@@ -62,6 +62,16 @@ class CaseMetadata(BaseModel):
     zephyr_version: str
 
 
+class LLMResponse(BaseModel):
+    """Response from an LLM call."""
+
+    model: str
+    generated_code: str
+    token_usage: TokenUsage
+    cost_usd: float = Field(ge=0.0)
+    duration_seconds: float = Field(ge=0.0)
+
+
 class CheckDetail(BaseModel):
     """Detail of a single evaluation check."""
 
@@ -87,6 +97,7 @@ class EvalResult(BaseModel):
     """Result of evaluating a single case against a model."""
 
     case_id: str
+    category: CaseCategory | None = None
     model: str
     attempt: int
     generated_code: str
