@@ -1,0 +1,9 @@
+id: timer-006
+category: timer
+difficulty: hard
+title: "Precise Timing with Hardware Counter and ISR"
+description: "Use the Zephyr counter API for precise microsecond timing; ISR records timestamps without blocking"
+tags: [zephyr, counter, hardware-timer, isr, microsecond, precise-timing]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

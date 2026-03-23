@@ -1,0 +1,9 @@
+id: memory-opt-010
+category: memory-opt
+difficulty: hard
+title: "Linker Section Placement for DMA Buffers"
+description: "Place DMA buffers in a named linker section using GCC section attribute or Z_GENERIC_SECTION"
+tags: [zephyr, memory, linker, section, DMA, __attribute__section, Z_GENERIC_SECTION]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

@@ -25,9 +25,9 @@ static void user_thread_fn(void *p1, void *p2, void *p3)
 
 int main(void)
 {
-	struct k_mem_partition *parts[] = { &app_partition };
+	k_mem_domain_init(&app_domain, 0, NULL);
 
-	k_mem_domain_init(&app_domain, ARRAY_SIZE(parts), parts);
+	k_mem_domain_add_partition(&app_domain, &app_partition);
 
 	k_thread_create(&user_thread, user_stack,
 			K_THREAD_STACK_SIZEOF(user_stack),

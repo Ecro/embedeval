@@ -1,0 +1,9 @@
+id: power-mgmt-006
+category: power-mgmt
+difficulty: hard
+title: "Peripheral Power Gating via Clock Control"
+description: "Disable peripheral clock when idle, re-enable before next access — no phantom Zephyr APIs"
+tags: [zephyr, power-management, clock-control, peripheral-gating, pm_device]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

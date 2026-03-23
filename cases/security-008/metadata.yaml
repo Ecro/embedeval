@@ -1,0 +1,9 @@
+id: security-008
+category: security
+difficulty: medium
+title: "HMAC-SHA256 Message Authentication (PSA MAC API)"
+description: "Compute HMAC-SHA256 using PSA MAC API: psa_mac_sign_setup, psa_mac_update, psa_mac_sign_finish"
+tags: [zephyr, psa, hmac, sha256, mac, authentication, security]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

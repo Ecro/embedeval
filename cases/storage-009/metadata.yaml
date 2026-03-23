@@ -1,0 +1,9 @@
+id: storage-009
+category: storage
+difficulty: medium
+title: "Flash Area Boundary Validation Before Write"
+description: "Validate offset + size against flash area bounds using flash_area_get_size before writing to prevent out-of-bounds flash access"
+tags: [zephyr, flash, flash-area, boundary-check, storage, safety]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

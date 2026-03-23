@@ -1,0 +1,9 @@
+id: sensor-driver-008
+category: sensor-driver
+difficulty: hard
+title: "Sensor Fusion (Accel + Gyro to Orientation)"
+description: "Fetch accelerometer and gyroscope data separately, then compute a simple orientation estimate"
+tags: [zephyr, sensor, fusion, accelerometer, gyroscope, orientation, imu]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

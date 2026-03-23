@@ -1,0 +1,9 @@
+id: power-mgmt-008
+category: power-mgmt
+difficulty: hard
+title: "Wake Timer from Deep Sleep"
+description: "Set a k_timer wakeup alarm before entering PM suspend; timer period less than max sleep"
+tags: [zephyr, power-management, wakeup, pm_state_force, k_timer, deep-sleep, alarm]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

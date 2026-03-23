@@ -1,0 +1,9 @@
+id: sensor-driver-009
+category: sensor-driver
+difficulty: medium
+title: "Sensor Power Management (Low-Power Mode)"
+description: "Put sensor into low-power mode between reads using sensor_attr_set with SENSOR_ATTR_SAMPLING_FREQUENCY"
+tags: [zephyr, sensor, power-management, low-power, sampling-frequency, attr-set]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

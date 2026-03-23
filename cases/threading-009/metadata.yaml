@@ -1,0 +1,9 @@
+id: threading-009
+category: threading
+difficulty: medium
+title: "Thread Pool Pattern with System Work Queue"
+description: "Submit N work items to system workqueue, use counting semaphore to track completion"
+tags: [zephyr, threading, workqueue, k_work, k_sem, completion-tracking, thread-pool]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

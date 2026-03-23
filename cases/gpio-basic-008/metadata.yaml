@@ -1,0 +1,9 @@
+id: gpio-basic-008
+category: gpio-basic
+difficulty: hard
+title: "ADC with Hardware Averaging and Oversampling"
+description: "Configure ADC oversampling before reading, validate resolution and oversampling combination"
+tags: [zephyr, adc, oversampling, averaging, hardware]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

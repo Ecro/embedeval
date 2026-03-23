@@ -1,0 +1,9 @@
+id: gpio-basic-010
+category: gpio-basic
+difficulty: hard
+title: "GPIO Wakeup from Deep Sleep"
+description: "Configure a GPIO as wakeup source, force deep sleep power state, wake on pin change"
+tags: [zephyr, gpio, power-management, deep-sleep, wakeup, pm]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

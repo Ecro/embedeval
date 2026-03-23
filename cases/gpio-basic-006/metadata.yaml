@@ -1,0 +1,9 @@
+id: gpio-basic-006
+category: gpio-basic
+difficulty: hard
+title: "GPIO Interrupt Debounce with Timer"
+description: "Button interrupt triggers a k_timer for 50ms debounce; timer callback reads stable GPIO state"
+tags: [zephyr, gpio, interrupt, debounce, timer, callback]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

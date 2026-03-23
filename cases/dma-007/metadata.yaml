@@ -1,0 +1,9 @@
+id: dma-007
+category: dma
+difficulty: medium
+title: "DMA Channel Priority Configuration"
+description: "Configure two DMA channels with different priorities so the high-priority channel preempts the low-priority one"
+tags: [zephyr, dma, priority, channel-config, preemption]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

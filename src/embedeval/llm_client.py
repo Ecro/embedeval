@@ -1,6 +1,9 @@
 """EmbedEval LLM client interface."""
 
+import json
 import logging
+import re
+import subprocess
 import time
 from pathlib import Path
 
@@ -29,6 +32,8 @@ void main(void) {
 }
 """
 
+CLAUDE_CODE_PREFIX = "claude-code://"
+
 
 def call_model(
     model: str,
@@ -40,19 +45,11 @@ def call_model(
 ) -> LLMResponse:
     """Call an LLM model and return generated code.
 
-    Args:
-        model: Model identifier (e.g., "gpt-4", "mock" for testing).
-        prompt: The prompt to send to the model.
-        context_files: Optional list of file paths to include as context.
-        timeout: Timeout in seconds for the API call.
-        max_retries: Maximum number of retry attempts.
-        rate_limit_delay: Delay in seconds between retries for rate limiting.
-
-    Returns:
-        LLMResponse with generated code, token usage, and cost.
-
-    Raises:
-        RuntimeError: If all retries are exhausted.
+    Supports three modes:
+    - "mock": Returns a mock response for testing.
+    - "claude-code://MODEL": Uses `claude -p` CLI with subscription (no API key).
+      e.g. "claude-code://sonnet", "claude-code://opus", "claude-code://haiku"
+    - Any other string: Uses litellm (requires API keys).
     """
     if model == "mock":
         return _mock_response()
@@ -60,6 +57,83 @@ def call_model(
     context = _build_context(context_files or [])
     full_prompt = f"{context}\n{prompt}" if context else prompt
 
+    if model.startswith(CLAUDE_CODE_PREFIX):
+        return _call_claude_code(model, full_prompt, timeout)
+
+    return _call_litellm(model, full_prompt, timeout, max_retries, rate_limit_delay)
+
+
+def _call_claude_code(model: str, prompt: str, timeout: float) -> LLMResponse:
+    """Call Claude via `claude -p` CLI (uses subscription, no API key)."""
+    claude_model = model.removeprefix(CLAUDE_CODE_PREFIX)
+
+    cmd = ["claude", "-p", "--output-format", "json"]
+    if claude_model:
+        cmd.extend(["--model", claude_model])
+
+    logger.info("Claude Code call: model=%s", claude_model or "default")
+    start = time.monotonic()
+
+    try:
+        result = subprocess.run(
+            cmd,
+            input=prompt,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(f"claude -p timed out after {timeout}s") from exc
+
+    elapsed = time.monotonic() - start
+
+    if result.returncode != 0:
+        raise RuntimeError(f"claude -p failed (exit {result.returncode}): {result.stderr}")
+
+    # Parse JSON output — find the result entry
+    text_content = ""
+    input_tokens = 0
+    output_tokens = 0
+    cost_usd = 0.0
+
+    try:
+        events = json.loads(result.stdout)
+        for event in events:
+            if event.get("type") == "result":
+                text_content = event.get("result", "")
+                cost_usd = event.get("total_cost_usd", 0.0)
+                usage = event.get("usage", {})
+                input_tokens = usage.get("input_tokens", 0) + usage.get(
+                    "cache_read_input_tokens", 0
+                )
+                output_tokens = usage.get("output_tokens", 0)
+                break
+    except (json.JSONDecodeError, TypeError, KeyError) as exc:
+        logger.warning("Failed to parse claude -p JSON output: %s", exc)
+        # Fall back to raw stdout
+        text_content = result.stdout
+
+    return LLMResponse(
+        model=model,
+        generated_code=_extract_code(text_content),
+        token_usage=TokenUsage(
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            total_tokens=input_tokens + output_tokens,
+        ),
+        cost_usd=cost_usd,
+        duration_seconds=elapsed,
+    )
+
+
+def _call_litellm(
+    model: str,
+    prompt: str,
+    timeout: float,
+    max_retries: int,
+    rate_limit_delay: float,
+) -> LLMResponse:
+    """Call LLM via litellm (requires API keys)."""
     last_error: Exception | None = None
     for attempt in range(1, max_retries + 1):
         try:
@@ -72,12 +146,12 @@ def call_model(
             start = time.monotonic()
             response = litellm.completion(
                 model=model,
-                messages=[{"role": "user", "content": full_prompt}],
+                messages=[{"role": "user", "content": prompt}],
                 timeout=timeout,
             )
             elapsed = time.monotonic() - start
 
-            content: str = response.choices[0].message.content or ""
+            content: str = _extract_code(response.choices[0].message.content or "")
             usage = response.usage
             input_tokens = usage.prompt_tokens if usage else 0
             output_tokens = usage.completion_tokens if usage else 0
@@ -114,7 +188,9 @@ def call_model(
                 time.sleep(rate_limit_delay)
         except Exception as exc:
             logger.error("LLM call failed (non-retryable): %s", exc)
-            raise RuntimeError(f"Non-retryable error for model {model}: {exc}") from exc
+            raise RuntimeError(
+                f"Non-retryable error for model {model}: {exc}"
+            ) from exc
 
     msg = f"All {max_retries} retries exhausted for model {model}"
     raise RuntimeError(msg) from last_error
@@ -133,6 +209,19 @@ def _mock_response() -> LLMResponse:
         cost_usd=0.0,
         duration_seconds=0.01,
     )
+
+
+def _extract_code(text: str) -> str:
+    """Extract code from LLM response, stripping markdown code blocks.
+
+    LLMs typically wrap code in ```lang ... ``` blocks. This extracts
+    the code content, or returns the original text if no blocks found.
+    """
+    # Match ```<optional-lang>\n...\n```
+    blocks = re.findall(r"```\w*\n(.*?)```", text, re.DOTALL)
+    if blocks:
+        return "\n".join(blocks).strip()
+    return text.strip()
 
 
 def _build_context(context_files: list[str]) -> str:

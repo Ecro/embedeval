@@ -1,0 +1,9 @@
+id: spi-i2c-007
+category: spi-i2c
+difficulty: medium
+title: "SPI Full-Duplex Transfer"
+description: "Perform simultaneous TX and RX using spi_transceive with separate TX and RX buffers"
+tags: [zephyr, spi, full-duplex, transceive, tx-rx]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

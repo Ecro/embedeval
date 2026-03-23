@@ -1,0 +1,9 @@
+id: kconfig-006
+category: kconfig
+difficulty: hard
+title: "Secure Boot Hardening Kconfig Fragment"
+description: "Write a Kconfig fragment to enable secure boot hardening with stack protection in Zephyr"
+tags: [zephyr, kconfig, secure-boot, stack-protection, security, hardening]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

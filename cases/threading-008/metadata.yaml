@@ -1,0 +1,9 @@
+id: threading-008
+category: threading
+difficulty: hard
+title: "Real-Time Thread with Deadline Measurement"
+description: "High-priority thread measures its own execution time with k_cycle_get_32 and asserts 10ms deadline"
+tags: [zephyr, threading, real-time, deadline, timing, k_cycle_get_32, high-priority]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: dma-010
+category: dma
+difficulty: hard
+title: "Zero-Copy DMA Double Buffer Swap"
+description: "Implement ping-pong DMA with two buffers: while DMA fills one, CPU processes the other, then swap atomically"
+tags: [zephyr, dma, double-buffer, ping-pong, zero-copy, atomic]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

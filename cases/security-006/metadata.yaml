@@ -1,0 +1,9 @@
+id: security-006
+category: security
+difficulty: hard
+title: "Secure Key Storage with Anti-Tamper (Non-Extractable)"
+description: "Import a key into PSA Crypto with non-extractable attributes; PSA_KEY_USAGE_EXPORT must NOT be set"
+tags: [zephyr, psa, crypto, key-storage, non-extractable, security]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

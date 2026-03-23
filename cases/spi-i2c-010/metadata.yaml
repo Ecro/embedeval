@@ -1,0 +1,9 @@
+id: spi-i2c-010
+category: spi-i2c
+difficulty: hard
+title: "I2C Register Block Write with Repeated Start"
+description: "Write multiple bytes to consecutive I2C registers using i2c_transfer with I2C_MSG_RESTART flag"
+tags: [zephyr, i2c, register-write, repeated-start, i2c-transfer, i2c-msg]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

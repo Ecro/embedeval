@@ -1,0 +1,9 @@
+id: networking-009
+category: networking
+difficulty: hard
+title: "WebSocket Client over TLS"
+description: "Establish a WebSocket connection over TLS with credentials and send/receive frames"
+tags: [zephyr, websocket, tls, networking, security, wss, credentials]
+platform: native_sim
+estimated_tokens: 700
+sdk_version: "4.1.0"

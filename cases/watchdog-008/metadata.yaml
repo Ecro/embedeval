@@ -1,0 +1,9 @@
+id: watchdog-008
+category: watchdog
+difficulty: hard
+title: "Watchdog Disable Attempt Detection"
+description: "Code must NOT disable the watchdog after start; wdt_disable() call is a forbidden anti-pattern"
+tags: [zephyr, watchdog, safety, wdt_disable, anti-pattern, security]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

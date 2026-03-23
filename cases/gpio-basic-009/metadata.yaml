@@ -1,0 +1,9 @@
+id: gpio-basic-009
+category: gpio-basic
+difficulty: medium
+title: "Multi-UART with Runtime Baudrate Change"
+description: "Configure two UARTs with different baudrates and change one baudrate at runtime using uart_configure()"
+tags: [zephyr, uart, baudrate, runtime-config, multi-uart]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: ble-006
+category: ble
+difficulty: hard
+title: "BLE Secure OTA (DFU over BLE)"
+description: "Implement a BLE GATT service for firmware update with authentication before DFU"
+tags: [zephyr, ble, bluetooth, dfu, ota, security, gatt, firmware-update]
+platform: native_sim
+estimated_tokens: 700
+sdk_version: "4.1.0"

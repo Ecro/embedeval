@@ -1,0 +1,9 @@
+id: isr-concurrency-008
+category: isr-concurrency
+difficulty: hard
+title: "Lock-Free Single-Producer Single-Consumer Queue"
+description: "Wait-free ring buffer using atomic indices; no locks, no semaphores, power-of-2 size"
+tags: [zephyr, isr, concurrency, lock-free, spsc, ring-buffer, atomic, wait-free]
+platform: native_sim
+estimated_tokens: 700
+sdk_version: "4.1.0"

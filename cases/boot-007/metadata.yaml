@@ -1,0 +1,9 @@
+id: boot-007
+category: boot
+difficulty: medium
+title: "MCUboot Serial Recovery Mode Kconfig"
+description: "Kconfig fragment enabling MCUboot serial recovery over USB CDC ACM"
+tags: [zephyr, mcuboot, boot, kconfig, serial-recovery, usb, cdc-acm]
+platform: native_sim
+estimated_tokens: 250
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: memory-opt-009
+category: memory-opt
+difficulty: medium
+title: "Compile-Time Buffer Size Validation with BUILD_ASSERT"
+description: "Use BUILD_ASSERT to validate buffer sizes and struct layouts at compile time"
+tags: [zephyr, memory, BUILD_ASSERT, compile-time, static-assert, validation]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

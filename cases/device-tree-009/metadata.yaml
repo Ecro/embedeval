@@ -1,0 +1,9 @@
+id: device-tree-009
+category: device-tree
+difficulty: medium
+title: "Voltage Regulator Node Definition"
+description: "Write a Device Tree overlay defining a fixed voltage regulator with min/max microvolt constraints"
+tags: [zephyr, device-tree, regulator, voltage, power]
+platform: qemu_arm
+estimated_tokens: 400
+sdk_version: "4.1.0"

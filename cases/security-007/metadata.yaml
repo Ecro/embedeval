@@ -1,0 +1,9 @@
+id: security-007
+category: security
+difficulty: hard
+title: "TLS Mutual Authentication (Client Certificate)"
+description: "Load CA cert, client cert, and client key via tls_credential_add for mutual TLS with consistent sec_tag"
+tags: [zephyr, tls, mutual-auth, credentials, mbedtls, security]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

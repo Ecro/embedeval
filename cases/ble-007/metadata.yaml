@@ -1,0 +1,9 @@
+id: ble-007
+category: ble
+difficulty: medium
+title: "BLE Advertising with Manufacturer Data"
+description: "Include manufacturer-specific data in BLE advertising packets"
+tags: [zephyr, ble, bluetooth, advertising, manufacturer-data, bt_data]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

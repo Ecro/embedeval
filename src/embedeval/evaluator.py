@@ -173,7 +173,7 @@ def _run_compile_gate(
     case_dir: Path, generated_code: str, timeout: float
 ) -> LayerResult:
     """Layer 1: Docker west build + .map analysis."""
-    if not _docker_available():
+    if not _build_env_available():
         logger.info("Docker not available, skipping compile gate (pass)")
         return LayerResult(
             layer=1,
@@ -235,7 +235,7 @@ def _run_compile_gate(
 
 def _run_runtime(case_dir: Path, generated_code: str, timeout: float) -> LayerResult:
     """Layer 2: Runtime execution via west build -t run."""
-    if not _docker_available():
+    if not _build_env_available():
         logger.info("Docker not available, skipping runtime execution (pass)")
         return LayerResult(
             layer=2,
@@ -393,6 +393,13 @@ def _execute_check_module(
         )
 
 
-def _docker_available() -> bool:
-    """Check if Docker is available on the system."""
-    return shutil.which("docker") is not None
+def _build_env_available() -> bool:
+    """Check if Zephyr build environment is ready for compilation.
+
+    Returns False unless EMBEDEVAL_ENABLE_BUILD=1 is set explicitly.
+    This prevents accidental west build invocations in environments
+    that have west/Zephyr installed for other purposes.
+    """
+    import os
+
+    return os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"

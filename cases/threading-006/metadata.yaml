@@ -1,0 +1,9 @@
+id: threading-006
+category: threading
+difficulty: hard
+title: "Deadlock-Free Multi-Mutex Acquisition"
+description: "Two threads acquire two mutexes always in the same order to prevent deadlock"
+tags: [zephyr, threading, mutex, deadlock, lock-ordering, k_mutex]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: yocto-010
+category: yocto
+difficulty: hard
+title: "Yocto Recipe with Runtime Tests (ptest)"
+description: "Write a BitBake recipe that implements Yocto ptest for runtime testing on target"
+tags: [yocto, bitbake, recipe, ptest, runtime-tests, testing]
+platform: yocto_build
+estimated_tokens: 450
+sdk_version: "5.0"

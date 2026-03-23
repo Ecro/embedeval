@@ -1,0 +1,9 @@
+id: device-tree-008
+category: device-tree
+difficulty: hard
+title: "DMA Channel Assignment in Device Tree"
+description: "Write a Device Tree overlay assigning DMA channels to UART via dmas and dma-names properties"
+tags: [zephyr, device-tree, dma, uart, dma-channels]
+platform: qemu_arm
+estimated_tokens: 450
+sdk_version: "4.1.0"

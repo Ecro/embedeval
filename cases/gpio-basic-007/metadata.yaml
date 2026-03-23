@@ -1,0 +1,9 @@
+id: gpio-basic-007
+category: gpio-basic
+difficulty: medium
+title: "UART Async API with DMA"
+description: "Use the Zephyr async UART API (uart_tx/uart_rx_enable) with a receive callback for UART_RX_RDY events"
+tags: [zephyr, uart, async, dma, callback, rx_rdy]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

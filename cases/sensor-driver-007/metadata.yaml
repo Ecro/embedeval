@@ -1,0 +1,9 @@
+id: sensor-driver-007
+category: sensor-driver
+difficulty: medium
+title: "Sensor Batch Read with FIFO"
+description: "Read sensor FIFO watermark, then burst-read all available samples into a buffer"
+tags: [zephyr, sensor, fifo, batch-read, watermark, burst, buffer]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

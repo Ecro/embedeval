@@ -1,0 +1,9 @@
+id: ota-006
+category: ota
+difficulty: hard
+title: "OTA with Image Hash Verification"
+description: "Download OTA image, compute SHA-256 hash, compare with expected before writing to flash"
+tags: [zephyr, ota, sha256, hash, psa-crypto, flash, security]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

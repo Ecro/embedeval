@@ -1,0 +1,9 @@
+id: isr-concurrency-007
+category: isr-concurrency
+difficulty: hard
+title: "Nested Interrupt Priority Management"
+description: "Configure two interrupt sources with different priorities so higher-priority ISR can preempt lower"
+tags: [zephyr, isr, concurrency, interrupt-priority, nested-irq, preemption]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

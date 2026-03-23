@@ -1,0 +1,9 @@
+id: timer-007
+category: timer
+difficulty: medium
+title: "Watchdog Fed by Timer (Cascaded Safety)"
+description: "A k_timer periodically feeds the watchdog; if the timer stops, the WDT resets the system"
+tags: [zephyr, timer, watchdog, safety, cascaded, wdt]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

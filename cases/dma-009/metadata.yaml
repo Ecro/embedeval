@@ -1,0 +1,9 @@
+id: dma-009
+category: dma
+difficulty: medium
+title: "DMA Linked List Multi-Block with Stop Condition"
+description: "Chain three DMA blocks where the last block has next_block NULL to stop DMA after completion"
+tags: [zephyr, dma, linked-list, multi-block, block-chain, next-block]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

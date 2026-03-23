@@ -1,0 +1,9 @@
+id: dma-008
+category: dma
+difficulty: hard
+title: "DMA Error Handling with Callback Status Check"
+description: "Implement DMA callback that checks status parameter and stops DMA on error with a volatile error flag"
+tags: [zephyr, dma, error-handling, callback, volatile, dma-stop]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

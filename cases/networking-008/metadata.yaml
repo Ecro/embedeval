@@ -1,0 +1,9 @@
+id: networking-008
+category: networking
+difficulty: medium
+title: "MQTT with Last Will and Testament"
+description: "Configure an MQTT client with a Last Will and Testament message before connecting"
+tags: [zephyr, mqtt, networking, lwt, last-will, iot, reliability]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

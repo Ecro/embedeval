@@ -1,0 +1,9 @@
+id: networking-006
+category: networking
+difficulty: hard
+title: "TCP Server with Buffer Overflow Protection"
+description: "Accept TCP connections and receive data into a bounded buffer with overflow protection"
+tags: [zephyr, tcp, socket, server, security, buffer-overflow, cwe-120]
+platform: native_sim
+estimated_tokens: 650
+sdk_version: "4.1.0"

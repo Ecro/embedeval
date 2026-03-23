@@ -1,0 +1,9 @@
+id: security-010
+category: security
+difficulty: medium
+title: "PSA ECDSA P-256 Key Pair Generation"
+description: "Generate ECDSA P-256 key pair using PSA; export public key only, keep private key in secure storage"
+tags: [zephyr, psa, ecdsa, ecc, p256, key-generation, security]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

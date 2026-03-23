@@ -1,0 +1,9 @@
+id: dma-006
+category: dma
+difficulty: hard
+title: "DMA with Buffer Alignment Requirements"
+description: "Allocate cache-line aligned DMA buffers using __aligned(32) attribute to meet hardware requirements"
+tags: [zephyr, dma, alignment, cache-line, __aligned, memory-safety]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

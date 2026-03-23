@@ -1,0 +1,9 @@
+id: storage-007
+category: storage
+difficulty: medium
+title: "LittleFS Mount with Format-on-Failure Recovery"
+description: "Mount LittleFS; if mount fails, format with fs_mkfs then remount — prevents brick on first boot or corruption"
+tags: [zephyr, littlefs, filesystem, mount, recovery, fs_mkfs, storage]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

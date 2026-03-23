@@ -1,0 +1,9 @@
+id: linux-driver-010
+category: linux-driver
+difficulty: medium
+title: "Workqueue-Based Deferred Processing"
+description: "Schedule deferred work from interrupt context using Linux workqueues"
+tags: [linux, kernel, driver, workqueue, interrupt, deferred-work]
+platform: docker_only
+estimated_tokens: 600
+sdk_version: "6.6"

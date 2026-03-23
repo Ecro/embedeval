@@ -1,0 +1,9 @@
+id: sensor-driver-006
+category: sensor-driver
+difficulty: hard
+title: "Custom Sensor Driver with I2C Backend"
+description: "Implement sensor driver: init reads WHO_AM_I over I2C, sample_fetch reads data registers, channel_get returns value"
+tags: [zephyr, sensor, i2c, custom-driver, who-am-i, driver-api, device-tree]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: ota-008
+category: ota
+difficulty: hard
+title: "OTA Rollback with Timeout"
+description: "Start a 60-second timer after boot into new image; if not confirmed within timeout, trigger reset for MCUboot rollback"
+tags: [zephyr, ota, rollback, timeout, mcuboot, timer, watchdog]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

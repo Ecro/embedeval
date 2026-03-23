@@ -1,0 +1,9 @@
+id: memory-opt-008
+category: memory-opt
+difficulty: hard
+title: "Memory Footprint Minimization via Kconfig"
+description: "Disable unused subsystems via Kconfig to minimize RAM and flash: no FPU, no dynamic threads, minimal libc"
+tags: [zephyr, memory, kconfig, footprint, FPU, minimal-libc, CBPRINTF_NANO]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

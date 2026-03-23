@@ -1,0 +1,9 @@
+id: ota-010
+category: ota
+difficulty: hard
+title: "Differential (Delta) OTA Patch Application"
+description: "Apply a binary delta patch to the current image, verify patch integrity before applying, rollback if patch fails"
+tags: [zephyr, ota, delta, patch, differential, integrity, rollback]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

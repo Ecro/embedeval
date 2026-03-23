@@ -1,0 +1,9 @@
+id: device-tree-006
+category: device-tree
+difficulty: hard
+title: "Pinctrl Configuration for UART Pins"
+description: "Write a Device Tree overlay configuring pin control for UART pins using pinctrl-0 and pinctrl-names"
+tags: [zephyr, device-tree, pinctrl, uart, pin-mux]
+platform: qemu_arm
+estimated_tokens: 450
+sdk_version: "4.1.0"

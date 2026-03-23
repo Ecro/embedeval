@@ -41,7 +41,7 @@ PILOT_CASE_IDS = sorted(
             "watchdog",
             "yocto",
         ]
-        for n in range(1, 6)
+        for n in range(1, 11)
     ]
 )
 
@@ -54,7 +54,7 @@ def results_dir(tmp_path: Path) -> Path:
     return out
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestE2EMockBenchmark:
     """End-to-end tests running mock benchmark against pilot cases."""
 
@@ -125,7 +125,7 @@ class TestE2EMockBenchmark:
         assert "Category Results" in content
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestPilotCaseValidation:
     """Validate that reference solutions pass all checks."""
 
@@ -184,7 +184,7 @@ class TestPilotCaseValidation:
         )
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestCLIIntegration:
     """CLI integration tests using typer.testing.CliRunner."""
 

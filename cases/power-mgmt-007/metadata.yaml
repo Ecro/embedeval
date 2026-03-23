@@ -1,0 +1,9 @@
+id: power-mgmt-007
+category: power-mgmt
+difficulty: medium
+title: "System PM Policy Override"
+description: "Acquire and release pm_policy_state_lock to prevent deep sleep during active network period"
+tags: [zephyr, power-management, pm-policy, state-lock, deep-sleep-prevention]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

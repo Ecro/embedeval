@@ -1,0 +1,9 @@
+id: yocto-009
+category: yocto
+difficulty: medium
+title: "Yocto Machine Configuration Fragment"
+description: "Write a machine .conf fragment with MACHINE_FEATURES, KERNEL_DEVICETREE, and SERIAL_CONSOLES"
+tags: [yocto, machine-conf, MACHINE_FEATURES, KERNEL_DEVICETREE, SERIAL_CONSOLES]
+platform: yocto_build
+estimated_tokens: 300
+sdk_version: "5.0"

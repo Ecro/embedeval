@@ -1,0 +1,9 @@
+id: linux-driver-009
+category: linux-driver
+difficulty: hard
+title: "GPIO Consumer Driver with gpiolib"
+description: "Request and control GPIO using the modern gpiod API with devm_ auto-cleanup"
+tags: [linux, kernel, driver, gpio, gpiolib, gpiod, platform-driver]
+platform: docker_only
+estimated_tokens: 600
+sdk_version: "6.6"

@@ -1,0 +1,9 @@
+id: threading-007
+category: threading
+difficulty: medium
+title: "Thread-Safe Singleton Initialization"
+description: "Double-check locking pattern for one-time resource initialization with k_mutex"
+tags: [zephyr, threading, mutex, singleton, double-check, once, initialization]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

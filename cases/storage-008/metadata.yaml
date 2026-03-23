@@ -1,0 +1,9 @@
+id: storage-008
+category: storage
+difficulty: hard
+title: "Atomic Config Update (Write-then-Commit)"
+description: "Write new config to temp NVS key, verify readback, then commit by writing to primary key — prevents partial-write corruption"
+tags: [zephyr, nvs, atomic-write, power-loss, config, storage]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

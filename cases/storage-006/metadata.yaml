@@ -1,0 +1,9 @@
+id: storage-006
+category: storage
+difficulty: hard
+title: "Wear-Aware Flash Write with Sector Rotation"
+description: "Track write count per sector and rotate to next sector when threshold exceeded; erase before writing to new sector"
+tags: [zephyr, flash, wear-leveling, sector-rotation, storage]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: yocto-006
+category: yocto
+difficulty: hard
+title: "Yocto Recipe with Patch Application"
+description: "Write a BitBake recipe that applies a patch to the source before compilation"
+tags: [yocto, bitbake, recipe, patch, FILESEXTRAPATHS, SRC_URI]
+platform: yocto_build
+estimated_tokens: 400
+sdk_version: "5.0"
