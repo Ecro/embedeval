@@ -1,0 +1,9 @@
+id: power-mgmt-001
+category: power-mgmt
+difficulty: medium
+title: "Device Power Management Action Handler"
+description: "Implement a PM device action callback handling suspend and resume transitions"
+tags: [zephyr, power-management, pm, suspend, resume, device]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

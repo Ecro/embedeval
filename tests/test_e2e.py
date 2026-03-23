@@ -22,7 +22,9 @@ PILOT_CASE_IDS = [
     "gpio-basic-001",
     "isr-concurrency-001",
     "kconfig-001",
+    "power-mgmt-001",
     "spi-i2c-001",
+    "threading-001",
     "timer-001",
     "watchdog-001",
 ]

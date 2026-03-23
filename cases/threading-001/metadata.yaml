@@ -1,0 +1,9 @@
+id: threading-001
+category: threading
+difficulty: medium
+title: "Producer-Consumer with Message Queue"
+description: "Two threads communicating via a Zephyr message queue in producer-consumer pattern"
+tags: [zephyr, threading, msgq, producer-consumer, synchronization]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"
