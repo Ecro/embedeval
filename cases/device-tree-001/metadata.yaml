@@ -1,0 +1,9 @@
+id: device-tree-001
+category: device-tree
+difficulty: medium
+title: "I2C Sensor Node with Interrupt GPIO Overlay"
+description: "Write a Device Tree overlay adding an I2C sensor node with interrupt GPIO"
+tags: [zephyr, device-tree, i2c, gpio, interrupt]
+platform: qemu_arm
+estimated_tokens: 400
+zephyr_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: zephyr-kconfig-001
+category: zephyr-kconfig
+difficulty: easy
+title: "SPI with DMA Mode Kconfig Fragment"
+description: "Write a Kconfig fragment to enable SPI with DMA mode in Zephyr"
+tags: [zephyr, kconfig, spi, dma]
+platform: native_sim
+estimated_tokens: 200
+zephyr_version: "4.1.0"

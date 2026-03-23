@@ -1,0 +1,9 @@
+id: isr-concurrency-001
+category: isr-concurrency
+difficulty: hard
+title: "ISR-safe Ring Buffer Implementation"
+description: "Implement a lock-free ring buffer for ISR-to-thread data transfer"
+tags: [zephyr, isr, concurrency, ring-buffer, lock-free]
+platform: native_sim
+estimated_tokens: 800
+zephyr_version: "4.1.0"
