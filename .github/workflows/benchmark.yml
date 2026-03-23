@@ -1,0 +1,18 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "LLM model to benchmark"
+        required: true
+        type: string
+
+jobs:
+  benchmark:
+    name: Run Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run benchmark
+        run: echo "Benchmark will be implemented in Phase 4"

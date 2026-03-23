@@ -1,0 +1,121 @@
+{
+  "spec_file": "work-docs/embedeval/TECH_SPEC.md",
+  "spec_hash": "e66fcaee4a0981b5ed7a9f43d27b78bae7aa2cd69da0167277ff9d0e71c6deb9",
+  "input_mode": "TECH_SPEC",
+  "project": "embedeval",
+  "repo_path": "/home/noel/embedeval",
+  "started": "2026-03-23T20:00:00Z",
+  "current_phase": 1,
+  "total_phases": 5,
+  "phases": [
+    {
+      "id": 1,
+      "name": "Project Scaffold & Docker Environment",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commit_hash": null,
+      "iterations": 0,
+      "stages": {
+        "research": { "status": "pending", "reason": null },
+        "plan_validation": { "status": "pending", "result": null, "rounds": 0, "critiques": 0 },
+        "execute": { "status": "pending", "iterations": 0, "tasks_completed": 0, "tasks_total": 5 },
+        "review": { "status": "pending", "method": null, "reviewers_spawned": 0, "consensus_findings": 0, "auto_fixed": 0, "remaining": 0, "grade": null },
+        "wrapup": { "status": "pending", "commit_hash": null }
+      },
+      "autonomous_decisions": [],
+      "verify_result": null,
+      "last_error": null
+    },
+    {
+      "id": 2,
+      "name": "Benchmark Harness Core",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commit_hash": null,
+      "iterations": 0,
+      "stages": {
+        "research": { "status": "pending", "reason": null },
+        "plan_validation": { "status": "pending", "result": null, "rounds": 0, "critiques": 0 },
+        "execute": { "status": "pending", "iterations": 0, "tasks_completed": 0, "tasks_total": 6 },
+        "review": { "status": "pending", "method": null, "reviewers_spawned": 0, "consensus_findings": 0, "auto_fixed": 0, "remaining": 0, "grade": null },
+        "wrapup": { "status": "pending", "commit_hash": null }
+      },
+      "autonomous_decisions": [],
+      "verify_result": null,
+      "last_error": null
+    },
+    {
+      "id": 3,
+      "name": "Test Case Framework & Pilot Cases",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commit_hash": null,
+      "iterations": 0,
+      "stages": {
+        "research": { "status": "pending", "reason": null },
+        "plan_validation": { "status": "pending", "result": null, "rounds": 0, "critiques": 0 },
+        "execute": { "status": "pending", "iterations": 0, "tasks_completed": 0, "tasks_total": 5 },
+        "review": { "status": "pending", "method": null, "reviewers_spawned": 0, "consensus_findings": 0, "auto_fixed": 0, "remaining": 0, "grade": null },
+        "wrapup": { "status": "pending", "commit_hash": null }
+      },
+      "autonomous_decisions": [],
+      "verify_result": null,
+      "last_error": null
+    },
+    {
+      "id": 4,
+      "name": "CI/CD Pipeline & Reporting",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commit_hash": null,
+      "iterations": 0,
+      "stages": {
+        "research": { "status": "pending", "reason": null },
+        "plan_validation": { "status": "pending", "result": null, "rounds": 0, "critiques": 0 },
+        "execute": { "status": "pending", "iterations": 0, "tasks_completed": 0, "tasks_total": 3 },
+        "review": { "status": "pending", "method": null, "reviewers_spawned": 0, "consensus_findings": 0, "auto_fixed": 0, "remaining": 0, "grade": null },
+        "wrapup": { "status": "pending", "commit_hash": null }
+      },
+      "autonomous_decisions": [],
+      "verify_result": null,
+      "last_error": null
+    },
+    {
+      "id": 5,
+      "name": "Integration, Documentation & Polish",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commit_hash": null,
+      "iterations": 0,
+      "stages": {
+        "research": { "status": "pending", "reason": null },
+        "plan_validation": { "status": "pending", "result": null, "rounds": 0, "critiques": 0 },
+        "execute": { "status": "pending", "iterations": 0, "tasks_completed": 0, "tasks_total": 5 },
+        "review": { "status": "pending", "method": null, "reviewers_spawned": 0, "consensus_findings": 0, "auto_fixed": 0, "remaining": 0, "grade": null },
+        "wrapup": { "status": "pending", "commit_hash": null }
+      },
+      "autonomous_decisions": [],
+      "verify_result": null,
+      "last_error": null
+    }
+  ],
+  "total_iterations": 0,
+  "agents_spawned": 0,
+  "last_action": "Initialized progress tracking",
+  "blockers": [],
+  "decision_log": [
+    {
+      "timestamp": "2026-03-23T20:00:00Z",
+      "phase": 0,
+      "stage": "init",
+      "decision": "Target repo not found. Auto-created at /home/noel/embedeval",
+      "rationale": "No existing repo found for embedeval project. Created fresh repo.",
+      "human_review_needed": false
+    }
+  ]
+}
