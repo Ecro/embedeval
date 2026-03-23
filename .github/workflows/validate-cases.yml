@@ -14,5 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate cases
-        run: echo "Case validation will be implemented in Phase 3"
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - run: uv sync
+      - name: Validate case reference solutions (layers 1-2 only without Docker)
+        run: uv run embedeval validate --cases cases/
+        continue-on-error: true

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       model:
-        description: "LLM model to benchmark"
+        description: "LLM model to benchmark (e.g. gpt-4, claude-sonnet-4-20250514)"
         required: true
         type: string
 
@@ -12,7 +12,27 @@ jobs:
   benchmark:
     name: Run Benchmark
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - name: Run benchmark
-        run: echo "Benchmark will be implemented in Phase 4"
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - run: uv sync
+
+      - name: Run benchmark for ${{ inputs.model }}
+        run: uv run embedeval run --model ${{ inputs.model }} --output results/
+
+      - name: Generate leaderboard
+        run: uv run embedeval report --results results/ --output results/LEADERBOARD.md
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ inputs.model }}-${{ github.run_id }}
+          path: results/
+          retention-days: 90
