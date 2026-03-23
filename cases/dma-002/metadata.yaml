@@ -1,0 +1,9 @@
+id: dma-002
+category: dma
+difficulty: easy
+title: "DMA Peripheral-to-Memory Transfer"
+description: "Configure DMA for peripheral-to-memory direction with fixed source address adjustment"
+tags: [zephyr, dma, peripheral, adc, direction, source-addr-adj]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

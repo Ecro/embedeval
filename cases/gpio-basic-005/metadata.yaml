@@ -1,0 +1,9 @@
+id: gpio-basic-005
+category: gpio-basic
+difficulty: medium
+title: "Multi-LED Sequential Blink"
+description: "Toggle 4 LEDs in sequence using GPIO pin configuration and individual pin toggles"
+tags: [zephyr, gpio, led, multi-led, sequence, blink]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

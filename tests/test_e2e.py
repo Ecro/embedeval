@@ -16,28 +16,34 @@ from embedeval.scorer import score
 cli_runner = CliRunner()
 
 CASES_DIR = Path(__file__).parent.parent / "cases"
-PILOT_CASE_IDS = [
-    "device-tree-001",
-    "dma-001",
-    "gpio-basic-001",
-    "isr-concurrency-001",
-    "ble-001",
-    "boot-001",
-    "kconfig-001",
-    "linux-driver-001",
-    "memory-opt-001",
-    "networking-001",
-    "ota-001",
-    "power-mgmt-001",
-    "security-001",
-    "sensor-driver-001",
-    "spi-i2c-001",
-    "storage-001",
-    "threading-001",
-    "timer-001",
-    "watchdog-001",
-    "yocto-001",
-]
+PILOT_CASE_IDS = sorted(
+    [
+        f"{cat}-{n:03d}"
+        for cat in [
+            "ble",
+            "boot",
+            "device-tree",
+            "dma",
+            "gpio-basic",
+            "isr-concurrency",
+            "kconfig",
+            "linux-driver",
+            "memory-opt",
+            "networking",
+            "ota",
+            "power-mgmt",
+            "security",
+            "sensor-driver",
+            "spi-i2c",
+            "storage",
+            "threading",
+            "timer",
+            "watchdog",
+            "yocto",
+        ]
+        for n in range(1, 6)
+    ]
+)
 
 
 @pytest.fixture()

@@ -1,0 +1,9 @@
+id: security-003
+category: security
+difficulty: medium
+title: "PSA Crypto Random Number Generation"
+description: "Generate cryptographically secure random bytes using PSA Crypto API and verify the buffer is non-zero"
+tags: [zephyr, psa, crypto, rng, random, security, entropy]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

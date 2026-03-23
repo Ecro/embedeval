@@ -1,0 +1,9 @@
+id: yocto-005
+category: yocto
+difficulty: hard
+title: "Yocto Out-of-Tree Kernel Module Recipe"
+description: "BitBake recipe for building an out-of-tree kernel module using the module class"
+tags: [yocto, bitbake, recipe, kernel-module, out-of-tree, kbuild]
+platform: yocto_build
+estimated_tokens: 500
+sdk_version: "5.0"

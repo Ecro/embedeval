@@ -1,0 +1,9 @@
+id: kconfig-004
+category: kconfig
+difficulty: medium
+title: "Logging with Multiple Backends Kconfig Fragment"
+description: "Write a Kconfig fragment to enable deferred logging with UART backend in Zephyr"
+tags: [zephyr, kconfig, logging, uart, backend]
+platform: native_sim
+estimated_tokens: 250
+sdk_version: "4.1.0"

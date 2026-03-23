@@ -1,0 +1,9 @@
+id: ota-003
+category: ota
+difficulty: medium
+title: "DFU Target Flash Write"
+description: "Receive firmware chunks and write to flash using the dfu_target API"
+tags: [zephyr, ota, dfu, flash, dfu-target]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: security-004
+category: security
+difficulty: hard
+title: "PSA Key Derivation with HKDF"
+description: "Derive a key from a password using HKDF-SHA-256 with salt via PSA Key Derivation API"
+tags: [zephyr, psa, crypto, hkdf, key-derivation, security, tf-m]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

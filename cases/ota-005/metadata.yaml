@@ -1,0 +1,9 @@
+id: ota-005
+category: ota
+difficulty: hard
+title: "Full OTA Flow with Rollback Safety"
+description: "State-machine OTA: IDLE→DOWNLOADING→VERIFYING→REBOOTING→CONFIRMING with rollback timeout"
+tags: [zephyr, ota, dfu, mcuboot, state-machine, rollback, safety]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

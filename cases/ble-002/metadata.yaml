@@ -1,0 +1,9 @@
+id: ble-002
+category: ble
+difficulty: easy
+title: "BLE Observer (Scan)"
+description: "Start BLE scanning and print discovered devices using a scan callback"
+tags: [zephyr, ble, bluetooth, observer, scan, advertising]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

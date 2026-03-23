@@ -1,0 +1,9 @@
+id: power-mgmt-005
+category: power-mgmt
+difficulty: hard
+title: "Multi-device PM Ordering with Rollback"
+description: "Suspend 3 devices in dependency order, resume in reverse; handle partial failures with full rollback"
+tags: [zephyr, power-management, pm, multi-device, ordering, rollback]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

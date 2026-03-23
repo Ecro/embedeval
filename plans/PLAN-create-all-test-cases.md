@@ -41,6 +41,39 @@ Currently only 3 of 20 categories have test cases. The benchmark cannot be used 
 
 **각 케이스의 checks는 이러한 "실제 AI 실패 패턴"을 검출하도록 설계해야 한다.** 단순히 "코드가 있는지" 체크하는 것이 아니라, "올바른 순서로, 올바른 맥락에서 사용되는지"를 검증해야 한다.
 
+### Difficulty Calibration: LLM 학습 난이도 기준
+
+난이도는 **"인간에게 어렵나"가 아니라 "LLM이 올바르게 생성하기 어렵나"** 기준으로 분류한다.
+
+**Easy (LLM pass@1 예상 >70%):**
+- 학습 데이터에 풍부한 패턴 (GPIO blink, hello world, 단순 Kconfig)
+- 단일 API 호출, 명확한 1:1 매핑
+- 순서/의존성 없이 독립적인 설정
+- 예: CONFIG_SPI=y 나열, 단순 UART echo, 기본 timer start
+
+**Medium (LLM pass@1 예상 30-70%):**
+- API 호출 **순서**가 중요 (init→config→start, fetch→get)
+- 2-3개 컴포넌트 간 **의존성 체인** 존재
+- **에러 핸들링** 필요 (반환값 체크, 실패 경로)
+- 덜 흔한 API 사용 (NVS, counter, task_wdt)
+- 예: I2C read with error handling, producer-consumer, DMA transfer
+
+**Hard (LLM pass@1 예상 <30%):**
+- **동시성/원자성** 요구 (volatile, atomic, lock-free)
+- **보안 패턴** (copy_to_user, key lifecycle, image confirmation)
+- **상호 배제 제약** (conflicting Kconfig, mutual exclusion)
+- **리소스 수명 관리** (alloc→use→free on all paths, register→unregister)
+- **도메인 고유 불변식** (문서에 없는 암묵적 규칙)
+- **교차 관심사** (여러 서브시스템 통합, 다중 타이머 동기화)
+- 예: ISR-safe ring buffer, PSA Crypto roundtrip, OTA rollback logic
+
+**카테고리당 5개 케이스 난이도 분포 목표:**
+| 난이도 | 개수 | 목적 |
+|--------|------|------|
+| Easy | 1-2개 | 기본 역량 측정 (baseline) |
+| Medium | 2개 | 실무 수준 평가 |
+| Hard | 1-2개 | 한계 탐색 (frontier) |
+
 ### Estimated Impact
 - **Complexity:** High (17 cases, diverse domains)
 - **Risk Level:** Medium (domain expertise needed for each)

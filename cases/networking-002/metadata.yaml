@@ -1,0 +1,9 @@
+id: networking-002
+category: networking
+difficulty: easy
+title: "UDP Socket Send/Receive"
+description: "Create a UDP socket, send data to a server, and receive a response"
+tags: [zephyr, udp, socket, networking, send, receive]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

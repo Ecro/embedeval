@@ -1,0 +1,9 @@
+id: timer-004
+category: timer
+difficulty: easy
+title: "Delayed Work Item Scheduling"
+description: "Schedule a delayable work item to execute after a 500ms delay using k_work_delayable"
+tags: [zephyr, work-queue, delayable, k_work_schedule, delay]
+platform: native_sim
+estimated_tokens: 300
+sdk_version: "4.1.0"

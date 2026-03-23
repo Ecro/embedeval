@@ -1,0 +1,9 @@
+id: device-tree-005
+category: device-tree
+difficulty: hard
+title: "Multi-Peripheral Board Overlay"
+description: "Write a Device Tree overlay enabling I2C with BME680 sensor, SPI with NOR flash, and GPIO with named pins"
+tags: [zephyr, device-tree, i2c, spi, gpio, multi-peripheral, bme680, flash]
+platform: qemu_arm
+estimated_tokens: 600
+sdk_version: "4.1.0"

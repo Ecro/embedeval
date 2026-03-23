@@ -1,0 +1,9 @@
+id: isr-concurrency-002
+category: isr-concurrency
+difficulty: medium
+title: "ISR-to-Thread Communication with k_msgq"
+description: "ISR puts sensor data into a Zephyr message queue; a thread consumes it using K_NO_WAIT in ISR context"
+tags: [zephyr, isr, concurrency, msgq, message-queue, k_msgq]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

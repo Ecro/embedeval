@@ -1,0 +1,9 @@
+id: device-tree-003
+category: device-tree
+difficulty: easy
+title: "PWM LED Node Overlay"
+description: "Write a Device Tree overlay adding a PWM LED node referencing pwm0 channel 0"
+tags: [zephyr, device-tree, pwm, led, gpio]
+platform: qemu_arm
+estimated_tokens: 300
+sdk_version: "4.1.0"

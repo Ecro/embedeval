@@ -1,0 +1,9 @@
+id: dma-003
+category: dma
+difficulty: medium
+title: "DMA Circular Buffer"
+description: "Configure DMA in circular mode for continuous data collection with dma_reload after each transfer"
+tags: [zephyr, dma, circular, continuous, reload, callback]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

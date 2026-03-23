@@ -1,0 +1,9 @@
+id: sensor-driver-002
+category: sensor-driver
+difficulty: easy
+title: "Sensor with Data-Ready Trigger Callback"
+description: "Configure a sensor data-ready trigger and handle new samples in an interrupt callback"
+tags: [zephyr, sensor, trigger, data-ready, callback, driver]
+platform: native_sim
+estimated_tokens: 300
+sdk_version: "4.1.0"

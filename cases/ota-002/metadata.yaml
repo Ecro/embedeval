@@ -1,0 +1,9 @@
+id: ota-002
+category: ota
+difficulty: easy
+title: "MCUboot Swap Type Check"
+description: "Query the current MCUboot swap type and print a human-readable status string"
+tags: [zephyr, ota, dfu, mcuboot, swap-type]
+platform: native_sim
+estimated_tokens: 250
+sdk_version: "4.1.0"

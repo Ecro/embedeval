@@ -1,0 +1,9 @@
+id: power-mgmt-004
+category: power-mgmt
+difficulty: medium
+title: "PM Device Runtime Enable/Disable"
+description: "Use pm_device_runtime_enable and pm_device_runtime_get/put for automatic reference-counted PM"
+tags: [zephyr, power-management, pm-runtime, reference-counting, device]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: watchdog-003
+category: watchdog
+difficulty: easy
+title: "Watchdog with Warning Callback Before Reset"
+description: "Install a watchdog timeout with a callback that prints a warning before system reset"
+tags: [zephyr, watchdog, callback, wdt, reset, safety]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: sensor-driver-005
+category: sensor-driver
+difficulty: hard
+title: "Custom Sensor Driver Registration"
+description: "Implement a minimal custom sensor driver with sample_fetch and channel_get using SENSOR_DEVICE_DT_INST_DEFINE"
+tags: [zephyr, sensor, custom-driver, device-tree, driver-api, sample-fetch, channel-get]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

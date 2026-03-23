@@ -1,0 +1,9 @@
+id: linux-driver-005
+category: linux-driver
+difficulty: hard
+title: "Sysfs Attribute Interface"
+description: "Create a device with custom sysfs show/store attributes using DEVICE_ATTR_RW"
+tags: [linux, kernel, driver, sysfs, device-attr, kobject]
+platform: docker_only
+estimated_tokens: 600
+sdk_version: "6.6"

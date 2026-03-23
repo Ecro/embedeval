@@ -1,0 +1,9 @@
+id: spi-i2c-003
+category: spi-i2c
+difficulty: medium
+title: "I2C Multi-register Burst Read"
+description: "Read 6 bytes from accelerometer registers 0x28-0x2D in a burst read"
+tags: [zephyr, i2c, accelerometer, burst-read, register]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

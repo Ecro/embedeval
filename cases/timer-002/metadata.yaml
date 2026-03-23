@@ -1,0 +1,9 @@
+id: timer-002
+category: timer
+difficulty: medium
+title: "One-shot Timer with Work Queue Submission"
+description: "Fire a one-shot kernel timer that submits a work item to the system work queue"
+tags: [zephyr, timer, work-queue, one-shot, k_work]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

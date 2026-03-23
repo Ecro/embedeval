@@ -1,0 +1,9 @@
+id: threading-003
+category: threading
+difficulty: medium
+title: "Semaphore-Based Event Signaling"
+description: "Producer thread signals an event via k_sem_give, consumer waits with k_sem_take using K_FOREVER"
+tags: [zephyr, threading, semaphore, signaling, synchronization]
+platform: native_sim
+estimated_tokens: 420
+sdk_version: "4.1.0"

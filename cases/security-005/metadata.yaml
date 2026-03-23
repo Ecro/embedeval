@@ -1,0 +1,9 @@
+id: security-005
+category: security
+difficulty: hard
+title: "TF-M PSA Protected Storage"
+description: "Store and retrieve a secret using PSA Protected Storage (psa_ps_set / psa_ps_get) with proper UID and error handling"
+tags: [zephyr, psa, tf-m, protected-storage, security, storage]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

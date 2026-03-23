@@ -1,0 +1,9 @@
+id: storage-005
+category: storage
+difficulty: hard
+title: "NVS Wear-Leveling Awareness"
+description: "Write multiple NVS entries, delete old ones, check remaining space, and handle ENOSPC"
+tags: [zephyr, nvs, wear-leveling, storage, flash, enospc]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

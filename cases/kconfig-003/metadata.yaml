@@ -1,0 +1,9 @@
+id: kconfig-003
+category: kconfig
+difficulty: easy
+title: "USB CDC ACM Kconfig Fragment"
+description: "Write a Kconfig fragment to enable USB CDC ACM serial in Zephyr"
+tags: [zephyr, kconfig, usb, cdc, uart]
+platform: native_sim
+estimated_tokens: 200
+sdk_version: "4.1.0"

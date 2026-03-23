@@ -1,0 +1,9 @@
+id: dma-005
+category: dma
+difficulty: hard
+title: "DMA with Cache Coherency"
+description: "Flush cache before DMA start and invalidate after completion to prevent data corruption on cached platforms"
+tags: [zephyr, dma, cache, coherency, flush, invalidate, sys-cache]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: isr-concurrency-003
+category: isr-concurrency
+difficulty: medium
+title: "Spinlock-Protected Shared State"
+description: "Use k_spinlock to protect shared data accessed from both ISR and thread context, saving and restoring the IRQ key"
+tags: [zephyr, isr, concurrency, spinlock, k_spinlock, irq]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

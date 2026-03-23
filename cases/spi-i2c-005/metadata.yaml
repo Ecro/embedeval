@@ -1,0 +1,9 @@
+id: spi-i2c-005
+category: spi-i2c
+difficulty: hard
+title: "I2C Bus Scan"
+description: "Scan all valid 7-bit I2C addresses (0x08-0x77) and report found devices, skipping reserved ranges"
+tags: [zephyr, i2c, bus-scan, address-range, probe]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

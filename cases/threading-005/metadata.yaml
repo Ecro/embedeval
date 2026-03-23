@@ -1,0 +1,9 @@
+id: threading-005
+category: threading
+difficulty: hard
+title: "Work Queue with Delayed Submission"
+description: "Custom work queue thread with delayed work items submitted via k_work_schedule_for_queue"
+tags: [zephyr, threading, workqueue, delayed-work, k_work_delayable]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

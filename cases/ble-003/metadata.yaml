@@ -1,0 +1,9 @@
+id: ble-003
+category: ble
+difficulty: medium
+title: "BLE Peripheral with Notifications"
+description: "GATT service with a notifiable characteristic that sends value updates to connected clients"
+tags: [zephyr, ble, gatt, notify, peripheral, bluetooth, ccc]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"

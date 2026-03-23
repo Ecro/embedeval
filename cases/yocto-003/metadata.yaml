@@ -1,0 +1,9 @@
+id: yocto-003
+category: yocto
+difficulty: medium
+title: "Yocto Recipe with Systemd Service"
+description: "BitBake recipe that installs a systemd service unit file using the systemd class"
+tags: [yocto, bitbake, recipe, systemd, service, embedded-linux]
+platform: yocto_build
+estimated_tokens: 400
+sdk_version: "5.0"

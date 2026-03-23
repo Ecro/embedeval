@@ -1,0 +1,9 @@
+id: spi-i2c-004
+category: spi-i2c
+difficulty: medium
+title: "SPI Flash Write and Read Verify"
+description: "Write data to SPI flash with write-enable and busy-wait, read back and compare"
+tags: [zephyr, spi, flash, write-enable, busy-wait, verify]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

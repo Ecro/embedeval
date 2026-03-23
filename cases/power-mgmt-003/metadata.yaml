@@ -1,0 +1,9 @@
+id: power-mgmt-003
+category: power-mgmt
+difficulty: medium
+title: "Device PM with State Tracking"
+description: "PM callback tracks device state in a variable and rejects duplicate transitions with -EALREADY"
+tags: [zephyr, power-management, pm, state-machine, device]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

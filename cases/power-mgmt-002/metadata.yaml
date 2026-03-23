@@ -1,0 +1,9 @@
+id: power-mgmt-002
+category: power-mgmt
+difficulty: easy
+title: "Simple System Sleep"
+description: "Demonstrate CPU yielding with k_sleep, printing timestamps before and after sleep to show time passage"
+tags: [zephyr, power-management, sleep, k_sleep, idle]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

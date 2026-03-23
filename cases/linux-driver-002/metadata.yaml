@@ -1,0 +1,9 @@
+id: linux-driver-002
+category: linux-driver
+difficulty: medium
+title: "Platform Driver with Device Tree Binding"
+description: "Implement a Linux platform driver that matches a Device Tree compatible string"
+tags: [linux, kernel, driver, platform-driver, device-tree, of_match]
+platform: docker_only
+estimated_tokens: 500
+sdk_version: "6.6"

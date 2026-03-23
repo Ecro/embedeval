@@ -1,0 +1,9 @@
+id: networking-004
+category: networking
+difficulty: medium
+title: "CoAP Client GET Request"
+description: "Send a CoAP GET request to a resource and parse the response"
+tags: [zephyr, coap, networking, get, iot, constrained]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: memory-opt-005
+category: memory-opt
+difficulty: hard
+title: "Memory Domain with Partitions"
+description: "Create a memory domain with k_mem_domain_init, add partitions, and assign a user-mode thread"
+tags: [zephyr, memory-domain, partition, user-mode, isolation, security]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

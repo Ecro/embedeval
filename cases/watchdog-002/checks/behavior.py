@@ -1,0 +1,93 @@
+"""Behavioral checks for task watchdog application."""
+
+import re
+
+from embedeval.models import CheckDetail
+
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    """Validate task watchdog behavioral properties and domain invariants."""
+    details: list[CheckDetail] = []
+
+    # Check 1: task_wdt_init called before task_wdt_add (correct ordering)
+    # AI failure: calling task_wdt_add before task_wdt_init
+    init_pos = generated_code.find("task_wdt_init")
+    add_pos = generated_code.find("task_wdt_add")
+    init_before_add = init_pos != -1 and add_pos != -1 and init_pos < add_pos
+    details.append(
+        CheckDetail(
+            check_name="init_before_add",
+            passed=init_before_add,
+            expected="task_wdt_init() called before task_wdt_add()",
+            actual="correct order" if init_before_add else "wrong order or missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 2: task_wdt_feed called from within the worker thread function
+    # AI failure: feeding from main thread instead of the monitored thread
+    # Heuristic: find the thread entry function and check if task_wdt_feed is inside it
+    thread_fn_match = re.search(
+        r"void\s+(\w+)\s*\(\s*void\s*\*[^)]*\)\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}",
+        generated_code,
+        re.DOTALL,
+    )
+    feed_in_thread = False
+    if thread_fn_match:
+        thread_body = thread_fn_match.group(2)
+        feed_in_thread = "task_wdt_feed" in thread_body
+    # Fallback: if we can't parse, check that task_wdt_feed appears after thread start
+    if not feed_in_thread:
+        feed_in_thread = "task_wdt_feed" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="feed_from_worker_thread",
+            passed=feed_in_thread,
+            expected="task_wdt_feed() called from within the worker thread",
+            actual="present in thread" if feed_in_thread else "missing or in wrong context",
+            check_type="constraint",
+        )
+    )
+
+    # Check 3: task_wdt_add return value checked or stored (channel ID used in feed)
+    # AI failure: ignoring return value, then feeding channel -1 or 0 blindly
+    add_result_stored = bool(
+        re.search(r"(?:int\s+)?\w+\s*=\s*task_wdt_add\s*\(", generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="channel_id_stored",
+            passed=add_result_stored,
+            expected="task_wdt_add() return value stored as channel ID",
+            actual="stored" if add_result_stored else "return value ignored",
+            check_type="constraint",
+        )
+    )
+
+    # Check 4: Worker thread loops (not a one-shot function)
+    has_loop_in_thread = bool(
+        re.search(r"while\s*\(\s*1\s*\)|while\s*\(\s*true\s*\)|for\s*\(\s*;\s*;\s*\)", generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="worker_thread_loops",
+            passed=has_loop_in_thread,
+            expected="Worker thread runs in an infinite loop",
+            actual="present" if has_loop_in_thread else "missing - thread may exit",
+            check_type="constraint",
+        )
+    )
+
+    # Check 5: k_sleep present in worker loop (not busy-wait)
+    has_sleep = "k_sleep" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="worker_sleeps_between_feeds",
+            passed=has_sleep,
+            expected="k_sleep() used in worker loop between WDT feeds",
+            actual="present" if has_sleep else "missing - may busy-wait",
+            check_type="constraint",
+        )
+    )
+
+    return details

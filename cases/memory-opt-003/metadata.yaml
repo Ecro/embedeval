@@ -1,0 +1,9 @@
+id: memory-opt-003
+category: memory-opt
+difficulty: medium
+title: "K_HEAP vs K_MEM_SLAB Selection"
+description: "Demonstrate correct use of K_HEAP_DEFINE for variable-size and K_MEM_SLAB for fixed-size allocations"
+tags: [zephyr, memory, heap, slab, allocation, optimization]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

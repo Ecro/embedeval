@@ -1,0 +1,9 @@
+id: kconfig-005
+category: kconfig
+difficulty: hard
+title: "TLS Networking Kconfig Fragment"
+description: "Write a Kconfig fragment to enable TLS networking with MbedTLS in Zephyr"
+tags: [zephyr, kconfig, tls, networking, mbedtls, sockets]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

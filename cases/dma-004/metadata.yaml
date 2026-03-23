@@ -1,0 +1,9 @@
+id: dma-004
+category: dma
+difficulty: medium
+title: "DMA Scatter-Gather Multi-block Transfer"
+description: "Chain multiple DMA blocks for scatter-gather transfer using next_block pointer linkage"
+tags: [zephyr, dma, scatter-gather, multi-block, next-block, linked-list]
+platform: native_sim
+estimated_tokens: 550
+sdk_version: "4.1.0"

@@ -1,0 +1,103 @@
+"""Behavioral checks for dual-channel watchdog application."""
+
+import re
+
+from embedeval.models import CheckDetail
+
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    """Validate dual-channel watchdog behavioral properties and domain invariants."""
+    details: list[CheckDetail] = []
+
+    # Check 1: install_timeout before setup (correct ordering)
+    install_pos = generated_code.find("wdt_install_timeout")
+    setup_pos = generated_code.find("wdt_setup")
+    order_ok = install_pos != -1 and setup_pos != -1 and install_pos < setup_pos
+    details.append(
+        CheckDetail(
+            check_name="install_before_setup",
+            passed=order_ok,
+            expected="wdt_install_timeout() called before wdt_setup()",
+            actual="correct order" if order_ok else "wrong order or missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 2: Two different timeout windows (1000 and 5000 ms)
+    # AI failure: using same timeout for both channels
+    has_1000ms_window = bool(re.search(r"\.max\s*=\s*1000", generated_code))
+    has_5000ms_window = bool(re.search(r"\.max\s*=\s*5000", generated_code))
+    has_distinct_timeouts = has_1000ms_window and has_5000ms_window
+    details.append(
+        CheckDetail(
+            check_name="distinct_channel_timeouts",
+            passed=has_distinct_timeouts,
+            expected="Channel 0: window.max=1000ms, Channel 1: window.max=5000ms",
+            actual=(
+                f"1000ms={'present' if has_1000ms_window else 'missing'}, "
+                f"5000ms={'present' if has_5000ms_window else 'missing'}"
+            ),
+            check_type="exact_match",
+        )
+    )
+
+    # Check 3: Both channel IDs used in wdt_feed (not just one)
+    # AI failure: feeding only one channel
+    feed_count = generated_code.count("wdt_feed")
+    feeds_both = feed_count >= 2
+    details.append(
+        CheckDetail(
+            check_name="feeds_both_channels",
+            passed=feeds_both,
+            expected="wdt_feed() called for both channels (at least 2 calls)",
+            actual=f"{feed_count} wdt_feed calls found",
+            check_type="constraint",
+        )
+    )
+
+    # Check 4: Channel IDs from install stored separately (two separate variables)
+    # Check for two separate assignments from wdt_install_timeout
+    install_assignments = re.findall(
+        r"(\w+)\s*=\s*wdt_install_timeout\s*\(", generated_code
+    )
+    has_distinct_ids = len(set(install_assignments)) >= 2
+    details.append(
+        CheckDetail(
+            check_name="channel_ids_stored_separately",
+            passed=has_distinct_ids,
+            expected="Two distinct variables store the channel IDs",
+            actual=(
+                f"distinct vars: {set(install_assignments)}"
+                if install_assignments
+                else "no assignments found"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 5: WDT_FLAG_RESET_SOC used for both channels
+    reset_flag_count = generated_code.count("WDT_FLAG_RESET_SOC")
+    has_reset_flags = reset_flag_count >= 2
+    details.append(
+        CheckDetail(
+            check_name="reset_flag_on_both_channels",
+            passed=has_reset_flags,
+            expected="WDT_FLAG_RESET_SOC used on both channel configurations",
+            actual=f"{reset_flag_count} WDT_FLAG_RESET_SOC found",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: device_is_ready check present
+    has_ready = "device_is_ready" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="device_ready_check",
+            passed=has_ready,
+            expected="device_is_ready() check before WDT operations",
+            actual="present" if has_ready else "missing",
+            check_type="constraint",
+        )
+    )
+
+    return details

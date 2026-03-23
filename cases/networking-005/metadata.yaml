@@ -1,0 +1,9 @@
+id: networking-005
+category: networking
+difficulty: hard
+title: "HTTP Client with TLS"
+description: "Perform an HTTPS GET request using the Zephyr HTTP client API with TLS credentials"
+tags: [zephyr, https, tls, http, networking, security, mbedtls]
+platform: native_sim
+estimated_tokens: 650
+sdk_version: "4.1.0"

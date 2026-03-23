@@ -1,0 +1,9 @@
+id: boot-005
+category: boot
+difficulty: hard
+title: "Multi-image Boot Configuration Kconfig"
+description: "Kconfig fragment for MCUboot dual-core setup: main app and network core images"
+tags: [zephyr, mcuboot, multi-image, dual-core, network-core, kconfig]
+platform: native_sim
+estimated_tokens: 250
+sdk_version: "4.1.0"

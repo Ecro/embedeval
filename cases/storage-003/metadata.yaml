@@ -1,0 +1,9 @@
+id: storage-003
+category: storage
+difficulty: medium
+title: "LittleFS File Read/Write"
+description: "Mount LittleFS filesystem, write data to a file, and read it back"
+tags: [zephyr, littlefs, filesystem, fs, storage]
+platform: native_sim
+estimated_tokens: 450
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: storage-002
+category: storage
+difficulty: easy
+title: "Settings Subsystem Load/Save"
+description: "Initialize settings subsystem, save a config value, and load it back"
+tags: [zephyr, settings, storage, nvram, config]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

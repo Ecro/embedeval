@@ -1,0 +1,9 @@
+id: watchdog-005
+category: watchdog
+difficulty: hard
+title: "Watchdog with Thread Health Flag Monitoring"
+description: "Main thread monitors worker thread liveness via a shared flag; feeds WDT only when worker is healthy"
+tags: [zephyr, watchdog, thread, health-monitoring, volatile, safety]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

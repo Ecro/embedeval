@@ -1,0 +1,9 @@
+id: memory-opt-004
+category: memory-opt
+difficulty: medium
+title: "Thread Stack Analyzer"
+description: "Enable CONFIG_THREAD_ANALYZER and call thread_analyzer_print to report stack usage"
+tags: [zephyr, thread-analyzer, stack, profiling, memory, optimization]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"

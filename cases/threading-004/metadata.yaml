@@ -1,0 +1,9 @@
+id: threading-004
+category: threading
+difficulty: hard
+title: "Priority Inheritance Mutex"
+description: "High-priority thread blocked on mutex held by low-priority thread; medium-priority thread must not preempt while mutex is held"
+tags: [zephyr, threading, mutex, priority-inheritance, real-time]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

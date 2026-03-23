@@ -1,0 +1,9 @@
+id: isr-concurrency-004
+category: isr-concurrency
+difficulty: hard
+title: "Double-Buffer (Ping-Pong) Pattern"
+description: "Two buffers alternate: ISR fills one while the thread processes the other, using atomic index swap"
+tags: [zephyr, isr, concurrency, double-buffer, ping-pong, atomic, memory-barrier]
+platform: native_sim
+estimated_tokens: 650
+sdk_version: "4.1.0"

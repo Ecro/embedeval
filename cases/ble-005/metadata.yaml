@@ -1,0 +1,9 @@
+id: ble-005
+category: ble
+difficulty: hard
+title: "BLE Pairing with Security"
+description: "Configure BLE pairing with MITM protection, register auth callbacks and implement passkey display"
+tags: [zephyr, ble, bluetooth, pairing, security, mitm, passkey, smp]
+platform: native_sim
+estimated_tokens: 650
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: timer-005
+category: timer
+difficulty: hard
+title: "Multi-timer Coordination with Atomic Shared State"
+description: "Three timers at different rates (100ms, 250ms, 1000ms) updating shared atomic counters"
+tags: [zephyr, timer, atomic, multi-timer, race-condition, concurrency]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"

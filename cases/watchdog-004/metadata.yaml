@@ -1,0 +1,9 @@
+id: watchdog-004
+category: watchdog
+difficulty: medium
+title: "Dual-channel Watchdog with Different Timeouts"
+description: "Configure two watchdog channels with different timeouts (1s and 5s) and feed each at the correct rate"
+tags: [zephyr, watchdog, multi-channel, wdt, timeout, safety]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"
