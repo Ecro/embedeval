@@ -36,9 +36,7 @@ def _create_case(
         "estimated_tokens": 500,
         "zephyr_version": "3.6.0",
     }
-    (case_dir / "metadata.yaml").write_text(
-        yaml.dump(metadata), encoding="utf-8"
-    )
+    (case_dir / "metadata.yaml").write_text(yaml.dump(metadata), encoding="utf-8")
     (case_dir / "prompt.md").write_text(
         f"Generate code for {case_id}", encoding="utf-8"
     )

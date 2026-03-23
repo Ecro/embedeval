@@ -210,7 +210,12 @@ class TestGenerateLeaderboard:
                 continue
             if in_heatmap and line.startswith("## "):
                 break
-            if in_heatmap and line.startswith("|") and "Model" not in line and "---" not in line:
+            if (
+                in_heatmap
+                and line.startswith("|")
+                and "Model" not in line
+                and "---" not in line
+            ):
                 heatmap_lines.append(line)
         assert len(heatmap_lines) == 2
         assert any("gpt-4" in line for line in heatmap_lines)
@@ -293,8 +298,7 @@ class TestGenerateLeaderboard:
         # Missing layers should show "-"
         lines = content.split("\n")
         heatmap_lines = [
-            l for l in lines
-            if "partial-model" in l and "L0 Static" not in l
+            l for l in lines if "partial-model" in l and "L0 Static" not in l
         ]
         # Find the line in the layer heatmap section (not Model Comparison)
         # The heatmap line should contain "-" for missing layers

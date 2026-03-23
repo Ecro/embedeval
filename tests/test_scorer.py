@@ -39,9 +39,7 @@ def _make_result(
         failed_at_layer=failed_at_layer,
         passed=passed,
         duration_seconds=0.5,
-        token_usage=TokenUsage(
-            input_tokens=100, output_tokens=50, total_tokens=150
-        ),
+        token_usage=TokenUsage(input_tokens=100, output_tokens=50, total_tokens=150),
         cost_usd=0.001,
     )
 
@@ -112,10 +110,18 @@ class TestPassAt5:
 
     def test_one_of_five_passes(self) -> None:
         results = [
-            _make_result(case_id="case-001", attempt=1, passed=False, failed_at_layer=0),
-            _make_result(case_id="case-001", attempt=2, passed=False, failed_at_layer=0),
-            _make_result(case_id="case-001", attempt=3, passed=False, failed_at_layer=0),
-            _make_result(case_id="case-001", attempt=4, passed=False, failed_at_layer=0),
+            _make_result(
+                case_id="case-001", attempt=1, passed=False, failed_at_layer=0
+            ),
+            _make_result(
+                case_id="case-001", attempt=2, passed=False, failed_at_layer=0
+            ),
+            _make_result(
+                case_id="case-001", attempt=3, passed=False, failed_at_layer=0
+            ),
+            _make_result(
+                case_id="case-001", attempt=4, passed=False, failed_at_layer=0
+            ),
             _make_result(case_id="case-001", attempt=5, passed=True),
         ]
         report = score(results)
@@ -136,7 +142,9 @@ class TestMultiModel:
     def test_two_models_compared(self) -> None:
         results = [
             _make_result(case_id="case-001", model="gpt-4", passed=True),
-            _make_result(case_id="case-001", model="claude-3", passed=False, failed_at_layer=0),
+            _make_result(
+                case_id="case-001", model="claude-3", passed=False, failed_at_layer=0
+            ),
         ]
         report = score(results)
         assert len(report.models) == 2

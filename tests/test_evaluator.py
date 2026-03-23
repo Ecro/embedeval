@@ -25,7 +25,7 @@ def case_with_static_checks(tmp_path: Path) -> Path:
     checks_dir.mkdir(parents=True)
     static_py = checks_dir / "static.py"
     static_py.write_text(
-        '''\
+        """\
 from embedeval.models import CheckDetail
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -39,7 +39,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="static",
         )
     ]
-''',
+""",
         encoding="utf-8",
     )
     return case_dir
@@ -53,7 +53,7 @@ def case_with_failing_static(tmp_path: Path) -> Path:
     checks_dir.mkdir(parents=True)
     static_py = checks_dir / "static.py"
     static_py.write_text(
-        '''\
+        """\
 from embedeval.models import CheckDetail
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -66,7 +66,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="static",
         )
     ]
-''',
+""",
         encoding="utf-8",
     )
     return case_dir
@@ -80,7 +80,7 @@ def case_with_behavior_checks(tmp_path: Path) -> Path:
     checks_dir.mkdir(parents=True)
     behavior_py = checks_dir / "behavior.py"
     behavior_py.write_text(
-        '''\
+        """\
 from embedeval.models import CheckDetail
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -94,7 +94,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="behavioral",
         )
     ]
-''',
+""",
         encoding="utf-8",
     )
     return case_dir
@@ -196,7 +196,7 @@ class TestStaticChecks:
     ) -> None:
         result = evaluate(
             case_dir=case_with_static_checks,
-            generated_code='#include <zephyr/kernel.h>\nvoid main(void) {}',
+            generated_code="#include <zephyr/kernel.h>\nvoid main(void) {}",
         )
         assert result.layers[0].passed is True
         assert len(result.layers[0].details) == 1

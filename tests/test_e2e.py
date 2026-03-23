@@ -5,11 +5,15 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from typer.testing import CliRunner
 
+from embedeval.cli import app
 from embedeval.models import BenchmarkReport
 from embedeval.reporter import generate_json, generate_leaderboard
 from embedeval.runner import run_benchmark
 from embedeval.scorer import score
+
+cli_runner = CliRunner()
 
 CASES_DIR = Path(__file__).parent.parent / "cases"
 PILOT_CASE_IDS = [
@@ -31,24 +35,18 @@ def results_dir(tmp_path: Path) -> Path:
 class TestE2EMockBenchmark:
     """End-to-end tests running mock benchmark against pilot cases."""
 
-    def test_run_benchmark_returns_3_results(
-        self, _mock_docker: object
-    ) -> None:
+    def test_run_benchmark_returns_3_results(self, _mock_docker: object) -> None:
         """Benchmark with mock model returns one result per pilot case."""
         results = run_benchmark(cases_dir=CASES_DIR, model="mock")
         assert len(results) == 3
 
-    def test_result_case_ids_match_pilot_cases(
-        self, _mock_docker: object
-    ) -> None:
+    def test_result_case_ids_match_pilot_cases(self, _mock_docker: object) -> None:
         """Each result case_id matches one of the pilot case directory names."""
         results = run_benchmark(cases_dir=CASES_DIR, model="mock")
         result_ids = {r.case_id for r in results}
         assert result_ids == set(PILOT_CASE_IDS)
 
-    def test_scoring_produces_valid_report(
-        self, _mock_docker: object
-    ) -> None:
+    def test_scoring_produces_valid_report(self, _mock_docker: object) -> None:
         """Scoring produces a valid BenchmarkReport with expected structure."""
         results = run_benchmark(cases_dir=CASES_DIR, model="mock")
         report = score(results)
@@ -117,9 +115,7 @@ class TestPilotCaseValidation:
         ref_file = case_dir / "reference" / "main.c"
         ref_code = ref_file.read_text(encoding="utf-8")
 
-        result = evaluate(
-            case_dir=case_dir, generated_code=ref_code, model="reference"
-        )
+        result = evaluate(case_dir=case_dir, generated_code=ref_code, model="reference")
         layer_0 = result.layers[0]
         failed_checks = [d for d in layer_0.details if not d.passed]
         assert layer_0.passed, (
@@ -138,9 +134,7 @@ class TestPilotCaseValidation:
         ref_file = case_dir / "reference" / "main.c"
         ref_code = ref_file.read_text(encoding="utf-8")
 
-        result = evaluate(
-            case_dir=case_dir, generated_code=ref_code, model="reference"
-        )
+        result = evaluate(case_dir=case_dir, generated_code=ref_code, model="reference")
         layer_3 = result.layers[3]
         failed_checks = [d for d in layer_3.details if not d.passed]
         assert layer_3.passed, (
@@ -159,10 +153,27 @@ class TestPilotCaseValidation:
         ref_file = case_dir / "reference" / "main.c"
         ref_code = ref_file.read_text(encoding="utf-8")
 
-        result = evaluate(
-            case_dir=case_dir, generated_code=ref_code, model="reference"
-        )
+        result = evaluate(case_dir=case_dir, generated_code=ref_code, model="reference")
         assert result.passed, (
-            f"Full evaluation failed for {case_id} at layer "
-            f"{result.failed_at_layer}"
+            f"Full evaluation failed for {case_id} at layer {result.failed_at_layer}"
         )
+
+
+@patch("embedeval.evaluator._docker_available", return_value=False)
+class TestCLIIntegration:
+    """CLI integration tests using typer.testing.CliRunner."""
+
+    def test_list_outputs_3_cases(self, _mock_docker: object) -> None:
+        """'embedeval list --cases cases/' outputs 3 cases."""
+        result = cli_runner.invoke(app, ["list", "--cases", str(CASES_DIR)])
+        assert result.exit_code == 0
+        assert "Found 3 cases" in result.output
+        for case_id in PILOT_CASE_IDS:
+            assert case_id in result.output
+
+    def test_validate_passes_all_cases(self, _mock_docker: object) -> None:
+        """'embedeval validate --cases cases/' passes for all pilot cases."""
+        result = cli_runner.invoke(app, ["validate", "--cases", str(CASES_DIR)])
+        assert result.exit_code == 0
+        assert "3 passed" in result.output
+        assert "0 failed" in result.output

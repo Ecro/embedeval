@@ -112,9 +112,7 @@ def _calculate_category_scores(
         cases = by_category[cat]
         total = len(cases)
         passed = sum(
-            1
-            for case_results in cases.values()
-            if any(r.passed for r in case_results)
+            1 for case_results in cases.values() if any(r.passed for r in case_results)
         )
 
         scores.append(

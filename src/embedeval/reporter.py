@@ -181,9 +181,7 @@ def _failure_distribution(reports: list[BenchmarkReport]) -> list[str]:
             pct = failures / total_failures
         else:
             pct = 0.0
-        lines.append(
-            f"| {display} | {failures:.1f} | {pct:.0%} |"
-        )
+        lines.append(f"| {display} | {failures:.1f} | {pct:.0%} |")
 
     return lines
 
