@@ -17,9 +17,12 @@ cli_runner = CliRunner()
 
 CASES_DIR = Path(__file__).parent.parent / "cases"
 PILOT_CASE_IDS = [
-    "kconfig-001",
     "device-tree-001",
+    "gpio-basic-001",
     "isr-concurrency-001",
+    "kconfig-001",
+    "timer-001",
+    "watchdog-001",
 ]
 
 
@@ -35,10 +38,12 @@ def results_dir(tmp_path: Path) -> Path:
 class TestE2EMockBenchmark:
     """End-to-end tests running mock benchmark against pilot cases."""
 
-    def test_run_benchmark_returns_3_results(self, _mock_docker: object) -> None:
-        """Benchmark with mock model returns one result per pilot case."""
+    def test_run_benchmark_returns_results_for_all_cases(
+        self, _mock_docker: object
+    ) -> None:
+        """Benchmark with mock model returns one result per case."""
         results = run_benchmark(cases_dir=CASES_DIR, model="mock")
-        assert len(results) == 3
+        assert len(results) == len(PILOT_CASE_IDS)
 
     def test_result_case_ids_match_pilot_cases(self, _mock_docker: object) -> None:
         """Each result case_id matches one of the pilot case directory names."""
@@ -55,8 +60,8 @@ class TestE2EMockBenchmark:
         assert report.version == "0.1.0"
         assert len(report.models) >= 1
         assert report.models[0].model == "mock"
-        assert report.models[0].total_cases == 3
-        assert report.overall.total_cases == 3
+        assert report.models[0].total_cases == len(PILOT_CASE_IDS)
+        assert report.overall.total_cases == len(PILOT_CASE_IDS)
         assert report.overall.total_models == 1
         assert 0.0 <= report.overall.best_pass_at_1 <= 1.0
 
@@ -167,7 +172,7 @@ class TestCLIIntegration:
         """'embedeval list --cases cases/' outputs 3 cases."""
         result = cli_runner.invoke(app, ["list", "--cases", str(CASES_DIR)])
         assert result.exit_code == 0
-        assert "Found 3 cases" in result.output
+        assert f"Found {len(PILOT_CASE_IDS)} cases" in result.output
         for case_id in PILOT_CASE_IDS:
             assert case_id in result.output
 
@@ -175,5 +180,5 @@ class TestCLIIntegration:
         """'embedeval validate --cases cases/' passes for all pilot cases."""
         result = cli_runner.invoke(app, ["validate", "--cases", str(CASES_DIR)])
         assert result.exit_code == 0
-        assert "3 passed" in result.output
+        assert f"{len(PILOT_CASE_IDS)} passed" in result.output
         assert "0 failed" in result.output
