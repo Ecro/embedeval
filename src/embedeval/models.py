@@ -8,18 +8,30 @@ from pydantic import BaseModel, Field
 class CaseCategory(str, Enum):
     """Categories of embedded firmware evaluation cases."""
 
-    KCONFIG = "zephyr-kconfig"
-    DEVICE_TREE = "device-tree"
+    # Tier 1: Platform-agnostic C code domains
+    GPIO_BASIC = "gpio-basic"
+    SPI_I2C = "spi-i2c"
     DMA = "dma"
     ISR_CONCURRENCY = "isr-concurrency"
+    THREADING = "threading"
+    TIMER = "timer"
+    SENSOR_DRIVER = "sensor-driver"
+    NETWORKING = "networking"
     BLE = "ble"
-    SPI_I2C = "spi-i2c"
+    SECURITY = "security"
+    STORAGE = "storage"
+
+    # Tier 2: System-level (build/boot/update)
+    KCONFIG = "kconfig"
+    DEVICE_TREE = "device-tree"
+    BOOT = "boot"
+    OTA = "ota"
     POWER_MGMT = "power-mgmt"
     WATCHDOG = "watchdog"
-    OTA = "ota"
-    BOOT = "boot"
+
+    # Tier 3: Platform-specific
     YOCTO = "yocto"
-    NETWORKING = "networking"
+    LINUX_DRIVER = "linux-driver"
     MEMORY_OPT = "memory-opt"
 
 
@@ -34,10 +46,17 @@ class DifficultyTier(str, Enum):
 class EvalPlatform(str, Enum):
     """Evaluation platform targets."""
 
+    # Zephyr
     NATIVE_SIM = "native_sim"
     QEMU_ARM = "qemu_arm"
     BABBLESIM = "babblesim"
+    # FreeRTOS
+    QEMU_FREERTOS = "qemu_freertos"
+    ESP_IDF = "esp_idf"
+    # Linux
     DOCKER_ONLY = "docker_only"
+    QEMU_LINUX = "qemu_linux"
+    YOCTO_BUILD = "yocto_build"
 
 
 class TokenUsage(BaseModel):
@@ -59,7 +78,7 @@ class CaseMetadata(BaseModel):
     tags: list[str]
     platform: EvalPlatform
     estimated_tokens: int
-    zephyr_version: str
+    sdk_version: str
 
 
 class LLMResponse(BaseModel):

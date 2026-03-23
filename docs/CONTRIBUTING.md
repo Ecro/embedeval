@@ -20,27 +20,31 @@ cases/<category>-<number>/
     main.c             # Skeleton/template code (optional)
 ```
 
-**Case ID format:** `<category>-<3-digit-number>`, e.g., `zephyr-kconfig-001`, `isr-concurrency-002`.
+**Case ID format:** `<category>-<3-digit-number>`, e.g., `kconfig-001`, `isr-concurrency-002`.
 
 ## metadata.yaml Schema
 
 Every case requires a `metadata.yaml` file with the following fields:
 
 ```yaml
-id: "zephyr-kconfig-001"          # Unique case ID (must match directory name)
-category: "zephyr-kconfig"        # One of the 13 supported categories
+id: "kconfig-001"                 # Unique case ID (must match directory name)
+category: "kconfig"               # One of the 20 supported categories
 difficulty: "easy"                 # easy | medium | hard
 title: "Short descriptive title"  # Human-readable title
 description: "Detailed task description for documentation"
 tags: [zephyr, kconfig, spi, dma] # Searchable tags
-platform: "native_sim"            # native_sim | qemu_arm | babblesim | docker_only
+platform: "native_sim"            # native_sim | qemu_arm | babblesim | docker_only | qemu_freertos | esp_idf | qemu_linux | yocto_build
 estimated_tokens: 200             # Expected output token count
-zephyr_version: "4.1.0"           # Target Zephyr version
+sdk_version: "4.1.0"              # Target SDK/framework version
 ```
 
-**Supported categories:**
+**Supported categories (20):**
 
-`zephyr-kconfig`, `device-tree`, `dma`, `isr-concurrency`, `ble`, `spi-i2c`, `power-mgmt`, `watchdog`, `ota`, `boot`, `yocto`, `networking`, `memory-opt`
+Platform-agnostic: `gpio-basic`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`
+
+System-level: `kconfig`, `device-tree`, `boot`, `ota`, `power-mgmt`, `watchdog`
+
+Platform-specific: `yocto`, `linux-driver`, `memory-opt`
 
 **Difficulty guidelines:**
 
@@ -93,7 +97,7 @@ Requirements:
 1. **Must pass all evaluation layers.** Run `embedeval validate --cases cases/` to verify.
 2. **Must be a correct, complete solution** to the task described in `prompt.md`.
 3. **Must be minimal.** Include only what is necessary to solve the task.
-4. **Must follow Zephyr coding conventions** for the relevant subsystem.
+4. **Must follow coding conventions** for the relevant subsystem and platform.
 5. **Must not contain comments explaining the evaluation** (the LLM should produce clean code).
 
 ## Writing checks/static.py

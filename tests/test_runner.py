@@ -18,7 +18,7 @@ from embedeval.runner import (
 def _create_case(
     parent: Path,
     case_id: str,
-    category: str = "zephyr-kconfig",
+    category: str = "kconfig",
     difficulty: str = "easy",
     tags: list[str] | None = None,
 ) -> Path:
@@ -34,7 +34,7 @@ def _create_case(
         "tags": tags or ["test"],
         "platform": "native_sim",
         "estimated_tokens": 500,
-        "zephyr_version": "3.6.0",
+        "sdk_version": "3.6.0",
     }
     (case_dir / "metadata.yaml").write_text(yaml.dump(metadata), encoding="utf-8")
     (case_dir / "prompt.md").write_text(
@@ -97,7 +97,7 @@ class TestFilterCases:
     """Tests for case filtering."""
 
     def test_filter_by_category(self, tmp_path: Path) -> None:
-        _create_case(tmp_path, "case-001", category="zephyr-kconfig")
+        _create_case(tmp_path, "case-001", category="kconfig")
         _create_case(tmp_path, "case-002", category="ble")
         all_cases = discover_cases(tmp_path)
 

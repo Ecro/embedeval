@@ -6,4 +6,4 @@ description: "Implement a lock-free ring buffer for ISR-to-thread data transfer"
 tags: [zephyr, isr, concurrency, ring-buffer, lock-free]
 platform: native_sim
 estimated_tokens: 800
-zephyr_version: "4.1.0"
+sdk_version: "4.1.0"

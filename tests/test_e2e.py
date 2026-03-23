@@ -17,7 +17,7 @@ cli_runner = CliRunner()
 
 CASES_DIR = Path(__file__).parent.parent / "cases"
 PILOT_CASE_IDS = [
-    "zephyr-kconfig-001",
+    "kconfig-001",
     "device-tree-001",
     "isr-concurrency-001",
 ]

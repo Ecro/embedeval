@@ -82,13 +82,13 @@ verify_phase_3() {
     echo "=== Phase 3: Test Case Framework & Pilot Cases ==="
 
     # Pilot cases exist
-    test -d cases/zephyr-kconfig-001 || fail "zephyr-kconfig-001 missing"
+    test -d cases/kconfig-001 || fail "kconfig-001 missing"
     test -d cases/device-tree-001 || fail "device-tree-001 missing"
     test -d cases/isr-concurrency-001 || fail "isr-concurrency-001 missing"
     pass "pilot case directories"
 
     # Each case has required files
-    for case in zephyr-kconfig-001 device-tree-001 isr-concurrency-001; do
+    for case in kconfig-001 device-tree-001 isr-concurrency-001; do
         test -f "cases/$case/prompt.md" || fail "$case/prompt.md missing"
         test -f "cases/$case/metadata.yaml" || fail "$case/metadata.yaml missing"
         test -d "cases/$case/reference" || fail "$case/reference/ missing"
@@ -98,7 +98,7 @@ verify_phase_3() {
 
     # Validate reference solutions (requires Docker)
     if docker info >/dev/null 2>&1; then
-        uv run embedeval validate --case zephyr-kconfig-001 || fail "kconfig validation failed"
+        uv run embedeval validate --case kconfig-001 || fail "kconfig validation failed"
         uv run embedeval validate --case device-tree-001 || fail "device-tree validation failed"
         uv run embedeval validate --case isr-concurrency-001 || fail "isr validation failed"
         pass "reference solution validation"
@@ -182,7 +182,7 @@ verify_all() {
 
     # Docker validation (if available)
     if docker info >/dev/null 2>&1; then
-        uv run embedeval validate --case zephyr-kconfig-001 || fail "kconfig validation"
+        uv run embedeval validate --case kconfig-001 || fail "kconfig validation"
         uv run embedeval validate --case device-tree-001 || fail "device-tree validation"
         uv run embedeval validate --case isr-concurrency-001 || fail "isr validation"
 

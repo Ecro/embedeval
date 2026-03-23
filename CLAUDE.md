@@ -1,6 +1,6 @@
 # EmbedEval
 
-Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS).
+Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS, FreeRTOS, Yocto/Embedded Linux).
 
 ## Project Context
 
@@ -19,7 +19,7 @@ Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS)
 | CLI | typer | latest |
 | Models | pydantic | v2 |
 | Container | Docker | latest |
-| Target SDK | Zephyr RTOS | 3.6+ |
+| Target SDKs | Zephyr RTOS, FreeRTOS, Yocto | various |
 | CI | GitHub Actions | - |
 
 ## Project Structure
@@ -35,10 +35,10 @@ embedeval/
 │   ├── llm_client.py    # LiteLLM wrapper with retry logic
 │   └── cli.py           # Typer CLI (run, list, validate, report)
 ├── cases/               # Test cases (each case is a directory)
-│   ├── zephyr-kconfig-001/
+│   ├── kconfig-001/
 │   ├── device-tree-001/
 │   └── isr-concurrency-001/
-├── tests/               # pytest test suite (94 tests)
+├── tests/               # pytest test suite
 ├── docs/                # METHODOLOGY.md, CONTRIBUTING.md
 └── .github/workflows/   # CI, case validation, benchmark dispatch
 ```
@@ -63,11 +63,19 @@ embedeval/
 - `/review [task]` - Code review and quality check
 - `/wrapup [task]` - Finalize, commit, PR, and complete
 
+## 20 Evaluation Categories
+
+Platform-agnostic: `gpio-basic`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`
+
+System-level: `kconfig`, `device-tree`, `boot`, `ota`, `power-mgmt`, `watchdog`
+
+Platform-specific: `yocto`, `linux-driver`, `memory-opt`
+
 ## 5-Layer Evaluation Architecture
 
 - **L0 Static**: Pattern matching, required includes, structure checks
-- **L1 Compile**: Docker-based Zephyr SDK compilation
-- **L2 Runtime**: QEMU execution with timeout
+- **L1 Compile**: Docker-based SDK compilation (west build, idf.py, make)
+- **L2 Runtime**: QEMU/native_sim execution with timeout
 - **L3 Behavioral**: Output validation against expected patterns
 - **L4 Mutation**: Robustness testing with code mutations
 

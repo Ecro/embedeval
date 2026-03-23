@@ -150,7 +150,7 @@ class TestGenerateLeaderboard:
 
         content = output.read_text(encoding="utf-8")
         assert "## Category Results" in content
-        assert "zephyr-kconfig" in content
+        assert "kconfig" in content
         assert "PASS" in content
         assert "FAIL" in content
 
@@ -250,7 +250,7 @@ class TestGenerateLeaderboard:
         content = output.read_text(encoding="utf-8")
         assert "## Category Breakdown" in content
         assert "| Category | Pass@1 | Cases |" in content
-        assert "zephyr-kconfig" in content
+        assert "kconfig" in content
         assert "ble" in content
 
     def test_category_breakdown_values(self, tmp_path: Path) -> None:
