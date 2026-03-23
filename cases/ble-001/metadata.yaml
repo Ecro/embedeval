@@ -1,0 +1,9 @@
+id: ble-001
+category: ble
+difficulty: hard
+title: "BLE GATT Custom Service with Read/Write"
+description: "Define a custom BLE GATT service with read and write characteristics"
+tags: [zephyr, ble, gatt, service, characteristic, bluetooth]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"
