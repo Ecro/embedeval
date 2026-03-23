@@ -1,0 +1,9 @@
+id: boot-001
+category: boot
+difficulty: medium
+title: "MCUboot Image Confirmation Kconfig"
+description: "Kconfig fragment enabling MCUboot with image confirmation and swap mode"
+tags: [zephyr, mcuboot, boot, kconfig, image-management]
+platform: native_sim
+estimated_tokens: 200
+sdk_version: "4.1.0"

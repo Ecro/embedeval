@@ -1,0 +1,9 @@
+id: ota-001
+category: ota
+difficulty: hard
+title: "MCUboot Image Swap Confirmation After OTA"
+description: "Check MCUboot swap type on boot and confirm image if test passes"
+tags: [zephyr, ota, dfu, mcuboot, image-confirmation, swap]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

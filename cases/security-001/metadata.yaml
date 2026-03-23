@@ -1,0 +1,9 @@
+id: security-001
+category: security
+difficulty: hard
+title: "PSA Crypto AES-256-CBC Encrypt/Decrypt"
+description: "Use PSA Crypto API to perform AES-256-CBC encryption and decryption"
+tags: [zephyr, psa, crypto, aes, security, tf-m]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"
