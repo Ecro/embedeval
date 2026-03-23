@@ -18,9 +18,11 @@ cli_runner = CliRunner()
 CASES_DIR = Path(__file__).parent.parent / "cases"
 PILOT_CASE_IDS = [
     "device-tree-001",
+    "dma-001",
     "gpio-basic-001",
     "isr-concurrency-001",
     "kconfig-001",
+    "spi-i2c-001",
     "timer-001",
     "watchdog-001",
 ]

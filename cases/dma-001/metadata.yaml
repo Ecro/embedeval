@@ -1,0 +1,9 @@
+id: dma-001
+category: dma
+difficulty: medium
+title: "Memory-to-Memory DMA Transfer"
+description: "Configure and execute a memory-to-memory DMA transfer with completion callback"
+tags: [zephyr, dma, memory, transfer, callback]
+platform: native_sim
+estimated_tokens: 500
+sdk_version: "4.1.0"
