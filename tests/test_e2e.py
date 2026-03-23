@@ -36,6 +36,7 @@ PILOT_CASE_IDS = [
     "threading-001",
     "timer-001",
     "watchdog-001",
+    "yocto-001",
 ]
 
 

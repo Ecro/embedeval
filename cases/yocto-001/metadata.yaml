@@ -1,0 +1,9 @@
+id: yocto-001
+category: yocto
+difficulty: medium
+title: "BitBake Recipe for a Simple C Application"
+description: "Write a Yocto BitBake recipe that builds and installs a simple hello-world C application"
+tags: [yocto, bitbake, recipe, embedded-linux, build-system]
+platform: yocto_build
+estimated_tokens: 350
+sdk_version: "5.0"
