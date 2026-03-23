@@ -1,0 +1,9 @@
+id: storage-001
+category: storage
+difficulty: medium
+title: "NVS Key-Value Store Read/Write"
+description: "Mount NVS and perform key-value write then read-back verification"
+tags: [zephyr, nvs, storage, flash, key-value]
+platform: native_sim
+estimated_tokens: 400
+sdk_version: "4.1.0"

@@ -1,0 +1,9 @@
+id: memory-opt-001
+category: memory-opt
+difficulty: medium
+title: "Static Memory Slab Allocation (No Heap)"
+description: "Use K_MEM_SLAB_DEFINE for fixed-size block allocation without heap"
+tags: [zephyr, memory, slab, allocation, no-heap]
+platform: native_sim
+estimated_tokens: 350
+sdk_version: "4.1.0"
