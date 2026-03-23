@@ -1,0 +1,9 @@
+id: linux-driver-001
+category: linux-driver
+difficulty: hard
+title: "Linux Character Device Driver with Read/Write"
+description: "Implement a minimal Linux kernel char device driver with file operations"
+tags: [linux, kernel, driver, char-device, module]
+platform: docker_only
+estimated_tokens: 600
+sdk_version: "6.6"
