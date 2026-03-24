@@ -128,3 +128,79 @@ L3 체크가 진짜 변별기.
 
 **임시 결론:** Implicit 프롬프트가 변별력을 높이는 방향으로 작동하는 것은 확인됨.
 다만 16개만 수정해서 전체 pass@1 변화는 아직 미미. 더 많은 프롬프트 수정 필요.
+
+---
+
+## #7. "Embedded Last Exam" 비판적 자기 분석 (2026-03-24)
+
+**방법:** 임베디드 전문가 + LLM 벤치마크 전문가 관점에서 COT 분석.
+
+### 치명적 비판 (Show-stopper)
+
+**S1. 코드를 컴파일 안 하는 "코드 벤치마크"**
+L1/L2 비활성. `"volatile" in code` regex를 "behavioral check"라 부르는 건 overclaiming.
+진짜 behavioral = QEMU 실행 + ThreadSanitizer + 타이밍 측정.
+컴파일도 안 해본 코드의 pass@1은 의미가 약하다.
+
+**S2. 재현 불가능한 단일 시행**
+pass@1, 1회. LLM은 stochastic → 같은 실험을 다시 돌리면 다른 결과.
+n=10/카테고리에서 1건 변동 = 10%p 차이. confidence interval 없는 "91%"는 통계적으로 무의미.
+
+### 심각한 비판 (Major)
+
+**M1. Construct Validity: "임베디드 능력" ≠ "API 암기"**
+프롬프트가 API를 알려주면 95%, 안 알려주면 60%. 이건 "프롬프트 따르기"이지
+"도메인 지식"이 아니다. 진짜 임베디드 = 데이터시트 + 회로 + 빌드시스템 + 디버깅인데
+이 중 아무것도 테스트 안 함.
+
+**M2. 플랫폼 편향: "Embedded" ≠ "Zephyr"**
+200 TC 중 Zephyr가 90%+. ESP-IDF, STM32 HAL, bare-metal, AUTOSAR는 0.
+"Embedded 벤치마크"가 아니라 "Zephyr RTOS 벤치마크"가 정직한 이름.
+
+**M3. Human Baseline 없음**
+"91%"가 좋은지 나쁜지 모름. 주니어가 95% 맞추면 Sonnet은 주니어보다 못한 것.
+비교 대상 없는 절대 점수는 의미 없다.
+
+**M4. 프롬프트 민감도 = 측정 불안정성**
+프롬프트 문구만 바꿔도 점수가 달라진다. 좋은 벤치마크는 합리적 변형에 robust해야 함.
+단, implicit TC는 의도적 설계(도메인 지식 측정 목표)이므로 이건 양면이 있다.
+
+**M5. Toy 복잡도: 50줄 단일 파일**
+실제 프로젝트: 수만 줄, 수십 모듈. EmbedEval은 "함수 하나"이지 "시스템 설계"가 아님.
+
+### 중요한 비판 (Moderate)
+
+- **D1. Binary 채점**: 10개 체크 중 9개 통과해도 FAIL. 부분 점수 없음.
+- **D2. Check 정확도 미검증**: 의도적 오답→FAIL 확인(negative test) 안 함.
+- **D3. 벤치마크 오염**: public repo + reference solution 노출.
+- **D4. 평가자 편향**: 단일 관점의 TC/체크. 다른 전문가가 만들면 다른 결과.
+
+### 공정한 반론
+
+| 비판 | 반론 |
+|------|------|
+| 200문제 부족 | EmbedAgent(ICSE 2026)는 59문제. 임베디드 특화로는 많은 편 |
+| L3 static 무의미 | 코드 리뷰도 static 분석. volatile 누락은 regex로도 잡을 가치 있음 |
+| Single-shot 비현실적 | HumanEval 등 대부분의 코드 벤치마크가 single-shot |
+| "Last Exam" 과장 | first mover value — 임베디드 LLM 벤치마크 자체가 거의 없음 |
+
+### 정직한 Positioning
+
+| 과장 | 정직한 대안 |
+|------|-----------|
+| "Embedded Last Exam" | "Zephyr RTOS 코드 생성 벤치마크" |
+| "Behavioral evaluation" | "Static pattern heuristics" |
+| "pass@1 = 91%" | "pass@1 = 91% (single run, n=10/cat)" |
+| "LLM embedded capability" | "API recall + safety pattern awareness" |
+
+### 우선순위화된 개선 로드맵
+
+| 순위 | 개선 | 효과 | 난이도 |
+|------|------|------|--------|
+| 1 | L1/L2 활성화 (Docker + west build) | 신뢰성 극적 향상 | High |
+| 2 | pass@5 또는 3회 반복 평균 | 통계적 유의성 | Low |
+| 3 | Human baseline (주니어 1명) | 절대 점수 의미 부여 | Medium |
+| 4 | L3 명칭 → "static_heuristic" | 정직한 프레이밍 | Trivial |
+| 5 | 부분 점수제 (weighted scoring) | 세밀한 모델 비교 | Medium |
+| 6 | Private test set 분리 | 오염 방지 | Medium |
+| 7 | Multi-platform (ESP-IDF 추가) | 범위 확대 | High |
