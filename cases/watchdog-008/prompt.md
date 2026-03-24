@@ -1,7 +1,7 @@
 Write a Zephyr RTOS application that starts a watchdog and feeds it correctly, demonstrating that the watchdog is never disabled once started.
 
 Requirements:
-1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) and verify with device_is_ready()
+1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) and verify the device is initialized and ready before use
 2. Configure the watchdog with wdt_install_timeout():
    - flags = WDT_FLAG_RESET_SOC
    - window.min = 0, window.max = 2000

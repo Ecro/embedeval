@@ -100,7 +100,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     return case_dir
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestEvaluateBasic:
     """Tests for basic evaluation pipeline behavior."""
 
@@ -167,7 +167,7 @@ class TestEvaluateBasic:
         assert result.token_usage.total_tokens == 150
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestLayerSkipping:
     """Tests for layer fail -> skip subsequent behavior."""
 
@@ -187,7 +187,7 @@ class TestLayerSkipping:
             assert "Skipped" in layer.error
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestStaticChecks:
     """Tests for Layer 0: Static analysis."""
 
@@ -215,7 +215,7 @@ class TestStaticChecks:
 class TestDockerLayers:
     """Tests for Docker-dependent layers (1, 2)."""
 
-    @patch("embedeval.evaluator._docker_available", return_value=False)
+    @patch("embedeval.evaluator._build_env_available", return_value=False)
     def test_no_docker_layers_pass(
         self, _mock_docker: object, empty_case_dir: Path
     ) -> None:
@@ -226,7 +226,7 @@ class TestDockerLayers:
         assert result.layers[1].passed is True
         assert result.layers[2].passed is True
 
-    @patch("embedeval.evaluator._docker_available", return_value=True)
+    @patch("embedeval.evaluator._build_env_available", return_value=True)
     @patch("embedeval.evaluator.subprocess")
     def test_compile_timeout(
         self,
@@ -252,7 +252,7 @@ class TestDockerLayers:
         assert "timed out" in result.layers[1].error
 
 
-@patch("embedeval.evaluator._docker_available", return_value=False)
+@patch("embedeval.evaluator._build_env_available", return_value=False)
 class TestBehavioralChecks:
     """Tests for Layer 3: Behavioral assertions."""
 

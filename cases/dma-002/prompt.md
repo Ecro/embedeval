@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that configures DMA for a peripheral-to-memory t
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define a simulated peripheral address as a uint32_t constant (e.g., 0x40012400)
 4. Define a destination memory buffer of 32 bytes initialized to zero
 5. Configure a DMA channel (channel 0) for peripheral-to-memory transfer:

@@ -3,7 +3,7 @@ Write a Zephyr RTOS application that reads temperature from a sensor using the Z
 Requirements:
 1. Include zephyr/kernel.h, zephyr/device.h, zephyr/drivers/sensor.h
 2. Get the sensor device using DEVICE_DT_GET(DT_NODELABEL(temp_sensor)) or DT_ALIAS
-3. Check device readiness with device_is_ready()
+3. Verify the device is initialized and ready before use
 4. In a loop:
    a. Call sensor_sample_fetch() to trigger a measurement
    b. Check return value for errors

@@ -9,7 +9,7 @@ Requirements:
 4. Use atomic_t for write_head and read_tail indices
 5. Implement isr_log_write(uint32_t event_id, uint32_t data):
    - Reads write_head atomically
-   - Writes entry to buffer[write_head % BUF_SIZE] with volatile store
+   - Writes entry to buffer[write_head % BUF_SIZE] (entry is shared between ISR and thread)
    - Advances write_head atomically
    - Does NOT call printk or LOG_ERR/LOG_INF/LOG_DBG
 6. Implement a log_drain_thread that:
@@ -22,7 +22,7 @@ Requirements:
 CRITICAL RULES:
 - NO printk inside isr_log_write (or any ISR path)
 - NO LOG_ERR, LOG_INF, LOG_DBG, LOG_WRN inside ISR path
-- Buffer entries accessed via volatile pointer or atomic operations
+- Buffer entries accessed safely between ISR and thread contexts
 - Indices advanced with atomic_set (not plain ++)
 
 Output ONLY the complete C source file.

@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that writes a block of data to consecutive I2C r
 
 Requirements:
 1. Get the I2C bus device using DEVICE_DT_GET(DT_NODELABEL(i2c0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define device I2C address as 0x3C
 4. Write 4 bytes of configuration data to register 0x10 and following registers:
    - Prepare a buffer where byte 0 is the register address (0x10) and bytes 1-4 are data values

@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that performs a memory-to-memory DMA transfer.
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define a source buffer (64 bytes) initialized with a known pattern
 4. Define a destination buffer (64 bytes) initialized to zero
 5. Configure a DMA channel (channel 0) for memory-to-memory transfer:

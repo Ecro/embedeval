@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that configures DMA in circular mode for continu
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define two ping-pong buffers of 32 bytes each (buf_a and buf_b), initialized to zero
 4. Use a global variable to track which buffer is active (current buffer index 0 or 1)
 5. Configure a DMA channel (channel 0) for memory-to-memory circular transfer:

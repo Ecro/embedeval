@@ -1,7 +1,7 @@
 Write a Zephyr RTOS application that configures a window watchdog with both minimum and maximum feed constraints.
 
 Requirements:
-1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) and verify with device_is_ready()
+1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) and verify the device is initialized and ready before use
 2. Configure the WDT with wdt_install_timeout() using:
    - flags = WDT_FLAG_RESET_SOC
    - window.min = 500 (feed must NOT happen before 500ms)

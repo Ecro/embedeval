@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that scans the I2C bus and reports all respondin
 
 Requirements:
 1. Get the I2C bus device using DEVICE_DT_GET(DT_NODELABEL(i2c0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Scan only valid 7-bit I2C addresses: 0x08 through 0x77 inclusive
 4. Do NOT scan reserved addresses: 0x00-0x07 (general call, reserved) and 0x78-0x7F (10-bit prefix)
 5. For each address in the valid range, probe by calling i2c_write() with a NULL buffer and length 0

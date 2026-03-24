@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that configures the device as an I2C target (sla
 
 Requirements:
 1. Get the I2C bus device using DEVICE_DT_GET(DT_NODELABEL(i2c0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define target address as 0x55
 4. Implement all four required i2c_target_callbacks:
    - write_requested: called when controller initiates a write; return 0 to ACK

@@ -9,7 +9,7 @@ Requirements:
    - Prints "Wakeup timer fired" with printk
 6. In main():
    - Initialize wakeup_timer with k_timer_init(&wakeup_timer, wakeup_timer_cb, NULL)
-   - Start wakeup_timer: k_timer_start(&wakeup_timer, K_MSEC(WAKEUP_TIMER_MS), K_NO_WAIT)
+   - Start wakeup_timer as a one-shot (fires once, no periodic repeat): k_timer_start(&wakeup_timer, K_MSEC(WAKEUP_TIMER_MS), ...)
    - Print "Entering deep sleep, wakeup in %d ms"
    - Force PM state: pm_state_force(0, &(struct pm_state_info){PM_STATE_SUSPEND_TO_RAM, 0, 0})
    - After wakeup, print "Returned from deep sleep"

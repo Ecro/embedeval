@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that performs a scatter-gather DMA transfer usin
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define 3 source buffers of 16 bytes each (src0, src1, src2), initialized with different fill patterns (0xAA, 0xBB, 0xCC)
 4. Define a single destination buffer of 48 bytes initialized to zero
 5. Create 3 struct dma_block_config descriptors, one per source buffer:

@@ -1,7 +1,7 @@
 Write a Zephyr RTOS application that uses the asynchronous UART API with DMA support.
 
 Requirements:
-1. Get the UART device using DEVICE_DT_GET(DT_ALIAS(uart0)) and check it with device_is_ready()
+1. Get the UART device using DEVICE_DT_GET(DT_ALIAS(uart0)) and verify it is initialized and ready before use
 2. Define a static RX buffer of at least 64 bytes
 3. Register a UART callback using uart_callback_set(); the callback parameter type is uart_callback_t
 4. In the callback, handle the UART_RX_RDY event: copy received data from evt->data.rx.buf + evt->data.rx.offset

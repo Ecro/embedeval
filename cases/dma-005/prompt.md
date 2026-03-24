@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that performs a DMA transfer with correct cache 
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define a source buffer of 64 bytes initialized with pattern values (index % 256)
 4. Define a destination buffer of 64 bytes initialized to zero; ensure it is properly aligned for DMA operations
 5. Before starting DMA, handle cache coherency:

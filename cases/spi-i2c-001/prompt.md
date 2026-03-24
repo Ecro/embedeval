@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that reads a WHO_AM_I register from an I2C senso
 
 Requirements:
 1. Get the I2C bus device from devicetree node DT_NODELABEL(i2c0)
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define the sensor I2C address as 0x68 (7-bit address)
 4. Define the WHO_AM_I register address as 0x75
 5. Read one byte from the WHO_AM_I register using i2c_reg_read_byte()

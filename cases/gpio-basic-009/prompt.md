@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that configures two UART devices with different 
 
 Requirements:
 1. Get uart0 using DEVICE_DT_GET(DT_ALIAS(uart0)) and uart1 using DEVICE_DT_GET(DT_ALIAS(uart1))
-2. Call device_is_ready() on BOTH UARTs; return -1 if either fails
+2. Verify BOTH UARTs are initialized and ready before use; return -1 if either fails
 3. Configure uart0 at 115200 baud using uart_configure() with a struct uart_config:
    - baudrate = 115200, parity = UART_CFG_PARITY_NONE
    - stop_bits = UART_CFG_STOP_BITS_1, data_bits = UART_CFG_DATA_BITS_8

@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that configures two DMA channels with different 
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define channel 0 as HIGH priority and channel 1 as LOW priority
 4. Configure channel 0 with channel_priority = 0 (highest) and channel 1 with channel_priority = 1 (lower)
    (Lower numeric value = higher priority in Zephyr DMA)

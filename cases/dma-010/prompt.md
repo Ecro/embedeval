@@ -2,7 +2,7 @@ Write a Zephyr RTOS application implementing ping-pong (double buffer) DMA for z
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define two separate DMA buffers of 64 bytes each: buf_a and buf_b — these are the ping-pong buffers
 4. Declare an atomic index: static atomic_t active_buf_idx = ATOMIC_INIT(0)
 5. The DMA callback (called on each buffer completion) must:

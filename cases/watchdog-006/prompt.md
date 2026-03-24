@@ -1,7 +1,7 @@
 Write a Zephyr RTOS application that configures a watchdog with a pre-timeout ISR callback that executes before the system resets.
 
 Requirements:
-1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) and verify with device_is_ready()
+1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) and verify the device is initialized and ready before use
 2. Define a watchdog callback function matching the signature:
    void wdt_callback(const struct device *dev, int channel_id)
 3. The callback MUST be short and non-blocking:

@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that uses DMA linked-list mode to chain three me
 
 Requirements:
 1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define three source buffers (src0, src1, src2) of 16 bytes each, initialized with distinct values
 4. Define three destination buffers (dst0, dst1, dst2) of 16 bytes each, initialized to zero
 5. Define three struct dma_block_config entries (block0, block1, block2):

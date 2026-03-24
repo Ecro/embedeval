@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that performs an SPI loopback test.
 
 Requirements:
 1. Get the SPI bus device using DEVICE_DT_GET(DT_NODELABEL(spi0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define a transmit buffer of 8 bytes initialized with a known pattern (e.g., 0x01 through 0x08)
 4. Define a receive buffer of 8 bytes initialized to zero
 5. Configure struct spi_config with frequency 1000000, operation SPI_OP_MODE_MASTER | SPI_WORD_SET(8)

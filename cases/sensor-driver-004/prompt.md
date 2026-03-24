@@ -3,7 +3,7 @@ Write a Zephyr RTOS application that configures sensor attributes before reading
 Requirements:
 1. Include zephyr/kernel.h, zephyr/device.h, zephyr/drivers/sensor.h
 2. Get the sensor device using DEVICE_DT_GET(DT_NODELABEL(my_sensor))
-3. Check device readiness with device_is_ready()
+3. Verify the device is initialized and ready before use
 4. Before reading any data, configure two sensor attributes:
    a. Set sampling frequency to 100 Hz:
       - Declare struct sensor_value odr = { .val1 = 100, .val2 = 0 }

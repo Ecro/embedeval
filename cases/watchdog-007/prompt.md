@@ -12,7 +12,7 @@ Requirements:
    b. If all 3 flags are set, clears them (atomic_clear) and calls wdt_feed()
    c. If any flag is NOT set, does NOT feed the WDT (allows reset)
    d. Logs current flag state with printk
-6. All health flags MUST be declared as atomic_t (not volatile int)
+6. All health flags MUST use appropriate synchronization for shared flags (not plain int)
 
 Include headers: zephyr/kernel.h, zephyr/device.h, zephyr/drivers/watchdog.h, zephyr/sys/atomic.h.
 

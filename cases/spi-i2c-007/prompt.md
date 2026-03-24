@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that performs a full-duplex SPI transfer, simult
 
 Requirements:
 1. Get the SPI device using DEVICE_DT_GET(DT_NODELABEL(spi0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define a TX buffer of 4 bytes with values {0x01, 0x02, 0x03, 0x04}
 4. Define a separate RX buffer of 4 bytes initialized to zero — TX and RX must be different arrays
 5. Create a spi_buf for TX and a separate spi_buf for RX, each pointing to their respective buffers

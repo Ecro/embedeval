@@ -3,7 +3,7 @@ Write a Zephyr RTOS application that configures a sensor data-ready trigger and 
 Requirements:
 1. Include zephyr/kernel.h, zephyr/device.h, zephyr/drivers/sensor.h
 2. Get the sensor device using DEVICE_DT_GET(DT_NODELABEL(my_sensor))
-3. Check device readiness with device_is_ready() before any sensor operation
+3. Verify the device is initialized and ready before any sensor operation
 4. Implement a trigger callback function with the correct Zephyr signature:
    static void data_ready_handler(const struct device *dev, const struct sensor_trigger *trig)
 5. Inside the callback:

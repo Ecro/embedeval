@@ -1,7 +1,7 @@
 Write a Zephyr RTOS application that configures an ADC channel with hardware oversampling and reads averaged results.
 
 Requirements:
-1. Get the ADC device using DEVICE_DT_GET(DT_ALIAS(adc0)) and verify with device_is_ready()
+1. Get the ADC device using DEVICE_DT_GET(DT_ALIAS(adc0)) and verify it is initialized and ready before use
 2. Define an adc_channel_cfg struct with:
    - gain = ADC_GAIN_1
    - reference = ADC_REF_INTERNAL

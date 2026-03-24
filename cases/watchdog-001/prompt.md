@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that configures and feeds a watchdog timer.
 
 Requirements:
 1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) or equivalent
-2. Check that the device is ready using device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Configure a watchdog timeout of 2000ms using wdt_install_timeout()
 4. Use WDT_FLAG_RESET_SOC as the reset action flag
 5. Set up the watchdog with wdt_setup() using WDT_OPT_PAUSE_HALTED_BY_DBG

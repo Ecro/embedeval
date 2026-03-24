@@ -12,7 +12,7 @@ Requirements:
    - Call sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP, out) — return error if it fails
    - Return 0
 5. In main():
-   - Check device is ready with device_is_ready()
+   - Verify the device is initialized and ready before use
    - Loop 5 times:
      a. Set normal sampling rate: set_sampling_freq(dev, 10) — 10 Hz active mode
      b. k_sleep(K_MSEC(100)) to let sensor stabilize

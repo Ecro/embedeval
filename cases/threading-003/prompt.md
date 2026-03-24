@@ -12,13 +12,13 @@ Requirements:
    - Prints "Producer: event signaled" using printk
 6. The consumer thread:
    - Loops 5 times
-   - Calls k_sem_take() with K_FOREVER timeout to wait for the event
+   - Calls k_sem_take() with a blocking wait (waits indefinitely until the event arrives)
    - Prints "Consumer: event received" using printk
-7. main() sleeps forever with k_sleep(K_FOREVER)
+7. main() sleeps forever
 
 The semaphore initial count MUST be 0 (not 1) so the consumer blocks until the producer signals.
-The consumer MUST use K_FOREVER (not K_NO_WAIT) to block properly.
+The consumer MUST use a blocking wait (not non-blocking) to block properly.
 
-Use the Zephyr API: K_SEM_DEFINE, k_sem_give, k_sem_take, K_FOREVER.
+Use the Zephyr API: K_SEM_DEFINE, k_sem_give, k_sem_take.
 
 Output ONLY the complete C source file.

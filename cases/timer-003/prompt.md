@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that uses the hardware counter driver API to set
 
 Requirements:
 1. Get the counter device using DEVICE_DT_GET(DT_ALIAS(counter0)) or equivalent
-2. Check that the device is ready using device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Start the counter using counter_start()
 4. Define an alarm callback function that prints "Alarm fired" using printk
 5. Set a one-shot alarm using counter_set_channel_alarm() with channel 0 and a 1-second delay

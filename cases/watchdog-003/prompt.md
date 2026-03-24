@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that installs a watchdog timeout with a warning 
 
 Requirements:
 1. Get the watchdog device using DEVICE_DT_GET(DT_ALIAS(watchdog0)) or equivalent
-2. Check that the device is ready using device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Define a watchdog callback function that prints "WDT timeout! Resetting..." using printk
 4. Configure the watchdog timeout with a 2000ms window, WDT_FLAG_RESET_SOC, and the callback function
 5. Install the timeout using wdt_install_timeout() and store the channel ID

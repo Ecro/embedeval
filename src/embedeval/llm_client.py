@@ -39,7 +39,7 @@ def call_model(
     model: str,
     prompt: str,
     context_files: list[str] | None = None,
-    timeout: float = 120.0,
+    timeout: float = 300.0,
     max_retries: int = 3,
     rate_limit_delay: float = 1.0,
 ) -> LLMResponse:

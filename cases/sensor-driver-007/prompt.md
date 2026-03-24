@@ -20,7 +20,7 @@ Requirements:
      - On any error: print error index and return error
    - Return 0
 6. In main():
-   - Check device is ready with device_is_ready()
+   - Verify the device is initialized and ready before use
    - Call read_fifo_watermark() to get count
    - Declare struct sensor_sample samples[FIFO_MAX_DEPTH]
    - Call burst_read_fifo(dev, samples, count)

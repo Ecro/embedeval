@@ -2,7 +2,7 @@ Write a Zephyr RTOS application that manages two SPI devices on the same bus, ea
 
 Requirements:
 1. Get the shared SPI bus device using DEVICE_DT_GET(DT_NODELABEL(spi0))
-2. Check device readiness with device_is_ready()
+2. Verify the device is initialized and ready before use
 3. Configure device 1 with its own spi_config:
    - frequency = 1000000
    - operation = SPI_OP_MODE_MASTER | SPI_WORD_SET(8)

@@ -5,7 +5,7 @@ Requirements:
    - Block size: 64 bytes
    - Number of blocks: 4
    - Alignment: 4 bytes
-2. In main(), allocate a block using k_mem_slab_alloc() with K_NO_WAIT timeout
+2. In main(), allocate a block using k_mem_slab_alloc() with a non-blocking timeout
 3. Check the return value for allocation failure
 4. Write some data to the allocated block (e.g., fill with a pattern)
 5. Print the allocation success and address using printk
