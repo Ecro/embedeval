@@ -3,7 +3,7 @@ Write a Zephyr RTOS application that uses hardware cycle counting for high-resol
 Requirements:
 1. In a loop, perform the following measurement steps:
    a. Record start cycles with: uint32_t start = k_cycle_get_32()
-   b. Perform a short dummy operation (e.g., a volatile increment or small busy loop of 100 iterations)
+   b. Perform a short dummy operation to simulate work (e.g., a small busy loop of 100 iterations)
    c. Record end cycles with: uint32_t end = k_cycle_get_32()
    d. Calculate elapsed cycles: uint32_t elapsed_cycles = end - start
    e. Convert to nanoseconds: uint64_t elapsed_ns = k_cyc_to_ns_floor64(elapsed_cycles)

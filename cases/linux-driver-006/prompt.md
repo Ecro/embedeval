@@ -8,7 +8,7 @@ Requirements:
 4. In the ioctl handler:
    - Validate _IOC_TYPE(cmd) matches your magic number, return -ENOTTY if mismatch
    - Validate _IOC_NR(cmd) is within the supported range, return -ENOTTY if out of range
-   - Use copy_from_user() to safely read arguments from user space (NOT direct pointer dereference)
+   - Safely read ioctl arguments from user space (NOT direct pointer dereference)
    - Use access_ok() or rely on copy_from_user return value to validate user pointer
 5. Define a struct for the ioctl argument (at least two fields)
 6. Wire up the ioctl handler in file_operations as .unlocked_ioctl
@@ -17,7 +17,7 @@ Requirements:
 
 CRITICAL SECURITY RULES:
 - NEVER dereference a __user pointer directly (e.g., val = *uarg is wrong)
-- ALWAYS use copy_from_user/copy_to_user for user-space data
+- ALWAYS use the appropriate kernel API for user-space data transfer
 - ALWAYS validate _IOC_TYPE before processing the command
 
 Output ONLY the complete C source file.

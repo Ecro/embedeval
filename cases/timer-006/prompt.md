@@ -3,7 +3,7 @@ Write a Zephyr RTOS application that uses the hardware counter API for precise m
 Requirements:
 1. Get the counter device using DEVICE_DT_GET(DT_ALIAS(counter0)) and verify with device_is_ready()
 2. Define a counter alarm callback; the callback MUST NOT block (no k_sleep, no printk, no mutex)
-3. In the alarm callback, record the current counter value using counter_get_value() into a volatile global variable
+3. In the alarm callback, record the current counter value using counter_get_value() into a global variable shared with the main thread
 4. In main():
    a. Start the counter with counter_start()
    b. Read the initial counter value with counter_get_value()

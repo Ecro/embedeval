@@ -7,17 +7,17 @@ Requirements:
 4. Declare:
    - A static wait_queue_head_t data_wq (initialized with init_waitqueue_head)
    - A static spinlock_t data_lock (initialized with spin_lock_init)
-   - A static volatile int data_ready = 0
+   - A flag shared between IRQ handler and read operation to signal data availability
    - A static char data_buf[64] with a static int data_len
 5. Implement the IRQ handler:
    - Signature: static irqreturn_t mydev_irq_handler(int irq, void *dev_id)
-   - Acquire spin_lock, set data_ready = 1, fill data_buf with sample data, release spin_lock
+   - Acquire spin_lock, set the data-ready flag, fill data_buf with sample data, release spin_lock
    - Call wake_up_interruptible(&data_wq) to wake blocked readers
    - Return IRQ_HANDLED
 6. Implement file_operations:
    - .open: return 0
    - .release: return 0
-   - .read: call wait_event_interruptible(data_wq, data_ready != 0), then copy data to user with copy_to_user, reset data_ready = 0, return bytes copied
+   - .read: block until data is available (wait_event_interruptible), then safely transfer data to user space, clear the ready flag, return bytes copied
 7. In module_init:
    - Allocate chrdev region, cdev_init, cdev_add
    - Call request_irq(irq_num, mydev_irq_handler, IRQF_SHARED, "mydev", &data_wq)

@@ -5,7 +5,7 @@ Requirements:
 2. Define a message struct with at least one uint32_t field (e.g. sensor_val)
 3. Define a message queue with K_MSGQ_DEFINE for that struct type, with at least 8 slots
 4. Implement an ISR function (isr_handler) that:
-   - Puts one message into the queue using k_msgq_put with K_NO_WAIT (never K_FOREVER in ISR)
+   - Sends one message into the queue without blocking (ISR context must never block)
    - Does NOT call k_malloc, printk, or any blocking API
 5. Implement a consumer thread function that:
    - Loops forever getting messages from the queue with k_msgq_get using K_FOREVER

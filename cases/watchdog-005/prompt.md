@@ -1,7 +1,7 @@
 Write a Zephyr RTOS application where the main thread monitors a worker thread's health via a shared flag and only feeds the watchdog if the worker is alive.
 
 Requirements:
-1. Define a global volatile int worker_alive initialized to 0
+1. Define a global flag to indicate worker thread health status, initialized to 0
 2. Get the watchdog device, check device_is_ready(), install a 3000ms timeout with WDT_FLAG_RESET_SOC, call wdt_setup()
 3. Define a worker thread (512 byte stack, priority 5) that runs a loop: sets worker_alive = 1, prints "Worker alive", then sleeps 500ms
 4. In main(), start the worker thread using k_thread_create()

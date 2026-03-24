@@ -25,6 +25,6 @@ Constraints:
 - NO k_mutex, NO k_sem, NO k_spin_lock — this is lock-free
 - Use atomic_t for BOTH indices (not plain uint32_t)
 - Buffer size MUST be a power of 2 (use bitwise mask & (SIZE-1), not modulo %)
-- Memory barrier (compiler_barrier() or __dmb()) before advancing index
+- Ensure proper memory ordering between writing data and advancing the index
 
 Output ONLY the complete C source file.

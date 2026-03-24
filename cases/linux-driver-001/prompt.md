@@ -7,8 +7,8 @@ Requirements:
 4. Implement file_operations with:
    - .open: print device opened with pr_info, return 0
    - .release: print device closed with pr_info, return 0
-   - .read: copy data from kernel buffer to user space using copy_to_user()
-   - .write: copy data from user space to kernel buffer using copy_from_user()
+   - .read: safely transfer data from kernel buffer to user space
+   - .write: safely transfer data from user space to kernel buffer
 5. In module_init:
    - Allocate a character device region with alloc_chrdev_region()
    - Initialize cdev with cdev_init()
@@ -20,6 +20,6 @@ Requirements:
    - Unregister the character device region
 7. Use module_init() and module_exit() macros
 
-IMPORTANT: Use copy_to_user/copy_from_user, NEVER access user pointers directly.
+IMPORTANT: Never access user-space pointers directly — use the appropriate kernel API for safe data transfer.
 
 Output ONLY the complete C source file.

@@ -3,7 +3,7 @@ Write a Zephyr RTOS application that reads all three acceleration axes from an a
 Requirements:
 1. Include zephyr/kernel.h, zephyr/device.h, zephyr/drivers/sensor.h
 2. Get the accelerometer device using DEVICE_DT_GET(DT_NODELABEL(accel_sensor))
-3. Check device readiness with device_is_ready()
+3. Verify the sensor device is available before reading
 4. In a loop:
    a. Call sensor_sample_fetch(dev) ONCE per iteration and check return value
    b. Read all three channels by calling sensor_channel_get() three times — for SENSOR_CHAN_ACCEL_X, SENSOR_CHAN_ACCEL_Y, and SENSOR_CHAN_ACCEL_Z — using a separate struct sensor_value for each axis
