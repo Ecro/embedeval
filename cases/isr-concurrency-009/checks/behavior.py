@@ -2,12 +2,20 @@
 
 import re
 
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    check_no_isr_forbidden,
+    find_isr_bodies,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate k_poll behavioral correctness."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: k_poll_signal_reset called after receiving signal
     # LLM failure: not resetting signal, causing spurious re-triggers
@@ -35,17 +43,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: k_poll NOT called in ISR context
-    # Heuristic: check for k_poll inside ISR-named functions
-    isr_pattern = re.search(
-        r"void\s+\w*(?:isr|irq|interrupt|handler)\w*\s*\([^)]*\)\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}",
-        generated_code,
-        re.IGNORECASE | re.DOTALL,
-    )
-    isr_calls_poll = False
-    if isr_pattern:
-        isr_body = isr_pattern.group(1)
-        isr_calls_poll = "k_poll(" in isr_body
+    # Check 3: k_poll NOT called in ISR context — using find_isr_bodies for accuracy
+    isr_bodies = find_isr_bodies(stripped)
+    isr_calls_poll = any("k_poll(" in body for body in isr_bodies)
     details.append(
         CheckDetail(
             check_name="k_poll_not_in_isr",
@@ -69,8 +69,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: No busy-wait loop without k_poll
-    # Detect tight while(1) { } without k_poll inside
-    # This is a heuristic — if k_poll present, assume it's in the loop
     has_kpoll = "k_poll(" in generated_code
     details.append(
         CheckDetail(
@@ -79,6 +77,31 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="k_poll() used for blocking wait (not busy-polling)",
             actual="k_poll present" if has_kpoll else "no k_poll (busy-wait?)",
             check_type="exact_match",
+        )
+    )
+
+    # Check 6: No forbidden blocking APIs inside ISR bodies
+    # LLM failure: calling k_poll or k_sleep from within the ISR signaling function
+    isr_violations = check_no_isr_forbidden(generated_code)
+    details.append(
+        CheckDetail(
+            check_name="no_forbidden_apis_in_isr",
+            passed=len(isr_violations) == 0,
+            expected="No printk/k_malloc/k_sleep inside ISR bodies",
+            actual="clean" if not isr_violations else f"violations: {isr_violations}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No cross-platform API contamination
+    cross_platform = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
+    details.append(
+        CheckDetail(
+            check_name="no_cross_platform_apis",
+            passed=len(cross_platform) == 0,
+            expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+            actual="clean" if not cross_platform else f"found: {[a for a, _ in cross_platform]}",
+            check_type="constraint",
         )
     )
 

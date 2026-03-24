@@ -2,25 +2,67 @@
 
 from embedeval.models import CheckDetail
 
+# CONFIG options that LLMs commonly hallucinate (do not exist in Zephyr)
+_HALLUCINATED_CONFIGS = [
+    "CONFIG_SECURE_MODE",
+    "CONFIG_WIFI_BLE_COEX",
+    "CONFIG_DEBUG_ENABLE",
+    "CONFIG_NETWORK_STACK",
+    "CONFIG_AUTO_INIT",
+]
+
+# Deprecated option pair: CONFIG_NEWLIB_LIBC should not coexist with CONFIG_MINIMAL_LIBC
+_DEPRECATED_CONFLICT = ("CONFIG_NEWLIB_LIBC", "CONFIG_MINIMAL_LIBC")
+
+
+def _parse_config(generated_code: str) -> dict[str, str]:
+    config: dict[str, str] = {}
+    for line in generated_code.strip().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, val = line.split("=", 1)
+            config[key.strip()] = val.strip()
+    return config
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate Kconfig dependency chains and config consistency."""
     details: list[CheckDetail] = []
-    lines = [
-        line.strip()
-        for line in generated_code.strip().splitlines()
-        if line.strip() and not line.strip().startswith("#")
-    ]
-    config: dict[str, str] = {}
-    for line in lines:
-        if "=" in line:
-            key, val = line.split("=", 1)
-            config[key.strip()] = val.strip()
+    config = _parse_config(generated_code)
 
-    # Metamorphic: If SPI is disabled, SPI_DMA must also be disabled
+    # Check 1: No hallucinated CONFIG options
+    found_hallucinated = [opt for opt in _HALLUCINATED_CONFIGS if opt in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_hallucinated_config_options",
+            passed=not found_hallucinated,
+            expected="No hallucinated Zephyr CONFIG options",
+            actual="clean" if not found_hallucinated else f"hallucinated: {found_hallucinated}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: Deprecated option conflict — CONFIG_NEWLIB_LIBC with CONFIG_MINIMAL_LIBC
+    has_newlib = config.get("CONFIG_NEWLIB_LIBC") == "y"
+    has_minimal = config.get("CONFIG_MINIMAL_LIBC") == "y"
+    no_deprecated_conflict = not (has_newlib and has_minimal)
+    details.append(
+        CheckDetail(
+            check_name="no_newlib_minimal_libc_conflict",
+            passed=no_deprecated_conflict,
+            expected="CONFIG_NEWLIB_LIBC and CONFIG_MINIMAL_LIBC are mutually exclusive",
+            actual=(
+                "no conflict"
+                if no_deprecated_conflict
+                else "both CONFIG_NEWLIB_LIBC=y and CONFIG_MINIMAL_LIBC=y present (conflict)"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 3: Metamorphic: If SPI is disabled, SPI_DMA must also be disabled
     spi_enabled = config.get("CONFIG_SPI") == "y"
     spi_dma_enabled = config.get("CONFIG_SPI_DMA") == "y"
-
     dep_consistent = not (spi_dma_enabled and not spi_enabled)
     details.append(
         CheckDetail(
@@ -35,7 +77,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check: DMA dependency
+    # Check 4: DMA dependency
     dma_enabled = config.get("CONFIG_DMA") == "y"
     dma_dep_ok = not (spi_dma_enabled and not dma_enabled)
     details.append(
@@ -51,7 +93,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check: all required configs present AND enabled
+    # Check 5: All required configs present AND enabled
     required_configs = ["CONFIG_SPI", "CONFIG_DMA", "CONFIG_SPI_DMA"]
     all_present = all(config.get(k) == "y" for k in required_configs)
     details.append(

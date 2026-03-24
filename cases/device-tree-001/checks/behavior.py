@@ -1,13 +1,67 @@
 """Behavioral checks for Device Tree I2C sensor overlay."""
 
+import re
+
 from embedeval.models import CheckDetail
+
+# Fake DT properties that LLMs commonly invent
+_FAKE_DT_PROPERTIES = [
+    "pin-config",      # Should be pinctrl-0
+    "mux-config",      # Does not exist
+    "clock-speed",     # Should be clock-frequency
+]
+
+
+def _check_semicolons(generated_code: str) -> tuple[bool, str]:
+    """Check that every property line ends with semicolon."""
+    # Property lines: lines containing '=' that are not node openers
+    property_lines = []
+    for line in generated_code.splitlines():
+        stripped = line.strip()
+        # Skip blank, comment, node open/close, and include lines
+        if not stripped or stripped.startswith("//") or stripped.startswith("/*"):
+            continue
+        if stripped.endswith("{") or stripped == "}" or stripped == "};":
+            continue
+        if stripped.startswith("#include") or stripped.startswith("/"):
+            continue
+        # This looks like a property line
+        if "=" in stripped or (stripped and not stripped.startswith("&") and not stripped.endswith("{")):
+            # Property lines should end with ;
+            if "=" in stripped and not stripped.endswith(";") and not stripped.endswith(","):
+                property_lines.append(stripped[:40])
+    return len(property_lines) == 0, property_lines[:3]
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate Device Tree overlay behavioral properties."""
     details: list[CheckDetail] = []
 
-    # Check 1: Sensor node with correct compatible
+    # Check 1: No fake DT properties
+    found_fake = [prop for prop in _FAKE_DT_PROPERTIES if prop in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_fake_dt_properties",
+            passed=not found_fake,
+            expected="No hallucinated DT properties (pin-config, mux-config, clock-speed)",
+            actual="clean" if not found_fake else f"fake properties found: {found_fake}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: No clock-speed (should be clock-frequency)
+    has_clock_speed = "clock-speed" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="no_clock_speed_property",
+            passed=not has_clock_speed,
+            expected="Use clock-frequency not clock-speed (clock-speed is hallucinated)",
+            actual="clean" if not has_clock_speed else "clock-speed found (non-existent property)",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 3: Sensor node with correct compatible
     has_bme280 = 'compatible = "bosch,bme280"' in generated_code
     details.append(
         CheckDetail(
@@ -19,7 +73,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: reg matches 0x76
+    # Check 4: reg matches 0x76
     has_reg_76 = "reg = <0x76>" in generated_code
     details.append(
         CheckDetail(
@@ -31,7 +85,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: GPIO interrupt connected (int-gpios present)
+    # Check 5: GPIO interrupt connected (int-gpios present)
     has_int_gpios = "int-gpios" in generated_code
     details.append(
         CheckDetail(
@@ -43,7 +97,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: GPIO active low polarity
+    # Check 6: GPIO active low polarity
     has_active_low = "GPIO_ACTIVE_LOW" in generated_code
     details.append(
         CheckDetail(
@@ -55,7 +109,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: status = "okay"
+    # Check 7: status = "okay"
     has_status_okay = 'status = "okay"' in generated_code
     details.append(
         CheckDetail(
@@ -67,7 +121,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: Node is child of i2c bus (i2c0 reference)
+    # Check 8: Node is child of i2c bus (i2c0 reference)
     has_i2c_bus = "i2c0" in generated_code
     details.append(
         CheckDetail(
@@ -75,6 +129,19 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_i2c_bus,
             expected="Node under i2c0 bus",
             actual="i2c0 referenced" if has_i2c_bus else "i2c0 not found",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: Node address format — sensor node uses @76 (node-name@addr format)
+    # LLM failure: uses bme280 { instead of bme280@76 {
+    has_at_addr = "bme280@76" in generated_code or "bme280@0x76" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="node_at_address_format",
+            passed=has_at_addr,
+            expected="Node name uses @76 address suffix (e.g. bme280@76)",
+            actual="present" if has_at_addr else "missing — node name should include @address",
             check_type="constraint",
         )
     )

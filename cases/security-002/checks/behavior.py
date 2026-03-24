@@ -1,11 +1,19 @@
 """Behavioral checks for PSA Crypto SHA-256 hash."""
 
+import re
+
+from embedeval.check_utils import (
+    extract_error_blocks,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate SHA-256 behavioral properties."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: init before hash compute (correct ordering)
     init_pos = generated_code.find("psa_crypto_init")
@@ -53,7 +61,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: hash_len / output length checked or used
-    import re
     has_len_var = bool(re.search(r'\b\w*hash_len\w*\b|\bdigest_len\b|\boutput_len\b|\bhash_length\b', generated_code))
     details.append(
         CheckDetail(
@@ -73,6 +80,48 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_print,
             expected="Result printed (success or failure)",
             actual="present" if has_print else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: No insecure hash algorithms used
+    # LLM failure: using MD5 or SHA-1 instead of SHA-256 for security contexts
+    has_md5 = bool(re.search(r'\bPSA_ALG_MD5\b|\bMD5\b', stripped))
+    has_sha1 = bool(re.search(r'\bPSA_ALG_SHA_1\b|\bSHA_1\b|\bSHA1\b', stripped))
+    details.append(
+        CheckDetail(
+            check_name="no_insecure_hash",
+            passed=not has_md5 and not has_sha1,
+            expected="No MD5 or SHA-1 (insecure; use SHA-256 or stronger)",
+            actual="clean" if not (has_md5 or has_sha1) else f"insecure hash found: md5={has_md5}, sha1={has_sha1}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No rand()/srand() (insecure PRNG usage in security code)
+    # LLM failure: using C stdlib rand() in security-sensitive code
+    has_rand = bool(re.search(r'\brand\s*\(|\bsrand\s*\(', stripped))
+    details.append(
+        CheckDetail(
+            check_name="no_insecure_rand",
+            passed=not has_rand,
+            expected="No rand()/srand() in security code (use PSA CSPRNG)",
+            actual="clean" if not has_rand else "rand()/srand() found in security code",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: Error path does not silently discard PSA errors
+    # LLM failure: ignoring return value of psa_hash_compute entirely
+    psa_calls = re.findall(r'\bpsa_\w+\s*\(', generated_code)
+    # At least one PSA call should have its return value checked
+    has_return_check = bool(re.search(r'(status|ret|rc)\s*=\s*psa_', generated_code))
+    details.append(
+        CheckDetail(
+            check_name="psa_return_values_checked",
+            passed=has_return_check,
+            expected="PSA function return values stored and checked",
+            actual="present" if has_return_check else "PSA return values may be discarded",
             check_type="constraint",
         )
     )

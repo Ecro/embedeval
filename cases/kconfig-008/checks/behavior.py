@@ -2,23 +2,66 @@
 
 from embedeval.models import CheckDetail
 
+_HALLUCINATED_CONFIGS = [
+    "CONFIG_SECURE_MODE",
+    "CONFIG_WIFI_BLE_COEX",
+    "CONFIG_DEBUG_ENABLE",
+    "CONFIG_NETWORK_STACK",
+    "CONFIG_AUTO_INIT",
+]
 
-def run_checks(generated_code: str) -> list[CheckDetail]:
-    """Validate MPU/USERSPACE Kconfig dependency chains and sizing invariants."""
-    details: list[CheckDetail] = []
+
+def _parse_config(generated_code: str) -> dict[str, str]:
     config: dict[str, str] = {}
     for line in generated_code.strip().splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             key, val = line.split("=", 1)
             config[key.strip()] = val.strip()
+    return config
+
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    """Validate MPU/USERSPACE Kconfig dependency chains and sizing invariants."""
+    details: list[CheckDetail] = []
+    config = _parse_config(generated_code)
 
     userspace_enabled = config.get("CONFIG_USERSPACE") == "y"
     mpu_enabled = config.get("CONFIG_MPU") == "y"
     arm_mpu_enabled = config.get("CONFIG_ARM_MPU") == "y"
     arc_mpu_enabled = config.get("CONFIG_ARC_MPU") == "y"
 
-    # Metamorphic: USERSPACE requires MPU=y
+    # Check 1: No hallucinated CONFIG options
+    found_hallucinated = [opt for opt in _HALLUCINATED_CONFIGS if opt in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_hallucinated_config_options",
+            passed=not found_hallucinated,
+            expected="No hallucinated Zephyr CONFIG options",
+            actual="clean" if not found_hallucinated else f"hallucinated: {found_hallucinated}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: Deprecated option conflict check
+    has_newlib = config.get("CONFIG_NEWLIB_LIBC") == "y"
+    has_minimal = config.get("CONFIG_MINIMAL_LIBC") == "y"
+    no_deprecated_conflict = not (has_newlib and has_minimal)
+    details.append(
+        CheckDetail(
+            check_name="no_newlib_minimal_libc_conflict",
+            passed=no_deprecated_conflict,
+            expected="CONFIG_NEWLIB_LIBC and CONFIG_MINIMAL_LIBC are mutually exclusive",
+            actual=(
+                "no conflict"
+                if no_deprecated_conflict
+                else "both CONFIG_NEWLIB_LIBC=y and CONFIG_MINIMAL_LIBC=y present (conflict)"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 3: USERSPACE requires MPU=y
     userspace_needs_mpu = not (userspace_enabled and not mpu_enabled)
     details.append(
         CheckDetail(
@@ -33,7 +76,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Metamorphic: MPU requires a platform-specific implementation
+    # Check 4: MPU requires a platform-specific implementation
     mpu_has_impl = not (mpu_enabled and not (arm_mpu_enabled or arc_mpu_enabled))
     details.append(
         CheckDetail(
@@ -49,7 +92,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Mutual exclusion: ARM_MPU and ARC_MPU cannot both be enabled
+    # Check 5: Mutual exclusion: ARM_MPU and ARC_MPU cannot both be enabled
     no_mpu_conflict = not (arm_mpu_enabled and arc_mpu_enabled)
     details.append(
         CheckDetail(
@@ -65,7 +108,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Behavioral: MAX_DOMAIN_PARTITIONS should be a positive integer when USERSPACE is enabled
+    # Check 6: MAX_DOMAIN_PARTITIONS should be a positive integer when USERSPACE is enabled
     max_partitions_val = config.get("CONFIG_MAX_DOMAIN_PARTITIONS", "")
     partitions_ok = True
     if userspace_enabled and max_partitions_val:
@@ -83,7 +126,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Behavioral: HEAP_MEM_POOL_SIZE should be set and positive for user thread stacks
+    # Check 7: HEAP_MEM_POOL_SIZE should be set and adequate for user thread stacks
     heap_val = config.get("CONFIG_HEAP_MEM_POOL_SIZE", "")
     heap_ok = True
     if userspace_enabled and heap_val:
@@ -101,7 +144,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Summary: all required configs present
+    # Check 8: All required configs present
     required = ["CONFIG_MPU", "CONFIG_ARM_MPU", "CONFIG_USERSPACE"]
     all_present = all(config.get(k) == "y" for k in required)
     details.append(

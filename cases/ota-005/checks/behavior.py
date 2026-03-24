@@ -99,4 +99,54 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 7: State machine completeness — all required OTA states defined
+    # (LLM failure: missing states like CONFIRMING or REBOOTING — incomplete state machine)
+    required_states = [
+        "OTA_IDLE",
+        "OTA_DOWNLOADING",
+        "OTA_VERIFYING",
+        "OTA_REBOOTING",
+        "OTA_CONFIRMING",
+    ]
+    missing_states = [s for s in required_states if s not in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="state_machine_complete",
+            passed=len(missing_states) == 0,
+            expected=f"All OTA states defined: {', '.join(required_states)}",
+            actual="complete" if not missing_states else f"missing states: {missing_states}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: Rollback path — dfu_target_done(false) on download error
+    # (LLM failure: only happy path — no abort if download chunk fails)
+    has_rollback_abort = "dfu_target_done(false)" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="rollback_abort_on_download_error",
+            passed=has_rollback_abort,
+            expected="dfu_target_done(false) called to abort DFU on error (rollback path)",
+            actual="present" if has_rollback_abort else "missing (no rollback path on download failure!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: Self-test return value checked before confirming
+    # (LLM failure: calling self_test() but ignoring its return value, always confirming)
+    self_test_ret_checked = (
+        "self_test" in generated_code
+        and "boot_write_img_confirmed" in generated_code
+        and ("!= 0" in generated_code or "< 0" in generated_code or "if (ret" in generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="self_test_return_checked",
+            passed=self_test_ret_checked,
+            expected="self_test() return value checked before boot_write_img_confirmed()",
+            actual="present" if self_test_ret_checked else "missing (self-test result ignored!)",
+            check_type="constraint",
+        )
+    )
+
     return details

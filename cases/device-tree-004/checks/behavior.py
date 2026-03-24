@@ -2,12 +2,30 @@
 
 from embedeval.models import CheckDetail
 
+_FAKE_DT_PROPERTIES = [
+    "pin-config",
+    "mux-config",
+    "clock-speed",
+]
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate CAN bus controller overlay behavioral properties."""
     details: list[CheckDetail] = []
 
-    # Check 1: can0 node enabled with status okay
+    # Check 1: No fake DT properties
+    found_fake = [prop for prop in _FAKE_DT_PROPERTIES if prop in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_fake_dt_properties",
+            passed=not found_fake,
+            expected="No hallucinated DT properties (pin-config, mux-config, clock-speed)",
+            actual="clean" if not found_fake else f"fake properties found: {found_fake}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: can0 node enabled with status okay
     has_can0 = "&can0" in generated_code
     details.append(
         CheckDetail(
@@ -19,7 +37,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: status = "okay" on can0
+    # Check 3: status = "okay" on can0
     has_status_okay = 'status = "okay"' in generated_code
     details.append(
         CheckDetail(
@@ -31,7 +49,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: bus-speed = <125000> (AI failure: omits bus-speed entirely)
+    # Check 4: bus-speed = <125000> (AI failure: omits bus-speed entirely)
     has_bus_speed = "bus-speed = <125000>" in generated_code
     details.append(
         CheckDetail(
@@ -43,7 +61,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: sample-point = <875> in permille (AI failure: uses 87 or 87.5 thinking it's percent)
+    # Check 5: sample-point = <875> in permille (AI failure: uses 87 or 87.5 thinking it's percent)
     has_sample_point = "sample-point = <875>" in generated_code
     details.append(
         CheckDetail(
@@ -55,7 +73,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: Transceiver child node with compatible string
+    # Check 6: Transceiver child node with compatible string
     has_transceiver_compatible = 'compatible = "microchip,mcp2562fd"' in generated_code
     details.append(
         CheckDetail(
@@ -67,8 +85,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: Transceiver child node is nested inside can0 (not at root level)
-    # Verify by checking both &can0 and compatible appear in the same code, with can0 wrapping
+    # Check 7: Transceiver child node is nested inside can0 (not at root level)
     lines = generated_code.splitlines()
     in_can0 = False
     transceiver_inside_can0 = False
@@ -90,6 +107,23 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="Transceiver child node nested inside can0 block",
             actual="nested correctly" if transceiver_inside_can0 else "not nested inside can0",
             check_type="constraint",
+        )
+    )
+
+    # Check 8: No fake interrupt-map without parent node
+    # LLM failure: adds interrupt-map property to CAN node (wrong — CAN doesn't use interrupt-map)
+    has_interrupt_map = "interrupt-map" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="no_spurious_interrupt_map",
+            passed=not has_interrupt_map,
+            expected="interrupt-map should not be present in simple CAN controller overlay",
+            actual=(
+                "clean"
+                if not has_interrupt_map
+                else "interrupt-map found (hallucinated for simple CAN node)"
+            ),
+            check_type="hallucination",
         )
     )
 

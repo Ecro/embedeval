@@ -84,4 +84,59 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: apply_patch return value checked before flash write
+    # (LLM failure: calling apply_patch() but not checking if it succeeded before writing to flash)
+    apply_ret_checked = (
+        "apply_patch" in generated_code
+        and "dfu_target_write" in generated_code
+        and ("!= 0" in generated_code or "< 0" in generated_code)
+        and apply_pos != -1
+        and write_pos != -1
+        and apply_pos < write_pos
+    )
+    details.append(
+        CheckDetail(
+            check_name="apply_patch_return_checked",
+            passed=apply_ret_checked,
+            expected="apply_patch() return value checked before proceeding to dfu_target_write()",
+            actual="present" if apply_ret_checked else "missing (writing flash even if patch application failed!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Separate source/patch/target buffers (no in-place patching)
+    # (LLM failure: using same buffer for source and target — corrupts original)
+    has_three_buffers = (
+        "source_image" in generated_code
+        and "patch_data" in generated_code
+        and "target_image" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="three_separate_buffers",
+            passed=has_three_buffers,
+            expected="Three separate buffers: source_image, patch_data, target_image",
+            actual="correct" if has_three_buffers else "wrong — missing separate buffers (in-place corruption possible!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: dfu_target_init called before dfu_target_write
+    # (LLM failure: calling dfu_target_write without initializing DFU target first)
+    init_pos = generated_code.find("dfu_target_init")
+    init_before_write = (
+        init_pos != -1
+        and write_pos != -1
+        and init_pos < write_pos
+    )
+    details.append(
+        CheckDetail(
+            check_name="dfu_init_before_write",
+            passed=init_before_write,
+            expected="dfu_target_init() called before dfu_target_write()",
+            actual="correct" if init_before_write else "missing or wrong order (writing without init!)",
+            check_type="constraint",
+        )
+    )
+
     return details

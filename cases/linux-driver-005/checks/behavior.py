@@ -1,5 +1,11 @@
 """Behavioral checks for Linux sysfs attribute driver."""
 
+import re
+
+from embedeval.check_utils import (
+    extract_error_blocks,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
@@ -7,8 +13,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate sysfs attribute driver behavioral properties."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: sysfs_remove_group called in remove
-    # (LLM failure: creates group in probe but never removes in remove)
     has_remove_group = "sysfs_remove_group" in generated_code
     details.append(
         CheckDetail(
@@ -21,7 +28,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: show uses sysfs_emit (not sprintf or snprintf)
-    # (LLM failure: using sprintf into buf can overflow the PAGE_SIZE sysfs buffer)
     has_sysfs_emit = "sysfs_emit" in generated_code
     has_raw_sprintf = "sprintf(" in generated_code and "sysfs_emit" not in generated_code
     details.append(
@@ -35,7 +41,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: store uses kstrtoint or kstrtol (not sscanf or atoi)
-    # (LLM failure: sscanf without error check, or atoi with no bounds check)
     has_kstrtoint = (
         "kstrtoint" in generated_code
         or "kstrtol" in generated_code
@@ -52,7 +57,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: store returns count on success (not 0 or length)
-    # (LLM failure: returning 0 from store causes infinite write loop in userspace)
     has_return_count = "return count" in generated_code
     details.append(
         CheckDetail(
@@ -65,8 +69,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: show output is newline-terminated (sysfs convention)
-    # (LLM failure: missing \n causes shell to print prompt on same line as value)
-    # sysfs_emit(buf, "%d\n", ...) or sysfs_emit(buf, "%s\n", ...) both contain \n
     has_newline = "\\n" in generated_code
     details.append(
         CheckDetail(
@@ -86,6 +88,37 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_group_used,
             expected="sysfs_create_group uses the attribute_group struct",
             actual="present" if has_group_used else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: sysfs_create_group error handled in probe
+    # LLM failure: calling sysfs_create_group without checking return value
+    error_blocks = extract_error_blocks(generated_code)
+    has_group_err_handling = (
+        "sysfs_create_group" in generated_code
+        and ("return ret" in generated_code or bool(re.search(r'if\s*\(\s*ret\s*\)', generated_code)))
+    )
+    details.append(
+        CheckDetail(
+            check_name="sysfs_create_group_error_handled",
+            passed=has_group_err_handling,
+            expected="sysfs_create_group() return value checked and handled",
+            actual="present" if has_group_err_handling else "sysfs_create_group failure may be ignored",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No Zephyr API contamination
+    zephyr_apis = ["k_work_submit", "k_thread_create", "K_THREAD_DEFINE",
+                   "k_mutex_lock", "k_sleep("]
+    has_zephyr = any(api in generated_code for api in zephyr_apis)
+    details.append(
+        CheckDetail(
+            check_name="no_zephyr_apis",
+            passed=not has_zephyr,
+            expected="No Zephyr RTOS APIs in Linux sysfs driver",
+            actual="clean" if not has_zephyr else "WRONG PLATFORM: Zephyr APIs found",
             check_type="constraint",
         )
     )

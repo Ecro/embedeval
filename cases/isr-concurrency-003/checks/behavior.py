@@ -2,12 +2,20 @@
 
 import re
 
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    check_no_isr_forbidden,
+    find_isr_bodies,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate spinlock behavioral properties."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: lock/unlock appear in pairs (balanced spinlock usage)
     lock_count = generated_code.count("k_spin_lock")
@@ -23,7 +31,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: key passed to unlock (correct API usage)
-    # k_spin_unlock must receive the key returned by k_spin_lock
     has_key_in_unlock = bool(re.search(
         r'k_spin_unlock\s*\([^,]+,\s*\w+\)', generated_code
     ))
@@ -69,7 +76,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Thread reads shared variable under spinlock
-    # Heuristic: k_spin_lock appears in a thread function alongside printk
     has_thread_read = bool(re.search(
         r'k_spin_lock[^}]*printk|printk[^}]*k_spin_lock',
         generated_code, re.DOTALL
@@ -92,6 +98,44 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_sleep,
             expected="k_sleep() present to allow thread scheduling",
             actual="present" if has_sleep else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No k_mutex used in ISR (mutex cannot be used in ISR context)
+    # LLM failure: using k_mutex_lock in the ISR body instead of spinlock
+    isr_bodies = find_isr_bodies(stripped)
+    isr_uses_mutex = any("k_mutex" in body for body in isr_bodies)
+    details.append(
+        CheckDetail(
+            check_name="no_mutex_in_isr",
+            passed=not isr_uses_mutex,
+            expected="No k_mutex operations inside ISR (spinlock required in ISR)",
+            actual="correct" if not isr_uses_mutex else "BUG: k_mutex used in ISR — will deadlock",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No forbidden blocking APIs inside ISR bodies
+    isr_violations = check_no_isr_forbidden(generated_code)
+    details.append(
+        CheckDetail(
+            check_name="no_forbidden_apis_in_isr",
+            passed=len(isr_violations) == 0,
+            expected="No printk/k_malloc/k_sleep inside ISR bodies",
+            actual="clean" if not isr_violations else f"violations: {isr_violations}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: No cross-platform API contamination
+    cross_platform = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
+    details.append(
+        CheckDetail(
+            check_name="no_cross_platform_apis",
+            passed=len(cross_platform) == 0,
+            expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+            actual="clean" if not cross_platform else f"found: {[a for a, _ in cross_platform]}",
             check_type="constraint",
         )
     )

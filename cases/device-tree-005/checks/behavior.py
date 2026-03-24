@@ -2,14 +2,44 @@
 
 from embedeval.models import CheckDetail
 
+_FAKE_DT_PROPERTIES = [
+    "pin-config",
+    "mux-config",
+    "clock-speed",
+]
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate multi-peripheral overlay behavioral properties."""
     details: list[CheckDetail] = []
 
-    # --- I2C / BME680 checks ---
+    # Check 1: No fake DT properties
+    found_fake = [prop for prop in _FAKE_DT_PROPERTIES if prop in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_fake_dt_properties",
+            passed=not found_fake,
+            expected="No hallucinated DT properties (pin-config, mux-config, clock-speed)",
+            actual="clean" if not found_fake else f"fake properties found: {found_fake}",
+            check_type="hallucination",
+        )
+    )
 
-    # Check 1: i2c0 enabled (AI failure: configures sensor but forgets to enable parent bus)
+    # Check 2: All three parent buses have status = "okay" (complex case: 3 buses)
+    # AI failure: sets status on children only, leaves parents disabled
+    status_okay_count = generated_code.count('status = "okay"')
+    has_enough_status = status_okay_count >= 3
+    details.append(
+        CheckDetail(
+            check_name="parent_buses_all_enabled",
+            passed=has_enough_status,
+            expected='At least 3 status = "okay" entries (i2c0 + spi0 + gpio0 minimum)',
+            actual=f'{status_okay_count} status = "okay" entries found',
+            check_type="constraint",
+        )
+    )
+
+    # Check 3: i2c0 enabled (AI failure: configures sensor but forgets to enable parent bus)
     has_i2c0_enabled = "&i2c0" in generated_code
     details.append(
         CheckDetail(
@@ -21,7 +51,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: BME680 compatible string (AI failure: uses bme280 address 0x76 instead of bme680 at 0x77)
+    # Check 4: BME680 compatible string (AI failure: uses bme280 instead of bme680)
     has_bme680_compatible = 'compatible = "bosch,bme680"' in generated_code
     details.append(
         CheckDetail(
@@ -33,7 +63,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: BME680 at address 0x77 (AI failure: uses 0x76 which is the BME280 address)
+    # Check 5: BME680 at address 0x77 (AI failure: uses 0x76 which is the BME280 address)
     has_bme680_addr = (
         "reg = <0x77>" in generated_code or "bme680@77" in generated_code
     )
@@ -47,9 +77,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # --- SPI / Flash checks ---
-
-    # Check 4: spi0 enabled (AI failure: adds flash child but forgets to enable parent spi0)
+    # Check 6: spi0 enabled
     has_spi0_enabled = "&spi0" in generated_code
     details.append(
         CheckDetail(
@@ -61,7 +89,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: SPI flash with jedec,spi-nor compatible
+    # Check 7: SPI flash with jedec,spi-nor compatible
     has_spi_nor = 'compatible = "jedec,spi-nor"' in generated_code
     details.append(
         CheckDetail(
@@ -73,7 +101,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: SPI flash at chip select 0 (reg = <0>)
+    # Check 8: SPI flash at chip select 0 (reg = <0>)
     has_flash_cs0 = "reg = <0>" in generated_code
     details.append(
         CheckDetail(
@@ -85,9 +113,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # --- GPIO checks ---
-
-    # Check 7: gpio0 enabled (AI failure: references gpio0 pins without enabling the controller)
+    # Check 9: gpio0 enabled
     has_gpio0_enabled = "&gpio0" in generated_code
     details.append(
         CheckDetail(
@@ -99,8 +125,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 8: Two GPIO pins configured (AI failure: only configures one pin)
-    # Count gpio0 pin references in angle-bracket cells
+    # Check 10: Two GPIO pins configured (AI failure: only configures one pin)
     gpio_pin_refs = generated_code.count("<&gpio0")
     has_two_gpio_pins = gpio_pin_refs >= 2
     details.append(
@@ -113,22 +138,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 9: All three bus parent nodes have status = "okay"
-    # (AI failure: sets status on children only, leaves parents disabled)
-    status_okay_count = generated_code.count('status = "okay"')
-    has_enough_status = status_okay_count >= 3
-    details.append(
-        CheckDetail(
-            check_name="parent_buses_all_enabled",
-            passed=has_enough_status,
-            expected="At least 3 status = \"okay\" entries (i2c0 + spi0 + gpio0 minimum)",
-            actual=f"{status_okay_count} status = \"okay\" entries found",
-            check_type="constraint",
-        )
-    )
-
-    # Check 10: No conflicting reg addresses (BME680 at 0x77, not 0x76)
-    # If code has both 0x76 and "bme680" that indicates the AI used the wrong address
+    # Check 11: No conflicting reg addresses (BME680 at 0x77, not 0x76)
     has_bme680_wrong_addr = (
         "bosch,bme680" in generated_code and "reg = <0x76>" in generated_code
     )

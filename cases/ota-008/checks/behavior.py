@@ -95,4 +95,53 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: self_test return value checked before confirming
+    # (LLM failure: calling self_test() but ignoring its return, always confirming)
+    self_test_ret_checked = (
+        "self_test" in generated_code
+        and "boot_write_img_confirmed" in generated_code
+        and ("!= 0" in generated_code or "if (ret" in generated_code or "< 0" in generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="self_test_return_checked",
+            passed=self_test_ret_checked,
+            expected="self_test() return value checked before confirming (failure triggers rollback)",
+            actual="present" if self_test_ret_checked else "missing (self-test result ignored!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: sys_reboot on self-test failure (not just return) — triggers MCUboot rollback
+    # (LLM failure: returning from main on failure — doesn't trigger MCUboot rollback)
+    reboot_on_fail = (
+        "self_test" in generated_code
+        and "sys_reboot" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="reboot_on_self_test_failure",
+            passed=reboot_on_fail,
+            expected="sys_reboot() called on self-test failure to trigger MCUboot rollback",
+            actual="present" if reboot_on_fail else "missing (return from main won't trigger rollback!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: boot_write_img_confirmed return value checked
+    # (LLM failure: ignoring confirm failure — image not actually confirmed)
+    confirm_err_checked = (
+        "boot_write_img_confirmed" in generated_code
+        and ("< 0" in generated_code or "!= 0" in generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="confirm_return_value_checked",
+            passed=confirm_err_checked,
+            expected="boot_write_img_confirmed() return value checked",
+            actual="present" if confirm_err_checked else "missing (confirm may silently fail!)",
+            check_type="constraint",
+        )
+    )
+
     return details

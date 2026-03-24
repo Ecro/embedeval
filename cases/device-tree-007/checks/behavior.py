@@ -4,12 +4,30 @@ import re
 
 from embedeval.models import CheckDetail
 
+_FAKE_DT_PROPERTIES = [
+    "pin-config",
+    "mux-config",
+    "clock-speed",     # Should be clock-frequency; clock-speed is hallucinated
+]
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate Device Tree clock configuration behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
 
-    # Check 1: Clock rate value is reasonable (> 0 and <= 1 GHz)
+    # Check 1: No fake DT properties — especially clock-speed (should be clock-frequency)
+    found_fake = [prop for prop in _FAKE_DT_PROPERTIES if prop in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_fake_dt_properties",
+            passed=not found_fake,
+            expected="No hallucinated DT properties; clock-speed does not exist (use clock-frequency)",
+            actual="clean" if not found_fake else f"fake properties found: {found_fake}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: Clock rate value is reasonable (> 0 and <= 1 GHz)
     rate_match = re.search(r"assigned-clock-rates\s*=\s*<(\d+)>", generated_code)
     if rate_match:
         rate_value = int(rate_match.group(1))
@@ -27,7 +45,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: assigned-clocks references a phandle (valid clock source)
+    # Check 3: assigned-clocks references a phandle (valid clock source)
     has_clock_ref = bool(re.search(r"assigned-clocks\s*=\s*<&", generated_code))
     details.append(
         CheckDetail(
@@ -39,7 +57,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: status = "okay"
+    # Check 4: status = "okay"
     has_status_okay = 'status = "okay"' in generated_code
     details.append(
         CheckDetail(
@@ -51,7 +69,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: No clock_rate = 0 (zero rate is invalid)
+    # Check 5: No clock_rate = 0 (zero rate is invalid)
     has_zero_rate = bool(re.search(r"assigned-clock-rates\s*=\s*<0>", generated_code))
     details.append(
         CheckDetail(
@@ -63,7 +81,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: No plain integer clock rate without phandle in assigned-clocks (hallucination guard)
+    # Check 6: No plain integer clock rate without phandle in assigned-clocks (hallucination guard)
     # Fake pattern: assigned-clocks = <16000000>; instead of a phandle reference
     has_fake_direct_freq = bool(
         re.search(r"assigned-clocks\s*=\s*<\d+>", generated_code)
@@ -75,6 +93,34 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="assigned-clocks must contain phandle, not raw frequency",
             actual="clean" if not has_fake_direct_freq else "raw frequency in assigned-clocks (wrong - use phandle)",
             check_type="hallucination",
+        )
+    )
+
+    # Check 7: uart0 (or relevant peripheral) referenced
+    has_peripheral_node = (
+        "&uart0" in generated_code
+        or "&usart1" in generated_code
+        or "&uart" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="peripheral_node_referenced",
+            passed=has_peripheral_node,
+            expected="Peripheral node (e.g. &uart0) referenced for clock assignment",
+            actual="present" if has_peripheral_node else "missing peripheral node reference",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: assigned-clock-rates present (not just assigned-clocks alone)
+    has_clock_rates = "assigned-clock-rates" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="assigned_clock_rates_present",
+            passed=has_clock_rates,
+            expected="assigned-clock-rates property present alongside assigned-clocks",
+            actual="present" if has_clock_rates else "missing — clock rate not set",
+            check_type="constraint",
         )
     )
 

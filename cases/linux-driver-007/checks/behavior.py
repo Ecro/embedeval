@@ -1,5 +1,10 @@
 """Behavioral checks for Linux DMA-coherent buffer driver."""
 
+import re
+
+from embedeval.check_utils import (
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
@@ -7,8 +12,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate DMA buffer driver behavioral properties."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: No malloc() — C userspace function in kernel code is wrong
-    # (LLM hallucination: confusing userspace malloc with kernel allocation)
     has_malloc = "malloc(" in generated_code and "dma_alloc" not in generated_code
     details.append(
         CheckDetail(
@@ -20,8 +26,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: No vmalloc() for DMA — vmalloc gives virtually contiguous but
-    # not physically contiguous memory, wrong for DMA
+    # Check 2: No vmalloc() for DMA — not physically contiguous
     has_vmalloc = "vmalloc(" in generated_code
     details.append(
         CheckDetail(
@@ -34,7 +39,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: No plain kmalloc() as the DMA allocation method
-    # (kmalloc may not be DMA-coherent on all architectures)
     has_kmalloc_only = (
         "kmalloc(" in generated_code and "dma_alloc_coherent" not in generated_code
     )
@@ -81,6 +85,42 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_drvdata,
             expected="dev_set_drvdata() or devm_ used to store per-device data",
             actual="present" if has_drvdata else "missing (global state is not multi-device safe)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: DMA allocation failure handled in error path
+    # LLM failure: dma_alloc_coherent fails but driver continues using NULL pointer
+    # Pattern: if (!virt_addr) { return -ENOMEM; } or if (!dev->virt_addr) { ... }
+    dma_error_handled = bool(
+        re.search(
+            r'if\s*\(\s*!\s*\w[\w.>-]*\s*\)\s*\{[^}]*(?:ENOMEM|return\s+-)',
+            generated_code,
+        )
+    ) or (
+        "ENOMEM" in generated_code
+        and bool(re.search(r'dma_alloc_coherent[^;]+;[^}]*if\s*\(\s*!', generated_code, re.DOTALL))
+    )
+    details.append(
+        CheckDetail(
+            check_name="dma_alloc_error_handled",
+            passed=dma_error_handled,
+            expected="DMA allocation failure path returns -ENOMEM",
+            actual="present" if dma_error_handled else "DMA allocation failure may not be handled",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No Zephyr API contamination in Linux DMA driver
+    zephyr_apis = ["k_work_submit", "k_thread_create", "K_THREAD_DEFINE",
+                   "k_mutex_lock", "k_sleep("]
+    has_zephyr = any(api in generated_code for api in zephyr_apis)
+    details.append(
+        CheckDetail(
+            check_name="no_zephyr_apis",
+            passed=not has_zephyr,
+            expected="No Zephyr RTOS APIs in Linux DMA driver",
+            actual="clean" if not has_zephyr else "WRONG PLATFORM: Zephyr APIs found",
             check_type="constraint",
         )
     )

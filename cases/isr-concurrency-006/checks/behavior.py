@@ -2,6 +2,12 @@
 
 import re
 
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    check_no_isr_forbidden,
+    find_isr_bodies,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
@@ -9,12 +15,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate k_fifo behavioral correctness for ISR-to-thread transfer."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: Static allocation — no k_malloc anywhere
     # LLM failure: calling k_malloc in ISR handler to allocate item
-    # Strip comments before checking to avoid false positives
-    import re as _re
-    stripped = _re.sub(r"/\*.*?\*/", "", generated_code, flags=_re.DOTALL)
-    stripped = _re.sub(r"//.*", "", stripped)
     has_kmalloc = "k_malloc" in stripped
     details.append(
         CheckDetail(
@@ -26,18 +30,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: k_fifo_get NOT inside ISR handler body
+    # Check 2: k_fifo_get NOT inside ISR handler body using find_isr_bodies
     # LLM failure: calling blocking k_fifo_get inside the ISR
-    # Heuristic: look for ISR-like function (void *_isr, irq_handler, ISR_DIRECT) containing k_fifo_get
-    isr_pattern = re.search(
-        r"(void\s+\w*(?:isr|irq|handler|interrupt)\w*\s*\([^)]*\)\s*\{)(.*?)(\n\})",
-        generated_code,
-        re.IGNORECASE | re.DOTALL,
-    )
-    isr_has_get = False
-    if isr_pattern:
-        isr_body = isr_pattern.group(2)
-        isr_has_get = "k_fifo_get" in isr_body
+    isr_bodies = find_isr_bodies(stripped)
+    isr_has_get = any("k_fifo_get" in body for body in isr_bodies)
     details.append(
         CheckDetail(
             check_name="k_fifo_get_not_in_isr",
@@ -49,7 +45,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: Consumer thread uses k_fifo_get with timeout (not K_NO_WAIT in a tight loop)
-    # K_FOREVER or K_MSEC timeout preferred; K_NO_WAIT in a loop wastes CPU
     has_get_with_timeout = bool(
         re.search(r"k_fifo_get\s*\([^,]+,\s*K_(FOREVER|MSEC|SECONDS|TICKS)\b", generated_code)
     )
@@ -83,7 +78,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         r"void\s+(\w+)\s*\(\s*(?:void\s*\*[^,)]*(?:,\s*void\s*\*[^,)]*){0,2})?\s*\)",
         generated_code,
     )
-    # Filter out ISR-like names; look for thread-like names
     consumer_names = [
         n for n in thread_fns
         if any(kw in n.lower() for kw in ["thread", "consumer", "recv", "process", "task"])
@@ -98,6 +92,32 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="Consumer thread defined (separate from main/ISR)",
             actual="consumer thread found" if has_consumer_thread else "no consumer thread",
             check_type="exact_match",
+        )
+    )
+
+    # Check 6: No forbidden APIs inside ISR bodies (strengthened with check_utils)
+    # LLM failure: calling printk inside the ISR fifo put handler
+    isr_violations = check_no_isr_forbidden(generated_code)
+    details.append(
+        CheckDetail(
+            check_name="no_forbidden_apis_in_isr",
+            passed=len(isr_violations) == 0,
+            expected="No printk/k_malloc/k_sleep inside ISR bodies",
+            actual="clean" if not isr_violations else f"violations: {isr_violations}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No cross-platform API contamination
+    # LLM failure: using xQueueSendFromISR (FreeRTOS) instead of k_fifo_put
+    cross_platform = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
+    details.append(
+        CheckDetail(
+            check_name="no_cross_platform_apis",
+            passed=len(cross_platform) == 0,
+            expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+            actual="clean" if not cross_platform else f"found: {[a for a, _ in cross_platform]}",
+            check_type="constraint",
         )
     )
 

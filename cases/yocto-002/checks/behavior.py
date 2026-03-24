@@ -1,5 +1,7 @@
 """Behavioral checks for Yocto CMake recipe."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -81,6 +83,66 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_s_workdir_git,
             expected="S set to ${WORKDIR}/git (or ${WORKDIR} for local sources)",
             actual="present" if has_s_workdir_git else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: SPDX license format — no non-SPDX names
+    # (LLM failure: "GPLv2" instead of "GPL-2.0-only")
+    non_spdx_patterns = [
+        r'\bGPLv2\b', r'\bGPLv3\b', r'\bLGPLv2\b', r'\bLGPLv2\.1\b',
+        r'\bLGPLv3\b', r'"GPL-2\.0"[^-]', r'"GPL-3\.0"[^-]',
+    ]
+    has_non_spdx = any(re.search(p, generated_code) for p in non_spdx_patterns)
+    details.append(
+        CheckDetail(
+            check_name="spdx_license_format",
+            passed=not has_non_spdx,
+            expected="SPDX license identifiers used (e.g. GPL-2.0-only, not GPLv2)",
+            actual="correct SPDX format" if not has_non_spdx else "NON-SPDX license name found",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: Override syntax uses ':' not '_' (Yocto 4.0+ requirement)
+    # (LLM failure: using deprecated RDEPENDS_${PN})
+    deprecated_override = re.search(
+        r'\b(RDEPENDS|SYSTEMD_SERVICE|SYSTEMD_AUTO_ENABLE|FILES|PACKAGES)_\$\{PN\}',
+        generated_code,
+    )
+    details.append(
+        CheckDetail(
+            check_name="colon_override_syntax",
+            passed=deprecated_override is None,
+            expected="Override syntax uses ':' operator (e.g. RDEPENDS:${PN})",
+            actual="correct" if deprecated_override is None else f"DEPRECATED '_' override: {deprecated_override.group(0)}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: No hardcoded /usr/lib (use ${libdir})
+    has_hardcoded_lib = bool(re.search(r'(?<!\$\{D\})/usr/lib\b', generated_code))
+    details.append(
+        CheckDetail(
+            check_name="no_hardcoded_libdir",
+            passed=not has_hardcoded_lib,
+            expected="${libdir} used (not hardcoded /usr/lib)",
+            actual="correct" if not has_hardcoded_lib else "hardcoded /usr/lib found (use ${libdir})",
+            check_type="constraint",
+        )
+    )
+
+    # Check 10: install -d before install -m in do_install
+    # (LLM failure: calling install -m without creating the directory first)
+    install_d_pos = generated_code.find("install -d")
+    install_m_pos = generated_code.find("install -m")
+    install_order_ok = install_d_pos != -1 and (install_m_pos == -1 or install_d_pos < install_m_pos)
+    details.append(
+        CheckDetail(
+            check_name="install_d_before_install_m",
+            passed=install_order_ok,
+            expected="install -d called before install -m (create dir before installing file)",
+            actual="correct" if install_order_ok else "WRONG ORDER or missing install -d",
             check_type="constraint",
         )
     )

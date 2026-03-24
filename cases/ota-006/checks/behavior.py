@@ -86,4 +86,50 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: psa_hash_compute return value checked (PSA_SUCCESS)
+    # (LLM failure: calling psa_hash_compute but not checking if it succeeded)
+    psa_ret_checked = (
+        "psa_hash_compute" in generated_code
+        and ("PSA_SUCCESS" in generated_code or "!= 0" in generated_code or "status" in generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="psa_hash_return_checked",
+            passed=psa_ret_checked,
+            expected="psa_hash_compute() return value checked (PSA_SUCCESS or != 0)",
+            actual="present" if psa_ret_checked else "missing (hash error ignored — invalid hash used!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: dfu_target_done(false) on hash mismatch — rollback path
+    # (LLM failure: only happy path — no abort if hash verification fails)
+    has_done_false = "dfu_target_done(false)" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="dfu_done_false_on_mismatch",
+            passed=has_done_false,
+            expected="dfu_target_done(false) called on hash mismatch to abort DFU",
+            actual="present" if has_done_false else "missing (no rollback on hash failure — corrupt image written!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: Hash length verified (output length matches 32 bytes for SHA-256)
+    # (LLM failure: not checking that hash_len == 32 after psa_hash_compute)
+    has_len_check = (
+        "hash_len" in generated_code
+        or "32" in generated_code
+        or "PSA_HASH_LENGTH" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="hash_length_verified",
+            passed=has_len_check,
+            expected="Hash output length verified (32 bytes for SHA-256)",
+            actual="present" if has_len_check else "missing (truncated hash may pass comparison!)",
+            check_type="constraint",
+        )
+    )
+
     return details

@@ -2,16 +2,29 @@
 
 from embedeval.models import CheckDetail
 
+_HALLUCINATED_CONFIGS = [
+    "CONFIG_SECURE_MODE",
+    "CONFIG_WIFI_BLE_COEX",
+    "CONFIG_DEBUG_ENABLE",
+    "CONFIG_NETWORK_STACK",
+    "CONFIG_AUTO_INIT",
+]
 
-def run_checks(generated_code: str) -> list[CheckDetail]:
-    """Validate hardware crypto Kconfig PSA dependency chain and backend exclusion invariants."""
-    details: list[CheckDetail] = []
+
+def _parse_config(generated_code: str) -> dict[str, str]:
     config: dict[str, str] = {}
     for line in generated_code.strip().splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             key, val = line.split("=", 1)
             config[key.strip()] = val.strip()
+    return config
+
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    """Validate hardware crypto Kconfig PSA dependency chain and backend exclusion invariants."""
+    details: list[CheckDetail] = []
+    config = _parse_config(generated_code)
 
     mbedtls_enabled = config.get("CONFIG_MBEDTLS") == "y"
     mbedtls_builtin_enabled = config.get("CONFIG_MBEDTLS_BUILTIN") == "y"
@@ -21,7 +34,37 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     hw_cc3xx_enabled = config.get("CONFIG_HW_CC3XX") == "y"
     tinycrypt_keys = [k for k in config if k.startswith("CONFIG_TINYCRYPT") and config[k] == "y"]
 
-    # Metamorphic: MBEDTLS_BUILTIN requires MBEDTLS=y
+    # Check 1: No hallucinated CONFIG options
+    found_hallucinated = [opt for opt in _HALLUCINATED_CONFIGS if opt in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_hallucinated_config_options",
+            passed=not found_hallucinated,
+            expected="No hallucinated Zephyr CONFIG options",
+            actual="clean" if not found_hallucinated else f"hallucinated: {found_hallucinated}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: Deprecated option conflict check
+    has_newlib = config.get("CONFIG_NEWLIB_LIBC") == "y"
+    has_minimal = config.get("CONFIG_MINIMAL_LIBC") == "y"
+    no_deprecated_conflict = not (has_newlib and has_minimal)
+    details.append(
+        CheckDetail(
+            check_name="no_newlib_minimal_libc_conflict",
+            passed=no_deprecated_conflict,
+            expected="CONFIG_NEWLIB_LIBC and CONFIG_MINIMAL_LIBC are mutually exclusive",
+            actual=(
+                "no conflict"
+                if no_deprecated_conflict
+                else "both CONFIG_NEWLIB_LIBC=y and CONFIG_MINIMAL_LIBC=y present (conflict)"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 3: MBEDTLS_BUILTIN requires MBEDTLS=y
     builtin_needs_mbedtls = not (mbedtls_builtin_enabled and not mbedtls_enabled)
     details.append(
         CheckDetail(
@@ -36,7 +79,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Metamorphic: PSA_CRYPTO_C requires MBEDTLS=y
+    # Check 4: PSA_CRYPTO_C requires MBEDTLS=y
     psa_needs_mbedtls = not (psa_enabled and not mbedtls_enabled)
     details.append(
         CheckDetail(
@@ -51,7 +94,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Metamorphic: HW_CC3XX requires PSA_CRYPTO_DRIVER_CC3XX=y
+    # Check 5: HW_CC3XX requires PSA_CRYPTO_DRIVER_CC3XX=y
     hw_cc3xx_needs_driver = not (hw_cc3xx_enabled and not psa_driver_cc3xx)
     details.append(
         CheckDetail(
@@ -66,7 +109,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Mutual exclusion: MBEDTLS_BUILTIN and MBEDTLS_EXTERNAL cannot coexist
+    # Check 6: Mutual exclusion: MBEDTLS_BUILTIN and MBEDTLS_EXTERNAL cannot coexist
     no_backend_conflict = not (mbedtls_builtin_enabled and mbedtls_external_enabled)
     details.append(
         CheckDetail(
@@ -82,7 +125,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Mutual exclusion: TinyCrypt conflicts with MbedTLS backend
+    # Check 7: TinyCrypt conflicts with MbedTLS backend
     no_tinycrypt_conflict = len(tinycrypt_keys) == 0
     details.append(
         CheckDetail(
@@ -98,7 +141,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Summary: PSA hardware crypto chain all present
+    # Check 8: PSA hardware crypto chain all present
     required = [
         "CONFIG_MBEDTLS",
         "CONFIG_MBEDTLS_BUILTIN",

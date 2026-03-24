@@ -1,5 +1,10 @@
 """Behavioral checks for Linux GPIO consumer driver."""
 
+import re
+
+from embedeval.check_utils import (
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
@@ -7,8 +12,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate GPIO consumer driver behavioral properties."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: No legacy gpio_request() — deprecated API
-    # (LLM hallucination: using the old integer-based GPIO API)
     has_legacy_request = "gpio_request(" in generated_code
     details.append(
         CheckDetail(
@@ -45,7 +51,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: Direction set before I/O operations
-    # (GPIO must have direction configured before read/write)
     has_direction_before_io = (
         "gpiod_direction_output" in generated_code
         or "gpiod_direction_input" in generated_code
@@ -82,6 +87,37 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=not has_gpio_free,
             expected="No manual gpio_free() needed when using devm_gpiod_get()",
             actual="clean" if not has_gpio_free else "unnecessary gpio_free() with devm_ usage",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Error path in probe handles devm_gpiod_get failure with PTR_ERR
+    # LLM failure: IS_ERR check present but returning wrong error (e.g., -1 instead of PTR_ERR)
+    # Reference pattern: if (IS_ERR(gpio)) { return PTR_ERR(gpio); }
+    has_ptr_err_return = bool(
+        re.search(r'return\s+PTR_ERR\s*\(', generated_code)
+        or re.search(r'return\s+-[A-Z]+', generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="gpiod_get_error_path_returns_ptr_err",
+            passed=has_ptr_err_return,
+            expected="Probe error path returns PTR_ERR() or proper error code on GPIO failure",
+            actual="present" if has_ptr_err_return else "error path may not propagate correct error code",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No Zephyr API contamination in Linux GPIO driver
+    zephyr_apis = ["k_work_submit", "k_thread_create", "K_THREAD_DEFINE",
+                   "k_mutex_lock", "k_sleep(", "gpio_pin_configure"]
+    has_zephyr = any(api in generated_code for api in zephyr_apis)
+    details.append(
+        CheckDetail(
+            check_name="no_zephyr_apis",
+            passed=not has_zephyr,
+            expected="No Zephyr RTOS APIs in Linux GPIO driver",
+            actual="clean" if not has_zephyr else "WRONG PLATFORM: Zephyr APIs found",
             check_type="constraint",
         )
     )

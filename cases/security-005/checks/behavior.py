@@ -1,11 +1,38 @@
 """Behavioral checks for PSA Protected Storage."""
 
+import re
+
+from embedeval.check_utils import (
+    strip_comments,
+)
 from embedeval.models import CheckDetail
+
+
+def _extract_psa_error_blocks(code: str) -> list[str]:
+    """Extract PSA-style error blocks: if (status != PSA_SUCCESS) { ... }"""
+    blocks = []
+    for match in re.finditer(
+        r"if\s*\([^)]*(?:PSA_SUCCESS|!=\s*0|<\s*0)[^)]*\)\s*\{",
+        code,
+    ):
+        start = match.end()
+        depth = 1
+        for i in range(start, len(code)):
+            if code[i] == "{":
+                depth += 1
+            elif code[i] == "}":
+                depth -= 1
+            if depth == 0:
+                blocks.append(code[start:i])
+                break
+    return blocks
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate PSA Protected Storage behavioral properties."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: init before ps_set (correct ordering)
     init_pos = generated_code.find("psa_crypto_init")
@@ -34,7 +61,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: actual_length variable captured from psa_ps_get
     # LLM failure: no size output variable, can't detect truncation
-    import re
     has_actual_len = bool(
         re.search(r'\b\w*(actual|out|result)\w*_len\w*\b|\bactual_length\b|\bout_len\b', generated_code)
         or re.search(r'psa_ps_get\s*\([^)]*&', generated_code)
@@ -84,6 +110,34 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_storage_flag,
             expected="PSA_STORAGE_FLAG_NONE or valid flag in psa_ps_set",
             actual="present" if has_storage_flag else "missing (0 used as flag?)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Error path handles failures — returns early on failure
+    # LLM failure: ignoring psa_ps_set failure and proceeding to psa_ps_get
+    error_blocks = _extract_psa_error_blocks(generated_code)
+    has_error_handling = len(error_blocks) > 0 and any(
+        "return" in block for block in error_blocks
+    )
+    details.append(
+        CheckDetail(
+            check_name="error_paths_return_early",
+            passed=has_error_handling,
+            expected="Error paths return early on psa_ps_set/get failure",
+            actual="present" if has_error_handling else "missing (may continue after failure)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No rand()/srand() in storage security code
+    has_rand = bool(re.search(r'\brand\s*\(|\bsrand\s*\(', stripped))
+    details.append(
+        CheckDetail(
+            check_name="no_insecure_rand",
+            passed=not has_rand,
+            expected="No rand()/srand() in security storage code",
+            actual="clean" if not has_rand else "rand()/srand() found",
             check_type="constraint",
         )
     )

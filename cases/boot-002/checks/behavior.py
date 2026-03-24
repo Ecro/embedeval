@@ -3,15 +3,20 @@
 from embedeval.models import CheckDetail
 
 
-def run_checks(generated_code: str) -> list[CheckDetail]:
-    """Validate U-Boot Kconfig behavioral properties."""
-    details: list[CheckDetail] = []
+def _parse_config(generated_code: str) -> dict[str, str]:
     config: dict[str, str] = {}
     for line in generated_code.strip().splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             key, val = line.split("=", 1)
             config[key.strip()] = val.strip()
+    return config
+
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    """Validate U-Boot Kconfig behavioral properties."""
+    details: list[CheckDetail] = []
+    config = _parse_config(generated_code)
 
     # Check 1: MCUboot not enabled (U-Boot path, no mixing)
     no_mcuboot = config.get("CONFIG_BOOTLOADER_MCUBOOT") != "y"
@@ -58,6 +63,39 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=no_img_mgr,
             expected="CONFIG_MCUBOOT_IMG_MANAGER not set (U-Boot path)",
             actual="not set" if no_img_mgr else "set (wrong bootloader mix!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 5: UPGRADE_ONLY + SWAP_USING_MOVE conflict
+    # (LLM failure: enabling both — they are mutually exclusive)
+    has_upgrade_only = config.get("CONFIG_BOOT_UPGRADE_ONLY") == "y"
+    has_swap_move = config.get("CONFIG_BOOT_SWAP_USING_MOVE") == "y"
+    no_swap_conflict = not (has_upgrade_only and has_swap_move)
+    details.append(
+        CheckDetail(
+            check_name="no_upgrade_only_swap_conflict",
+            passed=no_swap_conflict,
+            expected="BOOT_UPGRADE_ONLY and BOOT_SWAP_USING_MOVE must not both be set",
+            actual="no conflict" if no_swap_conflict else "CONFLICT: UPGRADE_ONLY + SWAP_USING_MOVE both set",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: SINGLE_APPLICATION_SLOT + SWAP conflict
+    # (LLM failure: single slot mode cannot do swaps)
+    has_single = config.get("CONFIG_SINGLE_APPLICATION_SLOT") == "y"
+    has_any_swap = (
+        config.get("CONFIG_BOOT_SWAP_USING_MOVE") == "y"
+        or config.get("CONFIG_BOOT_SWAP_USING_SCRATCH") == "y"
+    )
+    no_single_swap_conflict = not (has_single and has_any_swap)
+    details.append(
+        CheckDetail(
+            check_name="no_single_slot_swap_conflict",
+            passed=no_single_swap_conflict,
+            expected="SINGLE_APPLICATION_SLOT and BOOT_SWAP_* cannot both be set",
+            actual="no conflict" if no_single_swap_conflict else "CONFLICT: single slot + swap both set",
             check_type="constraint",
         )
     )

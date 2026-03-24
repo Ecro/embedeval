@@ -89,4 +89,52 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: dfu_target_done(false) on write error — rollback path
+    # (LLM failure: only happy path — no abort if a chunk write fails mid-loop)
+    has_done_false = "dfu_target_done(false)" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="abort_on_write_error",
+            passed=has_done_false,
+            expected="dfu_target_done(false) called on write error path (abort DFU)",
+            actual="present" if has_done_false else "missing (no rollback if chunk write fails!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: dfu_target_write return value checked inside loop
+    # (LLM failure: writing chunks but not checking if each write succeeded)
+    write_err_inside_loop = (
+        "dfu_target_write" in generated_code
+        and ("< 0" in generated_code or "!= 0" in generated_code)
+        and loop_pos != -1
+        and generated_code.find("dfu_target_write") > loop_pos
+    )
+    details.append(
+        CheckDetail(
+            check_name="write_error_checked_in_loop",
+            passed=write_err_inside_loop,
+            expected="dfu_target_write() return value checked inside the download loop",
+            actual="present" if write_err_inside_loop else "missing (write errors in loop ignored!)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: bytes_received accumulates correctly (size_t or similar wide type)
+    # (LLM failure: using int instead of size_t — sign mismatch with size comparisons)
+    has_size_t_counter = (
+        "size_t bytes_received" in generated_code
+        or "uint32_t bytes_received" in generated_code
+        or "size_t received" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="counter_uses_size_t",
+            passed=has_size_t_counter,
+            expected="bytes_received uses size_t or uint32_t (not int or uint8_t)",
+            actual="correct" if has_size_t_counter else "wrong type or missing (counter may overflow/mismatch)",
+            check_type="constraint",
+        )
+    )
+
     return details

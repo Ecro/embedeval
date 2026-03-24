@@ -2,20 +2,29 @@
 
 from embedeval.models import CheckDetail
 
+_HALLUCINATED_CONFIGS = [
+    "CONFIG_SECURE_MODE",
+    "CONFIG_WIFI_BLE_COEX",
+    "CONFIG_DEBUG_ENABLE",
+    "CONFIG_NETWORK_STACK",
+    "CONFIG_AUTO_INIT",
+]
+
+
+def _parse_config(generated_code: str) -> dict[str, str]:
+    config: dict[str, str] = {}
+    for line in generated_code.strip().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, val = line.split("=", 1)
+            config[key.strip()] = val.strip()
+    return config
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate BLE Mesh Kconfig dependency chains and mutual exclusion invariants."""
     details: list[CheckDetail] = []
-    lines = [
-        line.strip()
-        for line in generated_code.strip().splitlines()
-        if line.strip() and not line.strip().startswith("#")
-    ]
-    config: dict[str, str] = {}
-    for line in lines:
-        if "=" in line:
-            key, val = line.split("=", 1)
-            config[key.strip()] = val.strip()
+    config = _parse_config(generated_code)
 
     bt_enabled = config.get("CONFIG_BT") == "y"
     bt_hci_enabled = config.get("CONFIG_BT_HCI") == "y"
@@ -24,7 +33,37 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     bt_mesh_friend_enabled = config.get("CONFIG_BT_MESH_FRIEND") == "y"
     bt_mesh_low_power_enabled = config.get("CONFIG_BT_MESH_LOW_POWER") == "y"
 
-    # Metamorphic: BT_MESH requires BT=y
+    # Check 1: No hallucinated CONFIG options
+    found_hallucinated = [opt for opt in _HALLUCINATED_CONFIGS if opt in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_hallucinated_config_options",
+            passed=not found_hallucinated,
+            expected="No hallucinated Zephyr CONFIG options",
+            actual="clean" if not found_hallucinated else f"hallucinated: {found_hallucinated}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: Deprecated option conflict check
+    has_newlib = config.get("CONFIG_NEWLIB_LIBC") == "y"
+    has_minimal = config.get("CONFIG_MINIMAL_LIBC") == "y"
+    no_deprecated_conflict = not (has_newlib and has_minimal)
+    details.append(
+        CheckDetail(
+            check_name="no_newlib_minimal_libc_conflict",
+            passed=no_deprecated_conflict,
+            expected="CONFIG_NEWLIB_LIBC and CONFIG_MINIMAL_LIBC are mutually exclusive",
+            actual=(
+                "no conflict"
+                if no_deprecated_conflict
+                else "both CONFIG_NEWLIB_LIBC=y and CONFIG_MINIMAL_LIBC=y present (conflict)"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 3: Metamorphic: BT_MESH requires BT=y
     mesh_requires_bt = not (bt_mesh_enabled and not bt_enabled)
     details.append(
         CheckDetail(
@@ -39,7 +78,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Metamorphic: BT requires BT_HCI=y
+    # Check 4: Metamorphic: BT requires BT_HCI=y
     bt_requires_hci = not (bt_enabled and not bt_hci_enabled)
     details.append(
         CheckDetail(
@@ -54,7 +93,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Metamorphic: BT_MESH_RELAY requires BT_MESH=y
+    # Check 5: Metamorphic: BT_MESH_RELAY requires BT_MESH=y
     relay_requires_mesh = not (bt_mesh_relay_enabled and not bt_mesh_enabled)
     details.append(
         CheckDetail(
@@ -69,7 +108,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Mutual exclusion: BT_MESH_FRIEND and BT_MESH_LOW_POWER cannot both be enabled
+    # Check 6: Mutual exclusion: BT_MESH_FRIEND and BT_MESH_LOW_POWER cannot both be enabled
     no_friend_low_power = not (bt_mesh_friend_enabled and bt_mesh_low_power_enabled)
     details.append(
         CheckDetail(
@@ -84,7 +123,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check: all required configs present AND enabled
+    # Check 7: All required configs present AND enabled
     required_configs = [
         "CONFIG_BT",
         "CONFIG_BT_HCI",

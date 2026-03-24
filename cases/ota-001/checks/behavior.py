@@ -16,23 +16,33 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_name="check_before_confirm",
             passed=check_pos != -1 and write_pos != -1 and check_pos < write_pos,
             expected="boot_is_img_confirmed() before boot_write_img_confirmed()",
-            actual="correct order" if check_pos < write_pos else "wrong order",
+            actual="correct order" if (check_pos != -1 and write_pos != -1 and check_pos < write_pos) else "wrong order",
             check_type="constraint",
         )
     )
 
-    # Check 2: Self-test before confirmation
-    # (LLM failure: confirming image without validation)
-    has_test = any(
-        p in generated_code.lower()
-        for p in ["self_test", "selftest", "test(", "validate", "check"]
+    # Check 2: Self-test BEFORE boot_write_img_confirmed (ordering enforced)
+    # (LLM failure: confirming image without any self-test, or self-test after confirm)
+    # Look for explicit self_test function definition/call, or validate/check call before confirm
+    self_test_patterns = ["self_test()", "selftest()", "run_self_test", "app_validate", "validate_firmware"]
+    self_test_pos = -1
+    for p in self_test_patterns:
+        pos = generated_code.find(p)
+        if pos != -1:
+            self_test_pos = pos
+            break
+    confirm_pos = generated_code.find("boot_write_img_confirmed")
+    test_before_confirm = (
+        self_test_pos != -1
+        and confirm_pos != -1
+        and self_test_pos < confirm_pos
     )
     details.append(
         CheckDetail(
             check_name="self_test_before_confirm",
-            passed=has_test,
-            expected="Self-test/validation before image confirmation",
-            actual="present" if has_test else "missing (dangerous!)",
+            passed=test_before_confirm,
+            expected="self_test() (or equivalent) called BEFORE boot_write_img_confirmed()",
+            actual="correct order" if test_before_confirm else "missing self-test or wrong order (confirming before testing!)",
             check_type="constraint",
         )
     )
@@ -53,14 +63,32 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: Error handling for boot_write_img_confirmed
-    has_err = "< 0" in generated_code or "!= 0" in generated_code
+    # Check 4: Error handling for boot_write_img_confirmed return value
+    # (LLM failure: ignoring return value — silent confirm failure)
+    write_ret_handled = (
+        "boot_write_img_confirmed" in generated_code
+        and ("< 0" in generated_code or "!= 0" in generated_code)
+    )
     details.append(
         CheckDetail(
             check_name="confirm_error_handling",
-            passed=has_err,
-            expected="Error check on boot_write_img_confirmed()",
-            actual="present" if has_err else "missing",
+            passed=write_ret_handled,
+            expected="Return value of boot_write_img_confirmed() checked (< 0 or != 0)",
+            actual="present" if write_ret_handled else "missing (confirm failure silently ignored)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 5: boot_write_img_confirmed NOT called unconditionally at top-level
+    # (LLM failure: always confirming every boot without checking if image is unconfirmed)
+    # The confirm must be inside an if block that guards it
+    has_guard = "if" in generated_code and "boot_is_img_confirmed" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="confirm_guarded_by_check",
+            passed=has_guard,
+            expected="boot_write_img_confirmed() only called inside conditional block guarded by boot_is_img_confirmed()",
+            actual="guarded" if has_guard else "called unconditionally on every boot (dangerous!)",
             check_type="constraint",
         )
     )

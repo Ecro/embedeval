@@ -2,6 +2,10 @@
 
 import re
 
+from embedeval.check_utils import (
+    extract_error_blocks,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
@@ -9,9 +13,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate TLS mutual auth credential behavioral properties."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: All three tls_credential_add calls use the same sec_tag
-    # Extract all sec_tag arguments from tls_credential_add calls
-    # Pattern: tls_credential_add(TAG, TYPE, buf, len)
     call_pattern = re.findall(
         r'tls_credential_add\s*\(\s*([A-Za-z0-9_]+)',
         generated_code
@@ -41,9 +45,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: CA cert is CA type, not client cert type (LLM failure: uses wrong type for CA)
-    # Ensure TLS_CREDENTIAL_CA_CERTIFICATE is paired with ca_cert variable, not client_cert
-    # We check that CA_CERTIFICATE appears and is distinct from SERVER_CERTIFICATE
+    # Check 3: CA cert is CA type, not client cert type
     has_separate_types = (
         "TLS_CREDENTIAL_CA_CERTIFICATE" in generated_code
         and "TLS_CREDENTIAL_SERVER_CERTIFICATE" in generated_code
@@ -83,6 +85,46 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_ok_print,
             expected="Success message printed when all credentials loaded",
             actual="present" if has_ok_print else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: Error paths return early on credential failure
+    # LLM failure: continuing after tls_credential_add fails, then using broken TLS config
+    error_blocks = extract_error_blocks(generated_code)
+    error_returns = any("return" in block for block in error_blocks)
+    details.append(
+        CheckDetail(
+            check_name="error_path_returns_early",
+            passed=error_returns,
+            expected="Error path returns early when tls_credential_add fails",
+            actual="present" if error_returns else "missing (may continue with failed credentials)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No rand()/srand() in TLS credential setup
+    has_rand = bool(re.search(r'\brand\s*\(|\bsrand\s*\(', stripped))
+    details.append(
+        CheckDetail(
+            check_name="no_insecure_rand",
+            passed=not has_rand,
+            expected="No rand()/srand() in TLS setup code",
+            actual="clean" if not has_rand else "rand()/srand() found",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No OpenSSL SSL_CTX_ APIs (wrong platform, Zephyr uses tls_credentials)
+    # LLM failure: mixing OpenSSL APIs into Zephyr TLS code
+    openssl_apis = ["SSL_CTX_", "SSL_new(", "SSL_connect(", "EVP_", "X509_"]
+    has_openssl = any(api in generated_code for api in openssl_apis)
+    details.append(
+        CheckDetail(
+            check_name="no_openssl_apis",
+            passed=not has_openssl,
+            expected="No OpenSSL SSL_CTX_* APIs (use Zephyr tls_credentials)",
+            actual="clean" if not has_openssl else "OpenSSL APIs found (wrong platform)",
             check_type="constraint",
         )
     )

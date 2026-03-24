@@ -4,12 +4,30 @@ import re
 
 from embedeval.models import CheckDetail
 
+_FAKE_DT_PROPERTIES = [
+    "pin-config",
+    "mux-config",
+    "clock-speed",
+]
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate Device Tree DMA assignment behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
 
-    # Check 1: dma-names contains "tx" entry
+    # Check 1: No fake DT properties
+    found_fake = [prop for prop in _FAKE_DT_PROPERTIES if prop in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_fake_dt_properties",
+            passed=not found_fake,
+            expected="No hallucinated DT properties (pin-config, mux-config, clock-speed)",
+            actual="clean" if not found_fake else f"fake properties found: {found_fake}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: dma-names contains "tx" entry
     has_tx_name = '"tx"' in generated_code
     details.append(
         CheckDetail(
@@ -21,7 +39,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: dma-names contains "rx" entry
+    # Check 3: dma-names contains "rx" entry
     has_rx_name = '"rx"' in generated_code
     details.append(
         CheckDetail(
@@ -33,10 +51,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: dmas count matches dma-names count
-    # Each <&dma...> phandle tuple in dmas is one entry; dma-names entries are quoted strings on that line
+    # Check 4: dmas count matches dma-names count
     dmas_entries = re.findall(r"<&\w+\s+\d+\s+\d+>", generated_code)
-    # Count only the dma-names string values (not all quoted strings in the file)
     dma_names_line = re.search(r"dma-names\s*=\s*([^;]+);", generated_code)
     if dma_names_line:
         dma_names_entries = re.findall(r'"[^"]+"', dma_names_line.group(1))
@@ -53,7 +69,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: DMA format uses <&controller channel slot> (3-cell format)
+    # Check 5: DMA format uses <&controller channel slot> (3-cell format)
     has_three_cell_format = bool(re.search(r"<&\w+\s+\d+\s+\d+>", generated_code))
     details.append(
         CheckDetail(
@@ -65,7 +81,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: status = "okay" on uart0
+    # Check 6: status = "okay" on uart0
     has_status_okay = 'status = "okay"' in generated_code
     details.append(
         CheckDetail(
@@ -74,6 +90,39 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected='status = "okay"',
             actual="present" if has_status_okay else "missing",
             check_type="exact_match",
+        )
+    )
+
+    # Check 7: uart0 node referenced (not some other peripheral)
+    has_uart0 = "&uart0" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="uart0_node_referenced",
+            passed=has_uart0,
+            expected="&uart0 node referenced",
+            actual="present" if has_uart0 else "missing — DMA assigned to wrong node",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: DMA channel numbers are distinct (tx channel != rx channel)
+    # LLM failure: assigns same channel to both tx and rx
+    all_dma_entries = re.findall(r"<&(\w+)\s+(\d+)\s+(\d+)>", generated_code)
+    channels_distinct = True
+    if len(all_dma_entries) >= 2:
+        channels = [int(e[1]) for e in all_dma_entries]
+        channels_distinct = len(set(channels)) == len(channels)
+    details.append(
+        CheckDetail(
+            check_name="dma_channels_distinct",
+            passed=channels_distinct,
+            expected="TX and RX DMA channels must be different channel numbers",
+            actual=(
+                "distinct"
+                if channels_distinct
+                else f"duplicate channels: {[int(e[1]) for e in all_dma_entries]}"
+            ),
+            check_type="constraint",
         )
     )
 

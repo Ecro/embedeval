@@ -1,11 +1,38 @@
 """Behavioral checks for Secure Key Storage with Anti-Tamper."""
 
+import re
+
+from embedeval.check_utils import (
+    strip_comments,
+)
 from embedeval.models import CheckDetail
+
+
+def _extract_psa_error_blocks(code: str) -> list[str]:
+    """Extract PSA-style error blocks: if (status != PSA_SUCCESS) { ... }"""
+    blocks = []
+    for match in re.finditer(
+        r"if\s*\([^)]*(?:PSA_SUCCESS|!=\s*0|<\s*0)[^)]*\)\s*\{",
+        code,
+    ):
+        start = match.end()
+        depth = 1
+        for i in range(start, len(code)):
+            if code[i] == "{":
+                depth += 1
+            elif code[i] == "}":
+                depth -= 1
+            if depth == 0:
+                blocks.append(code[start:i])
+                break
+    return blocks
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate non-extractable key behavioral properties."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: psa_crypto_init before psa_import_key (correct ordering)
     init_pos = generated_code.find("psa_crypto_init")
@@ -77,6 +104,39 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_print,
             expected="Result printed (KEY SECURE / KEY EXPOSED)",
             actual="present" if has_print else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Key destruction present (key slot cleaned up after use).
+    # LLM failure: importing key but never calling psa_destroy_key, leaking key slot.
+    # The reference calls psa_destroy_key unconditionally at end (after export check).
+    # We verify it's present AND comes after the import (i.e., not a forward declaration).
+    destroy_pos = generated_code.rfind("psa_destroy_key")
+    error_path_destroy = (
+        has_destroy
+        and import_pos != -1
+        and destroy_pos > import_pos
+    )
+    details.append(
+        CheckDetail(
+            check_name="error_path_key_destroyed",
+            passed=error_path_destroy,
+            expected="psa_destroy_key() present to clean up key slot after use",
+            actual="key cleanup present" if error_path_destroy else "key may leak on error",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No rand()/srand() or insecure patterns in security code
+    has_rand = bool(re.search(r'\brand\s*\(|\bsrand\s*\(', stripped))
+    has_ecb = bool(re.search(r'\bPSA_ALG_ECB\b(?!_NO_PADDING)', stripped))
+    details.append(
+        CheckDetail(
+            check_name="no_insecure_patterns",
+            passed=not has_rand and not has_ecb,
+            expected="No rand()/srand() or ECB mode in security code",
+            actual="clean" if not (has_rand or has_ecb) else f"insecure: rand={has_rand}, ECB={has_ecb}",
             check_type="constraint",
         )
     )

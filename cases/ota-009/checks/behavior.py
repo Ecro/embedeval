@@ -91,4 +91,50 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: Version fields all accessed from header struct (not partially read)
+    # (LLM failure: only printing major version, ignoring minor/revision)
+    version_complete = (
+        "major" in generated_code
+        and "minor" in generated_code
+        and ("revision" in generated_code or "sem_ver" in generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="full_version_reported",
+            passed=version_complete,
+            expected="All version fields (major, minor, revision) reported from header",
+            actual="complete" if version_complete else "incomplete version info (missing fields)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: print_slot_info (or equivalent) called for both slots via loop or explicit calls
+    # (LLM failure: only calling for slot 0 in a function that should check both)
+    slot1_info_reported = (
+        "slot1_partition" in generated_code
+        and "boot_read_bank_header" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="slot1_info_reported",
+            passed=slot1_info_reported,
+            expected="boot_read_bank_header() called for slot1_partition (secondary slot info reported)",
+            actual="present" if slot1_info_reported else "missing (secondary slot never queried)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: mcuboot_swap_type() called (swap status is part of slot status query)
+    # (LLM failure: reporting slot versions but not the pending swap type)
+    has_swap_type_call = "mcuboot_swap_type" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="swap_type_queried",
+            passed=has_swap_type_call,
+            expected="mcuboot_swap_type() called to include swap status in slot report",
+            actual="present" if has_swap_type_call else "missing (swap state not included in status)",
+            check_type="constraint",
+        )
+    )
+
     return details

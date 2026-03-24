@@ -1,5 +1,7 @@
 """Behavioral checks for Yocto multi-license recipe."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -33,15 +35,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: No wrong SPDX like "GPLv2" or "GPL-2.0" (must be "GPL-2.0-only")
+    # Check 3: No wrong SPDX like "GPLv2" or bare "GPL-2.0" (must be "GPL-2.0-only")
     # (LLM failure: using non-SPDX names)
     has_gplv2 = "GPLv2" in generated_code
-    has_gpl20 = '"GPL-2.0"' in generated_code
+    has_gpl20 = bool(re.search(r'"GPL-2\.0"[^-]', generated_code)) or generated_code.endswith('"GPL-2.0"')
     details.append(
         CheckDetail(
             check_name="correct_gpl_spdx_format",
             passed=not has_gplv2 and not has_gpl20,
-            expected="Use GPL-2.0-only (SPDX), not GPLv2 or GPL-2.0",
+            expected="Use GPL-2.0-only (SPDX), not GPLv2 or bare GPL-2.0",
             actual="correct" if not has_gplv2 and not has_gpl20 else "WRONG SPDX: use GPL-2.0-only",
             check_type="constraint",
         )
@@ -79,6 +81,61 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_cc,
             expected="${CC} used for cross-compilation",
             actual="present" if has_cc else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Override syntax uses ':' not '_' (Yocto 4.0+ requirement)
+    deprecated_override = re.search(
+        r'\b(RDEPENDS|FILES|PACKAGES|SYSTEMD_SERVICE)_\$\{PN\}',
+        generated_code,
+    )
+    details.append(
+        CheckDetail(
+            check_name="colon_override_syntax",
+            passed=deprecated_override is None,
+            expected="Override syntax uses ':' (e.g. RDEPENDS:${PN})",
+            actual="correct" if deprecated_override is None else f"DEPRECATED '_' override: {deprecated_override.group(0)}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No hardcoded /usr/lib or /usr/bin paths
+    has_hardcoded_lib = bool(re.search(r'(?<!\$\{D\})/usr/lib\b', generated_code))
+    has_hardcoded_bin = "/usr/bin" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="no_hardcoded_paths",
+            passed=not has_hardcoded_lib and not has_hardcoded_bin,
+            expected="No hardcoded /usr/lib or /usr/bin (use ${libdir}, ${bindir})",
+            actual="correct" if not has_hardcoded_lib and not has_hardcoded_bin else "hardcoded paths found",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: install -d before install -m in do_install
+    install_d_pos = generated_code.find("install -d")
+    install_m_pos = generated_code.find("install -m")
+    install_order_ok = install_d_pos != -1 and (install_m_pos == -1 or install_d_pos < install_m_pos)
+    details.append(
+        CheckDetail(
+            check_name="install_d_before_install_m",
+            passed=install_order_ok,
+            expected="install -d called before install -m (directory must exist first)",
+            actual="correct" if install_order_ok else "WRONG ORDER or missing install -d",
+            check_type="constraint",
+        )
+    )
+
+    # Check 10: 'inherit' used for class, not 'require'
+    # (LLM failure: "require cmake" instead of "inherit cmake")
+    has_require_class = bool(re.search(r'^require\s+(cmake|module|systemd|ptest|core-image)\b', generated_code, re.MULTILINE))
+    details.append(
+        CheckDetail(
+            check_name="inherit_not_require_for_class",
+            passed=not has_require_class,
+            expected="'inherit' used for BitBake classes (not 'require')",
+            actual="correct" if not has_require_class else "WRONG: 'require' used for a class (use 'inherit')",
             check_type="constraint",
         )
     )

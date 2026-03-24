@@ -1,11 +1,38 @@
 """Behavioral checks for PSA ECDSA P-256 Key Pair Generation."""
 
+import re
+
+from embedeval.check_utils import (
+    strip_comments,
+)
 from embedeval.models import CheckDetail
+
+
+def _extract_psa_error_blocks(code: str) -> list[str]:
+    """Extract PSA-style error blocks: if (status != PSA_SUCCESS) { ... }"""
+    blocks = []
+    for match in re.finditer(
+        r"if\s*\([^)]*(?:PSA_SUCCESS|!=\s*0|<\s*0)[^)]*\)\s*\{",
+        code,
+    ):
+        start = match.end()
+        depth = 1
+        for i in range(start, len(code)):
+            if code[i] == "{":
+                depth += 1
+            elif code[i] == "}":
+                depth -= 1
+            if depth == 0:
+                blocks.append(code[start:i])
+                break
+    return blocks
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate ECDSA P-256 key generation behavioral flow."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: init before generate
     init_pos = generated_code.find("psa_crypto_init")
@@ -82,6 +109,33 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_print,
             expected="Result or key info printed",
             actual="present" if has_print else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Error paths call psa_destroy_key (key slot cleanup)
+    # LLM failure: generating key, failing on export, leaking the key slot
+    error_blocks = _extract_psa_error_blocks(generated_code)
+    error_path_destroy = any("psa_destroy_key" in block for block in error_blocks)
+    details.append(
+        CheckDetail(
+            check_name="error_path_key_destroyed",
+            passed=error_path_destroy,
+            expected="psa_destroy_key() in error paths after successful key generation",
+            actual="key cleanup in error path" if error_path_destroy else "key may leak on export failure",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No rand()/srand() or ECB mode in ECDSA code
+    has_rand = bool(re.search(r'\brand\s*\(|\bsrand\s*\(', stripped))
+    has_ecb = bool(re.search(r'\bPSA_ALG_ECB\b(?!_NO_PADDING)', stripped))
+    details.append(
+        CheckDetail(
+            check_name="no_insecure_patterns",
+            passed=not has_rand and not has_ecb,
+            expected="No rand()/srand() or ECB mode in ECDSA code",
+            actual="clean" if not (has_rand or has_ecb) else f"insecure: rand={has_rand}, ECB={has_ecb}",
             check_type="constraint",
         )
     )

@@ -2,12 +2,30 @@
 
 from embedeval.models import CheckDetail
 
+_FAKE_DT_PROPERTIES = [
+    "pin-config",
+    "mux-config",
+    "clock-speed",
+]
+
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate Device Tree chosen/aliases behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
 
-    # Check 1: zephyr,console = &uart0 (references real node)
+    # Check 1: No fake DT properties
+    found_fake = [prop for prop in _FAKE_DT_PROPERTIES if prop in generated_code]
+    details.append(
+        CheckDetail(
+            check_name="no_fake_dt_properties",
+            passed=not found_fake,
+            expected="No hallucinated DT properties (pin-config, mux-config, clock-speed)",
+            actual="clean" if not found_fake else f"fake properties found: {found_fake}",
+            check_type="hallucination",
+        )
+    )
+
+    # Check 2: zephyr,console = &uart0 (references real node)
     has_console_uart0 = "zephyr,console = &uart0" in generated_code
     details.append(
         CheckDetail(
@@ -19,7 +37,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: zephyr,shell-uart property present
+    # Check 3: zephyr,shell-uart property present
     has_shell_uart = "zephyr,shell-uart" in generated_code
     details.append(
         CheckDetail(
@@ -31,7 +49,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: Aliases use &label references (phandle syntax)
+    # Check 4: Aliases use &label references (phandle syntax)
     has_alias_phandle = (
         "led0 = &" in generated_code or "led0 = &" in generated_code.replace(" ", "")
     )
@@ -45,7 +63,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: sw0 alias present
+    # Check 5: sw0 alias present
     has_sw0 = "sw0" in generated_code
     details.append(
         CheckDetail(
@@ -57,7 +75,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: No string path aliases (hallucination: led0 = "/leds/led_0"; is wrong)
+    # Check 6: No string path aliases (hallucination: led0 = "/leds/led_0"; is wrong)
     has_string_path_alias = (
         'led0 = "/' in generated_code
         or 'sw0 = "/' in generated_code
@@ -73,7 +91,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: chosen properties reference uart0 (not a made-up node)
+    # Check 7: chosen properties reference uart0 (not a made-up node)
     chosen_refs_real_node = "&uart0" in generated_code
     details.append(
         CheckDetail(
@@ -81,6 +99,37 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=chosen_refs_real_node,
             expected="chosen references &uart0 (real Zephyr node label)",
             actual="present" if chosen_refs_real_node else "uart0 not referenced - may use non-existent node",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: gpio-leds compatible for LED nodes (LLM failure: uses wrong compatible)
+    # If the DT defines LED nodes, they should use gpio-leds compatible
+    if "led" in generated_code.lower() and "gpios" in generated_code:
+        has_gpio_leds = 'compatible = "gpio-leds"' in generated_code
+    else:
+        has_gpio_leds = True  # No LED gpios present, pass
+    details.append(
+        CheckDetail(
+            check_name="gpio_leds_compatible",
+            passed=has_gpio_leds,
+            expected='LED nodes with gpios property use compatible = "gpio-leds"',
+            actual="present" if has_gpio_leds else "missing — gpio-leds compatible required for LED nodes",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: gpio-keys compatible for button nodes
+    if "button" in generated_code.lower() and "gpios" in generated_code:
+        has_gpio_keys = 'compatible = "gpio-keys"' in generated_code
+    else:
+        has_gpio_keys = True
+    details.append(
+        CheckDetail(
+            check_name="gpio_keys_compatible",
+            passed=has_gpio_keys,
+            expected='Button nodes with gpios property use compatible = "gpio-keys"',
+            actual="present" if has_gpio_keys else "missing — gpio-keys compatible required for button nodes",
             check_type="constraint",
         )
     )

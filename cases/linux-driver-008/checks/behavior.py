@@ -1,5 +1,10 @@
 """Behavioral checks for Linux proc file driver."""
 
+import re
+
+from embedeval.check_utils import (
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
@@ -7,8 +12,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate proc file driver behavioral properties."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: proc_remove or remove_proc_entry called in exit
-    # (LLM failure: forgetting to remove proc entry on module unload = kernel panic)
     has_remove = (
         "proc_remove" in generated_code or "remove_proc_entry" in generated_code
     )
@@ -23,7 +29,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: seq_printf used (NOT sprintf/snprintf to user buffer)
-    # (LLM failure: using sprintf(buf, ...) with raw user buffer pointer)
     has_seq_printf = "seq_printf" in generated_code
     details.append(
         CheckDetail(
@@ -76,8 +81,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: No direct write() to user buffer in show function
-    # (negative: should not use copy_to_user or memcpy in a seq show function)
+    # Check 6: show function uses seq_file parameter
     has_show_fn = "seq_file" in generated_code
     details.append(
         CheckDetail(
@@ -85,6 +89,39 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_show_fn,
             expected="show function takes struct seq_file* parameter",
             actual="present" if has_show_fn else "missing",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: proc_create failure handled by returning error from init
+    # LLM failure: proc_create returns NULL but init proceeds and returns 0 anyway
+    # Pattern: if (!entry) { return -ENOMEM; } — no braces or with braces
+    proc_failure_handled = bool(
+        re.search(r'if\s*\(\s*!\s*\w+\s*\)', generated_code)
+        and ("return -ENOMEM" in generated_code or "return -" in generated_code)
+    ) or bool(
+        re.search(r'if\s*\(\s*!\s*\w+\s*\)\s*(?:\{[^}]*\}|[^;]+;)', generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="proc_create_failure_returns_error",
+            passed=proc_failure_handled,
+            expected="proc_create() failure causes init to return error",
+            actual="present" if proc_failure_handled else "proc_create failure may be silently ignored",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No Zephyr API contamination in Linux proc driver
+    zephyr_apis = ["k_work_submit", "k_thread_create", "K_THREAD_DEFINE",
+                   "k_mutex_lock", "k_sleep("]
+    has_zephyr = any(api in generated_code for api in zephyr_apis)
+    details.append(
+        CheckDetail(
+            check_name="no_zephyr_apis",
+            passed=not has_zephyr,
+            expected="No Zephyr RTOS APIs in Linux proc driver",
+            actual="clean" if not has_zephyr else "WRONG PLATFORM: Zephyr APIs found",
             check_type="constraint",
         )
     )

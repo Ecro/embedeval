@@ -75,4 +75,36 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: Error handling on dfu_target_write return value
+    # (LLM failure: ignoring write errors — partial flash writes go undetected)
+    write_err_handled = (
+        "dfu_target_write" in generated_code
+        and ("< 0" in generated_code or "!= 0" in generated_code)
+    )
+    details.append(
+        CheckDetail(
+            check_name="write_error_handling",
+            passed=write_err_handled,
+            expected="Return value of dfu_target_write() checked (< 0 or != 0)",
+            actual="present" if write_err_handled else "missing (write errors silently ignored)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No partial write to flash if error occurs (error path leads to abort, not continue)
+    # (LLM failure: continuing to write chunks after a write error)
+    abort_returns = (
+        "dfu_target_done(false)" in generated_code
+        and "return" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="abort_and_return_on_error",
+            passed=abort_returns,
+            expected="On error: dfu_target_done(false) called AND function returns (no partial write continues)",
+            actual="correct" if abort_returns else "missing: may continue writing after error",
+            check_type="constraint",
+        )
+    )
+
     return details

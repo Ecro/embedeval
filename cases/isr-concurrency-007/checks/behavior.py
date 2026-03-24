@@ -2,12 +2,20 @@
 
 import re
 
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    check_no_isr_forbidden,
+    find_isr_bodies,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate ISR bodies and priority semantics."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: Two distinct ISR functions defined
     isr_fns = re.findall(
@@ -26,13 +34,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: No k_sleep inside any ISR body
-    # Extract ISR-like function bodies and check for blocking calls
-    isr_body_pattern = re.compile(
-        r"void\s+\w*(?:isr|irq|interrupt|handler)\w*\s*\([^)]*\)\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}",
-        re.IGNORECASE | re.DOTALL,
-    )
-    isr_bodies = isr_body_pattern.findall(generated_code)
+    # Check 2: No k_sleep inside any ISR body — using check_utils find_isr_bodies
+    isr_bodies = find_isr_bodies(stripped)
     isr_has_sleep = any(
         "k_sleep" in body or "k_msleep" in body or "k_usleep" in body
         for body in isr_bodies
@@ -82,6 +85,34 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_printk_in_isrs,
             expected="Both ISR bodies do observable work (printk)",
             actual=f"printk count={generated_code.count('printk')}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: No forbidden blocking ISR APIs (using check_utils for thorough check)
+    # The printk check is intentionally skipped here since the reference uses
+    # printk in ISR as "observable work" — but k_malloc/k_sleep should not appear
+    isr_violations = check_no_isr_forbidden(generated_code)
+    # Filter out printk violations since this case legitimately uses printk in ISR
+    non_printk_violations = [v for v in isr_violations if "printk" not in v and "printf" not in v]
+    details.append(
+        CheckDetail(
+            check_name="no_blocking_forbidden_in_isr",
+            passed=len(non_printk_violations) == 0,
+            expected="No k_malloc/k_sleep/k_mutex_lock inside ISR bodies",
+            actual="clean" if not non_printk_violations else f"violations: {non_printk_violations}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No cross-platform API contamination
+    cross_platform = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
+    details.append(
+        CheckDetail(
+            check_name="no_cross_platform_apis",
+            passed=len(cross_platform) == 0,
+            expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+            actual="clean" if not cross_platform else f"found: {[a for a, _ in cross_platform]}",
             check_type="constraint",
         )
     )

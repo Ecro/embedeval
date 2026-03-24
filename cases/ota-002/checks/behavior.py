@@ -84,4 +84,34 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: default case handled in switch (or else clause for unrecognized type)
+    # (LLM failure: no default case — unrecognized swap types silently ignored)
+    has_default = "default" in generated_code or "UNKNOWN" in generated_code or "unknown" in generated_code.lower()
+    details.append(
+        CheckDetail(
+            check_name="default_case_handled",
+            passed=has_default,
+            expected="default/unknown case handled in switch statement",
+            actual="present" if has_default else "missing (unrecognized swap types not handled)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: mcuboot_swap_type() return value stored before use
+    # (LLM failure: calling mcuboot_swap_type() multiple times in switch arms)
+    stored_before_use = (
+        "swap_type" in generated_code
+        and "mcuboot_swap_type()" in generated_code
+        and generated_code.count("mcuboot_swap_type()") == 1
+    )
+    details.append(
+        CheckDetail(
+            check_name="swap_type_result_stored",
+            passed=stored_before_use,
+            expected="mcuboot_swap_type() called exactly once and result stored",
+            actual="correct" if stored_before_use else "called multiple times or result not stored",
+            check_type="constraint",
+        )
+    )
+
     return details

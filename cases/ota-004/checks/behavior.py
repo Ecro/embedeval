@@ -82,4 +82,41 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: Version comparison function checks all three fields (major, minor, revision)
+    # (LLM failure: only comparing major version — misses minor/patch differences)
+    checks_all_fields = (
+        "major" in generated_code
+        and "minor" in generated_code
+        and "revision" in generated_code
+    )
+    details.append(
+        CheckDetail(
+            check_name="all_version_fields_compared",
+            passed=checks_all_fields,
+            expected="Version comparison covers major, minor, AND revision fields",
+            actual="all fields checked" if checks_all_fields else "missing: not all version fields compared (incomplete version check)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: boot_read_bank_header return value checked before accessing struct fields
+    # (LLM failure: accessing header struct fields even when read fails)
+    header_err_pos = -1
+    if "boot_read_bank_header" in generated_code:
+        header_call_pos = generated_code.find("boot_read_bank_header")
+        # Look for error check near the header call (within 300 chars)
+        nearby = generated_code[header_call_pos:header_call_pos + 300]
+        if "< 0" in nearby or "!= 0" in nearby or "ret" in nearby:
+            header_err_pos = header_call_pos
+    header_checked_before_use = header_err_pos != -1
+    details.append(
+        CheckDetail(
+            check_name="header_return_checked_before_struct_access",
+            passed=header_checked_before_use,
+            expected="boot_read_bank_header() return value checked before accessing header struct",
+            actual="present" if header_checked_before_use else "missing (accessing struct on failed read!)",
+            check_type="constraint",
+        )
+    )
+
     return details

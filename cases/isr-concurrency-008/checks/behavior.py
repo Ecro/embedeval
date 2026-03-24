@@ -2,12 +2,19 @@
 
 import re
 
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    check_no_isr_forbidden,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate SPSC queue behavioral correctness."""
     details: list[CheckDetail] = []
+
+    stripped = strip_comments(generated_code)
 
     # Check 1: spsc_queue struct (or equivalent) defined
     has_struct = bool(
@@ -98,6 +105,32 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_barrier,
             expected="Memory barrier before advancing index (compiler_barrier or __dmb)",
             actual="barrier found" if has_barrier else "no memory barrier",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: No forbidden APIs inside ISR bodies (if ISR bodies present)
+    # LLM failure: calling k_malloc or printk inside an ISR that pushes to the queue
+    isr_violations = check_no_isr_forbidden(generated_code)
+    details.append(
+        CheckDetail(
+            check_name="no_forbidden_apis_in_isr",
+            passed=len(isr_violations) == 0,
+            expected="No printk/k_malloc/k_sleep inside ISR bodies (if any)",
+            actual="clean" if not isr_violations else f"violations: {isr_violations}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: No cross-platform API contamination
+    # LLM failure: using xQueueSend (FreeRTOS) or pthread_mutex (POSIX)
+    cross_platform = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
+    details.append(
+        CheckDetail(
+            check_name="no_cross_platform_apis",
+            passed=len(cross_platform) == 0,
+            expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+            actual="clean" if not cross_platform else f"found: {[a for a, _ in cross_platform]}",
             check_type="constraint",
         )
     )
