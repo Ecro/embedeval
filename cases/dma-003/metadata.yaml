@@ -1,6 +1,6 @@
 id: dma-003
 category: dma
-difficulty: medium
+difficulty: hard
 title: "DMA Circular Buffer"
 description: "Configure DMA in circular mode for continuous data collection with dma_reload after each transfer"
 tags: [zephyr, dma, circular, continuous, reload, callback]
