@@ -201,6 +201,42 @@ def report(
     typer.echo(f"Leaderboard written to {output}")
 
 
+@app.command(name="categories")
+def list_categories(
+    cases_dir: Annotated[
+        Path,
+        typer.Option("--cases", help="Path to cases directory"),
+    ] = Path("cases"),
+) -> None:
+    """List available categories with case counts."""
+    from collections import Counter
+
+    from embedeval.runner import discover_cases
+
+    cases = discover_cases(cases_dir)
+    if not cases:
+        typer.echo("No cases found.")
+        raise typer.Exit(code=0)
+
+    cat_counts: Counter[str] = Counter()
+    diff_counts: dict[str, Counter[str]] = {}
+    for _, meta in cases:
+        cat = meta.category.value
+        cat_counts[cat] += 1
+        diff_counts.setdefault(cat, Counter())[meta.difficulty.value] += 1
+
+    typer.echo(f"20 categories, {len(cases)} total cases:\n")
+    typer.echo(f"  {'Category':<20s} {'Cases':>5s}  {'Easy':>4s} {'Med':>4s} {'Hard':>4s}")
+    typer.echo(f"  {'─' * 20} {'─' * 5}  {'─' * 4} {'─' * 4} {'─' * 4}")
+    for cat in sorted(cat_counts):
+        dc = diff_counts[cat]
+        typer.echo(
+            f"  {cat:<20s} {cat_counts[cat]:>5d}"
+            f"  {dc.get('easy', 0):>4d} {dc.get('medium', 0):>4d}"
+            f"  {dc.get('hard', 0):>4d}"
+        )
+
+
 @app.command(name="list")
 def list_cases(
     cases_dir: Annotated[

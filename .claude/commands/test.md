@@ -10,6 +10,8 @@ Run LLM benchmark, save detailed results, generate failure analysis report.
 
 **Examples:**
 ```
+/test help                            # Show this help + category list
+/test list                            # Show all categories with case counts
 /test sonnet                          # All 200 cases with Sonnet
 /test sonnet kconfig                  # Only kconfig category (10 cases)
 /test sonnet isr-concurrency          # Only isr-concurrency
@@ -40,6 +42,16 @@ args = "$ARGUMENTS"
 3. **Show results**: Display leaderboard + failure report
 4. **Save to memory**: Record key findings for TC improvement reference
 
+### Step 0: Handle help/list
+
+If first arg is `help` or `list`:
+
+**`/test help`**: Show usage examples + run `uv run embedeval categories --cases cases/`
+
+**`/test list`**: Run `uv run embedeval categories --cases cases/` and display the result.
+
+Then STOP (don't run benchmark).
+
 ### Step 1: Parse and Run
 
 ```bash
@@ -49,7 +61,9 @@ args = "$ARGUMENTS"
 # Build the command
 CMD="uv run embedeval run --model claude-code://{model} --cases cases/"
 if category:
-    CMD += " -c {category}"  # for each category if comma-separated, run separately
+    # Support comma-separated: "kconfig,ble" → run with -c kconfig, then -c ble
+    for each cat in categories:
+        CMD += " -c {cat}"
 if attempts:
     CMD += " --attempts {attempts}"
 
