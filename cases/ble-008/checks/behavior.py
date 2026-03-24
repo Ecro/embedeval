@@ -156,4 +156,41 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 9: conn_cleanup_on_failed_connect (error path cleanup in connected callback)
+    # LLMs often handle the happy path but forget bt_conn_unref + NULL assignment when err != 0.
+    connected_cb_pos = generated_code.find("void connected")
+    if connected_cb_pos == -1:
+        # Resolve function name from struct assignment: .connected = fn_name
+        cb_name_match = re.search(r"\.connected\s*=\s*(\w+)", generated_code)
+        if cb_name_match:
+            fn_name = cb_name_match.group(1)
+            connected_cb_pos = generated_code.find(f"void {fn_name}")
+    conn_cleanup_ok = False
+    if connected_cb_pos != -1:
+        # Locate the error check block within the connected callback body
+        cb_slice = generated_code[connected_cb_pos:connected_cb_pos + 600]
+        err_block_match = re.search(r"if\s*\(\s*err", cb_slice)
+        if err_block_match:
+            err_block_start = err_block_match.start()
+            err_block_text = cb_slice[err_block_start:err_block_start + 400]
+            conn_cleanup_ok = (
+                "bt_conn_unref" in err_block_text
+                and "= NULL" in err_block_text
+            )
+    details.append(
+        CheckDetail(
+            check_name="conn_cleanup_on_failed_connect",
+            passed=conn_cleanup_ok,
+            expected=(
+                "In connected callback error block: bt_conn_unref() called "
+                "and connection pointer set to NULL"
+            ),
+            actual=(
+                "present" if conn_cleanup_ok
+                else "missing — connection ref leaked on failed connect"
+            ),
+            check_type="constraint",
+        )
+    )
+
     return details

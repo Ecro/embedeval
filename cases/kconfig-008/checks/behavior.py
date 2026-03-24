@@ -157,4 +157,27 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 9: No duplicate CONFIG_* keys with conflicting values
+    # LLM failure: emits the same config option twice with different values (e.g. CONFIG_MPU=y then CONFIG_MPU=n)
+    seen_keys: dict[str, list[str]] = {}
+    for line in generated_code.strip().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, val = line.split("=", 1)
+            key = key.strip()
+            val = val.strip()
+            if key.startswith("CONFIG_"):
+                seen_keys.setdefault(key, []).append(val)
+    duplicates = {k: vals for k, vals in seen_keys.items() if len(set(vals)) > 1}
+    no_duplicates = len(duplicates) == 0
+    details.append(
+        CheckDetail(
+            check_name="no_conflicting_duplicate_config_keys",
+            passed=no_duplicates,
+            expected="Each CONFIG_* key appears at most once (no conflicting duplicate definitions)",
+            actual="clean" if no_duplicates else f"conflicting duplicates: {duplicates}",
+            check_type="constraint",
+        )
+    )
+
     return details

@@ -140,4 +140,21 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 11: LICENSE count matches LIC_FILES_CHKSUM file:// count
+    # LLM failure: declares dual-license but provides only one checksum entry, or vice versa
+    license_line = re.search(r'LICENSE\s*=\s*"([^"]+)"', generated_code)
+    license_count = len(license_line.group(1).split(" & ")) if license_line else 0
+    lic_chksum_line = re.search(r'LIC_FILES_CHKSUM\s*=\s*"([^"]*)"', generated_code, re.DOTALL)
+    file_count = lic_chksum_line.group(1).count("file://") if lic_chksum_line else 0
+    counts_match = license_count > 0 and license_count == file_count
+    details.append(
+        CheckDetail(
+            check_name="license_count_matches_checksum_count",
+            passed=counts_match,
+            expected="Number of licenses in LICENSE matches number of file:// entries in LIC_FILES_CHKSUM",
+            actual=f"LICENSE has {license_count} license(s), LIC_FILES_CHKSUM has {file_count} file:// entry/entries",
+            check_type="constraint",
+        )
+    )
+
     return details

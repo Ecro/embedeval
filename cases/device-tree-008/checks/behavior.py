@@ -126,4 +126,39 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 9: DMA slot values are in valid range (0-15 for STM32)
+    # LLM failure: generates invalid slot numbers like 99 or 255
+    slot_values = [int(s) for s in re.findall(r"<&\w+\s+\d+\s+(\d+)>", generated_code)]
+    slots_valid = all(0 <= s <= 127 for s in slot_values) if slot_values else True
+    details.append(
+        CheckDetail(
+            check_name="dma_slot_values_reasonable",
+            passed=slots_valid,
+            expected="All DMA slot values between 0 and 127 (valid STM32 DMA/DMAMUX request slots)",
+            actual=(
+                "valid" if slots_valid else f"invalid slot values found: {[s for s in slot_values if not 0 <= s <= 127]}"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 10: In dma-names, "tx" must appear before "rx"
+    # LLM failure: swaps tx/rx order, causing TX/RX mismatch with dmas property
+    tx_rx_order_ok = True
+    if dma_names_line:
+        names_str = dma_names_line.group(1)
+        tx_pos = names_str.find('"tx"')
+        rx_pos = names_str.find('"rx"')
+        if tx_pos != -1 and rx_pos != -1:
+            tx_rx_order_ok = tx_pos < rx_pos
+    details.append(
+        CheckDetail(
+            check_name="tx_rx_ordering_in_dma_names",
+            passed=tx_rx_order_ok,
+            expected='"tx" appears before "rx" in dma-names (matches dmas property TX-first ordering)',
+            actual="correct" if tx_rx_order_ok else 'WRONG ORDER: "rx" appears before "tx" in dma-names',
+            check_type="constraint",
+        )
+    )
+
     return details

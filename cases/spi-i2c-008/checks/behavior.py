@@ -1,5 +1,7 @@
 """Behavioral checks for I2C target (slave) mode implementation."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -81,6 +83,94 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="Target address configured in i2c_target_config",
             actual="present" if has_address else "missing",
             check_type="constraint",
+        )
+    )
+
+    # Check 7: device_is_ready must appear before i2c_target_register (ordering)
+    pos_ready = generated_code.find("device_is_ready")
+    pos_register = generated_code.find("i2c_target_register")
+    ready_before_register = (
+        pos_ready != -1 and pos_register != -1 and pos_ready < pos_register
+    )
+    details.append(
+        CheckDetail(
+            check_name="device_ready_before_register",
+            passed=ready_before_register,
+            expected="device_is_ready called before i2c_target_register",
+            actual=(
+                "correct order"
+                if ready_before_register
+                else (
+                    "device_is_ready missing"
+                    if pos_ready == -1
+                    else "i2c_target_register missing"
+                    if pos_register == -1
+                    else "device_is_ready called after i2c_target_register"
+                )
+            ),
+            check_type="ordering",
+        )
+    )
+
+    # Check 8: i2c_target_register return value must be error-checked
+    error_checked = False
+    if pos_register != -1:
+        window = generated_code[pos_register : pos_register + 150]
+        error_checked = any(
+            marker in window
+            for marker in ("< 0", "!= 0", "if (ret", "if (err")
+        )
+    details.append(
+        CheckDetail(
+            check_name="i2c_target_register_error_checked",
+            passed=error_checked,
+            expected="i2c_target_register return value checked for error",
+            actual="error check present" if error_checked else "return value not checked",
+            check_type="constraint",
+        )
+    )
+
+    # Check 9: must NOT use deprecated slave API
+    deprecated_apis = ["i2c_slave_register", "i2c_slave_callbacks", "i2c_slave_config"]
+    deprecated_found = [api for api in deprecated_apis if api in generated_code]
+    no_deprecated = len(deprecated_found) == 0
+    details.append(
+        CheckDetail(
+            check_name="no_deprecated_slave_api",
+            passed=no_deprecated,
+            expected="No deprecated i2c_slave_* APIs used",
+            actual=(
+                "no deprecated APIs"
+                if no_deprecated
+                else f"deprecated APIs found: {', '.join(deprecated_found)}"
+            ),
+            check_type="constraint",
+        )
+    )
+
+    # Check 10: all 4 callback fields assigned in i2c_target_callbacks struct
+    required_fields = [
+        ".write_requested",
+        ".read_requested",
+        ".write_received",
+        ".read_processed",
+    ]
+    missing_fields = [
+        field for field in required_fields
+        if not re.search(rf"{re.escape(field)}\s*=", generated_code)
+    ]
+    callbacks_in_struct = len(missing_fields) == 0
+    details.append(
+        CheckDetail(
+            check_name="callbacks_assigned_in_struct",
+            passed=callbacks_in_struct,
+            expected="All 4 callback fields assigned in i2c_target_callbacks struct",
+            actual=(
+                "all 4 fields assigned"
+                if callbacks_in_struct
+                else f"missing fields: {', '.join(missing_fields)}"
+            ),
+            check_type="structural",
         )
     )
 
