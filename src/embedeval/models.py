@@ -43,6 +43,13 @@ class DifficultyTier(str, Enum):
     HARD = "hard"
 
 
+class Visibility(str, Enum):
+    """Visibility of evaluation cases."""
+
+    PUBLIC = "public"
+    PRIVATE = "private"
+
+
 class EvalPlatform(str, Enum):
     """Evaluation platform targets."""
 
@@ -79,6 +86,7 @@ class CaseMetadata(BaseModel):
     platform: EvalPlatform
     estimated_tokens: int
     sdk_version: str
+    visibility: Visibility = Visibility.PUBLIC
 
 
 class LLMResponse(BaseModel):
@@ -99,6 +107,7 @@ class CheckDetail(BaseModel):
     expected: str | None
     actual: str | None
     check_type: str
+    weight: float = Field(default=1.0, ge=0.0)
 
 
 class LayerResult(BaseModel):
@@ -110,6 +119,7 @@ class LayerResult(BaseModel):
     details: list[CheckDetail]
     error: str | None = None
     duration_seconds: float = Field(ge=0.0)
+    score: float = Field(default=1.0, ge=0.0, le=1.0)
 
 
 class EvalResult(BaseModel):
@@ -123,6 +133,7 @@ class EvalResult(BaseModel):
     layers: list[LayerResult]
     failed_at_layer: int | None = Field(default=None, ge=0, le=4)
     passed: bool
+    total_score: float = Field(default=1.0, ge=0.0, le=1.0)
     duration_seconds: float = Field(ge=0.0)
     token_usage: TokenUsage
     cost_usd: float = Field(ge=0.0)
@@ -133,7 +144,9 @@ class ModelScore(BaseModel):
 
     model: str
     pass_at_1: float = Field(ge=0.0, le=1.0)
+    pass_at_3: float = Field(default=0.0, ge=0.0, le=1.0)
     pass_at_5: float = Field(ge=0.0, le=1.0)
+    avg_score: float = Field(default=0.0, ge=0.0, le=1.0)
     total_cases: int = Field(ge=0)
     passed_cases: int = Field(ge=0)
     layer_pass_rates: dict[str, float]

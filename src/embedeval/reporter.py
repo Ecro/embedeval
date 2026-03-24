@@ -13,7 +13,7 @@ LAYER_DISPLAY_NAMES: dict[str, str] = {
     "static_analysis": "L0 Static",
     "compile_gate": "L1 Build",
     "runtime_execution": "L2 Runtime",
-    "behavioral_assertion": "L3 Behavior",
+    "static_heuristic": "L3 Heuristic",
     "test_quality_proof": "L4 Mutation",
 }
 
@@ -21,7 +21,7 @@ LAYER_ORDER: list[str] = [
     "static_analysis",
     "compile_gate",
     "runtime_execution",
-    "behavioral_assertion",
+    "static_heuristic",
     "test_quality_proof",
 ]
 
@@ -78,16 +78,21 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
     lines: list[str] = [
         "## Model Comparison",
         "",
-        "| Model | pass@1 | pass@5 | Cases Passed | Total Cases |",
-        "|-------|--------|--------|-------------|-------------|",
+        "| Model | pass@1 | pass@3 | pass@5 | avg_score | Cases Passed | Total Cases |",
+        "|-------|--------|--------|--------|-----------|-------------|-------------|",
     ]
 
     for report in reports:
         for model_score in report.models:
+            avg_score = (
+                model_score.pass_at_1 + model_score.pass_at_3 + model_score.pass_at_5
+            ) / 3.0
             lines.append(
                 f"| {model_score.model} "
                 f"| {model_score.pass_at_1:.1%} "
+                f"| {model_score.pass_at_3:.1%} "
                 f"| {model_score.pass_at_5:.1%} "
+                f"| {avg_score:.1%} "
                 f"| {model_score.passed_cases} "
                 f"| {model_score.total_cases} |"
             )

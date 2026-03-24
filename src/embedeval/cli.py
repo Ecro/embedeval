@@ -7,7 +7,7 @@ from typing import Annotated, Optional
 
 import typer
 
-from embedeval.models import CaseCategory, DifficultyTier
+from embedeval.models import CaseCategory, DifficultyTier, Visibility
 
 app = typer.Typer(help="EmbedEval: Embedded firmware LLM benchmark")
 
@@ -58,6 +58,10 @@ def run(
         int,
         typer.Option("--attempts", "-a", help="Number of attempts per case"),
     ] = 1,
+    visibility: Annotated[
+        str | None,
+        typer.Option("--visibility", help="Filter by visibility (public/private)"),
+    ] = None,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -75,6 +79,8 @@ def run(
         filters.categories = [CaseCategory(category)]
     if difficulty:
         filters.difficulties = [DifficultyTier(difficulty)]
+    if visibility:
+        filters.visibility = Visibility(visibility)
 
     typer.echo(f"Running benchmark: model={model}, cases={cases_dir}")
     results = run_benchmark(

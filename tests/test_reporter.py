@@ -189,7 +189,7 @@ class TestGenerateLeaderboard:
         assert "L0 Static" in content
         assert "L1 Build" in content
         assert "L2 Runtime" in content
-        assert "L3 Behavior" in content
+        assert "L3 Heuristic" in content
         assert "L4 Mutation" in content
         assert "100%" in content
         assert "90%" in content

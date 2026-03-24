@@ -9,7 +9,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from embedeval.evaluator import evaluate
 from embedeval.llm_client import call_model
-from embedeval.models import CaseCategory, CaseMetadata, DifficultyTier, EvalResult
+from embedeval.models import CaseCategory, CaseMetadata, DifficultyTier, EvalResult, Visibility
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +21,7 @@ class Filters:
     categories: list[CaseCategory] = field(default_factory=list)
     difficulties: list[DifficultyTier] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
+    visibility: Visibility | None = None
 
 
 def load_case_metadata(case_dir: Path) -> CaseMetadata | None:
@@ -93,6 +94,8 @@ def filter_cases(
         if filters.difficulties and meta.difficulty not in filters.difficulties:
             continue
         if filters.tags and not any(tag in meta.tags for tag in filters.tags):
+            continue
+        if filters.visibility is not None and meta.visibility != filters.visibility:
             continue
         filtered.append((case_dir, meta))
 

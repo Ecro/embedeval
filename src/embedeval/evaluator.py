@@ -22,7 +22,7 @@ LAYER_NAMES: dict[int, str] = {
     0: "static_analysis",
     1: "compile_gate",
     2: "runtime_execution",
-    3: "behavioral_assertion",
+    3: "static_heuristic",
     4: "test_quality_proof",
 }
 
@@ -90,13 +90,20 @@ def evaluate(
             generated_code=generated_code,
             timeout=timeout,
         )
+        # Calculate weighted score for the layer
+        details = layer_result.details
+        total_weight = sum(d.weight for d in details)
+        earned_weight = sum(d.weight for d in details if d.passed)
+        layer_score = earned_weight / total_weight if total_weight > 0 else 1.0
+
         layer_result = LayerResult(
             layer=layer_num,
             name=layer_name,
             passed=layer_result.passed,
-            details=layer_result.details,
+            details=details,
             error=layer_result.error,
             duration_seconds=time.monotonic() - layer_start,
+            score=layer_score,
         )
         layers.append(layer_result)
 
@@ -107,6 +114,13 @@ def evaluate(
     elapsed = time.monotonic() - start
     all_passed = failed_at_layer is None
 
+    scored_layers = [l for l in layers if l.details]  # layers with checks
+    total_score = (
+        sum(l.score for l in scored_layers) / len(scored_layers)
+        if scored_layers
+        else 1.0
+    )
+
     return EvalResult(
         case_id=case_dir.name,
         category=category,
@@ -116,6 +130,7 @@ def evaluate(
         layers=layers,
         failed_at_layer=failed_at_layer,
         passed=all_passed,
+        total_score=total_score,
         duration_seconds=elapsed,
         token_usage=effective_token_usage,
         cost_usd=cost_usd,
@@ -299,7 +314,7 @@ def _run_behavioral(case_dir: Path, generated_code: str) -> LayerResult:
     if checks_module is None:
         return LayerResult(
             layer=3,
-            name="behavioral_assertion",
+            name="static_heuristic",
             passed=True,
             details=[],
             error=None,
@@ -307,7 +322,7 @@ def _run_behavioral(case_dir: Path, generated_code: str) -> LayerResult:
         )
 
     return _execute_check_module(
-        checks_module, generated_code, layer=3, name="behavioral_assertion"
+        checks_module, generated_code, layer=3, name="static_heuristic"
     )
 
 

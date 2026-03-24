@@ -7,3 +7,4 @@ tags: [yocto, bitbake, recipe, ptest, runtime-tests, testing]
 platform: yocto_build
 estimated_tokens: 450
 sdk_version: "5.0"
+visibility: private

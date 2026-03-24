@@ -65,8 +65,9 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
 
     scores: list[ModelScore] = []
     for model, model_results in sorted(by_model.items()):
-        pass_at_1 = _calculate_pass_at_1(model_results)
-        pass_at_5 = _calculate_pass_at_5(model_results)
+        pass_at_1 = _calculate_pass_at_k(model_results, 1)
+        pass_at_3 = _calculate_pass_at_k(model_results, 3)
+        pass_at_5 = _calculate_pass_at_k(model_results, 5)
         case_ids = {r.case_id for r in model_results}
         passed_cases = sum(
             1
@@ -75,11 +76,15 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
         )
         layer_pass_rates = _calculate_layer_pass_rates(model_results)
 
+        avg_score = (pass_at_1 + pass_at_3 + pass_at_5) / 3.0
+
         scores.append(
             ModelScore(
                 model=model,
                 pass_at_1=pass_at_1,
+                pass_at_3=pass_at_3,
                 pass_at_5=pass_at_5,
+                avg_score=avg_score,
                 total_cases=len(case_ids),
                 passed_cases=passed_cases,
                 layer_pass_rates=layer_pass_rates,
@@ -146,6 +151,29 @@ def _calculate_overall(model_scores: list[ModelScore]) -> OverallScore:
         best_model=best.model,
         best_pass_at_1=best.pass_at_1,
     )
+
+
+def _calculate_pass_at_k(results: list[EvalResult], k: int) -> float:
+    """Calculate pass@k: fraction of cases where at least 1 of k attempts passes.
+
+    For pass@1 (k=1), only the first attempt is considered.
+    For pass@k (k>1), the first k attempts sorted by attempt number are used.
+    """
+    by_case: dict[str, list[EvalResult]] = defaultdict(list)
+    for r in results:
+        by_case[r.case_id].append(r)
+
+    if not by_case:
+        return 0.0
+
+    passed = 0
+    for case_results in by_case.values():
+        # Only consider first k attempts ordered by attempt number
+        first_k = sorted(case_results, key=lambda r: r.attempt)[:k]
+        if any(r.passed for r in first_k):
+            passed += 1
+
+    return passed / len(by_case)
 
 
 def _calculate_pass_at_1(results: list[EvalResult]) -> float:
