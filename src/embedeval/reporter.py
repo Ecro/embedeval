@@ -84,15 +84,12 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
 
     for report in reports:
         for model_score in report.models:
-            avg_score = (
-                model_score.pass_at_1 + model_score.pass_at_3 + model_score.pass_at_5
-            ) / 3.0
             lines.append(
                 f"| {model_score.model} "
                 f"| {model_score.pass_at_1:.1%} "
                 f"| {model_score.pass_at_3:.1%} "
                 f"| {model_score.pass_at_5:.1%} "
-                f"| {avg_score:.1%} "
+                f"| {model_score.avg_score:.1%} "
                 f"| {model_score.passed_cases} "
                 f"| {model_score.total_cases} |"
             )

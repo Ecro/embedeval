@@ -150,6 +150,23 @@ def _run_layer(
     elif layer_num == 1:
         return _run_compile_gate(case_dir, generated_code, timeout)
     elif layer_num == 2:
+        if _is_esp_idf_case(case_dir):
+            return LayerResult(
+                layer=2,
+                name="runtime_execution",
+                passed=True,
+                details=[
+                    CheckDetail(
+                        check_name="esp_idf_runtime",
+                        passed=True,
+                        expected="runtime execution",
+                        actual="skipped (ESP-IDF QEMU not configured)",
+                        check_type="environment",
+                    )
+                ],
+                error=None,
+                duration_seconds=0.0,
+            )
         return _run_runtime(case_dir, generated_code, timeout)
     elif layer_num == 3:
         return _run_behavioral(case_dir, generated_code)

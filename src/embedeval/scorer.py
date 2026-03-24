@@ -176,44 +176,6 @@ def _calculate_pass_at_k(results: list[EvalResult], k: int) -> float:
     return passed / len(by_case)
 
 
-def _calculate_pass_at_1(results: list[EvalResult]) -> float:
-    """Calculate pass@1: fraction of cases where first attempt passes.
-
-    For each unique case_id, check if attempt 1 passed.
-    """
-    by_case: dict[str, list[EvalResult]] = defaultdict(list)
-    for r in results:
-        by_case[r.case_id].append(r)
-
-    if not by_case:
-        return 0.0
-
-    passed = 0
-    for case_results in by_case.values():
-        first_attempts = [r for r in case_results if r.attempt == 1]
-        if first_attempts and first_attempts[0].passed:
-            passed += 1
-
-    return passed / len(by_case)
-
-
-def _calculate_pass_at_5(results: list[EvalResult]) -> float:
-    """Calculate pass@5: fraction of cases where at least 1 of 5 attempts passes.
-
-    For each unique case_id, check if any attempt passes.
-    """
-    by_case: dict[str, list[EvalResult]] = defaultdict(list)
-    for r in results:
-        by_case[r.case_id].append(r)
-
-    if not by_case:
-        return 0.0
-
-    passed = sum(
-        1 for case_results in by_case.values() if any(r.passed for r in case_results)
-    )
-    return passed / len(by_case)
-
 
 def _calculate_layer_pass_rates(
     results: list[EvalResult],
