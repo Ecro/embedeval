@@ -109,4 +109,70 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: Writer priority must be <= reader priority (lower number = higher priority in Zephyr)
+    # LLM failure: giving writer a higher numeric priority (lower real priority) causes writer starvation
+    thread_priority_ok = True  # default pass if we can't extract values
+    thread_defines = re.findall(
+        r"K_THREAD_DEFINE\s*\(\s*(\w+)\s*,\s*\w+\s*,\s*(\w+)\s*,\s*[^,]*,\s*[^,]*,\s*(\d+)\s*,",
+        generated_code,
+    )
+    # Also try #define WRITER_PRIO / READER_PRIO approach
+    writer_prio_define = re.search(
+        r"#define\s+WRITER_PRIO\w*\s+(\d+)", generated_code, re.IGNORECASE
+    )
+    reader_prio_define = re.search(
+        r"#define\s+READER_PRIO\w*\s+(\d+)", generated_code, re.IGNORECASE
+    )
+    if writer_prio_define and reader_prio_define:
+        writer_prio = int(writer_prio_define.group(1))
+        reader_prio = int(reader_prio_define.group(1))
+        thread_priority_ok = writer_prio <= reader_prio
+    elif thread_defines:
+        writer_entries = [
+            (name, fn, int(prio))
+            for name, fn, prio in thread_defines
+            if "write" in name.lower() or "write" in fn.lower()
+        ]
+        reader_entries = [
+            (name, fn, int(prio))
+            for name, fn, prio in thread_defines
+            if "read" in name.lower() or "read" in fn.lower()
+        ]
+        if writer_entries and reader_entries:
+            min_writer_prio = min(p for _, _, p in writer_entries)
+            max_reader_prio = max(p for _, _, p in reader_entries)
+            thread_priority_ok = min_writer_prio <= max_reader_prio
+    details.append(
+        CheckDetail(
+            check_name="writer_priority_not_lower_than_reader",
+            passed=thread_priority_ok,
+            expected="Writer priority number <= reader priority number (writer has equal/higher priority)",
+            actual="ok" if thread_priority_ok else "writer has lower priority - writer starvation risk",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: At least 2 reader threads needed to demonstrate concurrent reading
+    # Count K_THREAD_DEFINE or k_thread_create where function name contains "read"
+    reader_thread_defs = re.findall(
+        r"K_THREAD_DEFINE\s*\(\s*\w+\s*,\s*\w+\s*,\s*(\w*read\w*)\s*,",
+        generated_code,
+        re.IGNORECASE,
+    )
+    reader_thread_creates = re.findall(
+        r"k_thread_create\s*\([^,]*,[^,]*,[^,]*,\s*(\w*read\w*)\s*,",
+        generated_code,
+        re.IGNORECASE,
+    )
+    total_reader_threads = len(reader_thread_defs) + len(reader_thread_creates)
+    details.append(
+        CheckDetail(
+            check_name="multiple_reader_threads",
+            passed=total_reader_threads >= 2,
+            expected="At least 2 reader threads to demonstrate concurrent reading",
+            actual=f"{total_reader_threads} reader thread(s) found",
+            check_type="constraint",
+        )
+    )
+
     return details

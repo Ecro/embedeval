@@ -135,4 +135,56 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 9: Memory barrier appears BETWEEN data write and index advance
+    # LLM failure: placing barrier before data write or after atomic_set — both are useless
+    push_fn_match = re.search(
+        r'\b\w*(?:push|enq|produce|put|write)\w*\s*\([^)]*\)\s*\{',
+        generated_code, re.IGNORECASE
+    )
+    if push_fn_match:
+        # Extract function body (heuristic: up to 2000 chars after opening brace)
+        push_body_start = push_fn_match.end()
+        push_body = generated_code[push_body_start:push_body_start + 2000]
+
+        data_write_pos = -1
+        for pat in (r'buf\s*\[', r'q\s*->\s*\w+\s*\[', r'\.\w*buf\w*\s*\['):
+            m = re.search(pat + r'[^\n]*=', push_body)
+            if m:
+                data_write_pos = m.start()
+                break
+
+        barrier_pos = -1
+        for bpat in ("compiler_barrier", "__dmb", "atomic_thread_fence", "barrier()", "COMPILER_BARRIER"):
+            idx = push_body.find(bpat)
+            if idx != -1 and (barrier_pos == -1 or idx < barrier_pos):
+                barrier_pos = idx
+
+        atomic_pos = push_body.find("atomic_set")
+
+        if data_write_pos != -1 and barrier_pos != -1 and atomic_pos != -1:
+            barrier_ordered = data_write_pos < barrier_pos < atomic_pos
+            actual_barrier_msg = (
+                "correct: data_write < barrier < atomic_set"
+                if barrier_ordered
+                else f"WRONG ORDER: data_write={data_write_pos}, barrier={barrier_pos}, atomic_set={atomic_pos}"
+            )
+        else:
+            barrier_ordered = False
+            actual_barrier_msg = (
+                f"could not locate all three: "
+                f"data_write={data_write_pos}, barrier={barrier_pos}, atomic_set={atomic_pos}"
+            )
+    else:
+        barrier_ordered = False
+        actual_barrier_msg = "push/enqueue function not found"
+    details.append(
+        CheckDetail(
+            check_name="barrier_between_data_and_index_update",
+            passed=barrier_ordered,
+            expected="Memory barrier appears BETWEEN data write (buf[...]=) and index advance (atomic_set)",
+            actual=actual_barrier_msg,
+            check_type="constraint",
+        )
+    )
+
     return details

@@ -1,5 +1,7 @@
 """Behavioral checks for Zephyr thread stack analyzer."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -87,6 +89,67 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_printk_config,
             expected="CONFIG_THREAD_ANALYZER_USE_PRINTK referenced for visible output",
             actual="present" if has_printk_config else "missing (analyzer output may be silent)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Stack size must not be excessive (> 4096 bytes is wasteful on embedded)
+    # LLM failure: using large desktop-sized stacks when SRAM is precious
+    stack_define_match = re.search(
+        r"K_THREAD_STACK_DEFINE\s*\(\s*\w+\s*,\s*(\w+)\s*\)",
+        generated_code,
+    )
+    stack_size_ok = True
+    stack_size_actual = "not found"
+    if stack_define_match:
+        size_token = stack_define_match.group(1)
+        # Try to resolve as a literal integer first
+        if size_token.isdigit():
+            stack_size = int(size_token)
+        else:
+            # Try to resolve via #define
+            define_match = re.search(
+                rf"#define\s+{re.escape(size_token)}\s+(\d+)",
+                generated_code,
+            )
+            stack_size = int(define_match.group(1)) if define_match else None
+        if stack_size is not None:
+            stack_size_ok = stack_size <= 4096
+            stack_size_actual = f"{stack_size} bytes"
+        else:
+            stack_size_actual = f"macro {size_token} (unresolved)"
+    details.append(
+        CheckDetail(
+            check_name="stack_size_not_excessive",
+            passed=stack_size_ok,
+            expected="Thread stack size <= 4096 bytes (embedded SRAM is scarce)",
+            actual=stack_size_actual if stack_size_ok else f"{stack_size_actual} - EXCESSIVE",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: k_malloc without heap config is a common LLM error
+    # On embedded, malloc silently fails unless K_HEAP_DEFINE or CONFIG_HEAP_MEM_POOL_SIZE present
+    has_malloc = bool(re.search(r"\bk_malloc\b|\bmalloc\b", generated_code))
+    if not has_malloc:
+        # No malloc at all — trivially pass
+        heap_config_ok = True
+        heap_actual = "no malloc used"
+    else:
+        has_heap_define = "K_HEAP_DEFINE" in generated_code
+        has_heap_config = "CONFIG_HEAP_MEM_POOL_SIZE" in generated_code
+        heap_config_ok = has_heap_define or has_heap_config
+        heap_actual = (
+            "K_HEAP_DEFINE or CONFIG_HEAP_MEM_POOL_SIZE present"
+            if heap_config_ok
+            else "malloc without heap config - will fail on target"
+        )
+    details.append(
+        CheckDetail(
+            check_name="no_heap_allocation_without_pool",
+            passed=heap_config_ok,
+            expected="If malloc/k_malloc used, K_HEAP_DEFINE or CONFIG_HEAP_MEM_POOL_SIZE must be present",
+            actual=heap_actual,
             check_type="constraint",
         )
     )

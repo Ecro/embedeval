@@ -87,4 +87,29 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: Deadline/timeout value is a named constant, not a magic number
+    # LLM failure: hardcoding numbers like `if (elapsed > 10000)` instead of
+    # `#define DEADLINE_US 10000` or `const uint32_t deadline = 10000`
+    has_named_deadline_const = bool(
+        re.search(
+            r"#define\s+\w*(?:DEADLINE|TIMEOUT|PERIOD|LIMIT)\w*\s+\d+",
+            generated_code,
+            re.IGNORECASE,
+        )
+        or re.search(
+            r"const\s+\w+\s+\w*(?:deadline|timeout)\w*\s*=",
+            generated_code,
+            re.IGNORECASE,
+        )
+    )
+    details.append(
+        CheckDetail(
+            check_name="deadline_constant_not_magic",
+            passed=has_named_deadline_const,
+            expected="Deadline/timeout value as named constant (#define or const variable)",
+            actual="named constant found" if has_named_deadline_const else "magic number - anti-pattern",
+            check_type="constraint",
+        )
+    )
+
     return details

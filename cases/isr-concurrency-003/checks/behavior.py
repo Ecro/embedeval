@@ -140,4 +140,41 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 10: Spinlock used in BOTH ISR and thread contexts
+    # LLM failure: protecting only one side (ISR or thread, not both)
+    isr_fn_match = re.search(
+        r'\bvoid\s+(?:isr_handler|ISR|irq_handler)\s*\(', generated_code, re.IGNORECASE
+    )
+    thread_fn_match = re.search(
+        r'\bvoid\s+\w*(?:reader|thread|consumer|worker)\w*\s*\(', generated_code, re.IGNORECASE
+    )
+    if isr_fn_match and thread_fn_match:
+        isr_fn_pos = isr_fn_match.start()
+        thread_fn_pos = thread_fn_match.start()
+        # Find the next function boundary after each function start by searching for k_spin_lock
+        # within a reasonable range (up to the next function definition)
+        code_after_isr = generated_code[isr_fn_pos:]
+        code_after_thread = generated_code[thread_fn_pos:]
+        # Find first k_spin_lock after each function start (within 1000 chars)
+        isr_has_spinlock = "k_spin_lock" in code_after_isr[:1000]
+        thread_has_spinlock = "k_spin_lock" in code_after_thread[:1000]
+        spinlock_in_both = isr_has_spinlock and thread_has_spinlock
+        actual_msg = (
+            "both contexts protected"
+            if spinlock_in_both
+            else f"isr={isr_has_spinlock}, thread={thread_has_spinlock} — one side unprotected"
+        )
+    else:
+        spinlock_in_both = False
+        actual_msg = "could not locate isr/thread function bodies"
+    details.append(
+        CheckDetail(
+            check_name="spinlock_used_in_both_contexts",
+            passed=spinlock_in_both,
+            expected="k_spin_lock appears in BOTH ISR body AND thread body",
+            actual=actual_msg,
+            check_type="constraint",
+        )
+    )
+
     return details

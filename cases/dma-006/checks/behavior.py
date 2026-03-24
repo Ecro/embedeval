@@ -85,4 +85,53 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: All __aligned(N) values must be >= 32 (cache-line alignment for DMA)
+    # LLM failure: using __aligned(4) or __aligned(8) which is insufficient for DMA/cache coherency
+    numeric_aligns = [int(v) for v in align_numeric]  # reuse align_numeric from Check 1
+    if numeric_aligns:
+        all_cache_aligned = all(v >= 32 for v in numeric_aligns)
+        actual_cache_msg = (
+            f"all >= 32: {numeric_aligns}"
+            if all_cache_aligned
+            else f"INSUFFICIENT: {[v for v in numeric_aligns if v < 32]} < 32 (DMA needs cache-line alignment)"
+        )
+    elif align_named:
+        # Named constant — assume adequate (same as Check 1 rationale)
+        all_cache_aligned = True
+        actual_cache_msg = f"named constant used: {align_named} — assumed adequate"
+    else:
+        all_cache_aligned = False
+        actual_cache_msg = "no __aligned() found"
+    details.append(
+        CheckDetail(
+            check_name="alignment_at_least_cache_line",
+            passed=all_cache_aligned,
+            expected="__aligned(N) with N >= 32 for DMA cache-line safety",
+            actual=actual_cache_msg,
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Both src and dst buffers must have __aligned attribute
+    # LLM failure: aligning only dst, leaving src unaligned
+    aligned_buf_lines = [
+        line for line in generated_code.splitlines()
+        if "__aligned" in line and re.search(r'(?:buf|buffer|src|dst)', line, re.IGNORECASE)
+    ]
+    aligned_buf_count = len(aligned_buf_lines)
+    both_buffers_aligned = aligned_buf_count >= 2
+    details.append(
+        CheckDetail(
+            check_name="both_buffers_aligned",
+            passed=both_buffers_aligned,
+            expected="Both src and dst buffer declarations include __aligned",
+            actual=(
+                f"{aligned_buf_count} buffer(s) with __aligned found — both present"
+                if both_buffers_aligned
+                else f"only {aligned_buf_count} buffer(s) with __aligned (need >= 2; likely missing src alignment)"
+            ),
+            check_type="constraint",
+        )
+    )
+
     return details

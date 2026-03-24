@@ -118,4 +118,87 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 7: Health/alive flag must NOT be a plain int without volatile/atomic
+    # LLM failure: `static int health = 0` allows compiler to cache the value across threads
+    plain_int_flag = bool(
+        re.search(
+            r"\bstatic\s+int\s+\w*(?:health|alive|flag|running)\w*\s*[=;]",
+            generated_code,
+        )
+        or re.search(
+            r"(?<!volatile\s)(?<!atomic_t\s)\bint\s+\w*(?:health|alive|flag)\w*\s*[=;]",
+            generated_code,
+        )
+    )
+    # Only flag as problem if it's not accompanied by volatile anywhere near that variable
+    flag_var_match = re.search(
+        r"\b(\w*(?:health|alive|flag|running)\w*)\s*[=;]", generated_code
+    )
+    flag_is_safe = True
+    if flag_var_match:
+        flag_name = flag_var_match.group(1)
+        # Find the declaration of this variable
+        decl_match = re.search(
+            rf"(?:volatile|atomic_t)\s+\w*\s+{re.escape(flag_name)}|"
+            rf"{re.escape(flag_name)}\s*:\s*(?:volatile|atomic)",
+            generated_code,
+        )
+        # Also accept atomic_set / atomic_get usage
+        has_atomic_ops = bool(
+            re.search(rf"atomic_(?:set|get|cas)\s*\(\s*&?\s*{re.escape(flag_name)}", generated_code)
+        )
+        if not decl_match and not has_atomic_ops:
+            # Check if the variable has volatile in its declaration line
+            decl_line_match = re.search(
+                rf"volatile[^\n]*{re.escape(flag_name)}|{re.escape(flag_name)}[^\n]*volatile",
+                generated_code,
+            )
+            flag_is_safe = decl_line_match is not None
+    details.append(
+        CheckDetail(
+            check_name="health_flag_not_plain_int",
+            passed=flag_is_safe,
+            expected="Health/alive flag declared volatile or atomic_t (not plain int)",
+            actual="safe (volatile/atomic)" if flag_is_safe else "plain int - compiler may cache value",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: Feed loop interval must be less than WDT timeout to ensure timely feeding
+    # LLM failure: sleep interval >= wdt timeout means watchdog fires before being fed
+    wdt_timeout_match = re.search(
+        r"\.window\s*\.\s*max\s*=\s*(\d+)|window\.max\s*=\s*(\d+)",
+        generated_code,
+    )
+    feed_interval_match = re.search(
+        r"k_sleep\s*\(\s*K_MSEC\s*\(\s*(\d+)\s*\)\s*\)|"
+        r"k_sleep\s*\(\s*K_SECONDS\s*\(\s*(\d+)\s*\)\s*\)",
+        generated_code,
+    )
+    timing_margin_ok = True  # default pass if values cannot be extracted
+    if wdt_timeout_match and feed_interval_match:
+        wdt_ms = int(wdt_timeout_match.group(1) or wdt_timeout_match.group(2))
+        if feed_interval_match.group(1):
+            feed_ms = int(feed_interval_match.group(1))
+        else:
+            feed_ms = int(feed_interval_match.group(2)) * 1000
+        timing_margin_ok = feed_ms < wdt_ms
+    details.append(
+        CheckDetail(
+            check_name="feed_interval_less_than_wdt_timeout",
+            passed=timing_margin_ok,
+            expected="Feed loop sleep interval < WDT timeout (must feed before timeout fires)",
+            actual=(
+                f"feed={feed_ms}ms < wdt={wdt_ms}ms: ok"
+                if (wdt_timeout_match and feed_interval_match and timing_margin_ok)
+                else (
+                    f"feed={feed_ms}ms >= wdt={wdt_ms}ms: TOO SLOW"
+                    if (wdt_timeout_match and feed_interval_match)
+                    else "could not extract timing values"
+                )
+            ),
+            check_type="constraint",
+        )
+    )
+
     return details

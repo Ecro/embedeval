@@ -117,4 +117,70 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 8: High-priority IRQ must have the LOWER numeric priority value (ARM convention)
+    # LLM failure: setting HIGH_PRIORITY = 5, LOW_PRIORITY = 1 (backwards)
+    prio_defines = re.findall(
+        r'#define\s+(\w*(?:HIGH|LOW|FAST|SLOW)\w*(?:PRIO|PRIORITY|LEVEL)\w*)\s+(\d+)',
+        generated_code, re.IGNORECASE
+    )
+    if len(prio_defines) >= 2:
+        high_entries = [
+            (name, int(val)) for name, val in prio_defines
+            if re.search(r'HIGH|FAST|CRITICAL', name, re.IGNORECASE)
+        ]
+        low_entries = [
+            (name, int(val)) for name, val in prio_defines
+            if re.search(r'LOW|SLOW|BACKGROUND', name, re.IGNORECASE)
+        ]
+        if high_entries and low_entries:
+            min_high = min(v for _, v in high_entries)
+            min_low = min(v for _, v in low_entries)
+            priority_correct = min_high < min_low
+            actual_prio_msg = (
+                f"correct: {high_entries[0][0]}={min_high} < {low_entries[0][0]}={min_low}"
+                if priority_correct
+                else f"BACKWARDS: {high_entries[0][0]}={min_high} >= {low_entries[0][0]}={min_low} (lower number = higher priority on ARM)"
+            )
+        else:
+            # Fall back to IRQ_CONNECT priority params if defines aren't clearly named
+            irq_connect_params = re.findall(
+                r'IRQ_CONNECT\s*\(\s*\w+\s*,\s*(\d+)\s*,', generated_code
+            )
+            if len(irq_connect_params) >= 2:
+                vals = [int(v) for v in irq_connect_params]
+                priority_correct = vals[0] < vals[1]
+                actual_prio_msg = (
+                    f"IRQ_CONNECT priorities: {vals} — first handler has lower (higher-priority) number"
+                    if priority_correct
+                    else f"IRQ_CONNECT priorities: {vals} — first handler has higher number (may be backwards)"
+                )
+            else:
+                priority_correct = False
+                actual_prio_msg = "found HIGH/LOW defines but could not determine which is which"
+    elif prio_defines:
+        priority_correct = False
+        actual_prio_msg = f"only one priority #define found: {prio_defines} — cannot verify ordering"
+    else:
+        # No #define found — check IRQ_CONNECT directly
+        irq_connect_params = re.findall(
+            r'IRQ_CONNECT\s*\(\s*\w+\s*,\s*(\d+)\s*,', generated_code
+        )
+        if len(irq_connect_params) >= 2:
+            vals = [int(v) for v in irq_connect_params]
+            # Cannot determine which is "high" without names; mark as not confirmed
+            priority_correct = False
+            actual_prio_msg = f"IRQ_CONNECT priorities found: {vals} — no named defines to verify ordering"
+        else:
+            priority_correct = False
+            actual_prio_msg = "no priority #defines or IRQ_CONNECT priority params found"
+    details.append(
+        CheckDetail(
+            check_name="high_priority_lower_number",
+            passed=priority_correct,
+            expected="High-priority IRQ has lower numeric value (ARM: lower number = higher priority)",
+            actual=actual_prio_msg,
+            check_type="constraint",
+        )
+    )
+
     return details
