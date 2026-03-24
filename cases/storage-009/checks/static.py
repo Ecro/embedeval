@@ -34,11 +34,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: offset + size <= area_size boundary check present
-    # Look for the key comparison pattern
+    # Look for the key comparison pattern (including casted expressions)
     has_boundary_check = bool(
-        re.search(r'offset\s*\+\s*\w*size\w*\s*[><=]', generated_code)
-        or re.search(r'\w*size\w*\s*\+\s*offset\s*[><=]', generated_code)
-        or re.search(r'offset\s*\+\s*len\w*\s*[><=]', generated_code)
+        re.search(r'offset\s*\+\s*\w*size\w*\)?\s*[><=]', generated_code)
+        or re.search(r'\w*size\w*\s*\+\s*offset\)?\s*[><=]', generated_code)
+        or re.search(r'offset\s*\+\s*len\w*\)?\s*[><=]', generated_code)
+        or re.search(r'\(\s*offset\s*\+\s*\w+\s*\)\s*[><=]', generated_code)
     )
     details.append(
         CheckDetail(

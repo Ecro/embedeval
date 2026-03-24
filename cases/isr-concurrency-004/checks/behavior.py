@@ -84,13 +84,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: k_sleep present (scheduling)
-    has_sleep = "k_sleep" in generated_code
+    # Check 5: k_sleep/k_msleep/k_usleep present (scheduling)
+    has_sleep = bool(re.search(r'\bk_(?:m?sleep|usleep)\b', generated_code))
     details.append(
         CheckDetail(
             check_name="k_sleep_present",
             passed=has_sleep,
-            expected="k_sleep() present for scheduling",
+            expected="k_sleep/k_msleep/k_usleep present for scheduling",
             actual="present" if has_sleep else "missing",
             check_type="constraint",
         )

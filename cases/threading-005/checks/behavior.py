@@ -11,21 +11,38 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Stack size is at least 2048
     # (LLM failure: using 512 or 1024 — work queue needs larger stack for its own context)
+    # Support both literal: K_THREAD_STACK_DEFINE(name, 2048)
+    # and macro: K_THREAD_STACK_DEFINE(name, STACK_SIZE) with #define STACK_SIZE 2048
     stack_match = re.search(
-        r"K_THREAD_STACK_DEFINE\s*\(\s*\w+\s*,\s*(\d+)\s*\)",
+        r"K_THREAD_STACK_DEFINE\s*\(\s*\w+\s*,\s*(\w+)\s*\)",
         generated_code,
     )
     stack_size_ok = False
     stack_size_val = 0
+    stack_size_str = ""
     if stack_match:
-        stack_size_val = int(stack_match.group(1))
+        stack_size_str = stack_match.group(1)
+        if stack_size_str.isdigit():
+            stack_size_val = int(stack_size_str)
+        else:
+            # Resolve macro: look for #define MACRO_NAME <number>
+            macro_match = re.search(
+                rf"#define\s+{re.escape(stack_size_str)}\s+(\d+)",
+                generated_code,
+            )
+            if macro_match:
+                stack_size_val = int(macro_match.group(1))
         stack_size_ok = stack_size_val >= 2048
     details.append(
         CheckDetail(
             check_name="stack_size_adequate",
             passed=stack_size_ok,
             expected="Work queue stack size >= 2048",
-            actual=f"size={stack_size_val}" if stack_match else "K_THREAD_STACK_DEFINE not found",
+            actual=(
+                f"size={stack_size_val} (via {stack_size_str})"
+                if stack_match
+                else "K_THREAD_STACK_DEFINE not found"
+            ),
             check_type="constraint",
         )
     )
