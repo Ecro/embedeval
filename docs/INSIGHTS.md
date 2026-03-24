@@ -91,3 +91,40 @@ L3 Behavioral (행동): 90%   ← 여기서 갈림
 **시사점:** "컴파일되고 실행되는 코드"와 "프로덕션에서 안전한 코드"의 차이를
 LLM은 구분하지 못한다. 벤치마크가 L0-L2만 측정하면 LLM 능력을 과대평가.
 L3 체크가 진짜 변별기.
+
+---
+
+## #6. Implicit Prompt Rewrite — Partial Validation (2026-03-24)
+
+**실험:** 16개 프롬프트에서 explicit safety hint 제거 후 Sonnet 재벤치마크.
+
+**수정한 힌트 유형:**
+- `volatile int flag` → "callback과 main이 공유하는 flag"
+- `__aligned(32)` → "DMA에 적합한 alignment 보장"
+- `copy_to_user()` → "안전하게 user space로 데이터 전송"
+- `k_spinlock` → "ISR-safe 동기화"
+- `compiler_barrier()` → "메모리 순서 보장"
+- `device_is_ready()` → "디바이스 초기화 확인"
+
+**부분 결과 (50/200 cases, 벤치마크 중간 타임아웃):**
+
+| 구간 | Before (Explicit) | After (Implicit) | 변화 |
+|------|-------------------|------------------|------|
+| ble (10) | 10/10 | 10/10 | 변화 없음 (수정 안 함) |
+| boot (10) | 10/10 | 10/10 | 변화 없음 (수정 안 함) |
+| device-tree (10) | 10/10 | 10/10 | 변화 없음 (수정 안 함) |
+| dma (10) | 9/10 | **8/10** | **dma-004 NEW FAIL** |
+| gpio-basic (10) | 9/10 | **8/10** | **gpio-basic-007 NEW FAIL** |
+
+**새로 실패한 케이스:**
+- **dma-004**: 프롬프트에서 hint 제거 → 새로운 behavioral check 실패
+- **gpio-basic-007**: 프롬프트에서 hint 제거 → 새로운 behavioral check 실패
+
+**초기 결론:**
+- 수정된 카테고리(dma, gpio)에서 실패율 상승 확인
+- 수정 안 한 카테고리(ble, boot, device-tree)는 변화 없음 (대조군)
+- 50건 기준 pass@1: 92% → 92% (전체는 변화 적지만, 수정된 카테고리만 보면 90%→80%)
+- **전체 200건 재벤치마크 필요** — isr-concurrency에서 타임아웃 발생, 재시도 필요
+
+**임시 결론:** Implicit 프롬프트가 변별력을 높이는 방향으로 작동하는 것은 확인됨.
+다만 16개만 수정해서 전체 pass@1 변화는 아직 미미. 더 많은 프롬프트 수정 필요.
