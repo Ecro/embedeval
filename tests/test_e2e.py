@@ -17,32 +17,9 @@ cli_runner = CliRunner()
 
 CASES_DIR = Path(__file__).parent.parent / "cases"
 PILOT_CASE_IDS = sorted(
-    [
-        f"{cat}-{n:03d}"
-        for cat in [
-            "ble",
-            "boot",
-            "device-tree",
-            "dma",
-            "gpio-basic",
-            "isr-concurrency",
-            "kconfig",
-            "linux-driver",
-            "memory-opt",
-            "networking",
-            "ota",
-            "power-mgmt",
-            "security",
-            "sensor-driver",
-            "spi-i2c",
-            "storage",
-            "threading",
-            "timer",
-            "watchdog",
-            "yocto",
-        ]
-        for n in range(1, 11)
-    ]
+    d.name
+    for d in CASES_DIR.iterdir()
+    if d.is_dir() and (d / "metadata.yaml").exists()
 )
 
 

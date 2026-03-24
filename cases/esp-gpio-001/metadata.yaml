@@ -1,0 +1,10 @@
+id: esp-gpio-001
+category: gpio-basic
+difficulty: easy
+title: ESP-IDF GPIO LED Blink
+description: Blink an LED using ESP-IDF GPIO driver
+tags: [esp-idf, gpio, led, blink]
+platform: esp_idf
+estimated_tokens: 300
+sdk_version: "5.3"
+visibility: public

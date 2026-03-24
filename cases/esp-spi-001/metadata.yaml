@@ -1,0 +1,10 @@
+id: esp-spi-001
+category: spi-i2c
+difficulty: medium
+title: ESP-IDF SPI Master Half-Duplex Write
+description: Initialize SPI bus and write data to an SPI device using ESP-IDF SPI master driver
+tags: [esp-idf, spi, master, half-duplex]
+platform: esp_idf
+estimated_tokens: 400
+sdk_version: "5.3"
+visibility: public

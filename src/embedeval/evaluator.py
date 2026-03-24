@@ -187,7 +187,11 @@ def _run_static_checks(case_dir: Path, generated_code: str) -> LayerResult:
 def _run_compile_gate(
     case_dir: Path, generated_code: str, timeout: float
 ) -> LayerResult:
-    """Layer 1: Docker west build + .map analysis."""
+    """Layer 1: Compile gate — dispatches to ESP-IDF or Zephyr path."""
+    # Check if this is an ESP-IDF case before attempting west build
+    if _is_esp_idf_case(case_dir):
+        return _run_compile_esp_idf(case_dir, generated_code, timeout)
+
     if not _build_env_available():
         logger.info("Docker not available, skipping compile gate (pass)")
         return LayerResult(
@@ -418,3 +422,94 @@ def _build_env_available() -> bool:
     import os
 
     return os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+
+
+def _esp_idf_env_available() -> bool:
+    """Check if ESP-IDF build environment is available."""
+    import os
+
+    return (
+        os.environ.get("IDF_PATH") is not None
+        and os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+    )
+
+
+def _is_esp_idf_case(case_dir: Path) -> bool:
+    """Return True if this case targets ESP-IDF rather than Zephyr.
+
+    Detection strategy (first match wins):
+    1. metadata.yaml contains ``platform: esp_idf``
+    2. case directory contains an ``sdkconfig.defaults`` file
+    """
+    # Check metadata.yaml for explicit platform declaration
+    metadata_path = case_dir / "metadata.yaml"
+    if metadata_path.is_file():
+        content = metadata_path.read_text(encoding="utf-8")
+        if "platform: esp_idf" in content:
+            return True
+
+    # Fall back to presence of sdkconfig.defaults (ESP-IDF project marker)
+    return (case_dir / "sdkconfig.defaults").is_file()
+
+
+def _run_compile_esp_idf(
+    case_dir: Path, generated_code: str, timeout: float
+) -> LayerResult:
+    """Layer 1: ESP-IDF compilation via idf.py build."""
+    if not _esp_idf_env_available():
+        logger.info("ESP-IDF not available, skipping compile gate (pass)")
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="esp_idf_available",
+                    passed=True,
+                    expected="IDF_PATH set",
+                    actual="skipped (ESP-IDF not available)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
+    src_file = case_dir / "main" / "main.c"
+    src_file.parent.mkdir(parents=True, exist_ok=True)
+    src_file.write_text(generated_code, encoding="utf-8")
+
+    try:
+        result = subprocess.run(
+            ["idf.py", "build"],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(case_dir),
+        )
+        passed = result.returncode == 0
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=passed,
+            details=[
+                CheckDetail(
+                    check_name="idf_build",
+                    passed=passed,
+                    expected="exit code 0",
+                    actual=f"exit code {result.returncode}",
+                    check_type="compile",
+                )
+            ],
+            error=result.stderr if not passed else None,
+            duration_seconds=0.0,
+        )
+    except subprocess.TimeoutExpired:
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=False,
+            details=[],
+            error=f"ESP-IDF build timed out after {timeout}s",
+            duration_seconds=timeout,
+        )

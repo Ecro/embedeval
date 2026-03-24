@@ -1,0 +1,15 @@
+FROM espressif/idf:v5.3
+
+# Install Python tooling
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /app
+
+# Copy dependency files and install
+COPY pyproject.toml .python-version uv.lock ./
+RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
+
+# Copy project source
+COPY . .
+
+ENTRYPOINT ["uv", "run", "embedeval"]

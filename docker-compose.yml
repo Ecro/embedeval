@@ -10,6 +10,7 @@ services:
       - ZEPHYR_BASE=/opt/zephyrproject/zephyr
       - ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk-0.16.8
       - BSIM_OUT_PATH=/opt/bsim
+      - EMBEDEVAL_ENABLE_BUILD=1
 
   worker:
     build:
@@ -22,6 +23,7 @@ services:
       - ZEPHYR_BASE=/opt/zephyrproject/zephyr
       - ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk-0.16.8
       - BSIM_OUT_PATH=/opt/bsim
+      - EMBEDEVAL_ENABLE_BUILD=1
     deploy:
       replicas: 4
     entrypoint: ["uv", "run", "embedeval"]

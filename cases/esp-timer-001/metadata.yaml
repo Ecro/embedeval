@@ -1,0 +1,10 @@
+id: esp-timer-001
+category: timer
+difficulty: medium
+title: ESP-IDF High-Resolution Periodic Timer
+description: Create and start a periodic high-resolution timer using esp_timer with a callback function
+tags: [esp-idf, timer, esp_timer, high-resolution, periodic]
+platform: esp_idf
+estimated_tokens: 350
+sdk_version: "5.3"
+visibility: public

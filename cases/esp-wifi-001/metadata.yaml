@@ -1,0 +1,10 @@
+id: esp-wifi-001
+category: networking
+difficulty: medium
+title: ESP-IDF WiFi Station Mode Connect
+description: Connect to a WiFi network in station mode using the ESP-IDF WiFi driver and event system
+tags: [esp-idf, wifi, station, networking, events]
+platform: esp_idf
+estimated_tokens: 500
+sdk_version: "5.3"
+visibility: public
