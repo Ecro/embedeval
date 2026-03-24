@@ -1,0 +1,10 @@
+id: esp-i2c-001
+category: spi-i2c
+difficulty: medium
+title: ESP-IDF I2C Master Communication
+description: Read and write to an I2C sensor device
+tags: [esp-idf, i2c, master, sensor]
+platform: esp_idf
+estimated_tokens: 400
+sdk_version: "5.3"
+visibility: public

@@ -1,0 +1,10 @@
+id: esp-ble-001
+category: ble
+difficulty: hard
+title: ESP-IDF BLE GATT Server
+description: Create a BLE GATT server with a custom service and characteristic
+tags: [esp-idf, ble, gatt, bluedroid]
+platform: esp_idf
+estimated_tokens: 600
+sdk_version: "5.3"
+visibility: public

@@ -1,0 +1,10 @@
+id: esp-adc-001
+category: sensor-driver
+difficulty: medium
+title: ESP-IDF ADC with Calibration
+description: Read an ADC channel and convert raw values to millivolts using calibration
+tags: [esp-idf, adc, calibration, oneshot]
+platform: esp_idf
+estimated_tokens: 400
+sdk_version: "5.3"
+visibility: public

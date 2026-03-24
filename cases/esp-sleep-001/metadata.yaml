@@ -1,0 +1,10 @@
+id: esp-sleep-001
+category: power-mgmt
+difficulty: medium
+title: ESP-IDF Deep Sleep with GPIO Wakeup
+description: Enter deep sleep and wake up on a GPIO event
+tags: [esp-idf, deep-sleep, wakeup, power-management]
+platform: esp_idf
+estimated_tokens: 350
+sdk_version: "5.3"
+visibility: public
