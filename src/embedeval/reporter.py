@@ -214,9 +214,19 @@ def _category_breakdown(reports: list[BenchmarkReport]) -> list[str]:
 
 
 def _load_external_benchmarks() -> dict[str, dict[str, float | str]]:
-    """Load external benchmark scores from external_benchmarks.yaml."""
-    yaml_path = Path(__file__).parent.parent.parent / "external_benchmarks.yaml"
-    if not yaml_path.exists():
+    """Load external benchmark scores from external_benchmarks.yaml.
+
+    Searches: package data dir → CWD → repo root (relative to source).
+    """
+    candidates = [
+        Path.cwd() / "external_benchmarks.yaml",
+        Path(__file__).parent / "external_benchmarks.yaml",
+        Path(__file__).parent.parent.parent / "external_benchmarks.yaml",
+    ]
+    for yaml_path in candidates:
+        if yaml_path.exists():
+            break
+    else:
         return {}
     try:
         data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
@@ -226,12 +236,18 @@ def _load_external_benchmarks() -> dict[str, dict[str, float | str]]:
 
 
 def _match_external(model_name: str, externals: dict) -> dict | None:
-    """Find matching external benchmark entry by substring."""
+    """Find matching external benchmark entry.
+
+    Uses longest-match to avoid ambiguity (e.g., "gpt-4o" vs "gpt-4o-mini").
+    """
     model_lower = model_name.lower()
+    best_match: tuple[int, dict] | None = None
     for key, scores in externals.items():
-        if key.lower() in model_lower:
-            return scores
-    return None
+        key_lower = key.lower()
+        if key_lower in model_lower:
+            if best_match is None or len(key_lower) > best_match[0]:
+                best_match = (len(key_lower), scores)
+    return best_match[1] if best_match else None
 
 
 def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
