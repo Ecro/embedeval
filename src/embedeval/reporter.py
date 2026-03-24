@@ -5,6 +5,8 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
+import yaml
+
 from embedeval.models import BenchmarkReport, EvalResult
 
 logger = logging.getLogger(__name__)
@@ -68,6 +70,8 @@ def generate_leaderboard(
     lines.extend(_failure_distribution(reports))
     lines.append("")
     lines.extend(_category_breakdown(reports))
+    lines.append("")
+    lines.extend(_cross_benchmark_comparison(reports))
 
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     logger.info("Leaderboard written to %s", output)
@@ -206,6 +210,70 @@ def _category_breakdown(reports: list[BenchmarkReport]) -> list[str]:
                 f"| {cat_score.total_cases} |"
             )
 
+    return lines
+
+
+def _load_external_benchmarks() -> dict[str, dict[str, float | str]]:
+    """Load external benchmark scores from external_benchmarks.yaml."""
+    yaml_path = Path(__file__).parent.parent.parent / "external_benchmarks.yaml"
+    if not yaml_path.exists():
+        return {}
+    try:
+        data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+        return data.get("models", {}) if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _match_external(model_name: str, externals: dict) -> dict | None:
+    """Find matching external benchmark entry by substring."""
+    model_lower = model_name.lower()
+    for key, scores in externals.items():
+        if key.lower() in model_lower:
+            return scores
+    return None
+
+
+def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
+    """Generate cross-benchmark comparison table (EmbedEval vs HumanEval/SWE-bench)."""
+    externals = _load_external_benchmarks()
+    if not externals:
+        return []
+
+    lines: list[str] = [
+        "## Cross-Benchmark Comparison",
+        "",
+        "| Model | HumanEval | SWE-bench | EmbedEval | Embed Gap |",
+        "|-------|-----------|-----------|-----------|-----------|",
+    ]
+
+    has_data = False
+    for report in reports:
+        for model_score in report.models:
+            ext = _match_external(model_score.model, externals)
+            if ext is None:
+                continue
+            has_data = True
+            humaneval = ext.get("humaneval", 0)
+            swe_bench = ext.get("swe_bench", 0)
+            embed_pct = model_score.pass_at_1 * 100
+            gap = embed_pct - humaneval
+            lines.append(
+                f"| {model_score.model} "
+                f"| {humaneval:.1f}% "
+                f"| {swe_bench:.1f}% "
+                f"| {embed_pct:.1f}% "
+                f"| {gap:+.1f}%p |"
+            )
+
+    if not has_data:
+        return []
+
+    lines.extend([
+        "",
+        "*Embed Gap = EmbedEval pass@1 - HumanEval. "
+        "Negative = harder than general coding.*",
+    ])
     return lines
 
 

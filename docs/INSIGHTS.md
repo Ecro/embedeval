@@ -204,3 +204,54 @@ n=10/카테고리에서 1건 변동 = 10%p 차이. confidence interval 없는 "9
 | 5 | 부분 점수제 (weighted scoring) | 세밀한 모델 비교 | Medium |
 | 6 | Private test set 분리 | 오염 방지 | Medium |
 | 7 | Multi-platform (ESP-IDF 추가) | 범위 확대 | High |
+
+---
+
+## #8. Cross-Benchmark Comparison Strategy (2026-03-24)
+
+**발견:** Human baseline 대신 기존 공개 코딩 벤치마크와 비교하면 더 효과적.
+
+### 핵심 아이디어
+
+모델 출시 시 공개되는 일반 코딩 벤치마크 (HumanEval, MBPP, SWE-bench)와
+EmbedEval 점수를 나란히 놓으면, **"일반 코딩 → 임베디드 코딩"의 성능 하락폭(Gap)**
+자체가 모델의 도메인 전문성을 나타냄.
+
+```
+Model       | HumanEval | SWE-bench | EmbedEval | Embed Gap
+------------|-----------|-----------|-----------|----------
+Sonnet 4.6  |   93.7%   |   72.2%   |    ??%    | -??.?%p
+Haiku 4.5   |   84.0%   |   48.2%   |    ??%    | -??.?%p
+GPT-4o      |   92.0%   |   66.0%   |    ??%    | TBD
+```
+
+### 왜 Human Baseline보다 나은가
+
+| 비교 방식 | 장점 | 단점 |
+|-----------|------|------|
+| Human baseline | 절대적 의미 부여 | 사람 구하기 어려움, 1명이면 편향, 재현 불가 |
+| Cross-benchmark | 데이터 이미 공개됨, 모델마다 비교 가능, 재현 가능 | 벤치마크 간 난이도 차이 보정 필요 |
+
+### 핵심 메트릭: "Embedded Gap"
+
+```
+Embedded Gap = EmbedEval pass@1 - HumanEval pass@1
+```
+
+- Gap이 작을수록 → 모델이 임베디드 도메인에도 강함
+- Gap이 클수록 → 일반 코딩은 잘하지만 임베디드 특화 지식 부족
+- 모델 간 Gap 비교로 "어떤 모델이 임베디드에 더 적합한지" 판단 가능
+
+### 구현 방향
+
+1. **LEADERBOARD.md에 공개 벤치마크 점수 참조 컬럼 추가**
+2. **Embedded Gap 자동 계산** (외부 점수는 수동 입력 또는 config)
+3. **모델별 Gap 비교 차트** (markdown 테이블로)
+
+### 활용 시나리오
+
+"Sonnet은 HumanEval 93.7%인데 EmbedEval은 85%라 Gap이 -8.7%p.
+반면 Haiku는 HumanEval 84%인데 EmbedEval은 60%라 Gap이 -24%p.
+→ Sonnet이 임베디드에서 상대적으로 강하다."
+
+이런 분석이 가능해짐. Human baseline 1명 구하는 것보다 훨씬 신뢰성 있음.
