@@ -90,7 +90,12 @@ def run(
 
     report = score_results(results)
 
-    from embedeval.reporter import generate_json, generate_leaderboard
+    from embedeval.reporter import (
+        generate_failure_report,
+        generate_json,
+        generate_leaderboard,
+        generate_run_archive,
+    )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     json_path = output_dir / f"{model}-results.json"
@@ -99,8 +104,12 @@ def run(
     leaderboard_path = output_dir / "LEADERBOARD.md"
     generate_leaderboard([report], leaderboard_path)
 
+    run_dir = generate_run_archive(results, report, output_dir, model)
+    generate_failure_report(results, run_dir / "report.md", model)
+
     typer.echo(f"Results: {json_path}")
     typer.echo(f"Leaderboard: {leaderboard_path}")
+    typer.echo(f"Detailed: {run_dir}/")
 
 
 @app.command()

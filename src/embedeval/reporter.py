@@ -2,9 +2,10 @@
 
 import json
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
 
-from embedeval.models import BenchmarkReport
+from embedeval.models import BenchmarkReport, EvalResult
 
 logger = logging.getLogger(__name__)
 
@@ -204,6 +205,173 @@ def _category_breakdown(reports: list[BenchmarkReport]) -> list[str]:
             )
 
     return lines
+
+
+def generate_run_archive(
+    results: list[EvalResult],
+    report: BenchmarkReport,
+    output_base: Path,
+    model: str,
+) -> Path:
+    """Save detailed per-case results and summary to a timestamped run directory.
+
+    Returns the run directory path.
+    """
+    timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    model_slug = model.replace("/", "_").replace(":", "_")
+    run_dir = output_base / "runs" / f"{timestamp}_{model_slug}"
+    details_dir = run_dir / "details"
+    details_dir.mkdir(parents=True, exist_ok=True)
+
+    # Save per-case detailed results
+    for r in results:
+        case_data = r.model_dump(mode="json")
+        case_file = details_dir / f"{r.case_id}.json"
+        case_file.write_text(
+            json.dumps(case_data, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+
+    # Save summary
+    summary_file = run_dir / "summary.json"
+    summary = report.model_dump(mode="json")
+    summary["run_timestamp"] = timestamp
+    summary["model"] = model
+    summary["total_results"] = len(results)
+    summary["passed"] = sum(1 for r in results if r.passed)
+    summary["failed"] = sum(1 for r in results if not r.passed)
+    summary_file.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    # Append to history
+    _append_history(output_base, summary)
+
+    logger.info("Run archive saved to %s", run_dir)
+    return run_dir
+
+
+def generate_failure_report(
+    results: list[EvalResult],
+    output: Path,
+    model: str,
+) -> None:
+    """Generate a Markdown failure analysis report."""
+    lines: list[str] = []
+    timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    total = len(results)
+    passed = sum(1 for r in results if r.passed)
+    failed = total - passed
+    pass_at_1 = passed / total if total > 0 else 0.0
+
+    lines.append(f"# Benchmark Report: {model}")
+    lines.append(f"\n**Date:** {timestamp}")
+    lines.append(f"\n## Summary\n")
+    lines.append(f"| Metric | Value |")
+    lines.append(f"|--------|-------|")
+    lines.append(f"| Model | {model} |")
+    lines.append(f"| Total Cases | {total} |")
+    lines.append(f"| Passed | {passed} |")
+    lines.append(f"| Failed | {failed} |")
+    lines.append(f"| pass@1 | {pass_at_1:.1%} |")
+
+    # Failed cases detail
+    failed_results = [r for r in results if not r.passed]
+    if failed_results:
+        lines.append(f"\n## Failed Cases ({len(failed_results)})\n")
+        lines.append("| Case | Difficulty | Failed Layer | Failed Checks |")
+        lines.append("|------|-----------|-------------|--------------|")
+
+        for r in sorted(failed_results, key=lambda x: x.case_id):
+            diff = r.category.value if r.category else "?"
+            layer_name = "?"
+            failed_checks: list[str] = []
+            for layer in r.layers:
+                fc = [d.check_name for d in layer.details if not d.passed]
+                if fc:
+                    layer_name = layer.name
+                    failed_checks.extend(fc)
+            checks_str = ", ".join(failed_checks) if failed_checks else "unknown"
+            lines.append(
+                f"| `{r.case_id}` | {diff} | {layer_name} | {checks_str} |"
+            )
+
+    # Failure pattern analysis
+    pattern_counts: dict[str, list[str]] = {}
+    for r in failed_results:
+        for layer in r.layers:
+            for d in layer.details:
+                if not d.passed:
+                    pattern_counts.setdefault(d.check_name, []).append(r.case_id)
+
+    if pattern_counts:
+        lines.append(f"\n## Failure Patterns\n")
+        lines.append("| Check Name | Failures | Cases |")
+        lines.append("|-----------|----------|-------|")
+        for check, cases in sorted(
+            pattern_counts.items(), key=lambda x: -len(x[1])
+        ):
+            case_list = ", ".join(cases[:5])
+            if len(cases) > 5:
+                case_list += f" (+{len(cases)-5} more)"
+            lines.append(f"| `{check}` | {len(cases)} | {case_list} |")
+
+    # By difficulty
+    by_diff: dict[str, dict[str, int]] = {}
+    for r in results:
+        # Extract difficulty from case_id pattern
+        diff = "unknown"
+        for layer in r.layers:
+            pass  # We need metadata for difficulty
+        if r.case_id not in by_diff:
+            by_diff.setdefault("all", {"total": 0, "passed": 0})
+            by_diff["all"]["total"] += 1
+            if r.passed:
+                by_diff["all"]["passed"] += 1
+
+    # TC improvement suggestions
+    lines.append(f"\n## TC Improvement Suggestions\n")
+    always_pass = [r.case_id for r in results if r.passed]
+    if len(always_pass) == total:
+        lines.append("All cases passed — consider adding harder test cases.\n")
+    elif pass_at_1 > 0.9:
+        lines.append(
+            f"pass@1 is {pass_at_1:.0%} — most cases are too easy for this model.\n"
+        )
+        lines.append("Consider strengthening checks or adding hallucination traps.\n")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    logger.info("Failure report written to %s", output)
+
+
+def _append_history(output_base: Path, run_summary: dict[str, object]) -> None:  # noqa: C901
+    """Append a run summary to history.json."""
+    history_file = output_base / "history.json"
+    history: list[dict[str, object]] = []
+    if history_file.is_file():
+        try:
+            history = json.loads(history_file.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, TypeError):
+            history = []
+
+    entry = {
+        "timestamp": run_summary.get("run_timestamp", ""),
+        "model": run_summary.get("model", ""),
+        "total": run_summary.get("total_results", 0),
+        "passed": run_summary.get("passed", 0),
+        "failed": run_summary.get("failed", 0),
+    }
+    overall = run_summary.get("overall")
+    if isinstance(overall, dict):
+        entry["pass_at_1"] = overall.get("best_pass_at_1", 0.0)
+    history.append(entry)
+
+    history_file.write_text(
+        json.dumps(history, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _pass_fail_icon(rate: float) -> str:
