@@ -55,4 +55,13 @@ NEGATIVES = [
         "mutation": lambda code: _remove_lines(code, "portYIELD_FROM_ISR"),
         "must_fail": ["isr_yield_after_queue_send"],
     },
+    # --- Subtle ---
+    {
+        "name": "from_isr_with_null_wake_flag",
+        "mutation": lambda code: code.replace(
+            "&higher_priority_woken", "NULL"
+        ),
+        "should_fail": ["isr_yield_after_queue_send"],
+        "bug_description": "xQueueSendFromISR with NULL pxHigherPriorityTaskWoken — portYIELD_FROM_ISR gets garbage value",
+    },
 ]

@@ -54,4 +54,14 @@ NEGATIVES = [
         "mutation": lambda code: _remove_lines(code, "vTaskDelay"),
         "must_fail": ["vtaskdelay_used"],
     },
+    # --- Subtle ---
+    {
+        "name": "busy_wait_for_loop",
+        "mutation": lambda code: code.replace(
+            "vTaskDelay(pdMS_TO_TICKS(500));",
+            "for(volatile int _d=0; _d<5000000; _d++); /* busy wait */"
+        ),
+        "should_fail": ["vtaskdelay_used"],
+        "bug_description": "CPU busy-wait loop instead of OS delay — 100% CPU, no other tasks can run",
+    },
 ]

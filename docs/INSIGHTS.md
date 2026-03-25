@@ -338,3 +338,38 @@ Embedded Gap = EmbedEval pass@1 - HumanEval pass@1
 - **EmbedEval은 모델 간 변별력이 있다** — Sonnet vs Haiku에서 11.4%p 차이 확인.
 - **HW 도메인 지식이 변별기** — SW 패턴(boot, kconfig)은 차이 없고, HW 관련(spi, dt, ble)에서 차이 극대화.
 - **L1/L2 활성화 시 Gap이 더 벌어질 것** — Haiku의 코드가 컴파일 실패하는 경우가 더 많을 것으로 예상.
+
+---
+
+## #11. Check Precision — Subtle Negative Test Results (2026-03-25)
+
+**발견: 체크의 실제 precision은 40%. 교묘한 오답의 60%를 놓치고 있다.**
+
+### 결과
+
+```
+Trivial mutations (코드 제거):     20/20 caught (100%)
+Subtle mutations (체크 우회 버그):  6/15  caught  (40%)
+Blind spots:                        9/15           (60%)
+```
+
+### 9개 Blind Spot — 체크가 못 잡는 실제 버그
+
+| 유형 | 예시 | 위험도 | 근본 원인 |
+|------|------|--------|----------|
+| **Keyword 위치 무관** | `volatile`이 다른 변수에 있어도 PASS | High | `"volatile" in code` — 어디에 있든 매칭 |
+| **Substring 우회** | `__copy_to_user`가 `copy_to_user` 체크 통과 | Critical | substring 매칭 |
+| **행위 미확인** | 에러 감지하지만 return 없이 계속 진행 | High | 존재 여부만 체크, 행동 미확인 |
+| **대안 패턴 무시** | `irq_lock` 사용 — mutex 아니라 체크 통과 | High | 금지 목록에 irq_lock 없음 |
+| **부분 만족** | 3개 cleanup 중 2개만 해도 PASS | High | AND 체크가 아닌 OR 체크 |
+| **값 무관** | spinlock key가 0이어도 PASS | Medium | 변수 존재만 확인, 값 미확인 |
+
+### 핵심 교훈
+
+**Static heuristic의 구조적 한계:**
+1. **존재 체크(presence)는 의미 체크(semantics)가 아니다** — "volatile이 있는가"와 "올바른 변수에 volatile이 있는가"는 다르다
+2. **substring 매칭은 보안 우회를 허용한다** — `__copy_to_user`는 `copy_to_user`의 위험한 변종
+3. **금지 목록은 항상 불완전하다** — `irq_lock`이 목록에 없으면 통과
+4. **행동을 검증하려면 실행이 필요하다** — "에러 체크 후 return하는가"는 regex로 불완전
+
+**이 결과가 Insight #7을 재확인:** L3를 "behavioral"이라 부르면 안 되는 이유. 실제 precision은 40%.

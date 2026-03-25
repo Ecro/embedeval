@@ -33,4 +33,25 @@ NEGATIVES = [
         "mutation": lambda code: code.replace("if (worker_alive)", "if (1) /* always feed */"),
         "must_fail": ["wdt_feed_is_conditional"],
     },
+    # --- Subtle ---
+    {
+        "name": "check_and_clear_race",
+        "mutation": lambda code: code.replace(
+            "atomic_set(&worker_alive, 0);",
+            "atomic_set(&worker_alive, 0); /* cleared immediately after check — race window */"
+        ) if "atomic_set" in code else code.replace(
+            "worker_alive = 0;",
+            "worker_alive = 0; /* cleared immediately — race */"
+        ),
+        "should_fail": ["feed_conditional_not_unconditional"],
+        "bug_description": "Flag cleared right after check but before feed — thread could die in the gap",
+    },
+    {
+        "name": "feed_without_checking_all_threads",
+        "mutation": lambda code: code.replace(
+            "thread0_healthy", "1 /* always healthy */"
+        ) if "thread0_healthy" in code else code,
+        "should_fail": ["wdt_feed_is_conditional"],
+        "bug_description": "One thread's health always reported as healthy — dead thread undetected",
+    },
 ]

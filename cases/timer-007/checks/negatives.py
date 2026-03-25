@@ -32,4 +32,11 @@ NEGATIVES = [
         "mutation": lambda code: code.replace("K_SECONDS(1)", "K_SECONDS(3)"),
         "must_fail": ["timer_period_less_than_wdt_timeout"],
     },
+    # --- Subtle ---
+    {
+        "name": "period_almost_equals_timeout",
+        "mutation": lambda code: code.replace("K_SECONDS(1)", "K_MSEC(2999)"),
+        "should_fail": ["timer_period_less_than_wdt_timeout"],
+        "bug_description": "Period 2999ms with 3000ms timeout — technically < but 1ms margin is unsafe for real-time",
+    },
 ]

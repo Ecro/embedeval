@@ -68,4 +68,14 @@ NEGATIVES = [
         ),
         "must_fail": ["atomic_t_for_indices"],
     },
+    # --- Subtle ---
+    {
+        "name": "volatile_instead_of_atomic",
+        "mutation": lambda code: code.replace("atomic_t", "volatile uint32_t").replace(
+            "atomic_get(&", "(").replace("atomic_set(&", "*(").replace(
+            ", w + 1)", " = w + 1)").replace(", r + 1)", " = r + 1)").replace(
+            ", 0)", " = 0)"),
+        "should_fail": ["atomic_t_for_indices"],
+        "bug_description": "volatile is NOT atomic — read-modify-write race on multi-core or with optimizing compiler",
+    },
 ]

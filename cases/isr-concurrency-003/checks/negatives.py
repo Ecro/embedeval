@@ -59,4 +59,24 @@ NEGATIVES = [
         ),
         "must_fail": ["no_forbidden_apis_in_isr"],
     },
+    # --- Subtle mutations ---
+    {
+        "name": "irq_lock_instead_of_spinlock",
+        "mutation": lambda code: code.replace(
+            "k_spin_lock(&counter_lock)", "irq_lock()"
+        ).replace(
+            "k_spin_unlock(&counter_lock, key)", "irq_unlock(key)"
+        ).replace("k_spinlock_key_t", "unsigned int"),
+        "should_fail": ["no_mutex_in_isr"],
+        "bug_description": "irq_lock disables ALL interrupts globally — worse than spinlock but passes mutex check",
+    },
+    {
+        "name": "spinlock_key_hardcoded_zero",
+        "mutation": lambda code: code.replace(
+            "key = k_spin_lock(&counter_lock);",
+            "k_spin_lock(&counter_lock); k_spinlock_key_t key = {0};"
+        ),
+        "should_fail": ["key_passed_to_unlock"],
+        "bug_description": "Spinlock key not saved from k_spin_lock — interrupt state not restored on unlock",
+    },
 ]

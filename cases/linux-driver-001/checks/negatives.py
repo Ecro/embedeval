@@ -65,4 +65,27 @@ NEGATIVES = [
         ),
         "must_fail": ["copy_to_user_used"],
     },
+    # --- Subtle ---
+    {
+        "name": "unsafe_copy_to_user",
+        "mutation": lambda code: code.replace("copy_to_user", "__copy_to_user").replace("copy_from_user", "__copy_from_user"),
+        "should_fail": ["copy_to_user_used"],
+        "bug_description": "__copy_to_user skips access_ok() check — kernel security vulnerability",
+    },
+    {
+        "name": "partial_cleanup_only",
+        "mutation": lambda code: code.replace("unregister_chrdev_region", "/* unregister_chrdev_region */"),
+        "should_fail": ["init_error_path_cleanup"],
+        "bug_description": "cdev_del called but chrdev_region not unregistered — partial cleanup leaks major number",
+    },
+    {
+        "name": "error_check_no_return",
+        "mutation": lambda code: code.replace(
+            "return ret;",
+            '/* return ret; */ printk("continuing despite error\\n");',
+            1  # only first occurrence
+        ),
+        "should_fail": ["init_error_path_cleanup"],
+        "bug_description": "Error detected and logged but execution continues — resources used in undefined state",
+    },
 ]

@@ -42,4 +42,14 @@ NEGATIVES = [
         ),
         "must_fail": ["no_cross_platform_ble_apis"],
     },
+    # --- Subtle ---
+    {
+        "name": "unref_only_in_normal_path",
+        "mutation": lambda code: code.replace(
+            "bt_conn_unref(default_conn);\n\t\tdefault_conn = NULL;\n\t\treturn;",
+            "return;  /* skip cleanup on error */"
+        ),
+        "should_fail": ["conn_cleanup_on_failed_connect"],
+        "bug_description": "Connection ref leaked on failed connect — unref only in disconnect, not in error path",
+    },
 ]

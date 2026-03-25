@@ -50,4 +50,23 @@ NEGATIVES = [
         "mutation": _move_error_check_before_sem,
         "must_fail": ["error_flag_read_after_sync"],
     },
+    # --- Subtle mutations (should_fail — may not be caught) ---
+    {
+        "name": "volatile_on_wrong_variable",
+        "mutation": lambda code: code.replace(
+            "volatile int dma_error_flag",
+            "int dma_error_flag"
+        ) + "\nvolatile int _unused_volatile_marker = 0;\n",
+        "should_fail": ["error_flag_is_volatile"],
+        "bug_description": "volatile exists in code but on wrong variable — flag is not volatile",
+    },
+    {
+        "name": "error_detected_but_no_return",
+        "mutation": lambda code: code.replace(
+            "return dma_error_flag;",
+            'printk("error detected but continuing anyway\\n");'
+        ),
+        "should_fail": ["error_flag_read_after_sync"],
+        "bug_description": "Error flag checked but program continues — no early return on error",
+    },
 ]
