@@ -1,0 +1,10 @@
+id: stm32-uart-001
+category: networking
+difficulty: medium
+title: "STM32 UART Interrupt Receive with Echo"
+description: "Configure UART2 at 115200 baud with interrupt-driven receive and echo back"
+tags: [stm32, hal, uart, interrupt, echo, serial]
+platform: stm32_hal
+estimated_tokens: 450
+sdk_version: "1.28.1"
+visibility: public

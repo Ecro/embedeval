@@ -1,0 +1,10 @@
+id: stm32-spi-001
+category: spi-i2c
+difficulty: medium
+title: "STM32 SPI Master Communication with Manual CS"
+description: "Configure SPI1 as master with manual chip-select, write command and read response"
+tags: [stm32, hal, spi, master, chip-select, gpio]
+platform: stm32_hal
+estimated_tokens: 450
+sdk_version: "1.28.1"
+visibility: public

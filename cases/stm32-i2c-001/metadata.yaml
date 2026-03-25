@@ -1,0 +1,10 @@
+id: stm32-i2c-001
+category: spi-i2c
+difficulty: medium
+title: "STM32 I2C Sensor Register Read"
+description: "Configure I2C1 at 100kHz and read a WHO_AM_I register from an I2C sensor"
+tags: [stm32, hal, i2c, sensor, register, mpu6050]
+platform: stm32_hal
+estimated_tokens: 400
+sdk_version: "1.28.1"
+visibility: public

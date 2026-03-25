@@ -1,0 +1,10 @@
+id: stm32-freertos-001
+category: threading
+difficulty: medium
+title: "STM32 FreeRTOS Producer-Consumer with Queue"
+description: "Two FreeRTOS tasks communicating via a queue with different priorities"
+tags: [stm32, hal, freertos, task, queue, producer-consumer, cmsis-rtos]
+platform: stm32_hal
+estimated_tokens: 500
+sdk_version: "1.28.1"
+visibility: public

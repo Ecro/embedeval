@@ -150,17 +150,20 @@ def _run_layer(
     elif layer_num == 1:
         return _run_compile_gate(case_dir, generated_code, timeout)
     elif layer_num == 2:
-        if _is_esp_idf_case(case_dir):
+        is_esp = _is_esp_idf_case(case_dir)
+        is_stm32 = _is_stm32_case(case_dir)
+        if is_esp or is_stm32:
+            platform = "ESP-IDF" if is_esp else "STM32"
             return LayerResult(
                 layer=2,
                 name="runtime_execution",
                 passed=True,
                 details=[
                     CheckDetail(
-                        check_name="esp_idf_runtime",
+                        check_name="runtime_skip",
                         passed=True,
                         expected="runtime execution",
-                        actual="skipped (ESP-IDF QEMU not configured)",
+                        actual=f"skipped ({platform} QEMU not configured)",
                         check_type="environment",
                     )
                 ],
@@ -208,6 +211,10 @@ def _run_compile_gate(
     # Check if this is an ESP-IDF case before attempting west build
     if _is_esp_idf_case(case_dir):
         return _run_compile_esp_idf(case_dir, generated_code, timeout)
+
+    # Check if this is an STM32 HAL case
+    if _is_stm32_case(case_dir):
+        return _run_compile_stm32(case_dir, generated_code, timeout)
 
     if not _build_env_available():
         logger.info("Docker not available, skipping compile gate (pass)")
@@ -530,3 +537,109 @@ def _run_compile_esp_idf(
             error=f"ESP-IDF build timed out after {timeout}s",
             duration_seconds=timeout,
         )
+
+
+def _is_stm32_case(case_dir: Path) -> bool:
+    """Return True if this case targets STM32 HAL."""
+    metadata_path = case_dir / "metadata.yaml"
+    if metadata_path.is_file():
+        content = metadata_path.read_text(encoding="utf-8")
+        if "platform: stm32_hal" in content:
+            return True
+    return False
+
+
+def _stm32_env_available() -> bool:
+    """Check if STM32 build environment is available."""
+    import os
+
+    return (
+        os.environ.get("STM32_HAL_PATH") is not None
+        and os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+    )
+
+
+def _run_compile_stm32(
+    case_dir: Path, generated_code: str, timeout: float
+) -> LayerResult:
+    """Layer 1: STM32 HAL compilation via arm-none-eabi-gcc."""
+    if not _stm32_env_available():
+        logger.info("STM32 toolchain not available, skipping compile gate (pass)")
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="stm32_available",
+                    passed=True,
+                    expected="STM32_HAL_PATH set",
+                    actual="skipped (STM32 toolchain not available)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
+    import os
+    import tempfile
+    import time
+
+    hal_path = os.environ["STM32_HAL_PATH"]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        src_file = Path(tmpdir) / "main.c"
+        src_file.write_text(generated_code, encoding="utf-8")
+
+        cmd = [
+            "arm-none-eabi-gcc",
+            "-c",
+            "-mcpu=cortex-m4",
+            "-mthumb",
+            "-DSTM32F407xx",
+            "-DUSE_HAL_DRIVER",
+            f"-I{hal_path}/CMSIS/Include",
+            f"-I{hal_path}/CMSIS/Device/ST/STM32F4xx/Include",
+            f"-I{hal_path}/HAL_Driver/Inc",
+            "-Wall",
+            "-o", "/dev/null",
+            str(src_file),
+        ]
+
+        try:
+            start = time.monotonic()
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                cwd=tmpdir,
+            )
+            elapsed = time.monotonic() - start
+            passed = result.returncode == 0
+            return LayerResult(
+                layer=1,
+                name="compile_gate",
+                passed=passed,
+                details=[
+                    CheckDetail(
+                        check_name="stm32_gcc",
+                        passed=passed,
+                        expected="exit code 0",
+                        actual=f"exit code {result.returncode}",
+                        check_type="compile",
+                    )
+                ],
+                error=result.stderr if not passed else None,
+                duration_seconds=elapsed,
+            )
+        except subprocess.TimeoutExpired:
+            return LayerResult(
+                layer=1,
+                name="compile_gate",
+                passed=False,
+                details=[],
+                error=f"STM32 build timed out after {timeout}s",
+                duration_seconds=timeout,
+            )

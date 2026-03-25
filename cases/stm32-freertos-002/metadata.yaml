@@ -1,0 +1,10 @@
+id: stm32-freertos-002
+category: isr-concurrency
+difficulty: hard
+title: "STM32 FreeRTOS ISR-to-Task Communication via ISR-Safe Queue"
+description: "TIM2 ISR sends data to a task using xQueueSendFromISR; no blocking in ISR"
+tags: [stm32, hal, freertos, isr, queue, froomisr, timer, concurrency]
+platform: stm32_hal
+estimated_tokens: 550
+sdk_version: "1.28.1"
+visibility: public

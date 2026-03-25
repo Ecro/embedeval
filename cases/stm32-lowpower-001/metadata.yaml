@@ -1,0 +1,10 @@
+id: stm32-lowpower-001
+category: power-mgmt
+difficulty: hard
+title: "STM32 Stop Mode with RTC Alarm Wakeup"
+description: "Enter Stop mode via WFI, wake via RTC alarm after 5s, reconfigure PLL, toggle LED"
+tags: [stm32, hal, stop-mode, rtc, alarm, wakeup, pll, low-power, wfi]
+platform: stm32_hal
+estimated_tokens: 600
+sdk_version: "1.28.1"
+visibility: public

@@ -1,0 +1,10 @@
+id: stm32-gpio-001
+category: gpio-basic
+difficulty: medium
+title: "STM32 GPIO LED Toggle with Button Interrupt"
+description: "Configure GPIO output for LED and external interrupt on button, toggle LED in ISR callback"
+tags: [stm32, hal, gpio, interrupt, exti, led, button]
+platform: stm32_hal
+estimated_tokens: 400
+sdk_version: "1.28.1"
+visibility: public

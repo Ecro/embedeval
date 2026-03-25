@@ -1,0 +1,31 @@
+FROM ubuntu:22.04
+
+# Install ARM toolchain
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc-arm-none-eabi \
+    libnewlib-arm-none-eabi \
+    cmake make wget unzip ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download STM32F4 HAL (CMSIS + HAL Driver)
+RUN mkdir -p /opt/stm32f4 && \
+    wget -q https://github.com/STMicroelectronics/STM32CubeF4/archive/refs/tags/v1.28.1.tar.gz -O /tmp/stm32.tar.gz && \
+    tar xzf /tmp/stm32.tar.gz -C /tmp && \
+    cp -r /tmp/STM32CubeF4-1.28.1/Drivers/CMSIS /opt/stm32f4/CMSIS && \
+    cp -r /tmp/STM32CubeF4-1.28.1/Drivers/STM32F4xx_HAL_Driver /opt/stm32f4/HAL_Driver && \
+    rm -rf /tmp/stm32.tar.gz /tmp/STM32CubeF4-1.28.1
+
+# Install Python tooling
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /app
+
+COPY pyproject.toml .python-version uv.lock ./
+RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
+
+COPY . .
+
+ENV STM32_HAL_PATH=/opt/stm32f4
+ENV EMBEDEVAL_ENABLE_BUILD=1
+
+ENTRYPOINT ["uv", "run", "embedeval"]

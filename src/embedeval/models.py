@@ -60,6 +60,8 @@ class EvalPlatform(str, Enum):
     # FreeRTOS
     QEMU_FREERTOS = "qemu_freertos"
     ESP_IDF = "esp_idf"
+    # STM32 HAL
+    STM32_HAL = "stm32_hal"
     # Linux
     DOCKER_ONLY = "docker_only"
     QEMU_LINUX = "qemu_linux"

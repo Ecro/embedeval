@@ -1,0 +1,10 @@
+id: stm32-adc-001
+category: sensor-driver
+difficulty: hard
+title: "STM32 ADC1 Continuous Conversion via DMA"
+description: "Configure ADC1 Channel 0 with DMA for continuous conversion, process in callback"
+tags: [stm32, hal, adc, dma, continuous, callback, pa0]
+platform: stm32_hal
+estimated_tokens: 500
+sdk_version: "1.28.1"
+visibility: public
