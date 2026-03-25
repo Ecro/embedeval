@@ -7,3 +7,4 @@ tags: [zephyr, sensor, accelerometer, multi-channel, accel, driver]
 platform: native_sim
 estimated_tokens: 300
 sdk_version: "4.1.0"
+build_board: nrf52840dk/nrf52840

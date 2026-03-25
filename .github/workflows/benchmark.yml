@@ -4,11 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       model:
-        description: "LLM model to benchmark (e.g. gpt-4, claude-sonnet-4-20250514)"
+        description: "LLM model (e.g. claude-code://sonnet, mock)"
         required: true
         type: string
+        default: "mock"
+      enable_l1:
+        description: "Enable L1 build verification (Docker)"
+        type: boolean
+        default: false
 
 jobs:
+  # Always run: L0 + L3 static heuristic checks
   benchmark:
     name: Run Benchmark
     runs-on: ubuntu-latest
@@ -17,22 +23,53 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: astral-sh/setup-uv@v4
-        with:
-          enable-cache: true
-
+        with: { enable-cache: true }
       - run: uv sync
 
-      - name: Run benchmark for ${{ inputs.model }}
-        run: uv run embedeval run --model ${{ inputs.model }} --output results/
+      - name: Run benchmark
+        run: uv run embedeval run --model ${{ inputs.model }} --cases cases/ -v
 
-      - name: Generate leaderboard
-        run: uv run embedeval report --results results/ --output results/LEADERBOARD.md
-
-      - name: Upload benchmark results
+      - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-${{ inputs.model }}-${{ github.run_id }}
+          name: benchmark-results-${{ github.run_id }}
           path: results/
           retention-days: 90
+
+  # Optional: L1 Docker build verification
+  l1-build:
+    name: L1 Build Verification
+    runs-on: ubuntu-latest
+    if: inputs.enable_l1 == true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Zephyr Docker image
+        run: docker build -t embedeval-zephyr .
+
+      - name: L1 Build — all Zephyr -001 cases
+        run: |
+          docker run --rm --entrypoint bash embedeval-zephyr -c '
+            PASS=0; FAIL=0
+            for case_dir in /app/cases/*-001; do
+              name=$(basename $case_dir)
+              [[ $name == esp-* || $name == stm32-* ]] && continue
+              [ ! -f "$case_dir/CMakeLists.txt" ] && continue
+
+              # Read build_board from metadata, default native_sim
+              board=$(grep "build_board:" "$case_dir/metadata.yaml" 2>/dev/null | awk "{print \$2}")
+              [ -z "$board" ] && board="native_sim"
+
+              cd $case_dir; rm -rf build; mkdir -p src
+              cp reference/main.c src/main.c
+              if west build -b $board . -- -DCONF_FILE=prj.conf > /dev/null 2>&1; then
+                echo "PASS: $name ($board)"; PASS=$((PASS+1))
+              else
+                echo "FAIL: $name ($board)"; FAIL=$((FAIL+1))
+              fi
+              rm -rf build
+            done
+            echo "=== L1 Build: PASS=$PASS FAIL=$FAIL ==="
+            [ $FAIL -eq 0 ] || exit 1
+          '

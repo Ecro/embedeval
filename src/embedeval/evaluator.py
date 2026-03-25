@@ -241,7 +241,7 @@ def _run_compile_gate(
 
     try:
         result = subprocess.run(
-            ["west", "build", "-b", "native_sim", str(case_dir)],
+            ["west", "build", "-b", _get_build_board(case_dir), str(case_dir)],
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -446,6 +446,18 @@ def _build_env_available() -> bool:
     import os
 
     return os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+
+
+def _get_build_board(case_dir: Path) -> str:
+    """Read build_board from metadata.yaml, default to native_sim."""
+    metadata_path = case_dir / "metadata.yaml"
+    if metadata_path.is_file():
+        for line in metadata_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("build_board:"):
+                board = line.split(":", 1)[1].strip()
+                if board:
+                    return board
+    return "native_sim"
 
 
 def _esp_idf_env_available() -> bool:
