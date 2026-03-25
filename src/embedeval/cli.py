@@ -62,6 +62,14 @@ def run(
         str | None,
         typer.Option("--visibility", help="Filter by visibility (public/private)"),
     ] = None,
+    after_date: Annotated[
+        str | None,
+        typer.Option("--after-date", help="Only include cases created after this date (YYYY-MM-DD)"),
+    ] = None,
+    feedback_rounds: Annotated[
+        int,
+        typer.Option("--feedback-rounds", "-f", help="Compiler feedback rounds (0=disabled)"),
+    ] = 0,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -81,6 +89,8 @@ def run(
         filters.difficulties = [DifficultyTier(difficulty)]
     if visibility:
         filters.visibility = Visibility(visibility)
+    if after_date:
+        filters.after_date = after_date
 
     typer.echo(f"Running benchmark: model={model}, cases={cases_dir}")
     results = run_benchmark(
@@ -88,6 +98,7 @@ def run(
         model=model,
         filters=filters,
         attempts=attempts,
+        feedback_rounds=feedback_rounds,
     )
 
     if not results:
@@ -241,6 +252,73 @@ def list_categories(
             f"  {dc.get('easy', 0):>4d} {dc.get('medium', 0):>4d}"
             f"  {dc.get('hard', 0):>4d}"
         )
+
+
+@app.command()
+def agent(
+    model: Annotated[
+        str,
+        typer.Argument(help="LLM model identifier"),
+    ],
+    cases_dir: Annotated[
+        Path,
+        typer.Option("--cases", "-d", help="Path to cases directory"),
+    ] = Path("cases"),
+    max_turns: Annotated[
+        int,
+        typer.Option("--max-turns", "-t", help="Maximum agent turns per case"),
+    ] = 5,
+    category: Annotated[
+        Optional[list[str]],
+        typer.Option("--category", "-c", help="Filter by category (repeatable)"),
+    ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose logging"),
+    ] = False,
+) -> None:
+    """Run benchmark in multi-turn agent mode with error feedback."""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, force=True)
+
+    from embedeval.agent import evaluate_agent
+    from embedeval.runner import Filters, discover_cases, filter_cases
+
+    cases = discover_cases(cases_dir)
+    filters = Filters()
+    if category:
+        filters.categories = [CaseCategory(c) for c in category]
+    cases = filter_cases(cases, filters)
+
+    if not cases:
+        typer.echo("No cases found.")
+        raise typer.Exit(code=1)
+
+    typer.echo(f"Agent mode: model={model}, max_turns={max_turns}, cases={len(cases)}\n")
+
+    from embedeval.runner import _load_prompt
+
+    passed = 0
+    failed = 0
+    for case_dir, meta in cases:
+        prompt = _load_prompt(case_dir)
+        result = evaluate_agent(
+            case_dir=case_dir,
+            model=model,
+            prompt=prompt,
+            max_turns=max_turns,
+        )
+        status = "PASS" if result.passed else "FAIL"
+        turns_info = f"turn {result.turns_used}/{result.max_turns}"
+        typer.echo(f"  [{status}] {meta.id:30s} ({turns_info})")
+        if result.passed:
+            passed += 1
+        else:
+            failed += 1
+
+    total = passed + failed
+    pass_rate = passed / total if total > 0 else 0.0
+    typer.echo(f"\nAgent results: {passed}/{total} passed ({pass_rate:.1%})")
 
 
 @app.command(name="list")

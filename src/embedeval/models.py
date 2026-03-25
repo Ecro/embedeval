@@ -89,6 +89,7 @@ class CaseMetadata(BaseModel):
     estimated_tokens: int
     sdk_version: str
     visibility: Visibility = Visibility.PUBLIC
+    created_date: str | None = None  # ISO date, e.g. "2026-03-24"
 
 
 class LLMResponse(BaseModel):

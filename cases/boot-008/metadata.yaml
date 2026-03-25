@@ -7,3 +7,4 @@ tags: [zephyr, mcuboot, boot, kconfig, downgrade-protection, version, security]
 platform: native_sim
 estimated_tokens: 250
 sdk_version: "4.1.0"
+created_date: "2026-03-24"

@@ -10,23 +10,29 @@ models:
     humaneval: 93.7
     swe_bench: 72.2
     source: "Anthropic model card (2026)"
+    cutoff_date: "2024-04-01"
   opus:
     humaneval: 96.3
     swe_bench: 77.1
     source: "Anthropic model card (2026)"
+    cutoff_date: "2024-04-01"
   haiku:
     humaneval: 84.0
     swe_bench: 48.2
     source: "Anthropic model card (2026)"
+    cutoff_date: "2024-04-01"
   gpt-4o:
     humaneval: 92.0
     swe_bench: 66.0
     source: "OpenAI system card (2025)"
+    cutoff_date: "2023-10-01"
   gpt-4.1:
     humaneval: 95.3
     swe_bench: 74.5
     source: "OpenAI blog (2025)"
+    cutoff_date: "2024-06-01"
   gemini-2.5-pro:
     humaneval: 93.2
     swe_bench: 63.8
     source: "Google DeepMind (2025)"
+    cutoff_date: "2024-01-01"

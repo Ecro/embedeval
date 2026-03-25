@@ -8,7 +8,7 @@ import yaml
 from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from embedeval.evaluator import evaluate
-from embedeval.llm_client import call_model
+from embedeval.llm_client import _extract_code, call_model
 from embedeval.models import CaseCategory, CaseMetadata, DifficultyTier, EvalResult, Visibility
 
 logger = logging.getLogger(__name__)
@@ -22,6 +22,7 @@ class Filters:
     difficulties: list[DifficultyTier] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
     visibility: Visibility | None = None
+    after_date: str | None = None  # ISO date string; only include cases created after this date
 
 
 def load_case_metadata(case_dir: Path) -> CaseMetadata | None:
@@ -97,6 +98,9 @@ def filter_cases(
             continue
         if filters.visibility is not None and meta.visibility != filters.visibility:
             continue
+        if filters.after_date and meta.created_date:
+            if meta.created_date <= filters.after_date:
+                continue
         filtered.append((case_dir, meta))
 
     logger.info(
@@ -133,6 +137,7 @@ def run_benchmark(
     model: str,
     filters: Filters | None = None,
     attempts: int = 1,
+    feedback_rounds: int = 0,
 ) -> list[EvalResult]:
     """Run the benchmark pipeline: discover, filter, LLM call, evaluate.
 
@@ -141,6 +146,9 @@ def run_benchmark(
         model: Model identifier for LLM calls.
         filters: Optional filtering criteria.
         attempts: Number of attempts per case (for pass@k calculation).
+        feedback_rounds: Number of compiler-feedback retry rounds (0 = disabled).
+            When > 0 and a case fails at L0 or L1, the error message is fed back
+            to the LLM for up to `feedback_rounds` additional attempts.
 
     Returns:
         List of EvalResult for all case/attempt combinations.
@@ -191,6 +199,45 @@ def run_benchmark(
                     cost_usd=llm_response.cost_usd,
                     category=meta.category,
                 )
+
+                # Compiler feedback loop: retry with error context on early layer failures
+                if (
+                    feedback_rounds > 0
+                    and not result.passed
+                    and result.failed_at_layer is not None
+                    and result.failed_at_layer <= 1
+                ):
+                    for feedback_round in range(feedback_rounds):
+                        error_msg = result.layers[result.failed_at_layer].error or "Check failed"
+                        feedback_prompt = (
+                            f"Your previous code had the following error:\n"
+                            f"```\n{error_msg[:500]}\n```\n\n"
+                            f"Original task:\n{prompt}\n\n"
+                            f"Please fix the code and output ONLY the complete corrected C source file."
+                        )
+                        fb_response = call_model(
+                            model=model, prompt=feedback_prompt
+                        )
+                        generated_code = _extract_code(fb_response.generated_code)
+                        result = evaluate(
+                            case_dir=case_dir,
+                            generated_code=generated_code,
+                            model=model,
+                            attempt=attempt,
+                            token_usage=fb_response.token_usage,
+                            cost_usd=fb_response.cost_usd,
+                            category=meta.category,
+                        )
+                        logger.info(
+                            "Feedback round %d/%d for case %s: %s",
+                            feedback_round + 1,
+                            feedback_rounds,
+                            meta.id,
+                            "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}",
+                        )
+                        if result.passed:
+                            break
+
                 results.append(result)
                 progress.advance(task)
 

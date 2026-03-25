@@ -1,0 +1,3 @@
+Allocated block at
+Used blocks:
+Freed block

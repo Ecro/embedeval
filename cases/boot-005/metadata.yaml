@@ -7,3 +7,4 @@ tags: [zephyr, mcuboot, multi-image, dual-core, network-core, kconfig]
 platform: native_sim
 estimated_tokens: 250
 sdk_version: "4.1.0"
+created_date: "2026-03-24"

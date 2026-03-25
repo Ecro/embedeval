@@ -315,6 +315,30 @@ def _run_runtime(case_dir: Path, generated_code: str, timeout: float) -> LayerRe
                 check_type="runtime",
             )
         ]
+
+        # Validate output against expected_output.txt if present
+        if passed:
+            expected_file = case_dir / "checks" / "expected_output.txt"
+            if expected_file.exists():
+                stdout = result.stdout + result.stderr  # west run mixes streams
+                expected_keywords = expected_file.read_text(encoding="utf-8").strip().splitlines()
+                missing = [
+                    kw.strip()
+                    for kw in expected_keywords
+                    if kw.strip() and kw.strip() not in stdout
+                ]
+                if missing:
+                    passed = False
+                    details.append(
+                        CheckDetail(
+                            check_name="output_validation",
+                            passed=False,
+                            expected=f"Keywords: {expected_keywords}",
+                            actual=f"Missing: {missing}",
+                            check_type="runtime",
+                        )
+                    )
+
         return LayerResult(
             layer=2,
             name="runtime_execution",

@@ -7,3 +7,4 @@ tags: [linux, kernel, driver, dma, memory, platform-driver]
 platform: docker_only
 estimated_tokens: 650
 sdk_version: "6.6"
+created_date: "2026-03-24"

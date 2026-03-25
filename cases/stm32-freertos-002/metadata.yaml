@@ -8,3 +8,4 @@ platform: stm32_hal
 estimated_tokens: 550
 sdk_version: "1.28.1"
 visibility: public
+created_date: "2026-03-24"
