@@ -291,3 +291,50 @@ Embedded Gap = EmbedEval pass@1 - HumanEval pass@1
 2. **Embed Gap = -4.2%p** — 예상(-8~-15%p)보다 작음. L3가 static heuristic이라 실제 behavioral 오류를 놓치는 것이 원인. L1/L2 활성화 시 Gap 확대 예상.
 3. **ESP-IDF 2/10 실패 (80%)** — Zephyr(~90%)보다 낮음. 학습 데이터에 ESP-IDF가 적기 때문.
 4. **isr-concurrency 90%→80%** — deep check(spinlock, barrier) 추가가 가장 효과적이었음.
+
+---
+
+## #10. Sonnet vs Haiku — Cross-Model Comparison (2026-03-25)
+
+**최초의 모델 간 비교. 벤치마크의 변별력 검증.**
+
+### 결과
+
+| Metric | Sonnet | Haiku | Delta |
+|--------|--------|-------|-------|
+| pass@1 | 89.5% | **78.1%** | **-11.4%p** |
+| Failures | 22/210 | 46/210 | +24 |
+| Embed Gap (vs HumanEval) | -4.2%p | **-5.9%p** | -1.7%p |
+
+### 카테고리별 격차 (큰 순)
+
+| Category | Sonnet | Haiku | Delta | 해석 |
+|----------|--------|-------|-------|------|
+| spi-i2c | 92% | 58% | **-34%p** | HW 프로토콜 지식 부족 |
+| device-tree | 90% | 60% | **-30%p** | DT 문법 혼동 |
+| ble | 100% | 73% | **-27%p** | BLE 스택 API 복잡도 |
+| timer | 91% | 64% | **-27%p** | 타이밍 제약 무시 |
+| isr-concurrency | 80% | 60% | **-20%p** | ISR 동시성 규칙 |
+| dma | 90% | 70% | **-20%p** | 캐시/정렬 패턴 |
+| boot | 100% | 100% | 0 | Kconfig는 크기 무관 |
+| kconfig | 100% | 100% | 0 | 단순 설정 — 쉬움 |
+| linux-driver | 80% | 80% | 0 | error cleanup은 크기 무관 |
+| threading | 90% | 90% | 0 | 기본 스레드 패턴 |
+
+### 핵심 발견
+
+1. **전체 11.4%p 차이** — EmbedEval이 모델 크기별 차이를 잘 변별함.
+2. **HW 관련 카테고리에서 격차 최대** — spi-i2c(-34%p), device-tree(-30%p), ble(-27%p).
+   작은 모델일수록 HW 프로토콜/문법 지식이 부족.
+3. **소프트웨어 패턴 카테고리는 격차 없음** — boot, kconfig, linux-driver, threading.
+   이건 일반 SW 지식으로 풀 수 있는 문제라 모델 크기가 덜 중요.
+4. **Embed Gap: Sonnet -4.2%p vs Haiku -5.9%p** — Haiku가 임베디드에서 상대적으로 더 약함.
+   하지만 차이(1.7%p)가 예상보다 작음 — L3 static heuristic의 한계.
+5. **Haiku도 boot/kconfig 100%** — 이 카테고리는 모든 모델이 풀 수 있는 수준.
+   벤치마크 변별력의 바닥(floor)을 나타냄.
+
+### 시사점
+
+- **EmbedEval은 모델 간 변별력이 있다** — Sonnet vs Haiku에서 11.4%p 차이 확인.
+- **HW 도메인 지식이 변별기** — SW 패턴(boot, kconfig)은 차이 없고, HW 관련(spi, dt, ble)에서 차이 극대화.
+- **L1/L2 활성화 시 Gap이 더 벌어질 것** — Haiku의 코드가 컴파일 실패하는 경우가 더 많을 것으로 예상.
