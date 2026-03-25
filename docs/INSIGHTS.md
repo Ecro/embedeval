@@ -373,3 +373,47 @@ Blind spots:                        9/15           (60%)
 4. **행동을 검증하려면 실행이 필요하다** — "에러 체크 후 return하는가"는 regex로 불완전
 
 **이 결과가 Insight #7을 재확인:** L3를 "behavioral"이라 부르면 안 되는 이유. 실제 precision은 40%.
+
+---
+
+## #12. Cross-Benchmark Competitive Analysis (2026-03-25)
+
+**EmbedEval을 유명 SW 벤치마크 + 최신 임베디드 논문과 비교.**
+
+### 종합 비교
+
+| | HumanEval | SWE-bench | LiveCodeBench | EmbedBench (ICSE'26) | EmbedEval |
+|---|---|---|---|---|---|
+| 평가 방식 | assert 실행 | pytest 실행 | 실행+예측 | Wokwi 시뮬레이터 | regex 패턴 |
+| 코드 실행 | O | O | O | O | **X** |
+| 오염 방지 | 없음 | 대량 | temporal cutoff | HW 조합 | 20 private |
+| TC 수 | 164 | 2,294 | 1,055 | 126 | **220** |
+| 최고 pass@1 | ~97% | ~75% | ~65% | 55.6% | 89.5% |
+
+### EmbedEval만의 독창적 가치
+
+1. **Implicit Knowledge Gap 35%p** — 어떤 벤치마크도 측정 안 한 것
+2. **Embed Gap 메트릭** — HumanEval 대비 cross-benchmark comparison
+3. **Check Precision 자기 검증 (40%)** — 벤치마크 한계를 정량화
+4. **4-Level Implicit Knowledge Model** — C→RTOS→HW→Safety 계층
+5. **Cross-platform hallucination detection** — API 혼동 체계적 감지
+
+### EmbedEval이 뒤처지는 점
+
+1. **실행 없음** — 모든 경쟁자가 실행 기반. Check precision 40%.
+2. **pass@1 = 89.5% (과대평가)** — EmbedBench 55.6%. 실행 없어서.
+3. **오염 방지 약함** — LiveCodeBench temporal cutoff가 gold standard
+4. **Single-shot only** — compiler feedback, agent 반복 미지원
+5. **HW 회로 없음** — EmbedBench는 회로 설계 포함
+
+### 정직한 Positioning
+
+```
+현재:  "Embedded LLM Benchmark"
+제안:  "LLM Embedded Domain Knowledge Probe"
+```
+
+"코드가 동작하는가"가 아니라 "LLM이 임베디드 도메인 지식을 가지고 있는가"를 측정.
+실행 없이도 의미 있는 이유: 도메인 지식 프로브이기 때문.
+
+Sources: EmbedAgent(ICSE'26), LiveCodeBench(ICLR'25), IoT-SkillsBench(2026), SWE-bench(ICSE'26 correctness study)
