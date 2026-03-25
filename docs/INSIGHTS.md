@@ -255,3 +255,39 @@ Embedded Gap = EmbedEval pass@1 - HumanEval pass@1
 → Sonnet이 임베디드에서 상대적으로 강하다."
 
 이런 분석이 가능해짐. Human baseline 1명 구하는 것보다 훨씬 신뢰성 있음.
+
+---
+
+## #9. Sonnet 재벤치마크 결과 — Before vs After (2026-03-25)
+
+**변경 사항 적용 후 첫 완전한 재벤치마크.**
+
+### 결과
+
+| 항목 | Before (explicit, 200 TC) | After (implicit + deep, 210 TC) |
+|------|--------------------------|--------------------------------|
+| pass@1 | 91.0% (182/200) | **89.5% (188/210)** |
+| Failures | 18 | **22** |
+| 100% categories | 6 | **4** (ble, boot, kconfig, yocto) |
+| Embed Gap | N/A | **-4.2%p** (vs HumanEval 93.7%) |
+
+### 새로운 실패 (implicit/deep check 효과)
+
+| Case | 원인 |
+|------|------|
+| device-tree-003 | 새 behavioral check |
+| isr-concurrency-003 | deep check (spinlock) |
+| isr-concurrency-008 | barrier 순서 체크 |
+| spi-i2c-004 | 새 check |
+| storage-004 | 새 check |
+| timer-006 | implicit 전환 (device_is_ready 제거) |
+| watchdog-010 | private case |
+| threading-008 | deep check (magic number) |
+| esp-adc-001, esp-nvs-001 | 신규 ESP-IDF (LLM이 ESP API 혼동) |
+
+### 핵심 해석
+
+1. **100% 카테고리 6→4개** — device-tree, isr-concurrency가 떨어짐. 체크 강화 효과 확인.
+2. **Embed Gap = -4.2%p** — 예상(-8~-15%p)보다 작음. L3가 static heuristic이라 실제 behavioral 오류를 놓치는 것이 원인. L1/L2 활성화 시 Gap 확대 예상.
+3. **ESP-IDF 2/10 실패 (80%)** — Zephyr(~90%)보다 낮음. 학습 데이터에 ESP-IDF가 적기 때문.
+4. **isr-concurrency 90%→80%** — deep check(spinlock, barrier) 추가가 가장 효과적이었음.
