@@ -19,7 +19,7 @@ static int my_pm_action(const struct device *dev,
 
 int main(void)
 {
-	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(my_dev));
+	const struct device *dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
 	int ret;
 
 	if (!device_is_ready(dev)) {

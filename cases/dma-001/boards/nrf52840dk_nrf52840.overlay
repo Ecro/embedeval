@@ -1,0 +1,1 @@
+/* nrf52840 has no standalone DMA — skip L1 for DMA cases on this board */
