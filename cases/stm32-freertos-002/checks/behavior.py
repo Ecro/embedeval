@@ -42,20 +42,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: portYIELD_FROM_ISR called after FromISR send
-    has_yield_from_isr = any(
-        p in generated_code
-        for p in ["portYIELD_FROM_ISR", "portEND_SWITCHING_ISR"]
-    )
-    details.append(
-        CheckDetail(
-            check_name="yield_from_isr_called",
-            passed=has_yield_from_isr,
-            expected="portYIELD_FROM_ISR called after xQueueSendFromISR",
-            actual="present" if has_yield_from_isr else "missing — high-priority task may not wake promptly",
-            check_type="constraint",
-        )
-    )
+    # Check 2 removed — duplicate of Check 7 (isr_yield_after_queue_send)
 
     # Check 3: Receiver task uses blocking receive (portMAX_DELAY)
     has_blocking_receive = any(
