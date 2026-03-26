@@ -3,22 +3,25 @@
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen)]()
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
-[![Cases](https://img.shields.io/badge/cases-210-orange)]()
+[![Cases](https://img.shields.io/badge/cases-220-orange)]()
+[![Tests](https://img.shields.io/badge/tests-818-green)]()
 
-**LLM benchmark for embedded firmware code generation.**
+**LLM Embedded Domain Knowledge Probe.**
 
-EmbedEval measures how well LLMs generate embedded firmware code — Zephyr RTOS, ESP-IDF, Linux kernel drivers, and Yocto recipes. While [HumanEval](https://github.com/openai/human-eval) and [SWE-bench](https://www.swebench.com/) test general coding, EmbedEval tests **domain-specific knowledge**: interrupt safety, cache coherency, DMA alignment, power management, and real-time constraints that only embedded experts would know.
+EmbedEval measures how well LLMs understand embedded firmware development — not just whether code compiles, but whether the LLM possesses the domain knowledge to write **safe** embedded code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL + FreeRTOS, Linux kernel drivers, and Yocto recipes across 220 test cases.
+
+Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://www.swebench.com/) which test general coding, EmbedEval tests **implicit domain knowledge**: interrupt safety, cache coherency, DMA alignment, power management, and real-time constraints that only embedded experts would know — without telling the LLM what to do.
 
 ## Leaderboard
 
 | Model | pass@1 | HumanEval | Embed Gap | Cases |
 |-------|--------|-----------|-----------|-------|
-| **Sonnet 4.6** | **89.5%** | 93.7% | **-4.2%p** | 210 |
-| Haiku 4.5 | 78.1% | 84.0% | -5.9%p | 210 |
+| **Sonnet 4.6** | **89.5%** | 93.7% | **-4.2%p** | 220 |
+| Haiku 4.5 | 78.1% | 84.0% | -5.9%p | 220 |
 
-*Embed Gap = EmbedEval pass@1 − HumanEval pass@1. Negative means embedded is harder than general coding.*
+*Embed Gap = EmbedEval pass@1 − HumanEval pass@1. Negative = embedded is harder than general coding.*
 
-### Category Breakdown
+### Category Breakdown (Sonnet vs Haiku)
 
 ```
 Category          Sonnet   Haiku    Delta    Interpretation
@@ -31,7 +34,8 @@ device-tree        90%      60%    -30%p     DT syntax confusion
 isr-concurrency    80%      60%    -20%p     ISR safety rules
 linux-driver       80%      80%     0        Error cleanup — universal
 dma                90%      70%    -20%p     Cache/alignment patterns
-ESP-IDF (new)      80%      70%    -10%p     Cross-platform knowledge
+ESP-IDF            80%      70%    -10%p     Cross-platform knowledge
+STM32 HAL          TBD      TBD     —        FreeRTOS + HAL (new)
 ```
 
 **Key finding:** HW-related categories (spi-i2c, device-tree, ble) show the largest model-size sensitivity. SW-pattern categories (boot, kconfig) show zero difference.
@@ -42,11 +46,17 @@ ESP-IDF (new)      80%      70%    -10%p     Cross-platform knowledge
 # Install
 uv sync
 
-# Run benchmark with Claude (subscription, no API key needed)
+# Run benchmark (single-shot)
 uv run embedeval run --model claude-code://sonnet --cases cases/
 
-# Run with multiple attempts for statistical validity
-uv run embedeval run --model claude-code://sonnet --cases cases/ --attempts 3
+# With compiler feedback (3 rounds of error correction)
+uv run embedeval run --model claude-code://sonnet --cases cases/ --feedback-rounds 3
+
+# Multi-turn agent mode (5 attempts with accumulated context)
+uv run embedeval agent claude-code://sonnet --max-turns 5
+
+# Temporal filtering (contamination prevention)
+uv run embedeval run --model claude-code://sonnet --cases cases/ --after-date 2026-01-01
 
 # View results
 cat results/LEADERBOARD.md
@@ -63,132 +73,151 @@ Prompt:  "Implement DMA transfer from src to dst buffer.
           Use a callback to signal completion."
 
 Hidden requirements (not in prompt):
-  ✗ Buffer must be cache-line aligned (__aligned(32))
-  ✗ Cache flush before DMA start
-  ✗ Cache invalidate after DMA complete
-  ✗ Error flag must be volatile (shared with ISR)
-  ✗ Error flag checked AFTER synchronization, not before
+  - Buffer must be cache-line aligned (__aligned(32))
+  - Cache flush before DMA start
+  - Cache invalidate after DMA complete
+  - Error flag must be volatile (shared with ISR)
+  - Error flag checked AFTER synchronization, not before
 ```
 
-An embedded expert would add these automatically. An LLM that only follows instructions won't.
+**Measured impact:** Explicit prompts → ~95% pass. Implicit prompts → ~60% pass. **35%p gap.**
 
-**Measured impact:** Explicit prompts → ~95% pass. Implicit prompts → ~60% pass. 35%p gap.
+### 2. Multi-Platform (5 platforms)
 
-### 2. Multi-Platform
+| Platform | Cases | Build System | Docker |
+|----------|-------|-------------|--------|
+| Zephyr RTOS | 150 | `west build` | Dockerfile |
+| ESP-IDF | 10 | `idf.py build` | Dockerfile.esp |
+| STM32 HAL + FreeRTOS | 10 | `arm-none-eabi-gcc` | Dockerfile.stm32 |
+| Linux kernel | 10 | `kbuild` | — |
+| Yocto | 10 | `bitbake` | — |
+| Kconfig/DT/Boot | 30 | N/A (config files) | — |
 
-| Platform | Cases | Build System |
-|----------|-------|-------------|
-| Zephyr RTOS | 150 | `west build` |
-| ESP-IDF | 10 | `idf.py build` |
-| Linux kernel | 10 | `kbuild` |
-| Yocto | 10 | `bitbake` |
-| Kconfig/DT/Boot | 30 | N/A (config files) |
+### 3. Self-Validated Check Precision
 
-### 3. Cross-Platform Hallucination Detection
+We don't just test LLMs — we test our own checks with **subtle negative tests** (intentionally broken code that tries to evade detection):
 
-LLMs frequently mix APIs from different platforms:
+```
+Check Precision Progression:
+  Round 1:  6/15 caught (40%)  — checks were too naive
+  Round 2:  9/15 caught (60%)  — fixed substring matching, deny lists
+  Round 3: 12/15 caught (80%)  — added return verification, comment stripping
+
+  Remaining 3/15 (20%) are regex-unsolvable → need L1/L2 execution
+```
+
+### 4. Cross-Platform Hallucination Detection
 
 ```c
 // ESP-IDF code with Zephyr API hallucination
 #include "driver/gpio.h"
-#include <zephyr/kernel.h>    // ✗ HALLUCINATION — Zephyr in ESP-IDF code
-k_sleep(K_SECONDS(1));        // ✗ HALLUCINATION — Zephyr API
+#include <zephyr/kernel.h>    // HALLUCINATION — Zephyr in ESP-IDF code
+k_sleep(K_SECONDS(1));        // HALLUCINATION — Zephyr API
 ```
 
-EmbedEval catches these with platform-specific hallucination checks.
+### 5. Evaluation Modes (inspired by leading benchmarks)
 
-## 210 Test Cases, 21 Categories
+| Mode | Inspired By | CLI |
+|------|-------------|-----|
+| Single-shot | HumanEval | `embedeval run` |
+| Compiler feedback | EmbedBench (ICSE'26) | `--feedback-rounds 3` |
+| Multi-turn agent | SWE-bench | `embedeval agent --max-turns 5` |
+| Temporal filtering | LiveCodeBench (ICLR'25) | `--after-date 2026-01-01` |
 
-| Category | Cases | Difficulty | Platform |
-|----------|-------|-----------|----------|
-| gpio-basic | 10 | Easy-Hard | Zephyr |
-| spi-i2c | 10 | Easy-Hard | Zephyr |
-| dma | 10 | Medium-Hard | Zephyr |
-| isr-concurrency | 10 | Hard | Zephyr |
-| threading | 10 | Medium-Hard | Zephyr |
-| timer | 10 | Easy-Hard | Zephyr |
-| sensor-driver | 10 | Medium-Hard | Zephyr |
-| networking | 10 | Medium-Hard | Zephyr |
-| ble | 10 | Hard | Zephyr |
-| security | 10 | Hard | Zephyr |
-| storage | 10 | Medium-Hard | Zephyr |
-| kconfig | 10 | Easy-Medium | Zephyr |
-| device-tree | 10 | Medium-Hard | Zephyr |
-| boot | 10 | Medium | Zephyr |
-| ota | 10 | Hard | Zephyr |
-| power-mgmt | 10 | Medium-Hard | Zephyr |
-| watchdog | 10 | Easy-Medium | Zephyr |
-| memory-opt | 10 | Medium-Hard | Zephyr |
-| yocto | 10 | Medium | Yocto |
-| linux-driver | 10 | Hard | Linux |
-| esp-* | 10 | Medium-Hard | ESP-IDF |
+## 220 Test Cases, 22 Categories
+
+| Category | Cases | Platform | L1 Build |
+|----------|-------|----------|----------|
+| gpio-basic | 10 | Zephyr | native_sim |
+| spi-i2c | 10 | Zephyr | nrf52840dk |
+| dma | 10 | Zephyr | native_sim |
+| isr-concurrency | 10 | Zephyr | native_sim |
+| threading | 10 | Zephyr | native_sim |
+| timer | 10 | Zephyr | native_sim |
+| sensor-driver | 10 | Zephyr | nrf52840dk |
+| networking | 10 | Zephyr | native_sim |
+| ble | 10 | Zephyr | native_sim |
+| security | 10 | Zephyr | native_sim |
+| storage | 10 | Zephyr | native_sim |
+| kconfig | 10 | Zephyr | N/A |
+| device-tree | 10 | Zephyr | N/A |
+| boot | 10 | Zephyr | N/A |
+| ota | 10 | Zephyr | nrf52840dk |
+| power-mgmt | 10 | Zephyr | nrf52840dk |
+| watchdog | 10 | Zephyr | nrf52840dk |
+| memory-opt | 10 | Zephyr | native_sim |
+| yocto | 10 | Yocto | N/A |
+| linux-driver | 10 | Linux | N/A |
+| esp-* | 10 | ESP-IDF | idf.py |
+| stm32-* | 10 | STM32 HAL | arm-gcc |
 
 ## Evaluation Layers
 
 | Layer | Name | Method | Status |
 |-------|------|--------|--------|
 | L0 | Static Analysis | Regex pattern matching | Active |
-| L1 | Compilation | `west build` / `idf.py build` in Docker | Ready (Docker required) |
-| L2 | Runtime | `native_sim` execution | Ready (Docker required) |
-| L3 | Static Heuristic | Domain-specific pattern checks | Active |
+| L1 | Compilation | Docker builds (west/idf.py/arm-gcc) | Active (15/15 verified) |
+| L2 | Runtime | `native_sim` + expected output | Ready |
+| L3 | Static Heuristic | Domain-specific pattern checks (precision: 80%) | Active |
 | L4 | Mutation Testing | Robustness via code mutation | Planned |
 
-**Note on L3 naming:** We deliberately call L3 "Static Heuristic" rather than "Behavioral" because our checks are regex-based pattern matching, not actual execution-based behavioral testing. See [Insight #7](docs/INSIGHTS.md#7-embedded-last-exam-비판적-자기-분석-2026-03-24) for our self-critical analysis.
+**Honest naming:** We call L3 "Static Heuristic" not "Behavioral" — our checks are regex-based pattern matching with 80% precision, not execution-based testing.
 
 ## Scoring
 
-- **pass@1**: First attempt pass rate (default)
-- **pass@3**: Any of first 3 attempts passes
-- **Weighted scoring**: Partial credit — 9/10 checks passing scores 0.9, not binary FAIL
-- **Embed Gap**: EmbedEval pass@1 − HumanEval pass@1 (cross-benchmark comparison)
+- **pass@1, pass@3, pass@5**: First/any-of-k attempt pass rates
+- **Weighted scoring**: Partial credit — 9/10 checks = 0.9, not binary FAIL
+- **Embed Gap**: EmbedEval pass@1 − HumanEval pass@1 (cross-benchmark)
+- **Check Precision**: 80% (12/15 subtle mutations caught by checks)
 
-## Key Insights
+## 12 Key Insights
 
-10 insights documented in [docs/INSIGHTS.md](docs/INSIGHTS.md):
+Documented in [docs/INSIGHTS.md](docs/INSIGHTS.md):
 
-1. **Implicit vs Explicit Gap** — 35%p difference when removing API hints from prompts
+1. **Implicit vs Explicit Gap** — 35%p difference when removing API hints
 2. **General SW vs Embedded failures** — 56% general, 44% embedded-specific
 3. **6 LLM failure patterns** — Happy path bias, semantic ignorance, resource imbalance, ordering, magic numbers, demo mindset
-4. **4-Level implicit knowledge model** — C language → RTOS → Hardware → System safety
-5. **Syntactic vs Behavioral gap** — L0-L2 near-perfect, L3 where models diverge
+4. **4-Level implicit knowledge model** — C → RTOS → Hardware → System safety
+5. **Syntactic vs Behavioral gap** — L0-L2 perfect, L3 where models diverge
 6. **Implicit prompt validation** — Modified categories show pass rate decrease
 7. **Critical self-analysis** — Honest assessment of benchmark limitations
-8. **Cross-benchmark comparison** — Embed Gap metric replaces human baseline
-9. **Re-benchmark after improvements** — 91% → 89.5% with harder checks
+8. **Cross-benchmark comparison** — Embed Gap metric
+9. **Re-benchmark results** — 91% → 89.5% with harder checks
 10. **Sonnet vs Haiku** — 11.4%p gap, HW categories most discriminating
+11. **Check Precision** — 40% → 60% → 80% through iterative blind spot fixing
+12. **Cross-benchmark competitive analysis** — vs EmbedBench, LiveCodeBench, SWE-bench
 
 ## CLI Reference
 
 ```bash
-# Run benchmark
-uv run embedeval run --model claude-code://sonnet --cases cases/ -v
-uv run embedeval run --model claude-code://haiku --cases cases/ --attempts 3
+# Benchmark modes
+embedeval run --model sonnet --cases cases/              # Single-shot
+embedeval run --model sonnet --feedback-rounds 3         # With compiler feedback
+embedeval agent sonnet --max-turns 5                     # Multi-turn agent
+embedeval run --model sonnet --attempts 3                # pass@3
 
-# Filter by category
-uv run embedeval run --model claude-code://sonnet --cases cases/ -c isr-concurrency -c dma
+# Filtering
+embedeval run --model sonnet -c isr-concurrency -c dma   # By category
+embedeval run --model sonnet --visibility public          # Exclude private set
+embedeval run --model sonnet --after-date 2026-01-01      # Temporal filter
 
-# Filter by visibility (exclude private test set)
-uv run embedeval run --model claude-code://sonnet --cases cases/ --visibility public
-
-# Validate reference solutions
-uv run embedeval validate --cases cases/
-
-# List cases
-uv run embedeval list --cases cases/
+# Utilities
+embedeval validate --cases cases/                         # Validate references
+embedeval list --cases cases/                             # List cases
 ```
 
-## Docker (L1/L2 Build Verification)
+## Docker (L1 Build Verification)
 
 ```bash
-# Build Docker image with Zephyr SDK
-docker-compose build
+# Zephyr (15/15 categories verified)
+docker build -t embedeval-zephyr .
+docker run --rm --entrypoint bash embedeval-zephyr -c 'west build -b native_sim cases/ble-001'
 
-# Run benchmark with compilation enabled
-docker-compose run embedeval uv run embedeval run \
-  --model claude-code://sonnet --cases cases/ -v
-
-# ESP-IDF builds
+# ESP-IDF
 docker build -f Dockerfile.esp -t embedeval-esp .
+
+# STM32 HAL
+docker build -f Dockerfile.stm32 -t embedeval-stm32 .
 ```
 
 ## Project Structure
@@ -197,38 +226,38 @@ docker build -f Dockerfile.esp -t embedeval-esp .
 embedeval/
 ├── src/embedeval/           # Core library
 │   ├── evaluator.py         # 5-layer evaluation pipeline
-│   ├── runner.py            # Benchmark orchestration
+│   ├── runner.py            # Benchmark orchestration + feedback loop
 │   ├── scorer.py            # pass@k + weighted scoring
 │   ├── reporter.py          # Leaderboard + cross-benchmark comparison
+│   ├── agent.py             # Multi-turn agent evaluation
 │   ├── llm_client.py        # LiteLLM + claude-code:// provider
-│   └── cli.py               # Typer CLI
-├── cases/                   # 210 test cases
-│   ├── {category}-{NNN}/    # Each case directory
-│   │   ├── metadata.yaml    # Category, difficulty, platform
-│   │   ├── prompt.md        # LLM prompt (implicit requirements)
-│   │   ├── reference/main.c # Reference solution
-│   │   ├── checks/static.py # L0 checks
-│   │   └── checks/behavior.py # L3 heuristic checks
-│   └── esp-*/               # ESP-IDF cases
+│   └── cli.py               # Typer CLI (run, agent, validate, list)
+├── cases/                   # 220 test cases
+│   ├── {category}-{NNN}/    # Zephyr cases
+│   ├── esp-*/               # ESP-IDF cases
+│   └── stm32-*/             # STM32 HAL + FreeRTOS cases
+├── tests/                   # 818 tests
+│   ├── test_e2e.py          # End-to-end evaluation
+│   ├── test_negatives.py    # Trivial + subtle negative tests
+│   └── test_new_features.py # v3 feature tests
 ├── docs/
-│   ├── INSIGHTS.md          # 10 accumulated insights
-│   ├── METHODOLOGY.md       # Evaluation methodology
-│   └── BENCHMARK-ANALYSIS-2026-03-24.md
+│   └── INSIGHTS.md          # 12 accumulated insights
 ├── external_benchmarks.yaml # HumanEval/SWE-bench reference scores
-├── Dockerfile               # Zephyr SDK build environment
-├── Dockerfile.esp           # ESP-IDF build environment
-└── docker-compose.yml       # Orchestrated build environment
+├── Dockerfile               # Zephyr SDK (west build)
+├── Dockerfile.esp           # ESP-IDF (idf.py build)
+├── Dockerfile.stm32         # STM32 HAL (arm-none-eabi-gcc)
+└── .github/workflows/       # CI: validate + L1 Docker build
 ```
 
 ## Known Limitations
 
-Documented in [Insight #7](docs/INSIGHTS.md):
-
-- **L1/L2 not yet validated** — Docker infrastructure ready but not tested at scale
-- **Static heuristic, not behavioral** — L3 checks are regex, not execution-based
-- **Platform bias** — 71% Zephyr, 5% ESP-IDF (aspirational: broader coverage)
+- **Static heuristic precision: 80%** — 20% of subtle bugs undetectable by regex (need L1/L2)
+- **Platform bias** — 68% Zephyr, 5% ESP-IDF, 5% STM32 (expanding)
 - **n=10 per category** — Statistical significance limited; pass@3 recommended
-- **Public test set contamination risk** — 20 cases marked private as mitigation
+- **Single-run benchmark data** — Confidence intervals not yet reported
+- **Public test set** — 20 cases marked private, temporal rotation planned
+
+See [Insight #7](docs/INSIGHTS.md) and [Insight #12](docs/INSIGHTS.md) for our full self-critical analysis and competitive comparison.
 
 ## Contributing
 
