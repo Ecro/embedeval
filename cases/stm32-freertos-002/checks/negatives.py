@@ -61,7 +61,7 @@ NEGATIVES = [
         "mutation": lambda code: code.replace(
             "&higher_priority_woken", "NULL"
         ),
-        "should_fail": ["isr_yield_after_queue_send"],
+        "should_fail": ["higher_priority_woken_declared"],
         "bug_description": "xQueueSendFromISR with NULL pxHigherPriorityTaskWoken — portYIELD_FROM_ISR gets garbage value",
     },
 ]

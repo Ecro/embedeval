@@ -75,7 +75,7 @@ NEGATIVES = [
     {
         "name": "partial_cleanup_only",
         "mutation": lambda code: code.replace("unregister_chrdev_region", "/* unregister_chrdev_region */"),
-        "should_fail": ["init_error_path_cleanup"],
+        "should_fail": ["init_cleanup_no_comments"],
         "bug_description": "cdev_del called but chrdev_region not unregistered — partial cleanup leaks major number",
     },
     {
@@ -85,7 +85,7 @@ NEGATIVES = [
             '/* return ret; */ printk("continuing despite error\\n");',
             1  # only first occurrence
         ),
-        "should_fail": ["init_error_path_cleanup"],
+        "should_fail": ["error_path_returns"],
         "bug_description": "Error detected and logged but execution continues — resources used in undefined state",
     },
 ]

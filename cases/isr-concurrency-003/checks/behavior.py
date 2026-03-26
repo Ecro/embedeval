@@ -30,16 +30,25 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: key passed to unlock (correct API usage)
+    # Check 2: key passed to unlock AND is the captured return value of k_spin_lock()
+    # LLM blind spot: hardcoding zero or passing a fresh key_t instead of the captured value.
+    # Two conditions must both hold:
+    #   (a) k_spin_lock() return value is assigned to a variable
+    #   (b) a variable is passed as the second argument to k_spin_unlock()
+    has_key_assignment = bool(re.search(r'\w+\s*=\s*k_spin_lock\s*\(', generated_code))
     has_key_in_unlock = bool(re.search(
         r'k_spin_unlock\s*\([^,]+,\s*\w+\)', generated_code
     ))
     details.append(
         CheckDetail(
             check_name="key_passed_to_unlock",
-            passed=has_key_in_unlock,
-            expected="Key variable passed to k_spin_unlock()",
-            actual="present" if has_key_in_unlock else "missing (IRQ state not restored)",
+            passed=has_key_assignment and has_key_in_unlock,
+            expected="k_spin_lock() return assigned to key variable AND key passed to k_spin_unlock()",
+            actual=(
+                "correct"
+                if (has_key_assignment and has_key_in_unlock)
+                else f"key_assigned={has_key_assignment}, key_in_unlock={has_key_in_unlock} — IRQ state may not be restored"
+            ),
             check_type="constraint",
         )
     )

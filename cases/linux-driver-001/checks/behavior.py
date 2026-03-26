@@ -156,7 +156,75 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 8: No Zephyr API contamination in Linux driver code
+    # Check 8: Both cleanup calls present in __init body when comments are stripped.
+    # LLM failure (partial_cleanup_only): unregister_chrdev_region is commented out —
+    # the raw code still contains the text in a comment, so init_error_path_cleanup passes.
+    # This check repeats the same logic on comment-stripped code to catch that case.
+    if init_match:
+        # Re-walk init body on stripped code (same brace-walk using stripped source)
+        stripped_init_match = re.search(
+            r'__init\s+\w+\s*\([^)]*\)\s*\{',
+            stripped,
+        )
+        if stripped_init_match:
+            s_start = stripped_init_match.end()
+            s_depth = 1
+            s_pos = s_start
+            while s_pos < len(stripped) and s_depth > 0:
+                if stripped[s_pos] == '{':
+                    s_depth += 1
+                elif stripped[s_pos] == '}':
+                    s_depth -= 1
+                s_pos += 1
+            stripped_init_body = stripped[s_start:s_pos]
+            stripped_has_cdev_del = "cdev_del" in stripped_init_body
+            stripped_has_unregister = "unregister_chrdev_region" in stripped_init_body
+            stripped_cleanup_complete = stripped_has_cdev_del and stripped_has_unregister
+            actual_stripped = (
+                "complete (comments stripped)"
+                if stripped_cleanup_complete
+                else (
+                    f"partial (stripped): cdev_del={stripped_has_cdev_del}, "
+                    f"unregister_chrdev_region={stripped_has_unregister} — commented-out cleanup"
+                )
+            )
+        else:
+            stripped_cleanup_complete = cleanup_complete  # fallback to previous result
+            actual_stripped = "could not locate __init in stripped code"
+    else:
+        stripped_cleanup_complete = cleanup_complete
+        actual_stripped = "no __init annotation"
+    details.append(
+        CheckDetail(
+            check_name="init_cleanup_no_comments",
+            passed=stripped_cleanup_complete,
+            expected="BOTH cdev_del AND unregister_chrdev_region present (not in comments)",
+            actual=actual_stripped,
+            check_type="constraint",
+        )
+    )
+
+    # Check 9 (formerly 8): After an error check (if (ret / if (IS_ERR)), a return
+    # statement must follow within 300 characters.
+    # LLM failure (error_check_no_return): error detected and logged but execution continues.
+    error_checks = list(re.finditer(r'if\s*\(\s*(?:ret\b|IS_ERR\s*\()', stripped))
+    has_return_after_error = False
+    for m in error_checks:
+        window = stripped[m.start(): m.start() + 300]
+        if re.search(r'\breturn\b', window):
+            has_return_after_error = True
+            break
+    details.append(
+        CheckDetail(
+            check_name="error_path_returns",
+            passed=has_return_after_error,
+            expected="return statement follows each error check within 300 chars",
+            actual="present" if has_return_after_error else "missing — error detected but execution continues",
+            check_type="constraint",
+        )
+    )
+
+    # Check 11: No Zephyr API contamination in Linux driver code
     # LLM failure: mixing k_work_submit or k_thread_create into a Linux driver
     zephyr_apis = ["k_work_submit", "k_thread_create", "k_mutex_lock", "k_sem_take",
                    "K_THREAD_DEFINE", "k_sleep("]

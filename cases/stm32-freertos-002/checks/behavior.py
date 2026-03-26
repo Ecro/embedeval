@@ -130,4 +130,23 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 8: BaseType_t wake-flag variable declared for xQueueSendFromISR
+    # LLM blind spot: passing NULL instead of &higher_priority_woken means
+    # portYIELD_FROM_ISR receives an undefined/garbage value → incorrect preemption.
+    # If NULL is passed, the variable declaration will be absent from the generated code.
+    has_woken_var = bool(re.search(
+        r'BaseType_t\s+\w*(?:higher|woken|priority)\w*',
+        generated_code,
+        re.IGNORECASE,
+    ))
+    details.append(
+        CheckDetail(
+            check_name="higher_priority_woken_declared",
+            passed=has_woken_var,
+            expected="BaseType_t higher_priority_woken (or similar) declared for xQueueSendFromISR",
+            actual="present" if has_woken_var else "missing — NULL likely passed to xQueueSendFromISR",
+            check_type="constraint",
+        )
+    )
+
     return details

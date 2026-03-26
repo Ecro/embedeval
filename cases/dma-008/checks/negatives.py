@@ -66,7 +66,7 @@ NEGATIVES = [
             "return dma_error_flag;",
             'printk("error detected but continuing anyway\\n");'
         ),
-        "should_fail": ["error_flag_read_after_sync"],
+        "should_fail": ["error_flag_causes_return"],
         "bug_description": "Error flag checked but program continues — no early return on error",
     },
 ]

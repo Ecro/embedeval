@@ -43,7 +43,7 @@ NEGATIVES = [
             "worker_alive = 0;",
             "worker_alive = 0; /* cleared immediately — race */"
         ),
-        "should_fail": ["feed_conditional_not_unconditional"],
+        "should_fail": ["wdt_feed_is_conditional"],
         "bug_description": "Flag cleared right after check but before feed — thread could die in the gap",
     },
     {
