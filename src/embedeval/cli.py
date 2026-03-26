@@ -332,6 +332,66 @@ def agent(
     typer.echo(f"\nAgent results: {passed}/{total} passed ({pass_rate:.1%})")
 
 
+@app.command()
+def sensitivity(
+    model: Annotated[
+        str,
+        typer.Argument(help="LLM model identifier"),
+    ],
+    cases_dir: Annotated[
+        Path,
+        typer.Option("--cases", help="Path to cases directory"),
+    ] = Path("cases"),
+    sample: Annotated[
+        int,
+        typer.Option("--sample", "-s", help="Number of cases to sample (0=all)"),
+    ] = 30,
+    variants: Annotated[
+        int,
+        typer.Option("--variants", "-n", help="Number of prompt variants per case"),
+    ] = 3,
+    seed: Annotated[
+        int,
+        typer.Option("--seed", help="Random seed for reproducible sampling"),
+    ] = 42,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose logging"),
+    ] = False,
+) -> None:
+    """Run prompt sensitivity analysis to measure benchmark robustness."""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, force=True)
+
+    from embedeval.sensitivity import run_sensitivity_analysis
+
+    typer.echo(
+        f"Sensitivity analysis: model={model}, sample={sample}, "
+        f"variants={variants}, seed={seed}"
+    )
+    report = run_sensitivity_analysis(
+        cases_dir=cases_dir,
+        model=model,
+        sample_size=sample,
+        variants_per_case=variants,
+        seed=seed,
+    )
+
+    typer.echo(f"\nAvg robustness: {report.avg_robustness:.1%}")
+    typer.echo(f"Cases analyzed: {report.total_cases}")
+
+    if report.most_sensitive:
+        typer.echo(f"\nMost sensitive cases:")
+        for cid in report.most_sensitive:
+            case = next(c for c in report.cases if c.case_id == cid)
+            typer.echo(f"  {cid}: robustness={case.robustness:.0%}")
+
+    if report.most_robust:
+        typer.echo(f"\nMost robust cases ({len(report.most_robust)}):")
+        for cid in report.most_robust[:3]:
+            typer.echo(f"  {cid}: robustness=100%")
+
+
 @app.command(name="list")
 def list_cases(
     cases_dir: Annotated[
