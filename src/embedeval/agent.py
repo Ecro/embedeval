@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from embedeval.evaluator import evaluate
-from embedeval.llm_client import _extract_code, call_model
+from embedeval.llm_client import call_model
 from embedeval.models import EvalResult
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ def evaluate_agent(
 
         # Generate code
         llm_response = call_model(model=model, prompt=full_prompt, timeout=timeout)
-        generated_code = _extract_code(llm_response.generated_code)
+        generated_code = llm_response.generated_code
 
         # Evaluate
         result = evaluate(

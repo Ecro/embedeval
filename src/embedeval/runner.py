@@ -99,8 +99,15 @@ def filter_cases(
         if filters.visibility is not None and meta.visibility != filters.visibility:
             continue
         if filters.after_date and meta.created_date:
-            if meta.created_date <= filters.after_date:
-                continue
+            try:
+                from datetime import date as _date
+                _date.fromisoformat(filters.after_date)
+                _date.fromisoformat(meta.created_date)
+            except ValueError:
+                pass  # skip filter on invalid format
+            else:
+                if meta.created_date <= filters.after_date:
+                    continue
         filtered.append((case_dir, meta))
 
     logger.info(
@@ -208,17 +215,23 @@ def run_benchmark(
                     and result.failed_at_layer <= 1
                 ):
                     for feedback_round in range(feedback_rounds):
-                        error_msg = result.layers[result.failed_at_layer].error or "Check failed"
+                        failed_layer = result.layers[result.failed_at_layer]
+                        error_msg = failed_layer.error or ""
+                        failed_details = "\n".join(
+                            f"- {d.check_name}: expected={d.expected}, actual={d.actual}"
+                            for d in failed_layer.details if not d.passed
+                        )
+                        error_info = "\n".join(filter(None, [error_msg, failed_details])) or "Check failed"
                         feedback_prompt = (
                             f"Your previous code had the following error:\n"
-                            f"```\n{error_msg[:500]}\n```\n\n"
+                            f"```\n{error_info[:800]}\n```\n\n"
                             f"Original task:\n{prompt}\n\n"
                             f"Please fix the code and output ONLY the complete corrected C source file."
                         )
                         fb_response = call_model(
                             model=model, prompt=feedback_prompt
                         )
-                        generated_code = _extract_code(fb_response.generated_code)
+                        generated_code = fb_response.generated_code
                         result = evaluate(
                             case_dir=case_dir,
                             generated_code=generated_code,
