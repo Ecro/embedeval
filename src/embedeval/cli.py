@@ -70,6 +70,10 @@ def run(
         int,
         typer.Option("--feedback-rounds", "-f", help="Compiler feedback rounds (0=disabled)"),
     ] = 0,
+    temperature: Annotated[
+        float,
+        typer.Option("--temperature", "-t", help="LLM temperature (recorded in report metadata)"),
+    ] = 0.0,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -106,6 +110,8 @@ def run(
         raise typer.Exit(code=1)
 
     report = score_results(results)
+    report.temperature = temperature
+    report.n_samples_per_case = attempts
 
     from embedeval.reporter import (
         generate_failure_report,

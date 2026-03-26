@@ -82,20 +82,22 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
     lines: list[str] = [
         "## Model Comparison",
         "",
-        "| Model | pass@1 | pass@3 | pass@5 | avg_score | Cases Passed | Total Cases |",
-        "|-------|--------|--------|--------|-----------|-------------|-------------|",
+        "| Model | pass@1 | 95% CI | pass@5 | Cases Passed | Total Cases | Samples |",
+        "|-------|--------|--------|--------|-------------|-------------|---------|",
     ]
 
     for report in reports:
         for model_score in report.models:
+            lo, hi = model_score.pass_at_1_ci
+            ci_str = f"[{lo:.1%}, {hi:.1%}]"
             lines.append(
                 f"| {model_score.model} "
                 f"| {model_score.pass_at_1:.1%} "
-                f"| {model_score.pass_at_3:.1%} "
+                f"| {ci_str} "
                 f"| {model_score.pass_at_5:.1%} "
-                f"| {model_score.avg_score:.1%} "
                 f"| {model_score.passed_cases} "
-                f"| {model_score.total_cases} |"
+                f"| {model_score.total_cases} "
+                f"| n={model_score.n_samples} |"
             )
 
     return lines

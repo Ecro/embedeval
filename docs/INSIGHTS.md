@@ -417,3 +417,59 @@ Blind spots:                        9/15           (60%)
 실행 없이도 의미 있는 이유: 도메인 지식 프로브이기 때문.
 
 Sources: EmbedAgent(ICSE'26), LiveCodeBench(ICLR'25), IoT-SkillsBench(2026), SWE-bench(ICSE'26 correctness study)
+
+---
+
+## #13. Paper-Level Benchmark Gap Analysis (2026-03-26)
+
+**목적:** EmbedEval을 top venue(EMNLP/ACL Findings) Insight Paper로 제출하기 위한 개선 사항 도출.
+
+### 벤치마크 비교 (EmbedEval vs 유명 벤치마크)
+
+| 평가 기준 | HumanEval | SWE-bench | LiveCodeBench | BigCodeBench | EmbedAgent | **EmbedEval** |
+|-----------|-----------|-----------|---------------|-------------|------------|---------------|
+| 코드 실행 | assert | pytest | 실행+예측 | unittest | Wokwi | **X (regex)** |
+| TC 수 | 164 | 2,294 | 1,055 | 1,140 | 126 | **220** |
+| pass@k (unbiased) | O | N/A | O | O | O | **X (naive)** |
+| 신뢰 구간/반복 | 일부 | N/A | O | O | ? | **X** |
+| 오염 방지 | X→EvalPlus | PR 기반 | temporal cutoff | 수동감독 | HW 조합 | **X (public)** |
+| 인간 검증 | X→Next | 93명 검토 | 에라타 추적 | 20명×1년 | ? | **X** |
+| 난이도 보정 | X | N/A | easy/med/hard | Full/Hard | 3 role | **label만** |
+| 다중 시나리오 | X | X | 4개 | 2개 | 3개 | **X** |
+| Human baseline | X | O (간접) | O | O | X | **X** |
+
+### 논문 포지셔닝: Option B — Insight Paper
+
+**핵심 기여:** "LLM이 임베디드에서 왜 실패하는가"
+- Implicit Knowledge Gap 35%p → 새로운 발견
+- 4-Level Implicit Knowledge Model (C→RTOS→HW→Safety)
+- Check Precision 자기 검증 (40%) → meta-evaluation
+- Embed Gap 메트릭 → cross-benchmark positioning
+
+### 개선 로드맵 (P0-P3)
+
+| Priority | 개선 | 효과 | 난이도 |
+|----------|------|------|--------|
+| **P0** | pass@k unbiased estimator + n≥5 반복 | 통계적 신뢰성 | Low |
+| **P0** | L1 compilation 활성화 (Docker) | 신뢰성 극적 향상 | High |
+| **P1** | Private held-out set (50 TC) | 오염 방지 | Medium |
+| **P1** | Check precision 향상 (AST 기반, 40%→80%) | 핵심 기여 | High |
+| **P1** | Human validation (2-3명 검토) | 학술 신뢰성 | Medium |
+| **P2** | Human baseline (3명) | 점수 해석 | Medium |
+| **P2** | 프롬프트 민감도 분석 | Robustness | Medium |
+| **P2** | 난이도 보정 (IRT) | 정밀 분석 | Medium |
+| **P3** | Multi-scenario (bug fix, migration) | 범위 확장 | High |
+| **P3** | 동적 업데이트 | 오염 방지+ | Medium |
+| **P3** | 실패 분류 체계 (formal coding scheme) | 질적 분석 | Medium |
+| **P3** | Ablation study | layer별 기여도 | Medium |
+
+### 참고 논문/벤치마크
+
+- HumanEval Pro & MBPP Pro (ACL 2025) — self-invoking code generation
+- LiveCodeBench (ICLR 2025) — temporal cutoff, 4-scenario
+- BigCodeBench (ICLR 2025) — 20명 annotator, Complete/Instruct 2-mode
+- SWE-bench Verified (ICLR 2024) — 93명 human validation
+- EmbedAgent (ICSE 2026) — 126 TC, 3 platform, Wokwi 시뮬레이터
+- HardSecBench — HW 보안 벤치마크
+- Benchmark² — meta-evaluation framework (CBRC, DS, CAD)
+- EvalPlus — 80x test augmentation

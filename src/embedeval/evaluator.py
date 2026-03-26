@@ -2,8 +2,10 @@
 
 import importlib.util
 import logging
+import os
 import shutil
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 from types import ModuleType
@@ -207,27 +209,27 @@ def _run_static_checks(case_dir: Path, generated_code: str) -> LayerResult:
 def _run_compile_gate(
     case_dir: Path, generated_code: str, timeout: float
 ) -> LayerResult:
-    """Layer 1: Compile gate — dispatches to ESP-IDF or Zephyr path."""
-    # Check if this is an ESP-IDF case before attempting west build
+    """Layer 1: Compile gate — dispatches to ESP-IDF, STM32, or Zephyr path."""
     if _is_esp_idf_case(case_dir):
         return _run_compile_esp_idf(case_dir, generated_code, timeout)
 
-    # Check if this is an STM32 HAL case
     if _is_stm32_case(case_dir):
         return _run_compile_stm32(case_dir, generated_code, timeout)
 
-    if not _build_env_available():
-        logger.info("Docker not available, skipping compile gate (pass)")
+    build_mode = _get_build_mode()
+
+    if build_mode == "skip":
+        logger.info("Build disabled, skipping compile gate (pass)")
         return LayerResult(
             layer=1,
             name="compile_gate",
             passed=True,
             details=[
                 CheckDetail(
-                    check_name="docker_available",
+                    check_name="build_env",
                     passed=True,
-                    expected="docker installed",
-                    actual="skipped (docker not available)",
+                    expected="EMBEDEVAL_ENABLE_BUILD set",
+                    actual="skipped (build not enabled)",
                     check_type="environment",
                 )
             ],
@@ -235,35 +237,135 @@ def _run_compile_gate(
             duration_seconds=0.0,
         )
 
-    src_file = case_dir / "src" / "main.c"
-    src_file.parent.mkdir(parents=True, exist_ok=True)
-    src_file.write_text(generated_code, encoding="utf-8")
+    if build_mode == "docker":
+        return _run_compile_docker(case_dir, generated_code, timeout)
+
+    return _run_compile_local(case_dir, generated_code, timeout)
+
+
+def _prepare_build_dir(case_dir: Path, generated_code: str) -> Path:
+    """Prepare a temporary build directory with case files + generated code.
+
+    Copies CMakeLists.txt, prj.conf, and any overlay files from the case
+    directory, then writes generated_code to src/main.c. Returns the tmpdir path.
+    The caller is responsible for cleanup (use as context manager or explicit delete).
+    """
+    tmpdir = Path(tempfile.mkdtemp(prefix="embedeval_build_"))
+
+    # Copy build system files
+    for name in ("CMakeLists.txt", "prj.conf"):
+        src = case_dir / name
+        if src.is_file():
+            shutil.copy2(src, tmpdir / name)
+
+    # Copy overlay files (*.overlay, *.conf, boards/)
+    for pattern in ("*.overlay", "*.conf"):
+        for f in case_dir.glob(pattern):
+            if f.name not in ("prj.conf",):  # already copied
+                shutil.copy2(f, tmpdir / f.name)
+    boards_dir = case_dir / "boards"
+    if boards_dir.is_dir():
+        shutil.copytree(boards_dir, tmpdir / "boards")
+
+    # Write generated code
+    src_dir = tmpdir / "src"
+    src_dir.mkdir(parents=True, exist_ok=True)
+    (src_dir / "main.c").write_text(generated_code, encoding="utf-8")
+
+    return tmpdir
+
+
+def _run_compile_docker(
+    case_dir: Path, generated_code: str, timeout: float
+) -> LayerResult:
+    """Run west build inside Docker container (tmpdir-isolated)."""
+    board = _get_build_board(case_dir)
+    build_dir = _prepare_build_dir(case_dir, generated_code)
 
     try:
+        start = time.monotonic()
+        cmd = [
+            "docker", "run", "--rm",
+            "-v", f"{build_dir}:/workspace",
+            "-w", "/workspace",
+            _get_docker_image(),
+            "west", "build", "-b", board, "/workspace",
+        ]
         result = subprocess.run(
-            ["west", "build", "-b", _get_build_board(case_dir), str(case_dir)],
+            cmd,
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=str(case_dir),
         )
+        elapsed = time.monotonic() - start
         passed = result.returncode == 0
-        details = [
-            CheckDetail(
-                check_name="west_build",
-                passed=passed,
-                expected="exit code 0",
-                actual=f"exit code {result.returncode}",
-                check_type="compile",
-            )
-        ]
+
+        error_output = result.stderr
+        if not passed and result.stdout:
+            error_output = result.stdout[-2000:] + "\n" + (error_output or "")
+
         return LayerResult(
             layer=1,
             name="compile_gate",
             passed=passed,
-            details=details,
-            error=result.stderr if not passed else None,
-            duration_seconds=0.0,
+            details=[
+                CheckDetail(
+                    check_name="west_build_docker",
+                    passed=passed,
+                    expected="exit code 0",
+                    actual=f"exit code {result.returncode}",
+                    check_type="compile",
+                )
+            ],
+            error=error_output[:4000] if not passed else None,
+            duration_seconds=elapsed,
+        )
+    except subprocess.TimeoutExpired:
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=False,
+            details=[],
+            error=f"Docker build timed out after {timeout}s",
+            duration_seconds=timeout,
+        )
+    finally:
+        shutil.rmtree(build_dir, ignore_errors=True)
+
+
+def _run_compile_local(
+    case_dir: Path, generated_code: str, timeout: float
+) -> LayerResult:
+    """Run west build locally (requires ZEPHYR_BASE)."""
+    board = _get_build_board(case_dir)
+    build_dir = _prepare_build_dir(case_dir, generated_code)
+
+    try:
+        start = time.monotonic()
+        result = subprocess.run(
+            ["west", "build", "-b", board, str(build_dir)],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(build_dir),
+        )
+        elapsed = time.monotonic() - start
+        passed = result.returncode == 0
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=passed,
+            details=[
+                CheckDetail(
+                    check_name="west_build",
+                    passed=passed,
+                    expected="exit code 0",
+                    actual=f"exit code {result.returncode}",
+                    check_type="compile",
+                )
+            ],
+            error=result.stderr[:4000] if not passed else None,
+            duration_seconds=elapsed,
         )
     except subprocess.TimeoutExpired:
         return LayerResult(
@@ -274,6 +376,8 @@ def _run_compile_gate(
             error=f"Build timed out after {timeout}s",
             duration_seconds=timeout,
         )
+    finally:
+        shutil.rmtree(build_dir, ignore_errors=True)
 
 
 def _run_runtime(case_dir: Path, generated_code: str, timeout: float) -> LayerResult:
@@ -460,16 +564,30 @@ def _execute_check_module(
         )
 
 
-def _build_env_available() -> bool:
-    """Check if Zephyr build environment is ready for compilation.
+def _get_build_mode() -> str:
+    """Return the build mode: 'docker', 'local', or 'skip'.
 
-    Returns False unless EMBEDEVAL_ENABLE_BUILD=1 is set explicitly.
-    This prevents accidental west build invocations in environments
-    that have west/Zephyr installed for other purposes.
+    EMBEDEVAL_ENABLE_BUILD values:
+    - 'docker': Run west build inside Docker container (embedeval-zephyr image)
+    - '1' or 'local': Run west build locally (requires ZEPHYR_BASE)
+    - unset or other: Skip compilation (auto-pass)
     """
-    import os
+    val = os.environ.get("EMBEDEVAL_ENABLE_BUILD", "").lower()
+    if val == "docker":
+        return "docker"
+    if val in ("1", "local"):
+        return "local"
+    return "skip"
 
-    return os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+
+def _build_env_available() -> bool:
+    """Check if Zephyr build environment is ready for compilation."""
+    return _get_build_mode() != "skip"
+
+
+def _get_docker_image() -> str:
+    """Return Docker image name for Zephyr compilation."""
+    return os.environ.get("EMBEDEVAL_DOCKER_IMAGE", "embedeval-zephyr:latest")
 
 
 def _get_build_board(case_dir: Path) -> str:
@@ -486,11 +604,9 @@ def _get_build_board(case_dir: Path) -> str:
 
 def _esp_idf_env_available() -> bool:
     """Check if ESP-IDF build environment is available."""
-    import os
-
     return (
         os.environ.get("IDF_PATH") is not None
-        and os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+        and _get_build_mode() != "skip"
     )
 
 
@@ -587,11 +703,9 @@ def _is_stm32_case(case_dir: Path) -> bool:
 
 def _stm32_env_available() -> bool:
     """Check if STM32 build environment is available."""
-    import os
-
     return (
         os.environ.get("STM32_HAL_PATH") is not None
-        and os.environ.get("EMBEDEVAL_ENABLE_BUILD") == "1"
+        and _get_build_mode() != "skip"
     )
 
 
@@ -617,10 +731,6 @@ def _run_compile_stm32(
             error=None,
             duration_seconds=0.0,
         )
-
-    import os
-    import tempfile
-    import time
 
     hal_path = os.environ["STM32_HAL_PATH"]
 

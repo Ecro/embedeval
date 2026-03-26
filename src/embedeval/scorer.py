@@ -3,6 +3,7 @@
 import logging
 from collections import defaultdict
 from datetime import datetime, timezone
+from math import comb
 
 from embedeval.models import (
     BenchmarkReport,
@@ -14,6 +15,29 @@ from embedeval.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def wilson_ci(
+    pass_rate: float, n: int, z: float = 1.96
+) -> tuple[float, float]:
+    """Wilson score 95% confidence interval for a pass rate.
+
+    Args:
+        pass_rate: Observed pass rate (0.0 to 1.0).
+        n: Number of cases.
+        z: Z-score for confidence level (1.96 = 95%).
+
+    Returns:
+        (lower, upper) bounds of the confidence interval.
+    """
+    if n == 0:
+        return (0.0, 0.0)
+    denom = 1 + z**2 / n
+    center = (pass_rate + z**2 / (2 * n)) / denom
+    spread = (
+        z * ((pass_rate * (1 - pass_rate) / n + z**2 / (4 * n**2)) ** 0.5) / denom
+    )
+    return (max(0.0, center - spread), min(1.0, center + spread))
 
 
 def score(results: list[EvalResult]) -> BenchmarkReport:
@@ -76,7 +100,14 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
         )
         layer_pass_rates = _calculate_layer_pass_rates(model_results)
 
-        avg_score = (pass_at_1 + pass_at_3 + pass_at_5) / 3.0
+        n_cases = len(case_ids)
+        ci = wilson_ci(pass_at_1, n_cases)
+
+        # n_samples = max attempts per case
+        samples_per_case = max(
+            (len([r for r in model_results if r.case_id == cid]) for cid in case_ids),
+            default=1,
+        )
 
         scores.append(
             ModelScore(
@@ -84,10 +115,12 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
                 pass_at_1=pass_at_1,
                 pass_at_3=pass_at_3,
                 pass_at_5=pass_at_5,
-                avg_score=avg_score,
-                total_cases=len(case_ids),
+                avg_score=pass_at_1,
+                total_cases=n_cases,
                 passed_cases=passed_cases,
                 layer_pass_rates=layer_pass_rates,
+                pass_at_1_ci=ci,
+                n_samples=samples_per_case,
             )
         )
 
@@ -154,10 +187,12 @@ def _calculate_overall(model_scores: list[ModelScore]) -> OverallScore:
 
 
 def _calculate_pass_at_k(results: list[EvalResult], k: int) -> float:
-    """Calculate pass@k: fraction of cases where at least 1 of k attempts passes.
+    """Calculate pass@k using the unbiased estimator from Chen et al. (2021).
 
-    For pass@1 (k=1), only the first attempt is considered.
-    For pass@k (k>1), the first k attempts sorted by attempt number are used.
+    pass@k = E[1 - C(n-c, k) / C(n, k)]
+
+    where n = total samples per case, c = correct samples per case.
+    When n < k, falls back to empirical estimate (any correct → 1.0).
     """
     by_case: dict[str, list[EvalResult]] = defaultdict(list)
     for r in results:
@@ -166,14 +201,18 @@ def _calculate_pass_at_k(results: list[EvalResult], k: int) -> float:
     if not by_case:
         return 0.0
 
-    passed = 0
+    scores: list[float] = []
     for case_results in by_case.values():
-        # Only consider first k attempts ordered by attempt number
-        first_k = sorted(case_results, key=lambda r: r.attempt)[:k]
-        if any(r.passed for r in first_k):
-            passed += 1
+        n = len(case_results)
+        c = sum(1 for r in case_results if r.passed)
+        if n < k:
+            scores.append(1.0 if c > 0 else 0.0)
+        elif n - c < k:
+            scores.append(1.0)
+        else:
+            scores.append(1.0 - comb(n - c, k) / comb(n, k))
 
-    return passed / len(by_case)
+    return sum(scores) / len(scores)
 
 
 

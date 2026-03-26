@@ -1,11 +1,15 @@
 """Tests for EmbedEval evaluator."""
 
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from embedeval.evaluator import evaluate
+from embedeval.evaluator import (
+    _get_build_mode,
+    _prepare_build_dir,
+    evaluate,
+)
 from embedeval.models import CheckDetail, TokenUsage
 
 
@@ -226,17 +230,16 @@ class TestDockerLayers:
         assert result.layers[1].passed is True
         assert result.layers[2].passed is True
 
-    @patch("embedeval.evaluator._build_env_available", return_value=True)
+    @patch("embedeval.evaluator._get_build_mode", return_value="local")
     @patch("embedeval.evaluator.subprocess")
     def test_compile_timeout(
         self,
         mock_subprocess: object,
-        _mock_docker: object,
+        _mock_mode: object,
         empty_case_dir: Path,
     ) -> None:
         import subprocess as sp
 
-        # Make subprocess.run raise TimeoutExpired
         mock_subprocess.run.side_effect = sp.TimeoutExpired(  # type: ignore[union-attr]
             cmd="west build", timeout=300.0
         )
@@ -274,3 +277,163 @@ class TestBehavioralChecks:
             generated_code="void entry(void) { }",
         )
         assert result.layers[3].passed is False
+
+
+class TestGetBuildMode:
+    """Tests for build mode detection."""
+
+    def test_docker_mode(self) -> None:
+        with patch.dict("os.environ", {"EMBEDEVAL_ENABLE_BUILD": "docker"}):
+            assert _get_build_mode() == "docker"
+
+    def test_local_mode_1(self) -> None:
+        with patch.dict("os.environ", {"EMBEDEVAL_ENABLE_BUILD": "1"}):
+            assert _get_build_mode() == "local"
+
+    def test_local_mode_explicit(self) -> None:
+        with patch.dict("os.environ", {"EMBEDEVAL_ENABLE_BUILD": "local"}):
+            assert _get_build_mode() == "local"
+
+    def test_skip_when_unset(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_build_mode() == "skip"
+
+    def test_skip_when_empty(self) -> None:
+        with patch.dict("os.environ", {"EMBEDEVAL_ENABLE_BUILD": ""}):
+            assert _get_build_mode() == "skip"
+
+    def test_docker_case_insensitive(self) -> None:
+        with patch.dict("os.environ", {"EMBEDEVAL_ENABLE_BUILD": "DOCKER"}):
+            assert _get_build_mode() == "docker"
+
+
+class TestPrepareBuildDir:
+    """Tests for tmpdir-isolated build directory preparation."""
+
+    def test_creates_src_main_c(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "test-case"
+        case_dir.mkdir()
+        (case_dir / "CMakeLists.txt").write_text("cmake_minimum_required(VERSION 3.20)")
+        (case_dir / "prj.conf").write_text("CONFIG_GPIO=y")
+
+        build_dir = _prepare_build_dir(case_dir, "int main() { return 0; }")
+        try:
+            assert (build_dir / "src" / "main.c").is_file()
+            assert (build_dir / "src" / "main.c").read_text() == "int main() { return 0; }"
+            assert (build_dir / "CMakeLists.txt").is_file()
+            assert (build_dir / "prj.conf").is_file()
+        finally:
+            import shutil
+            shutil.rmtree(build_dir)
+
+    def test_does_not_mutate_case_dir(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "test-case"
+        case_dir.mkdir()
+        src_dir = case_dir / "src"
+        src_dir.mkdir()
+        original_code = "// original code"
+        (src_dir / "main.c").write_text(original_code)
+        (case_dir / "CMakeLists.txt").write_text("cmake")
+
+        build_dir = _prepare_build_dir(case_dir, "// generated code")
+        try:
+            assert (src_dir / "main.c").read_text() == original_code
+            assert (build_dir / "src" / "main.c").read_text() == "// generated code"
+        finally:
+            import shutil
+            shutil.rmtree(build_dir)
+
+    def test_copies_overlay_files(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "test-case"
+        case_dir.mkdir()
+        (case_dir / "app.overlay").write_text("/ { };")
+        (case_dir / "CMakeLists.txt").write_text("cmake")
+
+        build_dir = _prepare_build_dir(case_dir, "code")
+        try:
+            assert (build_dir / "app.overlay").is_file()
+        finally:
+            import shutil
+            shutil.rmtree(build_dir)
+
+    def test_handles_missing_cmake(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "test-case"
+        case_dir.mkdir()
+
+        build_dir = _prepare_build_dir(case_dir, "code")
+        try:
+            assert (build_dir / "src" / "main.c").is_file()
+            assert not (build_dir / "CMakeLists.txt").exists()
+        finally:
+            import shutil
+            shutil.rmtree(build_dir)
+
+
+class TestDockerCompileMode:
+    """Tests for Docker-based compilation."""
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess")
+    def test_docker_compile_success(
+        self, mock_subprocess: MagicMock, _mock_mode: object, tmp_path: Path
+    ) -> None:
+        import subprocess as sp
+
+        mock_subprocess.TimeoutExpired = sp.TimeoutExpired
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stderr = ""
+        mock_result.stdout = ""
+        mock_subprocess.run.return_value = mock_result
+
+        case_dir = tmp_path / "case-001"
+        case_dir.mkdir()
+        (case_dir / "CMakeLists.txt").write_text("cmake")
+        (case_dir / "prj.conf").write_text("CONFIG_GPIO=y")
+
+        result = evaluate(case_dir=case_dir, generated_code="int main() {}")
+        assert result.layers[1].passed is True
+        assert result.layers[1].details[0].check_name == "west_build_docker"
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess")
+    def test_docker_compile_failure(
+        self, mock_subprocess: MagicMock, _mock_mode: object, tmp_path: Path
+    ) -> None:
+        import subprocess as sp
+
+        mock_subprocess.TimeoutExpired = sp.TimeoutExpired
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_result.stderr = "error: undefined reference to 'foo'"
+        mock_result.stdout = ""
+        mock_subprocess.run.return_value = mock_result
+
+        case_dir = tmp_path / "case-001"
+        case_dir.mkdir()
+        (case_dir / "CMakeLists.txt").write_text("cmake")
+
+        result = evaluate(case_dir=case_dir, generated_code="int main() {}")
+        assert result.layers[1].passed is False
+        assert result.failed_at_layer == 1
+        assert "undefined reference" in result.layers[1].error
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess")
+    def test_docker_compile_timeout(
+        self, mock_subprocess: MagicMock, _mock_mode: object, tmp_path: Path
+    ) -> None:
+        import subprocess as sp
+
+        mock_subprocess.TimeoutExpired = sp.TimeoutExpired
+        mock_subprocess.run.side_effect = sp.TimeoutExpired(
+            cmd="docker run", timeout=300.0
+        )
+
+        case_dir = tmp_path / "case-001"
+        case_dir.mkdir()
+        (case_dir / "CMakeLists.txt").write_text("cmake")
+
+        result = evaluate(case_dir=case_dir, generated_code="int main() {}", timeout=300.0)
+        assert result.layers[1].passed is False
+        assert "timed out" in result.layers[1].error

@@ -153,6 +153,8 @@ class ModelScore(BaseModel):
     total_cases: int = Field(ge=0)
     passed_cases: int = Field(ge=0)
     layer_pass_rates: dict[str, float]
+    pass_at_1_ci: tuple[float, float] = (0.0, 0.0)
+    n_samples: int = Field(default=1, ge=1)
 
 
 class CategoryScore(BaseModel):
@@ -181,3 +183,6 @@ class BenchmarkReport(BaseModel):
     models: list[ModelScore]
     categories: list[CategoryScore]
     overall: OverallScore
+    temperature: float = Field(default=0.0, ge=0.0)
+    n_samples_per_case: int = Field(default=1, ge=1)
+    n_runs: int = Field(default=1, ge=1)

@@ -1,11 +1,13 @@
 """Tests for EmbedEval scorer."""
 
+from math import comb
+
 from embedeval.models import (
     EvalResult,
     LayerResult,
     TokenUsage,
 )
-from embedeval.scorer import score
+from embedeval.scorer import _calculate_pass_at_k, score, wilson_ci
 
 
 def _make_result(
@@ -184,3 +186,142 @@ class TestCategoryScores:
         assert report.categories[0].total_cases == 2
         assert report.categories[0].passed_cases == 1
         assert report.categories[0].pass_at_1 == 0.5
+
+
+class TestUnbiasedPassAtK:
+    """Tests for unbiased pass@k estimator: 1 - C(n-c,k)/C(n,k)."""
+
+    def test_exact_formula_n10_c3_k5(self) -> None:
+        """Verify against hand-calculated value: n=10, c=3, k=5."""
+        # 1 - C(7,5)/C(10,5) = 1 - 21/252 = 1 - 0.08333... = 0.91667
+        results = []
+        for i in range(1, 11):
+            results.append(
+                _make_result(
+                    case_id="case-001",
+                    attempt=i,
+                    passed=(i <= 3),  # first 3 pass
+                )
+            )
+        pass_at_5 = _calculate_pass_at_k(results, 5)
+        expected = 1.0 - comb(7, 5) / comb(10, 5)
+        assert abs(pass_at_5 - expected) < 1e-10
+
+    def test_exact_formula_n10_c1_k1(self) -> None:
+        """pass@1 with n=10, c=1: should be c/n = 0.1."""
+        results = [
+            _make_result(case_id="case-001", attempt=i, passed=(i == 5), failed_at_layer=0 if i != 5 else None)
+            for i in range(1, 11)
+        ]
+        pass_at_1 = _calculate_pass_at_k(results, 1)
+        expected = 1.0 - comb(9, 1) / comb(10, 1)  # 1 - 9/10 = 0.1
+        assert abs(pass_at_1 - expected) < 1e-10
+
+    def test_all_correct_returns_one(self) -> None:
+        """n=5, c=5, k=3: should return 1.0."""
+        results = [
+            _make_result(case_id="case-001", attempt=i, passed=True)
+            for i in range(1, 6)
+        ]
+        assert _calculate_pass_at_k(results, 3) == 1.0
+
+    def test_none_correct_returns_zero(self) -> None:
+        """n=5, c=0, k=3: should return 0.0."""
+        results = [
+            _make_result(case_id="case-001", attempt=i, passed=False, failed_at_layer=0)
+            for i in range(1, 6)
+        ]
+        assert _calculate_pass_at_k(results, 3) == 0.0
+
+    def test_k_greater_than_n_fallback(self) -> None:
+        """n=3, k=5: falls back to empirical (any correct → 1.0)."""
+        results = [
+            _make_result(case_id="case-001", attempt=1, passed=False, failed_at_layer=0),
+            _make_result(case_id="case-001", attempt=2, passed=True),
+            _make_result(case_id="case-001", attempt=3, passed=False, failed_at_layer=0),
+        ]
+        assert _calculate_pass_at_k(results, 5) == 1.0
+
+    def test_k_greater_than_n_none_correct(self) -> None:
+        """n=3, k=5, c=0: should return 0.0."""
+        results = [
+            _make_result(case_id="case-001", attempt=i, passed=False, failed_at_layer=0)
+            for i in range(1, 4)
+        ]
+        assert _calculate_pass_at_k(results, 5) == 0.0
+
+    def test_multi_case_averaging(self) -> None:
+        """Two cases: one always passes, one always fails → 0.5."""
+        results = [
+            _make_result(case_id="case-001", attempt=1, passed=True),
+            _make_result(case_id="case-002", attempt=1, passed=False, failed_at_layer=0),
+        ]
+        assert _calculate_pass_at_k(results, 1) == 0.5
+
+    def test_empty_results(self) -> None:
+        assert _calculate_pass_at_k([], 1) == 0.0
+
+
+class TestWilsonCI:
+    """Tests for Wilson score confidence interval."""
+
+    def test_zero_cases(self) -> None:
+        assert wilson_ci(0.5, 0) == (0.0, 0.0)
+
+    def test_perfect_score_small_n(self) -> None:
+        lo, hi = wilson_ci(1.0, 10)
+        assert lo < 1.0
+        assert hi == 1.0
+
+    def test_zero_score_small_n(self) -> None:
+        lo, hi = wilson_ci(0.0, 10)
+        assert lo == 0.0
+        assert hi > 0.0
+
+    def test_interval_contains_point_estimate(self) -> None:
+        lo, hi = wilson_ci(0.5, 100)
+        assert lo < 0.5 < hi
+
+    def test_larger_n_gives_tighter_interval(self) -> None:
+        lo10, hi10 = wilson_ci(0.5, 10)
+        lo100, hi100 = wilson_ci(0.5, 100)
+        assert (hi100 - lo100) < (hi10 - lo10)
+
+    def test_known_value(self) -> None:
+        """n=220, p=0.89: interval should be roughly (0.84, 0.93)."""
+        lo, hi = wilson_ci(0.89, 220)
+        assert 0.83 < lo < 0.86
+        assert 0.92 < hi < 0.94
+
+
+class TestModelScoreCI:
+    """Tests that model scores include CI and n_samples."""
+
+    def test_ci_present(self) -> None:
+        results = [
+            _make_result(case_id="case-001", passed=True),
+            _make_result(case_id="case-002", passed=False, failed_at_layer=0),
+        ]
+        report = score(results)
+        ms = report.models[0]
+        lo, hi = ms.pass_at_1_ci
+        assert lo < ms.pass_at_1
+        assert hi > ms.pass_at_1
+
+    def test_n_samples_recorded(self) -> None:
+        results = [
+            _make_result(case_id="case-001", attempt=1, passed=True),
+            _make_result(case_id="case-001", attempt=2, passed=True),
+        ]
+        report = score(results)
+        assert report.models[0].n_samples == 2
+
+
+class TestBenchmarkReportMetadata:
+    """Tests for report metadata fields."""
+
+    def test_default_metadata(self) -> None:
+        report = score([_make_result()])
+        assert report.temperature == 0.0
+        assert report.n_samples_per_case == 1
+        assert report.n_runs == 1
