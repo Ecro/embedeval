@@ -145,6 +145,7 @@ def run_benchmark(
     filters: Filters | None = None,
     attempts: int = 1,
     feedback_rounds: int = 0,
+    include_private: bool = False,
 ) -> list[EvalResult]:
     """Run the benchmark pipeline: discover, filter, LLM call, evaluate.
 
@@ -156,11 +157,15 @@ def run_benchmark(
         feedback_rounds: Number of compiler-feedback retry rounds (0 = disabled).
             When > 0 and a case fails at L0 or L1, the error message is fed back
             to the LLM for up to `feedback_rounds` additional attempts.
+        include_private: If True, include private (held-out) cases.
+            Defaults to False for contamination prevention.
 
     Returns:
         List of EvalResult for all case/attempt combinations.
     """
     effective_filters = filters or Filters()
+    if not include_private and effective_filters.visibility is None:
+        effective_filters.visibility = Visibility.PUBLIC
     all_cases = discover_cases(cases_dir)
     selected = filter_cases(all_cases, effective_filters)
 

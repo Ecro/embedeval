@@ -21,11 +21,12 @@ def _create_case(
     category: str = "kconfig",
     difficulty: str = "easy",
     tags: list[str] | None = None,
+    visibility: str | None = None,
 ) -> Path:
     """Helper to create a case directory with metadata."""
     case_dir = parent / case_id
     case_dir.mkdir(parents=True)
-    metadata = {
+    metadata: dict = {
         "id": case_id,
         "category": category,
         "difficulty": difficulty,
@@ -36,6 +37,8 @@ def _create_case(
         "estimated_tokens": 500,
         "sdk_version": "3.6.0",
     }
+    if visibility is not None:
+        metadata["visibility"] = visibility
     (case_dir / "metadata.yaml").write_text(yaml.dump(metadata), encoding="utf-8")
     (case_dir / "prompt.md").write_text(
         f"Generate code for {case_id}", encoding="utf-8"
@@ -219,3 +222,96 @@ class TestRunBenchmark:
             attempts=3,
         )
         assert len(results) == 3
+
+
+class TestPrivateHeldOutSet:
+    """Tests for private/public visibility filtering."""
+
+    def test_filter_excludes_private_by_default(self, tmp_path: Path) -> None:
+        _create_case(tmp_path, "case-001", visibility="public")
+        _create_case(tmp_path, "case-002", visibility="private")
+        all_cases = discover_cases(tmp_path)
+
+        from embedeval.models import Visibility
+
+        filtered = filter_cases(all_cases, Filters(visibility=Visibility.PUBLIC))
+        assert len(filtered) == 1
+        assert filtered[0][1].id == "case-001"
+
+    def test_filter_includes_private_when_requested(self, tmp_path: Path) -> None:
+        _create_case(tmp_path, "case-001", visibility="public")
+        _create_case(tmp_path, "case-002", visibility="private")
+        all_cases = discover_cases(tmp_path)
+
+        filtered = filter_cases(all_cases, Filters())  # no visibility filter
+        assert len(filtered) == 2
+
+    def test_no_visibility_defaults_to_public(self, tmp_path: Path) -> None:
+        """Cases without visibility field should be included in public filter."""
+        _create_case(tmp_path, "case-001")  # no visibility = defaults to public
+        _create_case(tmp_path, "case-002", visibility="private")
+        all_cases = discover_cases(tmp_path)
+
+        from embedeval.models import Visibility
+
+        filtered = filter_cases(all_cases, Filters(visibility=Visibility.PUBLIC))
+        assert len(filtered) == 1
+        assert filtered[0][1].id == "case-001"
+
+    @patch("embedeval.runner.evaluate")
+    @patch("embedeval.runner.call_model")
+    def test_run_benchmark_excludes_private_by_default(
+        self, mock_call_model: object, mock_evaluate: object, tmp_path: Path
+    ) -> None:
+        from unittest.mock import MagicMock
+
+        from embedeval.models import EvalResult, TokenUsage
+
+        _create_case(tmp_path, "kconfig-001")  # public (default)
+        _create_case(tmp_path, "kconfig-002", visibility="private")
+
+        mock_response = MagicMock()
+        mock_response.generated_code = "int main() {}"
+        mock_response.token_usage = TokenUsage(
+            input_tokens=10, output_tokens=5, total_tokens=15
+        )
+        mock_response.cost_usd = 0.0
+        mock_call_model.return_value = mock_response  # type: ignore[union-attr]
+
+        mock_result = MagicMock(spec=EvalResult)
+        mock_result.passed = True
+        mock_result.failed_at_layer = None
+        mock_evaluate.return_value = mock_result  # type: ignore[union-attr]
+
+        results = run_benchmark(cases_dir=tmp_path, model="mock")
+        assert len(results) == 1  # only public case
+
+    @patch("embedeval.runner.evaluate")
+    @patch("embedeval.runner.call_model")
+    def test_run_benchmark_includes_private_when_flag_set(
+        self, mock_call_model: object, mock_evaluate: object, tmp_path: Path
+    ) -> None:
+        from unittest.mock import MagicMock
+
+        from embedeval.models import EvalResult, TokenUsage
+
+        _create_case(tmp_path, "kconfig-001")  # public (default)
+        _create_case(tmp_path, "kconfig-002", visibility="private")
+
+        mock_response = MagicMock()
+        mock_response.generated_code = "int main() {}"
+        mock_response.token_usage = TokenUsage(
+            input_tokens=10, output_tokens=5, total_tokens=15
+        )
+        mock_response.cost_usd = 0.0
+        mock_call_model.return_value = mock_response  # type: ignore[union-attr]
+
+        mock_result = MagicMock(spec=EvalResult)
+        mock_result.passed = True
+        mock_result.failed_at_layer = None
+        mock_evaluate.return_value = mock_result  # type: ignore[union-attr]
+
+        results = run_benchmark(
+            cases_dir=tmp_path, model="mock", include_private=True
+        )
+        assert len(results) == 2  # both cases

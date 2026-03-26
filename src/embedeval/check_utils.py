@@ -155,8 +155,14 @@ def check_no_cross_platform_apis(
         if platform in skip:
             continue
         for api in apis:
-            if api in stripped:
-                found.append((api, platform))
+            if api.endswith("("):
+                # Deliberate substring pattern (e.g., "delay(", "open(")
+                if api in stripped:
+                    found.append((api, platform))
+            else:
+                # Word-boundary safe API names (e.g., "xTaskCreate")
+                if has_api_call(stripped, api):
+                    found.append((api, platform))
     return found
 
 
@@ -199,6 +205,122 @@ def extract_error_blocks(code: str) -> list[str]:
                 blocks.append(code[start:i])
                 break
     return blocks
+
+
+def has_word(code: str, word: str) -> bool:
+    """Check for a word with word-boundary matching.
+
+    Prevents substring aliasing (e.g., __copy_to_user matching copy_to_user).
+    """
+    return bool(re.search(rf'\b{re.escape(word)}\b', code))
+
+
+def has_api_call(code: str, api: str) -> bool:
+    """Check for an API call with word-boundary matching.
+
+    Handles both function-like APIs (e.g., 'copy_to_user') and
+    APIs with parens (e.g., 'delay(') by using word boundary on the base name.
+    """
+    base = api.rstrip("(")
+    return bool(re.search(rf'\b{re.escape(base)}\s*\(', code))
+
+
+def check_qualifier_on_variable(
+    code: str,
+    qualifier: str,
+    var_pattern: str,
+) -> bool:
+    """Check if a qualifier (e.g., volatile, const) is on a variable matching pattern.
+
+    Args:
+        code: Source code to check.
+        qualifier: C qualifier to look for (e.g., 'volatile', 'const').
+        var_pattern: Regex pattern for the variable name (e.g., r'flag|shared_data').
+
+    Returns True if the qualifier appears on a declaration line with the variable.
+    """
+    stripped = strip_comments(code)
+    return bool(re.search(
+        rf'\b{re.escape(qualifier)}\b[^;]*\b({var_pattern})\b\s*[;=\[]',
+        stripped,
+    ))
+
+
+def check_return_after_error(code: str, api_call: str | None = None) -> bool:
+    """Verify that error-handling blocks contain return/goto (not just detection).
+
+    If api_call is provided, only checks error blocks for that specific API.
+    Returns True if ALL error blocks contain return or goto.
+    Returns True if no error blocks found (nothing to check).
+    """
+    stripped = strip_comments(code)
+    blocks = extract_error_blocks(stripped)
+    if not blocks:
+        return True
+
+    for block in blocks:
+        if api_call and api_call not in block:
+            # Not related to the specified API — check if the error check
+            # is immediately after the API call (within a few lines)
+            continue
+        if "return" not in block and "goto" not in block:
+            return False
+    return True
+
+
+def check_api_in_function(
+    code: str,
+    api_name: str,
+    func_name: str,
+) -> bool:
+    """Check if api_name appears inside func_name's body.
+
+    Uses extract_function_body for scope-aware checking.
+    """
+    stripped = strip_comments(code)
+    body = extract_function_body(stripped, func_name)
+    if body is None:
+        return False
+    return has_word(body, api_name)
+
+
+def check_cleanup_reverse_order(
+    code: str,
+    init_calls: list[str],
+    func_name: str | None = None,
+) -> bool:
+    """Verify cleanup calls appear in reverse order of init calls.
+
+    Checks error-handling paths for proper reverse-order cleanup.
+    If func_name is provided, only checks within that function.
+    """
+    target = code
+    if func_name:
+        stripped = strip_comments(code)
+        body = extract_function_body(stripped, func_name)
+        if body is None:
+            return False
+        target = body
+
+    blocks = extract_error_blocks(target)
+    if not blocks:
+        return True
+
+    for block in blocks:
+        # Find cleanup calls in the ORDER they appear in the block
+        positions = []
+        for call in init_calls:
+            pos = block.find(call)
+            if pos != -1:
+                positions.append((pos, call))
+        positions.sort()
+        found_order = [call for _, call in positions]
+
+        if len(found_order) >= 2:
+            expected = [c for c in reversed(init_calls) if c in found_order]
+            if found_order != expected:
+                return False
+    return True
 
 
 def resolve_define(code: str, name: str) -> int | None:

@@ -74,6 +74,10 @@ def run(
         float,
         typer.Option("--temperature", "-t", help="LLM temperature (recorded in report metadata)"),
     ] = 0.0,
+    include_private: Annotated[
+        bool,
+        typer.Option("--include-private", help="Include private held-out cases (default: public only)"),
+    ] = False,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -103,6 +107,7 @@ def run(
         filters=filters,
         attempts=attempts,
         feedback_rounds=feedback_rounds,
+        include_private=include_private,
     )
 
     if not results:

@@ -39,18 +39,18 @@ class TestE2EMockBenchmark:
         self, _mock_docker: object
     ) -> None:
         """Benchmark with mock model returns one result per case."""
-        results = run_benchmark(cases_dir=CASES_DIR, model="mock")
+        results = run_benchmark(cases_dir=CASES_DIR, model="mock", include_private=True)
         assert len(results) == len(PILOT_CASE_IDS)
 
     def test_result_case_ids_match_pilot_cases(self, _mock_docker: object) -> None:
         """Each result case_id matches one of the pilot case directory names."""
-        results = run_benchmark(cases_dir=CASES_DIR, model="mock")
+        results = run_benchmark(cases_dir=CASES_DIR, model="mock", include_private=True)
         result_ids = {r.case_id for r in results}
         assert result_ids == set(PILOT_CASE_IDS)
 
     def test_scoring_produces_valid_report(self, _mock_docker: object) -> None:
         """Scoring produces a valid BenchmarkReport with expected structure."""
-        results = run_benchmark(cases_dir=CASES_DIR, model="mock")
+        results = run_benchmark(cases_dir=CASES_DIR, model="mock", include_private=True)
         report = score(results)
 
         assert isinstance(report, BenchmarkReport)
@@ -66,7 +66,7 @@ class TestE2EMockBenchmark:
         self, _mock_docker: object, results_dir: Path
     ) -> None:
         """Reporter generates valid JSON from benchmark results."""
-        results = run_benchmark(cases_dir=CASES_DIR, model="mock")
+        results = run_benchmark(cases_dir=CASES_DIR, model="mock", include_private=True)
         report = score(results)
 
         json_path = results_dir / "mock-results.json"
@@ -88,7 +88,7 @@ class TestE2EMockBenchmark:
         self, _mock_docker: object, results_dir: Path
     ) -> None:
         """Reporter generates valid Markdown leaderboard."""
-        results = run_benchmark(cases_dir=CASES_DIR, model="mock")
+        results = run_benchmark(cases_dir=CASES_DIR, model="mock", include_private=True)
         report = score(results)
 
         md_path = results_dir / "LEADERBOARD.md"
