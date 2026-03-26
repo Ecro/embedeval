@@ -86,10 +86,19 @@ You are a code reviewer for this project. Follow these steps:
    - **Performance**: Algorithm complexity, resource usage, bottlenecks
    - **Testing**: Coverage, test quality, testability
 
+   **Recurring Bug Patterns to Check (from past reviews):**
+   - **Redundant function calls**: Is extracted data being re-extracted? (e.g., _extract_code on already-extracted field)
+   - **Missing test coverage**: New CLI options/modules without corresponding tests?
+   - **Substring matching bugs**: Does `"copy_to_user" in code` also match `__copy_to_user`?
+   - **Error field is None vs empty string**: Which one does the upstream return? Is the caller checking correctly?
+   - **Date/format validation**: String comparison without format enforcement?
+   - **Duplicate checks**: Same logic implemented twice under different names?
+
    **Project-Specific Checks:**
-   - Follow patterns in project CLAUDE.md
+   - Follow patterns in project CLAUDE.md (especially Quality Gates section)
    - Verify consistency with existing codebase
    - Check for project-specific anti-patterns
+   - **New features MUST have tests** — flag if missing
 
 6. **Generate REVIEW Document**
    Save to: `${vault_path}/work-docs/${project}/reviews/REVIEW-${task-slug}-${date}.md`

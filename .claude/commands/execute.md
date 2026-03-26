@@ -734,6 +734,27 @@ Done
 - Add appropriate logging
 - Maintain consistency with existing code
 
+## Pre-Commit Quality Gates (MANDATORY)
+
+Before presenting code for commit, you MUST:
+
+1. **Self-review `git diff`** — Read every changed line and verify:
+   - No redundant function calls (e.g., double-extracting already-extracted data)
+   - API contracts match (check function signatures before calling)
+   - Edge cases handled (empty input, None, malformed data)
+   - No "defensive" wrapping that masks real bugs
+
+2. **Write tests for new features** — Every new CLI option, module, or code path needs:
+   - At least 1 happy-path test
+   - At least 1 edge-case test
+   - Tests MUST be committed alongside the feature, not deferred
+
+3. **Check function definitions** — Before calling any function, read its definition.
+   Don't assume return types. Don't duplicate processing that upstream already does.
+
+4. **Do NOT commit immediately** — Present changes for user review first.
+   User will say "commit" when ready. Never auto-commit after implementation.
+
 ---
 
 ## Background Execution (Claude Code Web)

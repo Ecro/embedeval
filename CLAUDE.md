@@ -85,3 +85,28 @@ Platform-specific: `yocto`, `linux-driver`, `memory-opt`
 - NO skipping tests
 - NO adding dependencies without justification
 - All new test cases must include reference solutions that pass all layers
+
+## Quality Gates (MANDATORY before commit)
+
+1. **Self-review `git diff`** — Read every changed line before committing. Check:
+   - API contracts: does the function I'm calling return what I expect?
+   - Redundant calls: am I calling a function that was already called upstream?
+   - Edge cases: what happens with empty input, None, malformed data?
+
+2. **New feature = new tests** — Every new CLI option, module, or code path needs at least 3 tests:
+   - Happy path
+   - Edge case (empty, None, boundary)
+   - Error case (invalid input, timeout)
+
+3. **Check function signatures before calling** — Read the function definition before using it.
+   Don't assume what it returns. Don't wrap it in "defensive" double-processing.
+
+## Learned Corrections
+
+### 2026
+- 2026-03-26: [embedeval] call_model() already extracts code — don't call _extract_code() again on generated_code
+- 2026-03-26: [embedeval] L0 check failures have error=None, details in .details — must include failed check details in feedback prompts
+- 2026-03-26: [embedeval] String date comparison needs format validation — use date.fromisoformat() before comparing
+- 2026-03-25: [embedeval] Docker Zephyr CI image has toolchain only, not Zephyr source — need west init + west update
+- 2026-03-25: [embedeval] native_sim has no DMA/WDT/sensor nodes — need DT overlays or nrf52840dk board target
+- 2026-03-24: [embedeval] L3 "behavioral_assertion" is actually regex pattern matching — renamed to "static_heuristic"
