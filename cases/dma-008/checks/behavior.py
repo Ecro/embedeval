@@ -26,14 +26,21 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: Error flag is volatile
-    has_volatile_flag = "volatile" in generated_code
+    # Check 2: volatile applied specifically to the error flag variable (not any variable).
+    # Reject code where volatile appears only on a buffer/struct while the flag itself is plain int.
+    has_volatile_flag = bool(re.search(
+        r'volatile\s+\w*int\w*\s+\w*(?:error|err)_?flag',
+        generated_code,
+    )) or bool(re.search(
+        r'\w*(?:error|err)_?flag\b.*volatile',
+        generated_code,
+    ))
     details.append(
         CheckDetail(
             check_name="error_flag_is_volatile",
             passed=has_volatile_flag,
             expected="Error flag declared as volatile to prevent compiler optimization",
-            actual="present" if has_volatile_flag else "missing volatile — flag may be optimized away",
+            actual="present" if has_volatile_flag else "missing volatile on error flag — may be optimized away",
             check_type="constraint",
         )
     )
@@ -133,7 +140,27 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 7: Error flag read AFTER k_sem_take (not before synchronization)
+    # Check 7 (new): Error flag check in main actually causes a return/abort.
+    # LLM failure: reads the flag and prints a message but never returns on error,
+    # allowing execution to proceed as if the DMA completed successfully.
+    error_check_pos = generated_code.find("if (dma_error_flag")
+    if error_check_pos == -1:
+        error_check_pos = generated_code.find("if (error_flag")
+    error_causes_return = False
+    if error_check_pos != -1:
+        post_check = generated_code[error_check_pos:error_check_pos + 200]
+        error_causes_return = "return" in post_check
+    details.append(
+        CheckDetail(
+            check_name="error_flag_causes_return",
+            passed=error_causes_return,
+            expected="Error flag check followed by a return (not just a log message)",
+            actual="return present after error check" if error_causes_return else "error checked but no return — execution continues on error",
+            check_type="constraint",
+        )
+    )
+
+    # Check 8: Error flag read AFTER k_sem_take (not before synchronization)
     # LLM failure: reading error flag before waiting for DMA completion semaphore
     sem_take_pos = generated_code.rfind("k_sem_take")
     error_flag_name_c7 = (

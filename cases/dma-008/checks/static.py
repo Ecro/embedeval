@@ -1,5 +1,7 @@
 """Static analysis checks for DMA error handling with callback status check."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -19,14 +21,22 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: volatile error flag declared
-    has_volatile = "volatile" in generated_code
+    # Check 2: volatile applied specifically to the error flag variable (not just any variable).
+    # Reject code that declares `volatile` elsewhere (e.g. on a DMA buffer) while the flag itself
+    # is non-volatile — the LLM blind spot being targeted here.
+    has_volatile_flag = bool(re.search(
+        r'volatile\s+\w*int\w*\s+\w*(?:error|err)_?flag',
+        generated_code,
+    )) or bool(re.search(
+        r'\w*(?:error|err)_?flag\b.*volatile',
+        generated_code,
+    ))
     details.append(
         CheckDetail(
             check_name="volatile_error_flag",
-            passed=has_volatile,
-            expected="volatile keyword used for error flag",
-            actual="present" if has_volatile else "missing — compiler may optimize away shared flag",
+            passed=has_volatile_flag,
+            expected="volatile applied to the error/err flag variable itself",
+            actual="present" if has_volatile_flag else "missing — volatile on wrong variable or absent",
             check_type="exact_match",
         )
     )

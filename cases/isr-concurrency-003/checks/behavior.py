@@ -102,16 +102,22 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 7: No k_mutex used in ISR (mutex cannot be used in ISR context)
-    # LLM failure: using k_mutex_lock in the ISR body instead of spinlock
+    # Check 7: No k_mutex / irq_lock / irq_unlock used in ISR.
+    # k_mutex deadlocks in ISR context. irq_lock/irq_unlock globally disable interrupts —
+    # still incorrect and a worse alternative to spinlock (LLM blind spot).
     isr_bodies = find_isr_bodies(stripped)
-    isr_uses_mutex = any("k_mutex" in body for body in isr_bodies)
+    isr_forbidden_apis = ["k_mutex", "irq_lock(", "irq_unlock("]
+    isr_violations = [
+        api for api in isr_forbidden_apis
+        if any(api in body for body in isr_bodies)
+    ]
+    isr_uses_forbidden = len(isr_violations) > 0
     details.append(
         CheckDetail(
             check_name="no_mutex_in_isr",
-            passed=not isr_uses_mutex,
-            expected="No k_mutex operations inside ISR (spinlock required in ISR)",
-            actual="correct" if not isr_uses_mutex else "BUG: k_mutex used in ISR — will deadlock",
+            passed=not isr_uses_forbidden,
+            expected="No k_mutex / irq_lock / irq_unlock inside ISR (spinlock required)",
+            actual="correct" if not isr_uses_forbidden else f"BUG: {isr_violations} in ISR body",
             check_type="constraint",
         )
     )

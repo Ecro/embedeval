@@ -31,15 +31,22 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: k_mutex NOT used in code (forbidden in ISR context — LLM failure)
-    # Search only in comment-stripped code to avoid matching "k_mutex is NOT" in comments
-    has_mutex = bool(re.search(r'\bk_mutex\b', code_no_comments))
+    # Check 2: k_mutex / irq_lock / irq_unlock NOT used in code.
+    # k_mutex is forbidden in ISR context. irq_lock/irq_unlock globally disable interrupts —
+    # worse than spinlock and still incorrect for this pattern (LLM blind spot).
+    # Search only in comment-stripped code to avoid false matches in comments.
+    forbidden = ["k_mutex", "irq_lock(", "irq_unlock("]
+    found_forbidden = [f for f in forbidden if f in code_no_comments]
+    # Also match k_mutex via word boundary to catch k_mutex_lock / k_mutex_unlock variants
+    if not found_forbidden and bool(re.search(r'\bk_mutex\b', code_no_comments)):
+        found_forbidden.append("k_mutex")
+    has_forbidden = len(found_forbidden) > 0
     details.append(
         CheckDetail(
             check_name="no_k_mutex",
-            passed=not has_mutex,
-            expected="No k_mutex in code (forbidden in ISR; use k_spinlock)",
-            actual="k_mutex found in code!" if has_mutex else "clean",
+            passed=not has_forbidden,
+            expected="No k_mutex / irq_lock / irq_unlock (all forbidden; use k_spinlock)",
+            actual=f"found: {found_forbidden}" if has_forbidden else "clean",
             check_type="constraint",
         )
     )
