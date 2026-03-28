@@ -29,6 +29,9 @@ LAYER_NAMES: dict[int, str] = {
 }
 
 DEFAULT_TIMEOUT = 300.0
+# Embedded firmware runs forever (while(1) + k_sleep). L2 captures output
+# for a short window, then kills the process and validates what was printed.
+RUNTIME_TIMEOUT = 10.0
 
 
 def evaluate(
@@ -62,7 +65,14 @@ def evaluate(
         input_tokens=0, output_tokens=0, total_tokens=0
     )
 
-    for layer_num in range(5):
+    # Shared build directory: created once, used by L1 (compile) and L2 (runtime),
+    # cleaned up after all layers complete.
+    build_dir: Path | None = None
+    if _get_build_mode() != "skip":
+        build_dir = _prepare_build_dir(case_dir, generated_code)
+
+    try:
+      for layer_num in range(5):
         layer_name = LAYER_NAMES[layer_num]
 
         if failed_at_layer is not None:
@@ -91,6 +101,7 @@ def evaluate(
             case_dir=case_dir,
             generated_code=generated_code,
             timeout=timeout,
+            build_dir=build_dir,
         )
         # Calculate weighted score for the layer
         details = layer_result.details
@@ -112,6 +123,10 @@ def evaluate(
         if not layer_result.passed:
             failed_at_layer = layer_num
             logger.info("Layer %d (%s) failed", layer_num, layer_name)
+
+    finally:
+        if build_dir is not None:
+            shutil.rmtree(build_dir, ignore_errors=True)
 
     elapsed = time.monotonic() - start
     all_passed = failed_at_layer is None
@@ -145,12 +160,13 @@ def _run_layer(
     case_dir: Path,
     generated_code: str,
     timeout: float,
+    build_dir: Path | None = None,
 ) -> LayerResult:
     """Execute a single evaluation layer."""
     if layer_num == 0:
         return _run_static_checks(case_dir, generated_code)
     elif layer_num == 1:
-        return _run_compile_gate(case_dir, generated_code, timeout)
+        return _run_compile_gate(case_dir, generated_code, timeout, build_dir)
     elif layer_num == 2:
         is_esp = _is_esp_idf_case(case_dir)
         is_stm32 = _is_stm32_case(case_dir)
@@ -172,7 +188,7 @@ def _run_layer(
                 error=None,
                 duration_seconds=0.0,
             )
-        return _run_runtime(case_dir, generated_code, timeout)
+        return _run_runtime(case_dir, generated_code, timeout, build_dir)
     elif layer_num == 3:
         return _run_behavioral(case_dir, generated_code)
     elif layer_num == 4:
@@ -207,7 +223,8 @@ def _run_static_checks(case_dir: Path, generated_code: str) -> LayerResult:
 
 
 def _run_compile_gate(
-    case_dir: Path, generated_code: str, timeout: float
+    case_dir: Path, generated_code: str, timeout: float,
+    build_dir: Path | None = None,
 ) -> LayerResult:
     """Layer 1: Compile gate — dispatches to ESP-IDF, STM32, or Zephyr path."""
     if _is_esp_idf_case(case_dir):
@@ -238,9 +255,9 @@ def _run_compile_gate(
         )
 
     if build_mode == "docker":
-        return _run_compile_docker(case_dir, generated_code, timeout)
+        return _run_compile_docker(case_dir, generated_code, timeout, build_dir)
 
-    return _run_compile_local(case_dir, generated_code, timeout)
+    return _run_compile_local(case_dir, generated_code, timeout, build_dir)
 
 
 def _prepare_build_dir(case_dir: Path, generated_code: str) -> Path:
@@ -276,16 +293,24 @@ def _prepare_build_dir(case_dir: Path, generated_code: str) -> Path:
 
 
 def _run_compile_docker(
-    case_dir: Path, generated_code: str, timeout: float
+    case_dir: Path, generated_code: str, timeout: float,
+    build_dir: Path | None = None,
 ) -> LayerResult:
-    """Run west build inside Docker container (tmpdir-isolated)."""
+    """Run west build inside Docker container.
+
+    Uses shared build_dir from evaluate() if provided, otherwise creates
+    a temporary one (legacy path for direct calls).
+    """
     board = _get_build_board(case_dir)
-    build_dir = _prepare_build_dir(case_dir, generated_code)
+    own_build_dir = build_dir is None
+    if own_build_dir:
+        build_dir = _prepare_build_dir(case_dir, generated_code)
 
     try:
         start = time.monotonic()
         cmd = [
             "docker", "run", "--rm",
+            "--entrypoint", "",
             "-v", f"{build_dir}:/workspace",
             "-w", "/workspace",
             _get_docker_image(),
@@ -330,15 +355,19 @@ def _run_compile_docker(
             duration_seconds=timeout,
         )
     finally:
-        shutil.rmtree(build_dir, ignore_errors=True)
+        if own_build_dir:
+            shutil.rmtree(build_dir, ignore_errors=True)
 
 
 def _run_compile_local(
-    case_dir: Path, generated_code: str, timeout: float
+    case_dir: Path, generated_code: str, timeout: float,
+    build_dir: Path | None = None,
 ) -> LayerResult:
     """Run west build locally (requires ZEPHYR_BASE)."""
     board = _get_build_board(case_dir)
-    build_dir = _prepare_build_dir(case_dir, generated_code)
+    own_build_dir = build_dir is None
+    if own_build_dir:
+        build_dir = _prepare_build_dir(case_dir, generated_code)
 
     try:
         start = time.monotonic()
@@ -377,23 +406,35 @@ def _run_compile_local(
             duration_seconds=timeout,
         )
     finally:
-        shutil.rmtree(build_dir, ignore_errors=True)
+        if own_build_dir:
+            shutil.rmtree(build_dir, ignore_errors=True)
 
 
-def _run_runtime(case_dir: Path, generated_code: str, timeout: float) -> LayerResult:
-    """Layer 2: Runtime execution via west build -t run."""
+def _run_runtime(
+    case_dir: Path, generated_code: str, timeout: float,
+    build_dir: Path | None = None,
+) -> LayerResult:
+    """Layer 2: Runtime execution.
+
+    For Docker mode: runs `west build -t run` inside Docker using the shared
+    build_dir (which already has L1 build artifacts).
+    For local mode: runs `west build -t run` on the host.
+
+    Only native_sim board target supports runtime execution. HW targets
+    (nrf52840dk, etc.) are skipped since they need physical hardware.
+    """
     if not _build_env_available():
-        logger.info("Docker not available, skipping runtime execution (pass)")
+        logger.info("Build not available, skipping runtime execution (pass)")
         return LayerResult(
             layer=2,
             name="runtime_execution",
             passed=True,
             details=[
                 CheckDetail(
-                    check_name="docker_available",
+                    check_name="build_env",
                     passed=True,
-                    expected="docker installed",
-                    actual="skipped (docker not available)",
+                    expected="build environment available",
+                    actual="skipped (build not enabled)",
                     check_type="environment",
                 )
             ],
@@ -401,67 +442,127 @@ def _run_runtime(case_dir: Path, generated_code: str, timeout: float) -> LayerRe
             duration_seconds=0.0,
         )
 
-    try:
-        result = subprocess.run(
-            ["west", "build", "-t", "run"],
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            cwd=str(case_dir),
-        )
-        passed = result.returncode == 0
-        details = [
-            CheckDetail(
-                check_name="runtime_execution",
-                passed=passed,
-                expected="exit code 0",
-                actual=f"exit code {result.returncode}",
-                check_type="runtime",
-            )
-        ]
-
-        # Validate output against expected_output.txt if present
-        if passed:
-            expected_file = case_dir / "checks" / "expected_output.txt"
-            if expected_file.exists():
-                stdout = result.stdout + result.stderr  # west run mixes streams
-                expected_keywords = expected_file.read_text(encoding="utf-8").strip().splitlines()
-                missing = [
-                    kw.strip()
-                    for kw in expected_keywords
-                    if kw.strip() and kw.strip() not in stdout
-                ]
-                if missing:
-                    passed = False
-                    details.append(
-                        CheckDetail(
-                            check_name="output_validation",
-                            passed=False,
-                            expected=f"Keywords: {expected_keywords}",
-                            actual=f"Missing: {missing}",
-                            check_type="runtime",
-                        )
-                    )
-
+    # Only native_sim can be executed without hardware
+    board = _get_build_board(case_dir)
+    if board != "native_sim":
+        logger.info("Board %s requires hardware, skipping runtime (pass)", board)
         return LayerResult(
             layer=2,
             name="runtime_execution",
-            passed=passed,
-            details=details,
-            error=result.stderr if not passed else None,
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="runtime_skip",
+                    passed=True,
+                    expected="runtime execution",
+                    actual=f"skipped (board {board} requires hardware)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
             duration_seconds=0.0,
         )
-    except subprocess.TimeoutExpired:
+
+    build_mode = _get_build_mode()
+
+    if build_dir is None:
         return LayerResult(
             layer=2,
             name="runtime_execution",
-            passed=False,
-            details=[],
-            error=(
-                f"Runtime timed out after {timeout}s (possible infinite loop/deadlock)"
-            ),
-            duration_seconds=timeout,
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="runtime_skip",
+                    passed=True,
+                    expected="runtime execution",
+                    actual="skipped (no build artifacts from L1)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
         )
+
+    if build_mode == "docker":
+        cmd = [
+            "docker", "run", "--rm",
+            "--entrypoint", "",
+            "-v", f"{build_dir}:/workspace",
+            "-w", "/workspace",
+            _get_docker_image(),
+            "west", "build", "-t", "run",
+        ]
+        cwd = None
+    else:
+        cmd = ["west", "build", "-t", "run"]
+        cwd = str(build_dir)
+
+    # Embedded firmware runs forever (while(1) loops). We run for a short
+    # window, capture whatever output appears, then kill the process.
+    # Success = process started + expected output keywords found.
+    rt_timeout = RUNTIME_TIMEOUT
+    start = time.monotonic()
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=rt_timeout,
+            cwd=cwd,
+        )
+        # Process exited on its own — check exit code
+        elapsed = time.monotonic() - start
+        stdout = result.stdout + result.stderr
+        exited_ok = result.returncode == 0
+    except subprocess.TimeoutExpired as exc:
+        # Expected: firmware runs forever, we killed it after rt_timeout
+        elapsed = time.monotonic() - start
+        stdout = (exc.stdout or b"").decode(errors="replace") + \
+                 (exc.stderr or b"").decode(errors="replace")
+        exited_ok = True  # timeout is normal for embedded firmware
+
+    details: list[CheckDetail] = [
+        CheckDetail(
+            check_name="runtime_started",
+            passed=exited_ok,
+            expected="process started successfully",
+            actual=f"ran for {elapsed:.1f}s",
+            check_type="runtime",
+        )
+    ]
+
+    # Validate output against expected_output.txt
+    expected_file = case_dir / "checks" / "expected_output.txt"
+    if expected_file.exists() and exited_ok:
+        expected_keywords = [
+            kw.strip()
+            for kw in expected_file.read_text(encoding="utf-8").strip().splitlines()
+            if kw.strip()
+        ]
+        missing = [kw for kw in expected_keywords if kw not in stdout]
+        output_passed = len(missing) == 0
+        details.append(
+            CheckDetail(
+                check_name="output_validation",
+                passed=output_passed,
+                expected=f"Keywords: {expected_keywords}",
+                actual="all found" if output_passed else f"Missing: {missing}",
+                check_type="runtime",
+            )
+        )
+        passed = exited_ok and output_passed
+    else:
+        # No expected_output.txt — pass if process started OK
+        passed = exited_ok
+
+    return LayerResult(
+        layer=2,
+        name="runtime_execution",
+        passed=passed,
+        details=details,
+        error=stdout[-4000:] if not passed else None,
+        duration_seconds=elapsed,
+    )
 
 
 def _run_behavioral(case_dir: Path, generated_code: str) -> LayerResult:

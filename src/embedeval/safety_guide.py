@@ -52,7 +52,7 @@ CAPABILITY_BOUNDARY = """## LLM Capability Boundary for Embedded Development
 TASK_CHECKLISTS: dict[str, dict] = {
     "ISR / Interrupt Handlers": {
         "risk": "HIGH",
-        "success_rate": "~70%",
+        "categories": ["isr-concurrency"],
         "reasoning_level": "L3 Cross-Domain",
         "checklist": [
             "Shared variables declared volatile?",
@@ -65,7 +65,7 @@ TASK_CHECKLISTS: dict[str, dict] = {
     },
     "Error Recovery Paths": {
         "risk": "HIGH",
-        "success_rate": "~60%",
+        "categories": ["boot", "linux-driver", "ota", "storage"],
         "reasoning_level": "L4 System Reasoning",
         "checklist": [
             "Every init/alloc return value checked (ret < 0)?",
@@ -78,7 +78,7 @@ TASK_CHECKLISTS: dict[str, dict] = {
     },
     "DMA Transfers": {
         "risk": "HIGH",
-        "success_rate": "~65%",
+        "categories": ["dma"],
         "reasoning_level": "L3 Cross-Domain",
         "checklist": [
             "Buffer aligned to cache line size (32B or 64B)?",
@@ -91,7 +91,7 @@ TASK_CHECKLISTS: dict[str, dict] = {
     },
     "Watchdog Timer": {
         "risk": "MEDIUM",
-        "success_rate": "~75%",
+        "categories": ["watchdog"],
         "reasoning_level": "L4 System Reasoning",
         "checklist": [
             "WDT install before setup (correct API order)?",
@@ -104,7 +104,7 @@ TASK_CHECKLISTS: dict[str, dict] = {
     },
     "Linux Kernel Drivers": {
         "risk": "HIGH",
-        "success_rate": "~70%",
+        "categories": ["linux-driver"],
         "reasoning_level": "L4 System Reasoning",
         "checklist": [
             "copy_to_user / copy_from_user (not __ variants)?",
@@ -117,7 +117,7 @@ TASK_CHECKLISTS: dict[str, dict] = {
     },
     "Basic GPIO / UART / SPI": {
         "risk": "LOW",
-        "success_rate": "~90%",
+        "categories": ["gpio-basic", "spi-i2c"],
         "reasoning_level": "L1 API Recall",
         "checklist": [
             "device_is_ready() called before use?",
@@ -226,6 +226,36 @@ def _reasoning_risk_table(results: list[EvalResult]) -> list[str]:
     return lines
 
 
+def _calculate_category_pass_rates(
+    results: list[EvalResult],
+) -> dict[str, float]:
+    """Calculate pass rate per category from results."""
+    by_cat: dict[str, list[bool]] = defaultdict(list)
+    for r in results:
+        cat = r.category.value if r.category else r.case_id.rsplit("-", 1)[0]
+        by_cat[cat].append(r.passed)
+    return {
+        cat: sum(passes) / len(passes)
+        for cat, passes in by_cat.items()
+        if passes
+    }
+
+
+def _task_success_rate(
+    categories: list[str],
+    cat_rates: dict[str, float],
+) -> str:
+    """Compute weighted success rate for a task from its mapped categories.
+
+    Returns a formatted string like '72%' or 'N/A' if no data.
+    """
+    rates = [cat_rates[c] for c in categories if c in cat_rates]
+    if not rates:
+        return "N/A (no benchmark data)"
+    weighted = sum(rates) / len(rates)
+    return f"{weighted:.0%}"
+
+
 def _task_checklists(results: list[EvalResult]) -> list[str]:
     """Generate per-task checklists with dynamic failure data."""
     lines = [
@@ -233,10 +263,13 @@ def _task_checklists(results: list[EvalResult]) -> list[str]:
         "",
     ]
 
+    cat_rates = _calculate_category_pass_rates(results)
+
     for task_name, info in TASK_CHECKLISTS.items():
-        risk_emoji = {"HIGH": "!!!", "MEDIUM": "!!", "LOW": "!"}.get(info["risk"], "")
+        categories = info["categories"]
+        success_rate = _task_success_rate(categories, cat_rates)
         lines.append(f"### {task_name}")
-        lines.append(f"**Risk: {info['risk']}** | Success rate: {info['success_rate']} | {info['reasoning_level']}")
+        lines.append(f"**Risk: {info['risk']}** | Success rate: {success_rate} | {info['reasoning_level']}")
         lines.append("")
         for item in info["checklist"]:
             lines.append(f"- [ ] {item}")

@@ -242,7 +242,7 @@ embedeval/
 │   ├── {category}-{NNN}/    # Zephyr cases (20 categories × 10+)
 │   ├── esp-*/               # ESP-IDF cases (10)
 │   └── stm32-*/             # STM32 HAL + FreeRTOS cases (10)
-├── tests/                   # 966 tests
+├── tests/                   # 974 tests
 │   ├── test_e2e.py          # E2E: 220 reference solutions + pipeline
 │   ├── test_negatives.py    # 20 must_fail + 15 subtle mutations
 │   ├── test_bugfix.py       # Bug fix scenario tests
