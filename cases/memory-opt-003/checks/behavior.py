@@ -90,4 +90,21 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 7: no malloc/free cycle inside loops
+    # (LLM failure: allocating and freeing inside a loop causes heap fragmentation over time)
+    import re
+    loop_regions = re.findall(
+        r'(?:while|for)\s*\([^)]*\)\s*\{[^}]*(?:k_malloc|k_heap_alloc)[^}]*(?:k_free|k_heap_free)',
+        generated_code,
+        re.DOTALL,
+    )
+    has_alloc_in_loop = len(loop_regions) > 0
+    details.append(CheckDetail(
+        check_name="no_malloc_free_in_loop",
+        passed=not has_alloc_in_loop,
+        expected="No malloc/free cycle inside loops (causes fragmentation over time)",
+        actual="clean" if not has_alloc_in_loop else "alloc/free in loop detected — fragmentation risk",
+        check_type="constraint",
+    ))
+
     return details

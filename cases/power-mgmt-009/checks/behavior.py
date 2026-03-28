@@ -94,4 +94,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: multiple PM states used (different sleep depths for different battery levels)
+    # (LLM failure: single fixed sleep state regardless of battery level)
+    pm_states = set(re.findall(r'PM_STATE_\w+', generated_code))
+    details.append(CheckDetail(
+        check_name="multiple_sleep_depths",
+        passed=len(pm_states) >= 2,
+        expected="At least 2 different PM states (adaptive power management)",
+        actual=f"{len(pm_states)} PM states: {pm_states}" if pm_states else "no PM states found",
+        check_type="constraint",
+    ))
+
     return details

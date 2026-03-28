@@ -107,4 +107,28 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: Consistent lock order across threads — Factor D3 Deadlock
+    # Groups k_mutex_lock call sequences and verifies all multi-lock sequences are identical
+    import re as _re
+    lock_calls = _re.findall(r'k_mutex_lock\s*\(\s*&?\s*(\w+)', generated_code)
+    lock_sequences: list[tuple[str, ...]] = []
+    current_seq: list[str] = []
+    for name in lock_calls:
+        if name in current_seq:
+            lock_sequences.append(tuple(current_seq))
+            current_seq = [name]
+        else:
+            current_seq.append(name)
+    if current_seq:
+        lock_sequences.append(tuple(current_seq))
+    multi_lock_seqs = [s for s in lock_sequences if len(s) >= 2]
+    consistent = len(set(multi_lock_seqs)) <= 1 if multi_lock_seqs else True
+    details.append(CheckDetail(
+        check_name="consistent_lock_order",
+        passed=consistent,
+        expected="All threads acquire mutexes in consistent order (deadlock prevention)",
+        actual="consistent" if consistent else f"inconsistent lock orders: {set(multi_lock_seqs)}",
+        check_type="constraint",
+    ))
+
     return details

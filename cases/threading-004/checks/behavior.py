@@ -106,4 +106,29 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 7: three distinct priority values extracted from K_THREAD_DEFINE
+    # Complements Check 2 by also resolving symbolic #define constants and
+    # by catching cases where the existing regex misses non-digit argument forms.
+    # (LLM failure: all threads at same priority — inheritance has no effect)
+    prio_values: set = set()
+    for m in re.finditer(
+        r'K_THREAD_DEFINE\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*(\w+)',
+        generated_code,
+    ):
+        val = m.group(1)
+        num_match = re.search(rf'#define\s+{re.escape(val)}\s+(\d+)', generated_code)
+        if num_match:
+            prio_values.add(int(num_match.group(1)))
+        elif val.isdigit():
+            prio_values.add(int(val))
+        else:
+            prio_values.add(val)  # symbolic, still counts as distinct
+    details.append(CheckDetail(
+        check_name="three_priorities_via_define",
+        passed=len(prio_values) >= 3,
+        expected="Three distinct thread priorities (low, medium, high for inversion demo)",
+        actual=f"priorities: {prio_values}" if prio_values else "could not extract priorities",
+        check_type="constraint",
+    ))
+
     return details

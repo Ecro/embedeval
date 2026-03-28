@@ -72,4 +72,19 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: both suspend and resume PM_DEVICE_ACTION constants present in code
+    # Distinct from Check 1 (both_transitions_handled): this check verifies the
+    # exact PM_DEVICE_ACTION_* constant names are referenced, not just any
+    # suspend/resume keyword.
+    # (LLM failure: using PM_DEVICE_ACTION_TURN_OFF instead of SUSPEND)
+    has_suspend = "PM_DEVICE_ACTION_SUSPEND" in generated_code
+    has_resume = "PM_DEVICE_ACTION_RESUME" in generated_code
+    details.append(CheckDetail(
+        check_name="suspend_resume_both_handled",
+        passed=has_suspend and has_resume,
+        expected="Both SUSPEND and RESUME PM actions have code paths",
+        actual=f"suspend={has_suspend}, resume={has_resume}",
+        check_type="constraint",
+    ))
+
     return details

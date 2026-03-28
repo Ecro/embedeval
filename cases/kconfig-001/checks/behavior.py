@@ -106,4 +106,27 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: No conflicting configs enabled simultaneously — Factor E3 Build system
+    # CONFIG_SPI_SLAVE conflicts with SPI master mode
+    has_conflict = config.get("CONFIG_SPI_SLAVE") == "y" and config.get("CONFIG_SPI") == "y"
+    details.append(CheckDetail(
+        check_name="no_conflicting_configs",
+        passed=not has_conflict,
+        expected="No mutually exclusive CONFIG options both enabled",
+        actual="clean" if not has_conflict else "CONFIG_SPI_SLAVE conflicts with SPI master mode",
+        check_type="constraint",
+    ))
+
+    # Check 7: Dependency chain complete (SPI with DMA requires CONFIG_DMA) — Factor E3 Build system
+    has_spi_dma = config.get("CONFIG_SPI_DMA") == "y"
+    dma_present = config.get("CONFIG_DMA") == "y"
+    dep_complete = not has_spi_dma or dma_present
+    details.append(CheckDetail(
+        check_name="dependency_chain_complete",
+        passed=dep_complete,
+        expected="SPI with DMA requires CONFIG_DMA dependency",
+        actual="dependencies satisfied" if dep_complete else "CONFIG_DMA missing for SPI DMA mode",
+        check_type="constraint",
+    ))
+
     return details

@@ -146,4 +146,24 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 10: compatible string format (vendor,device) — Factor A11 Device Tree
+    has_compatible = bool(re.search(r'compatible\s*=\s*"[a-z]+,[a-z]', generated_code))
+    details.append(CheckDetail(
+        check_name="compatible_string_valid",
+        passed=has_compatible,
+        expected='compatible = "vendor,device" format',
+        actual="valid format" if has_compatible else "missing or invalid compatible string",
+        check_type="constraint",
+    ))
+
+    # Check 11: status = "okay" on active node — Factor A11 Device Tree
+    has_status = bool(re.search(r'status\s*=\s*"okay"', generated_code))
+    details.append(CheckDetail(
+        check_name="status_okay_present",
+        passed=has_status,
+        expected='status = "okay" on active device node',
+        actual="present" if has_status else "missing status = okay",
+        check_type="constraint",
+    ))
+
     return details

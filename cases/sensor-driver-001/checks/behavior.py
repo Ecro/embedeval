@@ -1,5 +1,7 @@
 """Behavioral checks for Zephyr sensor API temperature read."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -69,5 +71,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
+
+    # Check 6: sensor value converted for display (val1/val2 extraction)
+    # (LLM failure: printing the raw struct pointer or ignoring val1/val2 fields)
+    has_conversion = bool(re.search(r'\.val1|\.val2|sensor_value_to', generated_code))
+    details.append(CheckDetail(
+        check_name="raw_to_physical_conversion",
+        passed=has_conversion,
+        expected="Sensor value fields (val1/val2) used for physical unit conversion",
+        actual="conversion found" if has_conversion else "no sensor value field access",
+        check_type="constraint",
+    ))
 
     return details

@@ -1,5 +1,7 @@
 """Behavioral checks for Device Tree pinctrl UART overlay."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 _FAKE_DT_PROPERTIES = [
@@ -112,5 +114,25 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
+
+    # Check 9: pinctrl binding present (Factor A4 pin muxing)
+    has_pinctrl_binding = bool(re.search(r'pinctrl-0\s*=\s*<&', generated_code))
+    details.append(CheckDetail(
+        check_name="pinctrl_binding_present",
+        passed=has_pinctrl_binding,
+        expected="pinctrl-0 = <&xxx> binding for pin muxing",
+        actual="present" if has_pinctrl_binding else "no pinctrl binding",
+        check_type="constraint",
+    ))
+
+    # Check 10: pinctrl-names = "default" (regex form for Factor A4 coverage)
+    has_pinctrl_names = bool(re.search(r'pinctrl-names\s*=\s*"default"', generated_code))
+    details.append(CheckDetail(
+        check_name="pinctrl_names_default",
+        passed=has_pinctrl_names,
+        expected='pinctrl-names = "default" for standard pin state',
+        actual="present" if has_pinctrl_names else "missing pinctrl-names",
+        check_type="constraint",
+    ))
 
     return details

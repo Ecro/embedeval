@@ -1,5 +1,7 @@
 """Behavioral checks for SPI full-duplex transfer."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -73,5 +75,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
+
+    # Check 6: SPI frequency or word size configured
+    # (LLM failure: leaving spi_config with defaults — undefined clock rate)
+    has_spi_config = bool(re.search(r'SPI_WORD_SET|spi_config|frequency|SPI_OP_MODE', generated_code))
+    details.append(CheckDetail(
+        check_name="spi_frequency_configured",
+        passed=has_spi_config,
+        expected="SPI frequency or word configuration present",
+        actual="configured" if has_spi_config else "no SPI timing configuration",
+        check_type="constraint",
+    ))
 
     return details

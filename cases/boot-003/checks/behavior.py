@@ -130,4 +130,19 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 9: At least one signature type configured — Factor E8 Bootloader sequence
+    sig_types = [
+        "CONFIG_BOOT_SIGNATURE_TYPE_RSA",
+        "CONFIG_BOOT_SIGNATURE_TYPE_ECDSA_P256",
+        "CONFIG_BOOT_SIGNATURE_TYPE_ED25519",
+    ]
+    has_sig = any(s in generated_code for s in sig_types)
+    details.append(CheckDetail(
+        check_name="signature_type_present",
+        passed=has_sig,
+        expected="At least one boot signature type configured",
+        actual="signature type found" if has_sig else "no signature type — unsigned images",
+        check_type="constraint",
+    ))
+
     return details

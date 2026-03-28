@@ -1,0 +1,12 @@
+id: memory-opt-012
+category: memory-opt
+difficulty: hard
+title: "Flash-Efficient CRC-16 for 16KB Target"
+description: "Implement CRC-16-CCITT without lookup tables on a 16KB flash target"
+tags: [zephyr, memory, flash-size, crc, code-size]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"
+created_date: "2026-03-28"
+tier: challenge
+reasoning_types: [cross_domain, system_reasoning]

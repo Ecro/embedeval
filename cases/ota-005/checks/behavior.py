@@ -151,4 +151,20 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 10: Rollback on error path — Factor E7 OTA pipeline
+    # Accepts MCUboot (dfu_target_done false / boot_write_img_invalid) or ESP-IDF rollback API
+    has_rollback = (
+        "boot_write_img_invalid" in generated_code
+        or "mark_app_invalid" in generated_code
+        or "esp_ota_mark_app_invalid" in generated_code
+        or "dfu_target_done(false)" in generated_code
+    )
+    details.append(CheckDetail(
+        check_name="rollback_on_error",
+        passed=has_rollback,
+        expected="Rollback API called on error path (image invalidation or dfu_target_done abort)",
+        actual="rollback present" if has_rollback else "no rollback on error",
+        check_type="constraint",
+    ))
+
     return details

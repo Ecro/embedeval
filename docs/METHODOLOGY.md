@@ -8,10 +8,10 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 
 | Metric | Value |
 |--------|-------|
-| **Total cases** | 223 |
+| **Total cases** | 227 |
 | **Categories** | 23 |
 | **Platforms** | 6 (docker_only, esp_idf, native_sim, qemu_arm, stm32_hal, yocto_build) |
-| **Difficulty** | 29 easy, 98 medium, 96 hard |
+| **Difficulty** | 29 easy, 98 medium, 100 hard |
 | **Private held-out** | 48 cases (21%) for contamination prevention |
 | **Evaluation scenarios** | 2 (generation, bugfix) |
 | **Negatives (mutation tests)** | 10 cases, 20 must_fail mutations |
@@ -40,7 +40,7 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | isr-concurrency | 0 | 3 | 9 | 12 |
 | kconfig | 2 | 4 | 4 | 10 |
 | linux-driver | 0 | 4 | 6 | 10 |
-| memory-opt | 1 | 5 | 5 | 11 |
+| memory-opt | 1 | 5 | 6 | 12 |
 | networking | 1 | 7 | 4 | 12 |
 | ota | 1 | 4 | 6 | 11 |
 | power-mgmt | 2 | 6 | 4 | 12 |
@@ -48,8 +48,8 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | security | 0 | 4 | 6 | 10 |
 | sensor-driver | 1 | 6 | 5 | 12 |
 | spi-i2c | 1 | 9 | 4 | 14 |
-| storage | 3 | 5 | 3 | 11 |
-| threading | 1 | 5 | 6 | 12 |
+| storage | 3 | 5 | 4 | 12 |
+| threading | 1 | 5 | 8 | 14 |
 | timer | 3 | 6 | 3 | 12 |
 | uart | 1 | 2 | 0 | 3 |
 | watchdog | 2 | 4 | 4 | 10 |
