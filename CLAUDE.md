@@ -120,6 +120,10 @@ Platform-specific: `yocto`, `linux-driver`, `memory-opt`
 ## Learned Corrections
 
 ### 2026
+- 2026-03-29: [embedeval] Check regexes must accept API variants (k_msleep=k_sleep, printf=printk=LOG_*) — use shared check_utils utilities
+- 2026-03-29: [embedeval] Check regexes must resolve #define macros — use extract_numeric/resolve_define, not bare \d+ patterns
+- 2026-03-29: [embedeval] Use find("func(") not find("func") — avoids matching typedefs like esp_timer_create_args_t
+- 2026-03-29: [embedeval] Content hashing must use file bytes, not st_mtime — mtime resets on git clone
 - 2026-03-26: [embedeval] call_model() already extracts code — don't call _extract_code() again on generated_code
 - 2026-03-26: [embedeval] L0 check failures have error=None, details in .details — must include failed check details in feedback prompts
 - 2026-03-26: [embedeval] String date comparison needs format validation — use date.fromisoformat() before comparing
