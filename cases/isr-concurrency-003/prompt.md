@@ -1,19 +1,11 @@
-Implement a Zephyr RTOS application that protects shared state between an ISR and a thread using k_spinlock.
+Implement a Zephyr RTOS application that safely shares a counter between an ISR and a reader thread.
 
 Requirements:
-1. Include zephyr/kernel.h
-2. Declare a shared uint32_t counter variable
-3. Implement an ISR function (isr_handler) that:
-   - Uses ISR-safe synchronization to protect the shared counter (note: k_mutex_lock is forbidden in ISR context)
-   - Increments the shared counter
-   - Saves and restores interrupt state when accessing shared data
-4. Implement a reader thread function that:
-   - Loops 5 times
-   - Each iteration: acquires the same synchronization primitive, reads counter, releases it
-   - Prints the counter value with printk
-   - Sleeps 100ms between reads with k_sleep(K_MSEC(100))
-5. Define the reader thread with K_THREAD_DEFINE and a stack of at least 1024 bytes
-6. In main(), simulate ISR firing 5 times by calling isr_handler() directly
-7. Call k_sleep(K_MSEC(600)) in main to allow reader thread to complete
+1. Declare a shared counter variable accessible from both ISR and thread context
+2. Implement an ISR handler that increments the shared counter with proper synchronization
+3. Implement a reader thread that periodically reads and prints the counter value with proper synchronization
+4. Ensure the synchronization mechanism is valid for use in both ISR and thread context
+5. In main(), simulate the ISR firing multiple times, then allow the reader thread time to complete
+6. The reader thread should be defined statically with an appropriate stack size
 
 Output ONLY the complete C source file.

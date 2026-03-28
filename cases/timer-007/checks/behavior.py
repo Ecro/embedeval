@@ -1,5 +1,8 @@
 """Behavioral checks for watchdog-fed-by-timer cascaded safety application."""
 
+import re
+
+from embedeval.check_utils import extract_function_body
 from embedeval.models import CheckDetail
 
 
@@ -10,7 +13,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 1: Timer period < WDT timeout
     # WDT max must be > timer period (in seconds)
     # Heuristic: find window.max value and timer period, compare
-    import re
     wdt_max_match = re.search(r"window\.max\s*=\s*(\d+)", generated_code)
     timer_period_match = re.search(r"K_SECONDS\((\d+)\)", generated_code)
     period_ok = False
@@ -94,6 +96,25 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=not has_freertos,
             expected="No FreeRTOS APIs (wrong RTOS)",
             actual="FreeRTOS API found" if has_freertos else "clean",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: wdt_feed is in timer callback, not main loop
+    timer_cb_pattern = re.search(
+        r'void\s+(\w+)\s*\(\s*struct\s+k_timer\s*\*', generated_code
+    )
+    if timer_cb_pattern:
+        cb_body = extract_function_body(generated_code, timer_cb_pattern.group(1))
+        feed_in_callback = cb_body is not None and "wdt_feed" in cb_body
+    else:
+        feed_in_callback = False
+    details.append(
+        CheckDetail(
+            check_name="wdt_feed_in_timer_callback",
+            passed=feed_in_callback,
+            expected="wdt_feed called inside timer callback (not main loop)",
+            actual="feed in callback" if feed_in_callback else "feed not found in timer callback",
             check_type="constraint",
         )
     )

@@ -1,5 +1,5 @@
 id: gpio-basic-002
-category: gpio-basic
+category: uart
 difficulty: easy
 title: "UART Echo"
 description: "Read bytes from UART and echo them back using the Zephyr UART poll API"

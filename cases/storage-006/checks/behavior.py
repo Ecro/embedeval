@@ -77,8 +77,24 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: Success message printed
-    has_ok_print = "WEAR WRITE OK" in generated_code or "OK" in generated_code
+    # Check 6: Write count reset on sector rotation
+    has_reset = bool(re.search(r'write_count\w*(?:\[.*?\])?\s*=\s*0', generated_code)) or \
+                bool(re.search(r'write_count\w*\s*=\s*\{0\}', generated_code)) or \
+                "memset" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="write_count_reset_on_rotation",
+            passed=has_reset,
+            expected="Write count reset when rotating to new sector",
+            actual="reset found" if has_reset else "no write count reset on rotation",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Success message printed
+    has_ok_print = bool(re.search(
+        r'printk\s*\([^)]*(?:OK|ok|success|written|sector)[^)]*\)', generated_code
+    ))
     details.append(
         CheckDetail(
             check_name="success_printed",

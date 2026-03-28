@@ -124,11 +124,14 @@ k_sleep(K_SECONDS(1));        // HALLUCINATION — Zephyr API
 | Multi-turn agent | SWE-bench | `embedeval agent --max-turns 5` |
 | Temporal filtering | LiveCodeBench (ICLR'25) | `--after-date 2026-01-01` |
 
-## 220 Test Cases, 22 Categories
+## 221 Test Cases, 23 Categories
 
 | Category | Cases | Platform | L1 Build |
 |----------|-------|----------|----------|
-| gpio-basic | 10 | Zephyr | native_sim |
+| gpio-basic | 4 | Zephyr | native_sim |
+| uart | 3 | Zephyr | nrf52840dk |
+| adc | 2 | Zephyr | nrf52840dk |
+| pwm | 1 | Zephyr | nrf52840dk |
 | spi-i2c | 10 | Zephyr | nrf52840dk |
 | dma | 10 | Zephyr | native_sim |
 | isr-concurrency | 10 | Zephyr | native_sim |
@@ -238,8 +241,8 @@ embedeval/
 │   ├── agent.py             # Multi-turn agent evaluation
 │   ├── llm_client.py        # LiteLLM + claude-code:// provider
 │   └── cli.py               # Typer CLI (run, agent, validate, sensitivity, list)
-├── cases/                   # 223 test cases (173 public + 50 private)
-│   ├── {category}-{NNN}/    # Zephyr cases (20 categories × 10+)
+├── cases/                   # 223 test cases (175 public + 48 private)
+│   ├── {category}-{NNN}/    # Zephyr cases (23 categories × 10+)
 │   ├── esp-*/               # ESP-IDF cases (10)
 │   └── stm32-*/             # STM32 HAL + FreeRTOS cases (10)
 ├── tests/                   # 994 tests

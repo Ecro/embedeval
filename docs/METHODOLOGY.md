@@ -9,10 +9,10 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | Metric | Value |
 |--------|-------|
 | **Total cases** | 223 |
-| **Categories** | 20 |
+| **Categories** | 23 |
 | **Platforms** | 6 (docker_only, esp_idf, native_sim, qemu_arm, stm32_hal, yocto_build) |
-| **Difficulty** | 30 easy, 99 medium, 94 hard |
-| **Private held-out** | 50 cases (22%) for contamination prevention |
+| **Difficulty** | 29 easy, 98 medium, 96 hard |
+| **Private held-out** | 48 cases (21%) for contamination prevention |
 | **Evaluation scenarios** | 2 (generation, bugfix) |
 | **Negatives (mutation tests)** | 10 cases, 20 must_fail mutations |
 
@@ -20,7 +20,7 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 
 | Platform | Cases | Categories |
 |----------|-------|------------|
-| Zephyr RTOS (native_sim) | 170 | gpio-basic, spi-i2c, dma, isr-concurrency, threading, timer, sensor-driver, networking, ble, security, storage, kconfig, device-tree, boot, ota, power-mgmt, watchdog, memory-opt |
+| Zephyr RTOS (native_sim) | 170 | gpio-basic, uart, adc, pwm, spi-i2c, dma, isr-concurrency, threading, timer, sensor-driver, networking, ble, security, storage, kconfig, device-tree, boot, ota, power-mgmt, watchdog, memory-opt |
 | Zephyr RTOS (qemu_arm) | 10 | (subset of above, board-specific) |
 | ESP-IDF | 10 | esp-adc, esp-ble, esp-gpio, esp-i2c, esp-nvs, esp-ota, esp-sleep, esp-spi, esp-timer, esp-wifi |
 | STM32 HAL | 10 | stm32-gpio, stm32-uart, stm32-spi, stm32-i2c, stm32-timer, stm32-adc, stm32-dma, stm32-lowpower, stm32-freertos (×2) |
@@ -31,11 +31,12 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 
 | Category | Easy | Medium | Hard | Total |
 |----------|------|--------|------|-------|
+| adc | 0 | 1 | 1 | 2 |
 | ble | 1 | 4 | 6 | 11 |
 | boot | 2 | 5 | 3 | 10 |
 | device-tree | 2 | 4 | 4 | 10 |
-| dma | 1 | 4 | 6 | 11 |
-| gpio-basic | 4 | 5 | 3 | 12 |
+| dma | 1 | 3 | 7 | 11 |
+| gpio-basic | 2 | 2 | 2 | 6 |
 | isr-concurrency | 0 | 3 | 9 | 12 |
 | kconfig | 2 | 4 | 4 | 10 |
 | linux-driver | 0 | 4 | 6 | 10 |
@@ -43,13 +44,15 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | networking | 1 | 7 | 4 | 12 |
 | ota | 1 | 4 | 6 | 11 |
 | power-mgmt | 2 | 6 | 4 | 12 |
+| pwm | 1 | 0 | 0 | 1 |
 | security | 0 | 4 | 6 | 10 |
 | sensor-driver | 1 | 6 | 5 | 12 |
 | spi-i2c | 1 | 9 | 4 | 14 |
 | storage | 3 | 5 | 3 | 11 |
 | threading | 1 | 5 | 6 | 12 |
 | timer | 3 | 6 | 3 | 12 |
-| watchdog | 3 | 4 | 3 | 10 |
+| uart | 1 | 2 | 0 | 3 |
+| watchdog | 2 | 4 | 4 | 10 |
 | yocto | 1 | 5 | 4 | 10 |
 
 ---

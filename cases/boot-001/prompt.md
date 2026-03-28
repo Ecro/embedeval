@@ -1,13 +1,11 @@
-Write a Zephyr Kconfig fragment that enables MCUboot bootloader integration with image confirmation.
+Write a Zephyr RTOS Kconfig fragment (.conf) that configures MCUboot integration for safe firmware updates with image confirmation support.
 
 Requirements:
-1. Enable CONFIG_BOOTLOADER_MCUBOOT=y
-2. Enable CONFIG_MCUBOOT_IMG_MANAGER=y (image management support)
-3. Enable CONFIG_IMG_MANAGER=y (required dependency)
-4. Enable CONFIG_FLASH=y (required for image storage)
-5. Enable CONFIG_STREAM_FLASH=y (required for flash streaming)
-6. Enable CONFIG_IMG_BLOCK_BUF_SIZE=512 (image block buffer size)
-7. Do NOT enable CONFIG_BOOT_UPGRADE_ONLY (keep swap mode for rollback)
-8. Do NOT enable CONFIG_SINGLE_APPLICATION_SLOT
+1. Enable MCUboot bootloader integration
+2. Enable image management so the application can confirm or revert firmware images
+3. Ensure all flash-related dependencies are enabled (flash subsystem, stream flash, etc.)
+4. Set the image block buffer size to 512 bytes
+5. Keep swap-based upgrade mode (do NOT enable upgrade-only mode, as it disables rollback)
+6. Do NOT use single application slot (dual-slot is required for A/B updates)
 
 Output ONLY the Kconfig fragment as plain text .conf file content.

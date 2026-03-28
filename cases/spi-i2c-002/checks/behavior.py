@@ -30,9 +30,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Separate tx and rx buffers (LLM failure: same pointer for both)
-    # Heuristic: at least two distinct buffer names containing "tx" and "rx"
-    has_tx_buf = bool(re.search(r"\btx[_\w]*buf\b|\bbuf[_\w]*tx\b", generated_code))
-    has_rx_buf = bool(re.search(r"\brx[_\w]*buf\b|\bbuf[_\w]*rx\b", generated_code))
+    # Heuristic: at least two distinct buffer names containing "tx"/"send"/"out" and "rx"/"recv"/"in"
+    tx_patterns = [r'\btx[_\w]*buf\b', r'\bsend[_\w]*buf\b', r'\bout[_\w]*buf\b', r'\btx_data\b', r'\bsend_data\b']
+    rx_patterns = [r'\brx[_\w]*buf\b', r'\brecv[_\w]*buf\b', r'\bin[_\w]*buf\b', r'\brx_data\b', r'\brecv_data\b']
+    has_tx_buf = any(re.search(p, generated_code) for p in tx_patterns)
+    has_rx_buf = any(re.search(p, generated_code) for p in rx_patterns)
     details.append(
         CheckDetail(
             check_name="separate_tx_rx_buffers",

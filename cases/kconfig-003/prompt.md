@@ -1,7 +1,9 @@
-Write a Zephyr Kconfig fragment that enables USB CDC ACM serial communication. The fragment should:
-1. Enable CONFIG_USB_DEVICE_STACK=y (USB device stack base)
-2. Enable CONFIG_USB_CDC_ACM=y (depends on USB_DEVICE_STACK)
-3. Enable CONFIG_UART_LINE_CTRL=y (line control for CDC ACM)
-4. NOT enable conflicting options
+Write a Zephyr RTOS Kconfig fragment (.conf) that enables USB CDC ACM for serial console communication.
+
+Requirements:
+1. Enable the USB device stack
+2. Enable the CDC ACM class driver for virtual serial port functionality
+3. Enable UART line control support needed by CDC ACM
+4. Do NOT enable any conflicting or mutually exclusive options
 
 Output ONLY the Kconfig fragment as a plain text .conf file content.

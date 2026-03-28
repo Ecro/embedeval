@@ -9,14 +9,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate SPI flash behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
 
-    # Check 1: Write enable command present (WREN / 0x06)
-    has_wren = "WREN" in generated_code or "write_enable" in generated_code
+    # Check 1: Write enable command present AND ordered before write operation
+    wren_pos = max(generated_code.find("WREN"), generated_code.lower().find("write_enable"))
+    write_pos = max(generated_code.find("spi_write"), generated_code.find("spi_transceive"))
+    has_wren_before = wren_pos != -1 and (write_pos == -1 or wren_pos < write_pos)
     details.append(
         CheckDetail(
             check_name="write_enable_before_write",
-            passed=has_wren,
-            expected="Write enable command (WREN/0x06) present",
-            actual="present" if has_wren else "missing",
+            passed=has_wren_before,
+            expected="Write enable command (WREN/0x06) before write operation",
+            actual="correct order" if has_wren_before else "missing or wrong order",
             check_type="constraint",
         )
     )

@@ -1,6 +1,6 @@
 # EmbedEval Test Case Catalog
 
-20 categories × 10 cases = **200 test cases** targeting LLM failure patterns in embedded firmware development.
+23 categories × 10 cases = **200+ test cases** targeting LLM failure patterns in embedded firmware development.
 
 ## Difficulty Legend
 

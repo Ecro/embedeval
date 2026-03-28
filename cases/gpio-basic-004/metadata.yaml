@@ -1,5 +1,5 @@
 id: gpio-basic-004
-category: gpio-basic
+category: pwm
 difficulty: easy
 title: "PWM LED Brightness Control"
 description: "Control LED brightness by varying PWM duty cycle using the Zephyr PWM DT spec API"

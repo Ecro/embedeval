@@ -1,5 +1,7 @@
 """Behavioral checks for TCP server with buffer overflow protection."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -7,14 +9,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate TCP server safety and correctness behavioral properties."""
     details: list[CheckDetail] = []
 
-    # Check 1: Null-terminate received data
-    has_null_term = (
-        "recv_buf[ret] = '\\0'" in generated_code
-        or "recv_buf[received" in generated_code
-        or "= '\\0'" in generated_code
-        or '= "\\0"' in generated_code
-        or "\\0" in generated_code
-    )
+    # Check 1: Null-terminate received data — must be buf[len] = '\0' pattern
+    # (not just any occurrence of \0 in the source)
+    has_null_term = bool(re.search(
+        r'\w+\s*\[\s*\w+\s*\]\s*=\s*[\'\"]\\0[\'\"]', generated_code
+    )) or bool(re.search(
+        r'\w+\s*\[\s*\w+\s*\]\s*=\s*0\s*;', generated_code
+    ))
     details.append(
         CheckDetail(
             check_name="null_terminate_received",
@@ -37,8 +38,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 3: Connection-closed check (ret == 0)
-    has_closed_check = "== 0" in generated_code or "ret == 0" in generated_code
+    # Check 3: Connection-closed check (ret == 0) — scoped to recv context
+    has_closed_check = bool(re.search(
+        r'(?:ret|len|n|bytes)\s*==\s*0', generated_code
+    )) and ("recv" in generated_code)
     details.append(
         CheckDetail(
             check_name="connection_closed_check",

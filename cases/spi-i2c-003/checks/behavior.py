@@ -47,9 +47,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Little-endian axis reconstruction (low byte | high byte shifted)
     # Correct: (raw[1] << 8) | raw[0], etc.
-    has_little_endian = bool(
-        re.search(r"<<\s*8.*\||\|.*<<\s*8", generated_code)
-        or "int16_t" in generated_code
+    has_little_endian = bool(re.search(r'<<\s*8', generated_code)) and bool(re.search(r'\|', generated_code))
+    # Also accept explicit byte swapping functions
+    has_little_endian = has_little_endian or bool(
+        re.search(r'__bswap|bswap|htole|letoh|le16_to_cpu', generated_code)
     )
     details.append(
         CheckDetail(

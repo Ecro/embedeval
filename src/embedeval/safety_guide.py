@@ -119,7 +119,7 @@ TASK_CHECKLISTS: dict[str, dict] = {
     },
     "Basic GPIO / UART / SPI": {
         "risk": "LOW",
-        "categories": ["gpio-basic", "spi-i2c"],
+        "categories": ["gpio-basic", "uart", "adc", "pwm", "spi-i2c"],
         "reasoning_level": "L1 API Recall",
         "checklist": [
             "device_is_ready() called before use?",

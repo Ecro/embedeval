@@ -71,7 +71,23 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: get_resource (or equivalent) function returns pointer
+    # Check 5: volatile on initialized flag (double-check locking correctness)
+    has_volatile_init = bool(re.search(
+        r'volatile\s+\w+\s+\w*init\w*', generated_code
+    )) or bool(re.search(
+        r'atomic_t\s+\w*init\w*', generated_code
+    ))
+    details.append(
+        CheckDetail(
+            check_name="volatile_on_initialized_flag",
+            passed=has_volatile_init,
+            expected="volatile or atomic_t qualifier on initialized flag",
+            actual="volatile/atomic found" if has_volatile_init else "plain variable (compiler may cache)",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: get_resource (or equivalent) function returns pointer
     has_get_fn = bool(
         re.search(r"\*\s*get_\w+\s*\(|get_resource|get_singleton|get_instance", generated_code)
     )

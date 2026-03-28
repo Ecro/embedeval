@@ -1,21 +1,12 @@
-Write a Zephyr RTOS application that uses the task watchdog API to monitor the main thread.
+Write a Zephyr RTOS application that combines a hardware watchdog with a persistent reboot counter stored in NVS (Non-Volatile Storage).
 
 Requirements:
-1. Include header: zephyr/task_wdt/task_wdt.h (in addition to zephyr/kernel.h)
-2. Initialize the task watchdog subsystem with task_wdt_init(NULL) before adding any channels
-3. Add a task watchdog channel for the main thread using task_wdt_add():
-   - period_ms = 2000 (2 second timeout)
-   - callback = NULL (use default reset action)
-   - user_data = NULL
-   - Store the return value as int task_wdt_id; check that it is >= 0
-4. In the main loop:
-   a. Print a heartbeat message with printk
-   b. Feed the task watchdog by calling task_wdt_feed(task_wdt_id)
-   c. Sleep for 1 second with k_sleep(K_SECONDS(1))
-5. Repeat forever
+1. On boot, read a reboot counter from NVS
+2. If the counter exceeds a threshold (e.g., 3), enter a safe/recovery mode instead of normal operation
+3. Increment and save the counter to NVS before starting normal operation
+4. Set up a hardware watchdog with an appropriate timeout
+5. In normal mode, periodically feed the watchdog from the main loop
+6. After successful operation for a period (e.g., 30 seconds), reset the counter to 0 in NVS (proving stability)
+7. Print the current reboot count and mode (normal vs recovery) on startup
 
-task_wdt_init MUST be called before task_wdt_add. Feed period (1s) must be less than channel period (2s).
-
-Include headers: zephyr/kernel.h, zephyr/task_wdt/task_wdt.h.
-
-Output ONLY the complete C source file.
+This tests system-level reasoning: persistent state across reboots, escalating recovery, and watchdog integration.

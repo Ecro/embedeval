@@ -89,8 +89,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 5: Verify mismatch error handled
     has_mismatch_err = (
         "mismatch" in generated_code.lower()
-        or "verify" in generated_code.lower()
-        and "failed" in generated_code.lower()
+        or ("verify" in generated_code.lower()
+            and "failed" in generated_code.lower())
     )
     details.append(
         CheckDetail(
@@ -106,9 +106,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # nvs_mount must appear before the first nvs_read/nvs_write call inside main().
     # Helper functions defined before main may contain nvs_write/nvs_read, but they
     # are only executed after main calls them (after nvs_mount).
-    main_pos = generated_code.find("int main(")
-    if main_pos == -1:
-        main_pos = generated_code.find("void main(")
+    main_pos = -1
+    for main_pattern in ["int main(", "void main(", "int main(void", "void main(void"]:
+        pos = generated_code.find(main_pattern)
+        if pos != -1:
+            main_pos = pos
+            break
     mount_pos = mount_positions[0] if mount_positions else -1
     # Find first nvs_read or nvs_write call inside main() (after main_pos)
     all_nvs_ops = sorted(

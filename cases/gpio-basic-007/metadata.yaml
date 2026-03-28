@@ -1,5 +1,5 @@
 id: gpio-basic-007
-category: gpio-basic
+category: uart
 difficulty: medium
 title: "UART Async API with DMA"
 description: "Use the Zephyr async UART API (uart_tx/uart_rx_enable) with a receive callback for UART_RX_RDY events"

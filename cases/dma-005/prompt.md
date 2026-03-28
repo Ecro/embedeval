@@ -1,25 +1,14 @@
-Write a Zephyr RTOS application that performs a DMA transfer with correct cache coherency management.
+Write a Zephyr RTOS application that performs a memory-to-memory DMA transfer with correct data integrity on a platform that has data caches.
 
 Requirements:
-1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Verify the device is initialized and ready before use
-3. Define a source buffer of 64 bytes initialized with pattern values (index % 256)
-4. Define a destination buffer of 64 bytes initialized to zero; ensure it is properly aligned for DMA operations
-5. Before starting DMA, handle cache coherency:
-   a. Flush source data from cache to memory so the DMA controller sees current values
-   b. Invalidate stale destination cache lines so the CPU does not read old cached data after DMA
-6. Configure a DMA channel (channel 0) for memory-to-memory transfer:
-   - Set channel_direction to MEMORY_TO_MEMORY
-   - Set source_data_size and dest_data_size to 1
-   - Set source_burst_length and dest_burst_length to 1
-   - Configure dma_block_config with source_address, dest_address, block_size = 64
-7. Provide a completion callback that signals a semaphore
-8. Call dma_config() then dma_start(); wait with k_sem_take() timeout 1 second
-9. After DMA completes, invalidate the destination cache before the CPU reads the transferred data
-10. Verify buffers match with memcmp; print "Cache-coherent DMA OK" or "DMA verify FAILED"
-
-Use the Zephyr DMA API and cache coherency API.
-
-Include proper headers: zephyr/kernel.h, zephyr/device.h, zephyr/drivers/dma.h, zephyr/cache.h, string.h.
+1. Obtain the DMA controller from the devicetree (node label: dma0)
+2. Check that the device is ready before use
+3. Define a 64-byte source buffer initialized with a pattern (index % 256) and a 64-byte destination buffer initialized to zero
+4. Ensure the DMA engine and the CPU see consistent data throughout the transfer — the CPU's cached view of memory and the DMA engine's view of physical memory may differ
+5. Configure a DMA channel for memory-to-memory transfer of 64 bytes
+6. Use a callback to signal transfer completion
+7. Wait for completion with a 1-second timeout
+8. After DMA completes, ensure the CPU reads the actual transferred data, not stale cached values
+9. Verify buffers match; print "Cache-coherent DMA OK" or "DMA verify FAILED"
 
 Output ONLY the complete C source file.

@@ -134,10 +134,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 9: Self-test return value checked before confirming
     # (LLM failure: calling self_test() but ignoring its return value, always confirming)
+    import re as _re
     self_test_ret_checked = (
         "self_test" in generated_code
         and "boot_write_img_confirmed" in generated_code
-        and ("!= 0" in generated_code or "< 0" in generated_code or "if (ret" in generated_code)
+        and ("!= 0" in generated_code or "< 0" in generated_code
+             or bool(_re.search(r'if\s*\(\s*(?:ret|rc|result|err|status)\b', generated_code)))
     )
     details.append(
         CheckDetail(

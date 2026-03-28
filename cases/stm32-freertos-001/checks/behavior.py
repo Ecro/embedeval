@@ -72,7 +72,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 5: Different priorities for producer and consumer
     # Native API: xTaskCreate(..., priority, ...)
     priority_matches = re.findall(
-        r"xTaskCreate\s*\([^,]+,\s*[^,]+,\s*\d+,\s*[^,]+,\s*(\d+)",
+        r"xTaskCreate\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*(\d+)",
         generated_code,
     )
     if len(priority_matches) < 2:

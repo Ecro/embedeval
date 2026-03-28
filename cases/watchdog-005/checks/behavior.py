@@ -120,40 +120,29 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 7: Health/alive flag must NOT be a plain int without volatile/atomic
     # LLM failure: `static int health = 0` allows compiler to cache the value across threads
-    plain_int_flag = bool(
-        re.search(
-            r"\bstatic\s+int\s+\w*(?:health|alive|flag|running)\w*\s*[=;]",
-            generated_code,
-        )
-        or re.search(
-            r"(?<!volatile\s)(?<!atomic_t\s)\bint\s+\w*(?:health|alive|flag)\w*\s*[=;]",
-            generated_code,
-        )
-    )
-    # Only flag as problem if it's not accompanied by volatile anywhere near that variable
+    # Simplified: check if volatile or atomic_t appears on the flag declaration line
+    flag_patterns = [
+        r'volatile\s+\w+\s+\w*(?:health|alive|running|ok)\w*',
+        r'atomic_t\s+\w*(?:health|alive|running|ok)\w*',
+    ]
+    has_safe_qualifier = any(re.search(p, generated_code) for p in flag_patterns)
+    # Also accept atomic_set / atomic_get usage on the flag
     flag_var_match = re.search(
         r"\b(\w*(?:health|alive|flag|running)\w*)\s*[=;]", generated_code
     )
-    flag_is_safe = True
-    if flag_var_match:
+    flag_is_safe = has_safe_qualifier
+    if not flag_is_safe and flag_var_match:
         flag_name = flag_var_match.group(1)
-        # Find the declaration of this variable
-        decl_match = re.search(
-            rf"(?:volatile|atomic_t)\s+\w*\s+{re.escape(flag_name)}|"
-            rf"{re.escape(flag_name)}\s*:\s*(?:volatile|atomic)",
-            generated_code,
-        )
-        # Also accept atomic_set / atomic_get usage
+        # Accept atomic_set / atomic_get usage
         has_atomic_ops = bool(
             re.search(rf"atomic_(?:set|get|cas)\s*\(\s*&?\s*{re.escape(flag_name)}", generated_code)
         )
-        if not decl_match and not has_atomic_ops:
-            # Check if the variable has volatile in its declaration line
-            decl_line_match = re.search(
-                rf"volatile[^\n]*{re.escape(flag_name)}|{re.escape(flag_name)}[^\n]*volatile",
-                generated_code,
-            )
-            flag_is_safe = decl_line_match is not None
+        # Check if volatile appears on the same line as the flag declaration
+        decl_line_match = re.search(
+            rf"volatile[^\n]*{re.escape(flag_name)}|{re.escape(flag_name)}[^\n]*volatile",
+            generated_code,
+        )
+        flag_is_safe = has_atomic_ops or (decl_line_match is not None)
     details.append(
         CheckDetail(
             check_name="health_flag_not_plain_int",

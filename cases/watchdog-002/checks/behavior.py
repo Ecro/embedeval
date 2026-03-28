@@ -36,9 +36,27 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     if thread_fn_match:
         thread_body = thread_fn_match.group(2)
         feed_in_thread = "task_wdt_feed" in thread_body
-    # Fallback: if we can't parse, check that task_wdt_feed appears after thread start
-    if not feed_in_thread:
-        feed_in_thread = "task_wdt_feed" in generated_code
+    # Fallback: if thread body couldn't be extracted, check that task_wdt_feed
+    # appears near a thread definition and NOT only inside main()
+    if not feed_in_thread and not thread_fn_match:
+        has_feed = "task_wdt_feed" in generated_code
+        # Check it's associated with a thread, not just in main
+        has_thread_def = bool(re.search(
+            r"K_THREAD_DEFINE|k_thread_create", generated_code
+        ))
+        # Ensure feed is NOT only in main()
+        main_match = re.search(
+            r"\bmain\s*\([^)]*\)\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}",
+            generated_code,
+            re.DOTALL,
+        )
+        feed_only_in_main = False
+        if main_match and has_feed:
+            feed_only_in_main = (
+                "task_wdt_feed" in main_match.group(1)
+                and generated_code.count("task_wdt_feed") == main_match.group(1).count("task_wdt_feed")
+            )
+        feed_in_thread = has_feed and has_thread_def and not feed_only_in_main
     details.append(
         CheckDetail(
             check_name="feed_from_worker_thread",

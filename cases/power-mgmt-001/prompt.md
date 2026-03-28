@@ -1,18 +1,13 @@
-Write a Zephyr RTOS device power management action handler.
+Write a Zephyr RTOS application that implements a device power management callback handling suspend and resume transitions.
 
 Requirements:
-1. Include zephyr/pm/device.h and zephyr/kernel.h
-2. Implement a PM action callback function with signature:
-   static int my_pm_action(const struct device *dev, enum pm_device_action action)
-3. Handle PM_DEVICE_ACTION_SUSPEND: print "Device suspended" and return 0
-4. Handle PM_DEVICE_ACTION_RESUME: print "Device resumed" and return 0
-5. For any other action, return -ENOTSUP
-6. Use a switch statement on the action parameter
-7. In main(), get a device reference (use DEVICE_DT_GET(DT_NODELABEL(my_dev)) or a mock)
-8. Call pm_device_action_run() to test suspend, then resume
-9. Check return values and print status
-10. Return 0 from main on success
-
-Use the Zephyr PM API: pm_device_action_run, PM_DEVICE_ACTION_SUSPEND, PM_DEVICE_ACTION_RESUME.
+1. Include the necessary Zephyr headers for kernel and device power management
+2. Implement a PM action callback that handles suspend and resume device power state transitions
+3. Print "Device suspended" when the device enters suspend, and "Device resumed" when it exits suspend
+4. Return an appropriate error code for unsupported power actions
+5. Use a switch statement to dispatch on the power action
+6. In main(), obtain a device reference and exercise the suspend and resume transitions
+7. Check return values from the PM calls and print status
+8. Return 0 from main on success
 
 Output ONLY the complete C source file.

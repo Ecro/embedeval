@@ -1,5 +1,7 @@
 """Behavioral checks for TCP client with connection retry."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -96,6 +98,30 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=has_connect_check,
             expected="zsock_connect() return value checked",
             actual="present" if has_connect_check else "missing — return value ignored",
+            check_type="constraint",
+        )
+    )
+
+    # Check 7: Socket cleanup present (close after all retries fail, or recreate per retry)
+    has_close_in_retry = bool(re.search(
+        r'(zsock_close|close)\s*\([^)]*\).*zsock_connect',
+        generated_code,
+        re.DOTALL,
+    )) or bool(re.search(
+        r'zsock_connect.*?(zsock_close|close)\s*\([^)]*\).*zsock_socket',
+        generated_code,
+        re.DOTALL,
+    ))
+    # Also accept: socket closed on final failure (cleanup path)
+    has_close_on_fail = bool(re.search(
+        r'zsock_close|close\s*\(\s*sock', generated_code
+    ))
+    details.append(
+        CheckDetail(
+            check_name="socket_cleanup_on_failure",
+            passed=has_close_in_retry or has_close_on_fail,
+            expected="Socket closed on failure path (recreate per retry or cleanup after all retries fail)",
+            actual="present" if (has_close_in_retry or has_close_on_fail) else "missing — socket leaked on failure",
             check_type="constraint",
         )
     )

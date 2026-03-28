@@ -1,5 +1,7 @@
 """Static analysis checks for GPIO interrupt debounce with timer application."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -79,8 +81,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 7: No floating-point in file
-    has_float = any(p in generated_code for p in ["float ", "double ", ".0f", ".0 "])
+    # Check 7: No floating-point in file (use word-boundary regex on comment-stripped code)
+    stripped = re.sub(r'//.*$', '', generated_code, flags=re.MULTILINE)
+    stripped = re.sub(r'/\*.*?\*/', '', stripped, flags=re.DOTALL)
+    stripped = re.sub(r'"[^"]*"', '""', stripped)
+    fp_patterns = [r'\bfloat\b', r'\bdouble\b']
+    has_float = any(re.search(p, stripped) for p in fp_patterns)
     details.append(
         CheckDetail(
             check_name="no_floating_point",

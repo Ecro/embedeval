@@ -1,26 +1,14 @@
-Write a Zephyr RTOS application that configures DMA in circular mode for continuous data collection.
+Write a Zephyr RTOS application that uses DMA in circular mode for continuous data collection with ping-pong buffers.
 
 Requirements:
-1. Get the DMA controller device using DEVICE_DT_GET(DT_NODELABEL(dma0))
-2. Verify the device is initialized and ready before use
-3. Define two ping-pong buffers of 32 bytes each (buf_a and buf_b), initialized to zero
-4. Use a global variable to track which buffer is active (current buffer index 0 or 1)
-5. Configure a DMA channel (channel 0) for memory-to-memory circular transfer:
-   - Set channel_direction to MEMORY_TO_MEMORY
-   - Set source_data_size and dest_data_size to 1
-   - Set source_burst_length and dest_burst_length to 1
-   - Set cyclic to 1 in the dma_block_config to enable circular mode
-   - Configure block_size = 32
-6. Provide a DMA completion callback that:
-   - Increments a transfer counter
-   - Calls dma_reload() with the next buffer address to set up the next transfer
-   - Signals a semaphore after each completed transfer
-7. Call dma_config() and dma_start() to begin
-8. In main, use k_sem_take() to wait for each transfer; process 4 total transfers
-9. After 4 transfers call dma_stop() and print the total transfer count
-
-Use the Zephyr DMA API: dma_config, dma_start, dma_stop, dma_reload.
-
-Include proper headers: zephyr/kernel.h, zephyr/device.h, zephyr/drivers/dma.h.
+1. Obtain the DMA controller from the devicetree (node label: dma0)
+2. Check that the device is ready before use
+3. Define two 32-byte buffers (buf_a and buf_b) for alternating DMA targets
+4. Track which buffer is currently active
+5. Configure DMA to automatically restart after each transfer completes (circular/continuous mode)
+6. On each transfer completion, reload the DMA to fill the next buffer
+7. Signal the main thread after each transfer so it can process the completed buffer
+8. Process at least 4 transfers in the main loop, then stop the DMA
+9. Print the total number of completed transfers
 
 Output ONLY the complete C source file.

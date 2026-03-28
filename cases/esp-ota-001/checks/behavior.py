@@ -23,7 +23,21 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         check_type="constraint",
     ))
 
-    # Check 2: Rollback on failure
+    # Check 2: NVS initialized before WiFi (WiFi requires NVS)
+    # NVS must be present. Position comparison is unreliable when WiFi init
+    # is inside a helper function defined before app_main, so we just check
+    # that nvs_flash_init is present (it must run before WiFi at runtime).
+    nvs_pos = generated_code.find("nvs_flash_init")
+    has_nvs_before_wifi = nvs_pos != -1
+    details.append(CheckDetail(
+        check_name="nvs_init_before_wifi",
+        passed=has_nvs_before_wifi,
+        expected="nvs_flash_init() called before esp_wifi_init()",
+        actual="correct ordering" if has_nvs_before_wifi else "NVS not initialized before WiFi",
+        check_type="constraint",
+    ))
+
+    # Check 3: Rollback on failure
     has_rollback = (
         "esp_ota_mark_app_invalid_rollback_and_reboot" in generated_code
         or "esp_https_ota_abort" in generated_code

@@ -1,97 +1,149 @@
-"""Behavioral checks for task watchdog main thread monitoring application."""
+"""Behavioral checks for watchdog with NVS persistent reboot counter."""
+
+import re
 
 from embedeval.models import CheckDetail
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
-    """Validate task watchdog behavioral properties."""
+    """Validate watchdog + NVS behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
 
-    # Check 1: task_wdt_init before task_wdt_add (correct ordering)
-    init_pos = generated_code.find("task_wdt_init")
-    add_pos = generated_code.find("task_wdt_add")
-    order_ok = init_pos != -1 and add_pos != -1 and init_pos < add_pos
+    # Check 1: NVS read before watchdog setup (ordering)
+    nvs_read_pos = -1
+    for pattern in ["nvs_read", "settings_runtime_get", "settings_load"]:
+        pos = generated_code.find(pattern)
+        if pos != -1:
+            nvs_read_pos = pos
+            break
+
+    wdt_setup_pos = generated_code.find("wdt_setup")
+    wdt_install_pos = generated_code.find("wdt_install_timeout")
+    wdt_pos = min(
+        p for p in [wdt_setup_pos, wdt_install_pos] if p != -1
+    ) if any(p != -1 for p in [wdt_setup_pos, wdt_install_pos]) else -1
+
+    read_before_wdt = nvs_read_pos != -1 and wdt_pos != -1 and nvs_read_pos < wdt_pos
     details.append(
         CheckDetail(
-            check_name="init_before_add",
-            passed=order_ok,
-            expected="task_wdt_init called before task_wdt_add",
-            actual="correct order" if order_ok else "wrong order or missing",
+            check_name="nvs_read_before_watchdog_setup",
+            passed=read_before_wdt,
+            expected="NVS read before watchdog setup (must know reboot count first)",
+            actual="correct order" if read_before_wdt else "wrong order or missing",
             check_type="constraint",
         )
     )
 
-    # Check 2: task_wdt_add before task_wdt_feed
-    feed_pos = generated_code.find("task_wdt_feed")
-    add_before_feed = add_pos != -1 and feed_pos != -1 and add_pos < feed_pos
+    # Check 2: Counter threshold comparison (escalation logic)
+    has_threshold = bool(
+        re.search(
+            r"(reboot|boot|counter|count)\s*[><=!]+\s*\d|"
+            r"\d+\s*[><=!]+\s*(reboot|boot|counter|count)|"
+            r"MAX_REBOOT|REBOOT_THRESHOLD|MAX_BOOT",
+            generated_code,
+            re.IGNORECASE,
+        )
+    )
     details.append(
         CheckDetail(
-            check_name="add_before_feed",
-            passed=add_before_feed,
-            expected="task_wdt_add called before task_wdt_feed",
-            actual="correct order" if add_before_feed else "wrong order or missing",
+            check_name="counter_threshold_comparison",
+            passed=has_threshold,
+            expected="Reboot counter compared against threshold for escalation",
+            actual="present" if has_threshold else "missing — no escalation logic",
             check_type="constraint",
         )
     )
 
-    # Check 3: feed period (sleep) < channel period (task_wdt_add period_ms)
-    # Heuristic: find period_ms in task_wdt_add and sleep duration
-    import re
-    add_match = re.search(r"task_wdt_add\s*\(\s*(\d+)", generated_code)
-    sleep_s_match = re.search(r"K_SECONDS\s*\(\s*(\d+)\s*\)", generated_code)
-    sleep_ms_match = re.search(r"K_MSEC\s*\(\s*(\d+)\s*\)", generated_code)
-
-    period_ms = int(add_match.group(1)) if add_match else 0
-    sleep_ms = 0
-    if sleep_s_match:
-        sleep_ms = int(sleep_s_match.group(1)) * 1000
-    elif sleep_ms_match:
-        sleep_ms = int(sleep_ms_match.group(1))
-
-    feed_period_ok = period_ms > 0 and sleep_ms > 0 and sleep_ms < period_ms
+    # Check 3: NVS write (increment counter)
+    has_nvs_write = bool(
+        re.search(r"nvs_write|settings_save|settings_runtime_set", generated_code)
+    )
     details.append(
         CheckDetail(
-            check_name="feed_period_less_than_wdt_period",
-            passed=feed_period_ok,
-            expected="Feed sleep < task_wdt_add period_ms (feed before timeout)",
-            actual=f"sleep={sleep_ms}ms, period={period_ms}ms",
+            check_name="nvs_write_counter",
+            passed=has_nvs_write,
+            expected="NVS write to persist incremented counter",
+            actual="present" if has_nvs_write else "missing — counter not persisted",
+            check_type="exact_match",
+        )
+    )
+
+    # Check 4: Counter reset to 0 after stable period (the key insight)
+    # Look for writing 0 back to NVS after a delay/stable period
+    has_counter_reset = bool(
+        re.search(
+            r"=\s*0\s*;.*nvs_write|nvs_write.*\b0\b|"
+            r"counter\s*=\s*0|count\s*=\s*0|"
+            r"reset.*counter|counter.*reset|clear.*counter",
+            generated_code,
+            re.IGNORECASE | re.DOTALL,
+        )
+    )
+    details.append(
+        CheckDetail(
+            check_name="counter_reset_after_stable",
+            passed=has_counter_reset,
+            expected="Counter reset to 0 in NVS after stable operation period",
+            actual="present"
+            if has_counter_reset
+            else "missing — counter never cleared",
             check_type="constraint",
         )
     )
 
-    # Check 4: task_wdt_feed called inside the loop
-    loop_pos = max(generated_code.find("while"), generated_code.find("for ("))
-    feed_in_loop = feed_pos != -1 and loop_pos != -1 and feed_pos > loop_pos
+    # Check 5: wdt_setup called
+    has_wdt_setup = "wdt_setup" in generated_code
     details.append(
         CheckDetail(
-            check_name="feed_in_loop",
-            passed=feed_in_loop,
-            expected="task_wdt_feed called inside the main loop",
-            actual="inside loop" if feed_in_loop else "outside loop or missing",
+            check_name="wdt_setup_called",
+            passed=has_wdt_setup,
+            expected="wdt_setup() called to start watchdog",
+            actual="present" if has_wdt_setup else "missing",
+            check_type="exact_match",
+        )
+    )
+
+    # Check 6: wdt_feed called
+    has_wdt_feed = "wdt_feed" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="wdt_feed_called",
+            passed=has_wdt_feed,
+            expected="wdt_feed() called to periodically reset watchdog",
+            actual="present" if has_wdt_feed else "missing",
+            check_type="exact_match",
+        )
+    )
+
+    # Check 7: Two distinct code paths (normal vs recovery mode)
+    has_normal_mode = bool(
+        re.search(r"normal|NORMAL|regular|REGULAR", generated_code)
+    )
+    has_recovery_mode = bool(
+        re.search(r"recovery|RECOVERY|safe|SAFE|fallback|FALLBACK", generated_code)
+    )
+    has_two_paths = has_normal_mode and has_recovery_mode
+    details.append(
+        CheckDetail(
+            check_name="two_distinct_code_paths",
+            passed=has_two_paths,
+            expected="Two distinct modes: normal operation and recovery/safe mode",
+            actual=(
+                f"normal={'yes' if has_normal_mode else 'no'}, "
+                f"recovery={'yes' if has_recovery_mode else 'no'}"
+            ),
             check_type="constraint",
         )
     )
 
-    # Check 5: Error handling for task_wdt_add return value
-    has_error_check = "< 0" in generated_code or "!= 0" in generated_code
+    # Check 8: wdt_install_timeout called
+    has_install_timeout = "wdt_install_timeout" in generated_code
     details.append(
         CheckDetail(
-            check_name="error_handling_present",
-            passed=has_error_check,
-            expected="Return value of task_wdt_add() checked for error",
-            actual="present" if has_error_check else "missing",
-            check_type="constraint",
-        )
-    )
-
-    # Check 6: printk used for heartbeat
-    has_printk = "printk" in generated_code
-    details.append(
-        CheckDetail(
-            check_name="heartbeat_printed",
-            passed=has_printk,
-            expected="printk() used for heartbeat messages",
-            actual="present" if has_printk else "missing",
+            check_name="wdt_install_timeout_called",
+            passed=has_install_timeout,
+            expected="wdt_install_timeout() called to configure watchdog timeout",
+            actual="present" if has_install_timeout else "missing",
             check_type="exact_match",
         )
     )

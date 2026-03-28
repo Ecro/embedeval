@@ -21,7 +21,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         arr = int(arr_match.group(1))
         psc = int(psc_match.group(1))
         # Timer clock typically 84MHz (APB1*2) or 168MHz (APB2*1)
-        for timer_clk in [84_000_000, 168_000_000, 42_000_000]:
+        for timer_clk in [84_000_000, 42_000_000]:
             freq = timer_clk / ((psc + 1) * (arr + 1))
             if 900 <= freq <= 1100:  # within 10% of 1kHz
                 freq_ok = True

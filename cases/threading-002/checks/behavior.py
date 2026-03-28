@@ -94,4 +94,20 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: k_sleep is NOT between mutex lock and unlock (starvation bug)
+    lock_pos = generated_code.find("k_mutex_lock")
+    unlock_pos = generated_code.find("k_mutex_unlock")
+    sleep_pos = generated_code.find("k_sleep")
+    sleep_inside_mutex = (lock_pos != -1 and unlock_pos != -1 and sleep_pos != -1 and
+                          lock_pos < sleep_pos < unlock_pos)
+    details.append(
+        CheckDetail(
+            check_name="no_sleep_under_mutex",
+            passed=not sleep_inside_mutex,
+            expected="k_sleep() NOT called while holding mutex (prevents starvation)",
+            actual="clean" if not sleep_inside_mutex else "k_sleep inside mutex lock — starvation risk",
+            check_type="constraint",
+        )
+    )
+
     return details

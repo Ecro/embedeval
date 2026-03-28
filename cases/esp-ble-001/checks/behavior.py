@@ -72,7 +72,27 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         check_type="constraint",
     ))
 
-    # Check 5: No NimBLE APIs used
+    # Check 5: BT controller enabled after init
+    has_ctrl_enable = "esp_bt_controller_enable" in generated_code
+    details.append(CheckDetail(
+        check_name="bt_controller_enabled",
+        passed=has_ctrl_enable,
+        expected="esp_bt_controller_enable() called after init",
+        actual="controller enabled" if has_ctrl_enable else "controller not enabled (dead stack)",
+        check_type="constraint",
+    ))
+
+    # Check 6: Bluedroid enabled after init
+    has_bluedroid_enable = "esp_bluedroid_enable" in generated_code
+    details.append(CheckDetail(
+        check_name="bluedroid_enabled",
+        passed=has_bluedroid_enable,
+        expected="esp_bluedroid_enable() called after init",
+        actual="bluedroid enabled" if has_bluedroid_enable else "bluedroid not enabled (dead stack)",
+        check_type="constraint",
+    ))
+
+    # Check 7: No NimBLE APIs used
     nimble_apis = ["nimble_port_run", "ble_svc_gap_init", "ble_gatts_add_svcs"]
     found_nimble = [api for api in nimble_apis if api in generated_code]
     details.append(CheckDetail(

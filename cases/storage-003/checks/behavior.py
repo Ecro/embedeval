@@ -80,4 +80,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check 6: fs_seek called before reading back written data
+    has_seek = "fs_seek" in generated_code or "lfs_file_seek" in generated_code
+    details.append(
+        CheckDetail(
+            check_name="seek_before_read",
+            passed=has_seek,
+            expected="fs_seek() called before reading back written data",
+            actual="seek found" if has_seek else "no seek — will read from end of file",
+            check_type="constraint",
+        )
+    )
+
     return details

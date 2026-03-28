@@ -10,6 +10,9 @@ class CaseCategory(str, Enum):
 
     # Tier 1: Platform-agnostic C code domains
     GPIO_BASIC = "gpio-basic"
+    UART = "uart"
+    ADC = "adc"
+    PWM = "pwm"
     SPI_I2C = "spi-i2c"
     DMA = "dma"
     ISR_CONCURRENCY = "isr-concurrency"

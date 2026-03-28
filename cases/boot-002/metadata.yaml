@@ -1,9 +1,9 @@
 id: boot-002
 category: boot
 difficulty: easy
-title: "U-Boot Environment Kconfig"
-description: "Kconfig fragment configuring U-Boot with boot delay and environment commands"
-tags: [zephyr, uboot, boot, kconfig, bootloader]
+title: "U-Boot Environment Defconfig"
+description: "U-Boot defconfig fragment configuring boot delay and environment commands"
+tags: [uboot, boot, defconfig, bootloader]
 platform: native_sim
 estimated_tokens: 200
 sdk_version: "4.1.0"

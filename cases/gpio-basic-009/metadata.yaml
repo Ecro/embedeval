@@ -1,5 +1,5 @@
 id: gpio-basic-009
-category: gpio-basic
+category: uart
 difficulty: medium
 title: "Multi-UART with Runtime Baudrate Change"
 description: "Configure two UARTs with different baudrates and change one baudrate at runtime using uart_configure()"

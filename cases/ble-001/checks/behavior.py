@@ -116,10 +116,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 7: Error handling for bt_enable
-    has_err_check = (
-        "err" in generated_code or "ret" in generated_code
-    ) and ("if" in generated_code)
+    # Check 7: Error handling for bt_enable (scoped: check within 200 chars after bt_enable)
+    bt_enable_pos = generated_code.find("bt_enable")
+    if bt_enable_pos != -1:
+        window = generated_code[bt_enable_pos:bt_enable_pos + 200]
+        has_err_check = bool(re.search(r'if\s*\(\s*(?:err|ret|rc)\b', window))
+    else:
+        has_err_check = False
     details.append(
         CheckDetail(
             check_name="bt_enable_error_check",

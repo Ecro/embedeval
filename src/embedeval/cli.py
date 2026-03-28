@@ -297,7 +297,7 @@ def list_categories(
         cat_counts[cat] += 1
         diff_counts.setdefault(cat, Counter())[meta.difficulty.value] += 1
 
-    typer.echo(f"20 categories, {len(cases)} total cases:\n")
+    typer.echo(f"{len(cat_counts)} categories, {len(cases)} total cases:\n")
     typer.echo(
         f"  {'Category':<20s} {'Cases':>5s}  {'Easy':>4s} {'Med':>4s} {'Hard':>4s}"
     )

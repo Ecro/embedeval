@@ -1,17 +1,11 @@
-Implement a Zephyr RTOS application that transfers data from an ISR to a thread using k_msgq (Zephyr message queue).
+Implement a Zephyr RTOS application that sends sensor data from an ISR to a processing thread using a message queue.
 
 Requirements:
-1. Include zephyr/kernel.h
-2. Define a message struct with at least one uint32_t field (e.g. sensor_val)
-3. Define a message queue with K_MSGQ_DEFINE for that struct type, with at least 8 slots
-4. Implement an ISR function (isr_handler) that:
-   - Sends one message into the queue without blocking (ISR context must never block)
-   - Does NOT call k_malloc, printk, or any blocking API
-5. Implement a consumer thread function that:
-   - Loops forever getting messages from the queue with k_msgq_get using K_FOREVER
-   - Prints each received value with printk
-6. Define the consumer thread with K_THREAD_DEFINE and a stack of at least 1024 bytes
-7. In main(), simulate ISR firing by calling isr_handler() directly at least 3 times
-8. Call k_sleep(K_MSEC(100)) in main after the simulated ISRs to allow thread to run
+1. Define a message struct containing a sensor value
+2. Create a message queue large enough to buffer multiple messages
+3. Implement an ISR handler that enqueues sensor readings into the message queue
+4. Implement a consumer thread that retrieves and prints messages from the queue
+5. In main(), simulate the ISR firing multiple times, then allow the consumer thread time to process
+6. The consumer thread should be defined statically with an appropriate stack size
 
 Output ONLY the complete C source file.

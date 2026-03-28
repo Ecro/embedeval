@@ -1,5 +1,5 @@
 id: gpio-basic-003
-category: gpio-basic
+category: adc
 difficulty: medium
 title: "ADC Single Channel Read"
 description: "Read a single ADC channel and convert the raw sample to millivolts"

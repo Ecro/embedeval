@@ -79,9 +79,9 @@ This auto-updates:
 
 If `sync_docs.py` output shows "already up to date", no action needed.
 
-## 20 Evaluation Categories
+## 23 Evaluation Categories
 
-Platform-agnostic: `gpio-basic`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`
+Platform-agnostic: `gpio-basic`, `uart`, `adc`, `pwm`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`
 
 System-level: `kconfig`, `device-tree`, `boot`, `ota`, `power-mgmt`, `watchdog`
 

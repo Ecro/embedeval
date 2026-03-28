@@ -1,5 +1,5 @@
 id: gpio-basic-008
-category: gpio-basic
+category: adc
 difficulty: hard
 title: "ADC with Hardware Averaging and Oversampling"
 description: "Configure ADC oversampling before reading, validate resolution and oversampling combination"

@@ -1,5 +1,7 @@
 """Behavioral checks for custom sensor driver registration."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -9,20 +11,14 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: sample_fetch and channel_get wired into api struct
     # (LLM failure: defining functions but not assigning them in the api struct)
-    has_fetch_in_api = (
-        "sample_fetch" in generated_code
-        and "sensor_driver_api" in generated_code
-    )
-    has_get_in_api = (
-        "channel_get" in generated_code
-        and "sensor_driver_api" in generated_code
-    )
+    has_fetch_wired = bool(re.search(r'\.sample_fetch\s*=\s*\w+', generated_code))
+    has_get_wired = bool(re.search(r'\.channel_get\s*=\s*\w+', generated_code))
     details.append(
         CheckDetail(
             check_name="api_struct_populated",
-            passed=has_fetch_in_api and has_get_in_api,
+            passed=has_fetch_wired and has_get_wired,
             expected="sample_fetch and channel_get assigned in sensor_driver_api struct",
-            actual="correct" if (has_fetch_in_api and has_get_in_api) else "missing function pointer assignments",
+            actual=f"fetch_wired={has_fetch_wired}, get_wired={has_get_wired}" if not (has_fetch_wired and has_get_wired) else "correct",
             check_type="constraint",
         )
     )

@@ -105,11 +105,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Uses printk (not printf — embedded target)
     has_printk = "printk(" in generated_code
-    has_printf = "printf(" in generated_code and "printk" not in generated_code
+    has_only_printf = "printf(" in generated_code and "printk(" not in generated_code
     details.append(
         CheckDetail(
             check_name="uses_printk_not_printf",
-            passed=has_printk and not has_printf,
+            passed=has_printk and not has_only_printf,
             expected="Uses printk (Zephyr), not printf (POSIX)",
             actual="printk used" if has_printk else "printf used or no output",
             check_type="constraint",

@@ -1,18 +1,15 @@
-Write a Zephyr RTOS application demonstrating CPU yielding with k_sleep.
+Write a Zephyr RTOS application that demonstrates CPU yielding with a timed sleep, printing wall-clock timestamps before and after to show elapsed time.
 
 Requirements:
-1. Include zephyr/kernel.h
+1. Include the necessary Zephyr kernel header
 2. In main():
-   - Print "Before sleep: uptime=X ms" using printk, where X is obtained from k_uptime_get()
-   - Sleep for 1000ms using k_sleep(K_MSEC(1000))
-   - Print "After sleep: uptime=X ms" using printk, where X is obtained from k_uptime_get() again
-   - Print "Elapsed: X ms" using printk showing the difference between the two uptime values
+   - Read and print the current system uptime in milliseconds before sleeping
+   - Sleep for 1000ms using a proper kernel sleep call (not a busy-wait loop)
+   - Read and print the current system uptime in milliseconds after sleeping
+   - Compute and print the elapsed time from two separate uptime readings
+   - Correctly compute elapsed time, accounting for timer wrap-around on 32-bit platforms
    - Return 0
-
-Use k_sleep(K_MSEC(1000)) for sleeping — do NOT use a busy-wait loop or k_busy_wait().
-Use k_uptime_get() to read timestamps — do NOT use a custom counter or loop variable.
-The elapsed time printed must be derived from two separate k_uptime_get() calls.
-
-Use the Zephyr API: k_sleep, K_MSEC, k_uptime_get.
+3. Use the Zephyr kernel timing API for uptime — do NOT use a custom counter or loop variable
+4. The elapsed time must be derived from two separate uptime calls, not assumed from the sleep duration
 
 Output ONLY the complete C source file.

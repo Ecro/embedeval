@@ -25,10 +25,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Reject code that declares `volatile` elsewhere (e.g. on a DMA buffer) while the flag itself
     # is non-volatile — the LLM blind spot being targeted here.
     has_volatile_flag = bool(re.search(
-        r'volatile\s+\w*int\w*\s+\w*(?:error|err)_?flag',
+        r'volatile\s+(?:int|uint\w+|bool|_Bool)\s+\w*(?:error|err|fail|fault|status)\w*',
         generated_code,
     )) or bool(re.search(
-        r'\w*(?:error|err)_?flag\b.*volatile',
+        r'(?:int|uint\w+|bool|_Bool)\s+volatile\s+\w*(?:error|err|fail|fault|status)\w*',
         generated_code,
     ))
     details.append(

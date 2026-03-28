@@ -16,11 +16,17 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     stripped = strip_comments(generated_code)
 
     # Check 1: All three tls_credential_add calls use the same sec_tag
-    call_pattern = re.findall(
-        r'tls_credential_add\s*\(\s*([A-Za-z0-9_]+)',
+    # Extract first argument up to first comma, strip casts like (sec_tag_t)
+    raw_args = re.findall(
+        r'tls_credential_add\s*\(\s*([^,]+)',
         generated_code
     )
-    same_sec_tag = len(set(call_pattern)) <= 1 and len(call_pattern) >= 3
+    # Normalize: strip whitespace and cast expressions e.g. "(sec_tag_t) FOO" -> "FOO"
+    normalized_tags = [
+        re.sub(r'\(\s*\w+\s*\)\s*', '', arg).strip() for arg in raw_args
+    ]
+    call_pattern = normalized_tags
+    same_sec_tag = len(set(normalized_tags)) <= 1 and len(normalized_tags) >= 3
     details.append(
         CheckDetail(
             check_name="same_sec_tag_all_credentials",

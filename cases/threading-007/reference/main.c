@@ -13,7 +13,7 @@ struct shared_resource {
 };
 
 static struct shared_resource resource;
-static bool initialized = false;
+static volatile bool initialized = false;
 
 static struct shared_resource *get_resource(void)
 {

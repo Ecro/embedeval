@@ -1,5 +1,7 @@
 """Behavioral checks for DMA peripheral-to-memory transfer."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -24,10 +26,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Source address adjustment is NO_CHANGE (peripheral register is fixed)
-    has_no_change = (
-        "DMA_ADDR_ADJ_NO_CHANGE" in generated_code
-        or "source_addr_adj" in generated_code
-    )
+    has_no_change = bool(re.search(
+        r'source_addr_adj\s*=\s*DMA_ADDR_ADJ_NO_CHANGE', generated_code
+    )) or "DMA_ADDR_ADJ_NO_CHANGE" in generated_code
     details.append(
         CheckDetail(
             check_name="source_addr_fixed",
@@ -39,10 +40,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: Destination address increments into memory buffer
-    has_increment = (
-        "DMA_ADDR_ADJ_INCREMENT" in generated_code
-        or "dest_addr_adj" in generated_code
-    )
+    has_increment = bool(re.search(
+        r'dest_addr_adj\s*=\s*DMA_ADDR_ADJ_INCREMENT', generated_code
+    )) or "DMA_ADDR_ADJ_INCREMENT" in generated_code
     details.append(
         CheckDetail(
             check_name="dest_addr_increments",

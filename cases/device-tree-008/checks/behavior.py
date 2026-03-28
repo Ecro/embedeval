@@ -52,7 +52,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: dmas count matches dma-names count
-    dmas_entries = re.findall(r"<&\w+\s+\d+\s+\d+>", generated_code)
+    # Match both separate <&ctrl ch slot> entries and single-bracket multi-entry format
+    dmas_line_match = re.search(r"dmas\s*=\s*([^;]+);", generated_code)
+    dmas_line = dmas_line_match.group(1) if dmas_line_match else ""
+    dmas_entries = re.findall(r"&\w+\s+\d+\s+\d+", dmas_line) if dmas_line else []
     dma_names_line = re.search(r"dma-names\s*=\s*([^;]+);", generated_code)
     if dma_names_line:
         dma_names_entries = re.findall(r'"[^"]+"', dma_names_line.group(1))
@@ -70,7 +73,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: DMA format uses <&controller channel slot> (3-cell format)
-    has_three_cell_format = bool(re.search(r"<&\w+\s+\d+\s+\d+>", generated_code))
+    has_three_cell_format = bool(re.search(r"<&\w+\s+\d+\s+\d+", generated_code))
     details.append(
         CheckDetail(
             check_name="dma_three_cell_format",
@@ -107,7 +110,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 8: DMA channel numbers are distinct (tx channel != rx channel)
     # LLM failure: assigns same channel to both tx and rx
-    all_dma_entries = re.findall(r"<&(\w+)\s+(\d+)\s+(\d+)>", generated_code)
+    all_dma_entries = re.findall(r"&(\w+)\s+(\d+)\s+(\d+)", dmas_line) if dmas_line else []
     channels_distinct = True
     if len(all_dma_entries) >= 2:
         channels = [int(e[1]) for e in all_dma_entries]
@@ -128,7 +131,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 9: DMA slot values are in valid range (0-15 for STM32)
     # LLM failure: generates invalid slot numbers like 99 or 255
-    slot_values = [int(s) for s in re.findall(r"<&\w+\s+\d+\s+(\d+)>", generated_code)]
+    slot_values = [int(e[2]) for e in all_dma_entries] if all_dma_entries else []
     slots_valid = all(0 <= s <= 127 for s in slot_values) if slot_values else True
     details.append(
         CheckDetail(

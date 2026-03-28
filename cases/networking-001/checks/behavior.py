@@ -1,5 +1,7 @@
 """Behavioral checks for MQTT client."""
 
+import re
+
 from embedeval.models import CheckDetail
 
 
@@ -83,6 +85,18 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="MQTT client_id configured",
             actual="present" if has_client_id else "missing",
             check_type="exact_match",
+        )
+    )
+
+    # Check 7: Port number in network byte order (htons)
+    has_htons = bool(re.search(r'htons\s*\(', generated_code))
+    details.append(
+        CheckDetail(
+            check_name="port_byte_order",
+            passed=has_htons,
+            expected="htons() used for port number (network byte order)",
+            actual="htons found" if has_htons else "no htons for port",
+            check_type="constraint",
         )
     )
 

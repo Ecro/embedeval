@@ -1,7 +1,9 @@
-Write a Zephyr Kconfig fragment that enables SPI with DMA mode. The fragment should:
-1. Enable CONFIG_SPI=y
-2. Enable CONFIG_SPI_DMA=y (which depends on SPI)
-3. Enable CONFIG_DMA=y (dependency for SPI_DMA)
-4. NOT enable conflicting options
+Write a Zephyr RTOS Kconfig fragment (.conf) that enables SPI bus communication with DMA transfer mode support.
+
+Requirements:
+1. Enable the SPI bus subsystem
+2. Enable DMA-backed SPI transfers
+3. Ensure all necessary dependencies are enabled (DMA subsystem, etc.)
+4. Do NOT enable any conflicting or mutually exclusive options
 
 Output ONLY the Kconfig fragment as a plain text .conf file content.

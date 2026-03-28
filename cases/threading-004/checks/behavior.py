@@ -1,6 +1,7 @@
 """Behavioral checks for priority inheritance mutex."""
 
 import re
+from collections import Counter
 
 from embedeval.models import CheckDetail
 
@@ -87,6 +88,20 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             passed=no_deadlock,
             expected="k_mutex_unlock called at least as many times as k_mutex_lock",
             actual=f"lock={lock_count}, unlock={unlock_count}",
+            check_type="constraint",
+        )
+    )
+
+    # Check 6: Same mutex used by multiple threads (not separate mutexes)
+    mutex_names = re.findall(r'k_mutex_lock\s*\(\s*&?\s*(\w+)', generated_code)
+    mutex_counts = Counter(mutex_names)
+    same_mutex = any(c >= 2 for c in mutex_counts.values()) if mutex_counts else False
+    details.append(
+        CheckDetail(
+            check_name="same_mutex_shared",
+            passed=same_mutex,
+            expected="Same mutex used by multiple threads for priority inheritance",
+            actual=f"mutex usage: {dict(mutex_counts)}" if mutex_counts else "no mutex locks found",
             check_type="constraint",
         )
     )
