@@ -1,6 +1,7 @@
 """Behavioral checks for STM32 HAL GPIO LED + button interrupt application."""
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import check_no_cross_platform_apis
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -101,5 +102,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
+
+    # Check: No cross-platform API contamination
+    cross_plat = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace", "STM32_HAL"])
+    details.append(CheckDetail(
+        check_name="no_cross_platform_apis",
+        passed=len(cross_plat) == 0,
+        expected="No FreeRTOS/Arduino/POSIX APIs (STM32 HAL is expected)",
+        actual="clean" if not cross_plat else f"found: {[a for a, _ in cross_plat]}",
+        check_type="constraint",
+    ))
 
     return details

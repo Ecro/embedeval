@@ -183,4 +183,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check: IRQ priority explicitly configured
+    has_irq_config = bool(re.search(r'IRQ_CONNECT\s*\(', generated_code)) or \
+                     bool(re.search(r'irq_connect_dynamic\s*\(', generated_code))
+    details.append(CheckDetail(
+        check_name="irq_priority_configured",
+        passed=has_irq_config,
+        expected="IRQ_CONNECT or irq_connect_dynamic used with priority parameter",
+        actual="IRQ priority configured" if has_irq_config else "no IRQ priority configuration",
+        check_type="constraint",
+    ))
+
     return details

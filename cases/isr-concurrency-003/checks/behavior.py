@@ -192,4 +192,22 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check: no blocking calls between spinlock lock and unlock
+    lock_pos = generated_code.find("k_spin_lock")
+    unlock_pos = generated_code.find("k_spin_unlock")
+    blocking_in_critical = False
+    if lock_pos != -1 and unlock_pos != -1 and lock_pos < unlock_pos:
+        critical = generated_code[lock_pos:unlock_pos]
+        blocking_apis = ["k_sleep", "k_msleep", "k_mutex_lock", "printk"]
+        blocking_in_critical = any(api in critical for api in blocking_apis)
+    details.append(
+        CheckDetail(
+            check_name="no_blocking_in_locked_region",
+            passed=not blocking_in_critical,
+            expected="No k_sleep/printk/k_mutex_lock between spinlock lock and unlock",
+            actual="clean" if not blocking_in_critical else "blocking call in critical section — deadlock/latency risk",
+            check_type="constraint",
+        )
+    )
+
     return details

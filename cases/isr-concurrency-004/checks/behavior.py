@@ -133,4 +133,17 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check: atomic_t used for shared state between ISR and thread
+    has_atomic_type = "atomic_t" in generated_code
+    has_atomic_ops = any(op in generated_code for op in ["atomic_set", "atomic_get", "atomic_inc", "atomic_cas"])
+    details.append(
+        CheckDetail(
+            check_name="atomic_type_for_shared",
+            passed=has_atomic_type and has_atomic_ops,
+            expected="atomic_t with atomic operations for shared ISR-thread state",
+            actual="atomic_t + ops found" if (has_atomic_type and has_atomic_ops) else "missing atomic_t or atomic operations",
+            check_type="constraint",
+        )
+    )
+
     return details

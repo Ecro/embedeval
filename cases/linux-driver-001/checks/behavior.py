@@ -2,7 +2,7 @@
 
 import re
 
-from embedeval.check_utils import (
+from embedeval.check_utils import (check_no_cross_platform_apis,
     extract_error_blocks,
     strip_comments,
 )
@@ -250,5 +250,26 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
+
+    # Check: copy_to_user used instead of raw pointer dereference
+    has_copy_to = bool(re.search(r'(?<!_)\bcopy_to_user\b', generated_code))
+    has_copy_from = bool(re.search(r'(?<!_)\bcopy_from_user\b', generated_code))
+    details.append(CheckDetail(
+        check_name="copy_to_user_not_raw_deref",
+        passed=has_copy_to or has_copy_from,
+        expected="copy_to_user/copy_from_user used for kernel-user data transfer",
+        actual="safe copy API used" if (has_copy_to or has_copy_from) else "missing — possible raw __user pointer dereference",
+        check_type="constraint",
+    ))
+
+    # Check: No cross-platform API contamination
+    cross_plat = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace", "POSIX"])
+    details.append(CheckDetail(
+        check_name="no_cross_platform_apis",
+        passed=len(cross_plat) == 0,
+        expected="No FreeRTOS/Arduino/STM32_HAL APIs (Linux/POSIX is expected)",
+        actual="clean" if not cross_plat else f"found: {[a for a, _ in cross_plat]}",
+        check_type="constraint",
+    ))
 
     return details

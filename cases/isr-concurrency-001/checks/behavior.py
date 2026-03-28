@@ -162,4 +162,36 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
+    # Check: no dynamic allocation in callback/handler functions
+    callback_patterns = [r'void\s+\w*(?:callback|handler|cb|isr|irq)\w*\s*\(']
+    malloc_in_callback = False
+    for pat in callback_patterns:
+        for match in re.finditer(pat, stripped, re.IGNORECASE):
+            # Find the function body
+            rest = stripped[match.start():]
+            brace = rest.find('{')
+            if brace == -1:
+                continue
+            start = match.start() + brace + 1
+            depth = 1
+            for i in range(start, len(stripped)):
+                if stripped[i] == '{':
+                    depth += 1
+                elif stripped[i] == '}':
+                    depth -= 1
+                if depth == 0:
+                    body = stripped[start:i]
+                    if 'k_malloc' in body or 'malloc' in body:
+                        malloc_in_callback = True
+                    break
+    details.append(
+        CheckDetail(
+            check_name="no_malloc_in_callbacks",
+            passed=not malloc_in_callback,
+            expected="No k_malloc/malloc in callback/handler functions",
+            actual="clean" if not malloc_in_callback else "malloc found in callback — forbidden in ISR/callback context",
+            check_type="constraint",
+        )
+    )
+
     return details

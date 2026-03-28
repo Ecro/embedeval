@@ -1,6 +1,7 @@
 """Behavioral checks for OTA image confirmation."""
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import check_no_cross_platform_apis
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -92,5 +93,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
+
+    # Check: No cross-platform API contamination
+    cross_plat = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
+    details.append(CheckDetail(
+        check_name="no_cross_platform_apis",
+        passed=len(cross_plat) == 0,
+        expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+        actual="clean" if not cross_plat else f"found: {[a for a, _ in cross_plat]}",
+        check_type="constraint",
+    ))
 
     return details
