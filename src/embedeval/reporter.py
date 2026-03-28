@@ -65,6 +65,10 @@ def generate_leaderboard(
     lines.append("")
     lines.extend(_model_comparison_table(reports))
     lines.append("")
+    lines.extend(_tier_breakdown(reports))
+    lines.append("")
+    lines.extend(_reasoning_breakdown(reports))
+    lines.append("")
     lines.extend(_category_heatmap(reports))
     lines.append("")
     lines.extend(_layer_heatmap(reports))
@@ -125,6 +129,66 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
                 f"| n={model_score.n_samples} |"
             )
 
+    return lines
+
+
+def _tier_breakdown(reports: list[BenchmarkReport]) -> list[str]:
+    """Generate tier-based pass rate breakdown."""
+    has_tiers = any(r.tier_scores for r in reports)
+    if not has_tiers:
+        return []
+
+    lines: list[str] = [
+        "## Tier Breakdown",
+        "",
+        "| Tier | pass@1 | Passed | Total |",
+        "|------|--------|--------|-------|",
+    ]
+    for report in reports:
+        for ts in report.tier_scores:
+            label = ts.tier.capitalize()
+            if ts.tier == "sanity":
+                label += " (not scored)"
+            lines.append(
+                f"| {label} | {ts.pass_at_1:.1%} "
+                f"| {ts.passed_cases} | {ts.total_cases} |"
+            )
+    return lines
+
+
+REASONING_LABELS: dict[str, str] = {
+    "api_recall": "L1 API Recall",
+    "rule_application": "L2 Rule Application",
+    "cross_domain": "L3 Cross-Domain",
+    "system_reasoning": "L4 System Reasoning",
+}
+
+
+def _reasoning_breakdown(reports: list[BenchmarkReport]) -> list[str]:
+    """Generate reasoning type pass rate breakdown."""
+    has_reasoning = any(r.reasoning_scores for r in reports)
+    if not has_reasoning:
+        return []
+
+    lines: list[str] = [
+        "## Reasoning Type Breakdown",
+        "",
+        "| Reasoning Type | pass@1 | Cases | LLM Reliability |",
+        "|----------------|--------|-------|-----------------|",
+    ]
+    for report in reports:
+        for rs in report.reasoning_scores:
+            label = REASONING_LABELS.get(rs.reasoning_type, rs.reasoning_type)
+            if rs.pass_at_1 >= 0.9:
+                reliability = "Reliable"
+            elif rs.pass_at_1 >= 0.7:
+                reliability = "Review recommended"
+            else:
+                reliability = "Expert review required"
+            lines.append(
+                f"| {label} | {rs.pass_at_1:.1%} "
+                f"| {rs.total_cases} | {reliability} |"
+            )
     return lines
 
 

@@ -9,3 +9,5 @@ estimated_tokens: 400
 sdk_version: "4.1.0"
 created_date: "2026-03-24"
 visibility: private
+tier: challenge
+reasoning_types: [system_reasoning, rule_application, api_recall]

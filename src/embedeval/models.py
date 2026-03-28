@@ -50,6 +50,23 @@ class Visibility(str, Enum):
     PRIVATE = "private"
 
 
+class CaseTier(str, Enum):
+    """Evaluation tier for benchmark scoring."""
+
+    SANITY = "sanity"        # Basic functionality — score not counted
+    CORE = "core"            # Primary evaluation metric
+    CHALLENGE = "challenge"  # Model differentiation
+
+
+class ReasoningType(str, Enum):
+    """Type of reasoning required to solve a test case."""
+
+    API_RECALL = "api_recall"                # L1: Single API call pattern
+    RULE_APPLICATION = "rule_application"    # L2: Known rule enforcement
+    CROSS_DOMAIN = "cross_domain"            # L3: C + RTOS + HW combined
+    SYSTEM_REASONING = "system_reasoning"    # L4: Backward/whole-system reasoning
+
+
 class EvalPlatform(str, Enum):
     """Evaluation platform targets."""
 
@@ -90,6 +107,8 @@ class CaseMetadata(BaseModel):
     sdk_version: str
     visibility: Visibility = Visibility.PUBLIC
     created_date: str | None = None  # ISO date, e.g. "2026-03-24"
+    tier: CaseTier = CaseTier.CORE
+    reasoning_types: list[ReasoningType] = Field(default_factory=list)
 
 
 class LLMResponse(BaseModel):
@@ -140,6 +159,8 @@ class EvalResult(BaseModel):
     duration_seconds: float = Field(ge=0.0)
     token_usage: TokenUsage
     cost_usd: float = Field(ge=0.0)
+    tier: CaseTier | None = None
+    reasoning_types: list[ReasoningType] = Field(default_factory=list)
 
 
 class ModelScore(BaseModel):
@@ -166,6 +187,24 @@ class CategoryScore(BaseModel):
     passed_cases: int = Field(ge=0)
 
 
+class TierScore(BaseModel):
+    """Pass rate breakdown by evaluation tier."""
+
+    tier: str
+    pass_at_1: float = Field(ge=0.0, le=1.0)
+    total_cases: int = Field(ge=0)
+    passed_cases: int = Field(ge=0)
+
+
+class ReasoningScore(BaseModel):
+    """Pass rate breakdown by reasoning type."""
+
+    reasoning_type: str
+    pass_at_1: float = Field(ge=0.0, le=1.0)
+    total_cases: int = Field(ge=0)
+    passed_cases: int = Field(ge=0)
+
+
 class OverallScore(BaseModel):
     """Overall benchmark scoring summary."""
 
@@ -182,6 +221,8 @@ class BenchmarkReport(BaseModel):
     date: str
     models: list[ModelScore]
     categories: list[CategoryScore]
+    tier_scores: list[TierScore] = Field(default_factory=list)
+    reasoning_scores: list[ReasoningScore] = Field(default_factory=list)
     overall: OverallScore
     scenario: str = "generation"
     temperature: float = Field(default=0.0, ge=0.0)

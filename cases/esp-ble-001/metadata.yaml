@@ -9,3 +9,5 @@ estimated_tokens: 600
 sdk_version: "5.3"
 visibility: private
 created_date: "2026-03-24"
+tier: challenge
+reasoning_types: [rule_application, api_recall]

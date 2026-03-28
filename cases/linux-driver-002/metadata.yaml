@@ -8,3 +8,5 @@ platform: docker_only
 estimated_tokens: 500
 sdk_version: "6.6"
 created_date: "2026-03-24"
+tier: core
+reasoning_types: [rule_application, api_recall]

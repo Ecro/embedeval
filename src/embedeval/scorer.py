@@ -12,6 +12,8 @@ from embedeval.models import (
     EvalResult,
     ModelScore,
     OverallScore,
+    ReasoningScore,
+    TierScore,
 )
 
 logger = logging.getLogger(__name__)
@@ -54,6 +56,8 @@ def score(results: list[EvalResult]) -> BenchmarkReport:
 
     model_scores = _calculate_model_scores(results)
     category_scores = _calculate_category_scores(results)
+    tier_scores = _calculate_tier_scores(results)
+    reasoning_scores = _calculate_reasoning_scores(results)
     overall = _calculate_overall(model_scores)
 
     return BenchmarkReport(
@@ -61,6 +65,8 @@ def score(results: list[EvalResult]) -> BenchmarkReport:
         date=datetime.now(tz=timezone.utc).strftime("%Y-%m-%d"),
         models=model_scores,
         categories=category_scores,
+        tier_scores=tier_scores,
+        reasoning_scores=reasoning_scores,
         overall=overall,
     )
 
@@ -235,6 +241,71 @@ def _calculate_layer_pass_rates(
         name: layer_passes[name] / count if count > 0 else 0.0
         for name, count in sorted(layer_counts.items())
     }
+
+
+def _calculate_tier_scores(results: list[EvalResult]) -> list[TierScore]:
+    """Calculate pass rate breakdown by evaluation tier."""
+    by_tier: dict[str, dict[str, list[EvalResult]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for r in results:
+        tier_name = r.tier.value if r.tier else "core"
+        by_tier[tier_name][r.case_id].append(r)
+
+    scores: list[TierScore] = []
+    for tier_name in ["sanity", "core", "challenge"]:
+        if tier_name not in by_tier:
+            continue
+        cases = by_tier[tier_name]
+        total = len(cases)
+        passed = sum(
+            1 for case_results in cases.values() if any(r.passed for r in case_results)
+        )
+        scores.append(
+            TierScore(
+                tier=tier_name,
+                pass_at_1=passed / total if total > 0 else 0.0,
+                total_cases=total,
+                passed_cases=passed,
+            )
+        )
+    return scores
+
+
+def _calculate_reasoning_scores(results: list[EvalResult]) -> list[ReasoningScore]:
+    """Calculate pass rate breakdown by reasoning type.
+
+    A case counts toward a reasoning type if it has that type in its
+    reasoning_types list. Cases can appear in multiple reasoning types.
+    """
+    by_type: dict[str, dict[str, list[EvalResult]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for r in results:
+        if not r.reasoning_types:
+            continue
+        for rt in r.reasoning_types:
+            rt_name = rt.value if hasattr(rt, "value") else str(rt)
+            by_type[rt_name][r.case_id].append(r)
+
+    scores: list[ReasoningScore] = []
+    for rt_name in ["api_recall", "rule_application", "cross_domain", "system_reasoning"]:
+        if rt_name not in by_type:
+            continue
+        cases = by_type[rt_name]
+        total = len(cases)
+        passed = sum(
+            1 for case_results in cases.values() if any(r.passed for r in case_results)
+        )
+        scores.append(
+            ReasoningScore(
+                reasoning_type=rt_name,
+                pass_at_1=passed / total if total > 0 else 0.0,
+                total_cases=total,
+                passed_cases=passed,
+            )
+        )
+    return scores
 
 
 def _resolve_category(key: str) -> CaseCategory:

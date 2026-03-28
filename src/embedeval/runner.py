@@ -9,7 +9,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from embedeval.evaluator import evaluate
 from embedeval.llm_client import _extract_code, call_model
-from embedeval.models import CaseCategory, CaseMetadata, DifficultyTier, EvalResult, Visibility
+from embedeval.models import CaseCategory, CaseMetadata, CaseTier, DifficultyTier, EvalResult, Visibility
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ class Filters:
 
     categories: list[CaseCategory] = field(default_factory=list)
     difficulties: list[DifficultyTier] = field(default_factory=list)
+    tiers: list[CaseTier] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
     visibility: Visibility | None = None
     after_date: str | None = None  # ISO date string; only include cases created after this date
@@ -93,6 +94,8 @@ def filter_cases(
         if filters.categories and meta.category not in filters.categories:
             continue
         if filters.difficulties and meta.difficulty not in filters.difficulties:
+            continue
+        if filters.tiers and meta.tier not in filters.tiers:
             continue
         if filters.tags and not any(tag in meta.tags for tag in filters.tags):
             continue
@@ -211,6 +214,8 @@ def run_benchmark(
                     cost_usd=llm_response.cost_usd,
                     category=meta.category,
                 )
+                result.tier = meta.tier
+                result.reasoning_types = meta.reasoning_types
 
                 # Compiler feedback loop: retry with error context on early layer failures
                 if (

@@ -58,6 +58,10 @@ def run(
         int,
         typer.Option("--attempts", "-a", help="Number of attempts per case"),
     ] = 1,
+    tier: Annotated[
+        Optional[str],
+        typer.Option("--tier", help="Filter by tier: sanity, core, challenge (comma-separated)"),
+    ] = None,
     visibility: Annotated[
         str | None,
         typer.Option("--visibility", help="Filter by visibility (public/private)"),
@@ -112,11 +116,15 @@ def run(
     from embedeval.runner import Filters, run_benchmark
     from embedeval.scorer import score as score_results
 
+    from embedeval.models import CaseTier
+
     filters = Filters()
     if category:
         filters.categories = [CaseCategory(category)]
     if difficulty:
         filters.difficulties = [DifficultyTier(difficulty)]
+    if tier:
+        filters.tiers = [CaseTier(t.strip()) for t in tier.split(",")]
     if visibility:
         filters.visibility = Visibility(visibility)
     if after_date:

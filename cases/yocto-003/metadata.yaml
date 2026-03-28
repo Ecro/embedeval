@@ -8,3 +8,5 @@ platform: yocto_build
 estimated_tokens: 400
 sdk_version: "5.0"
 created_date: "2026-03-24"
+tier: core
+reasoning_types: [rule_application, api_recall]

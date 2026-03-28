@@ -9,3 +9,5 @@ estimated_tokens: 400
 sdk_version: "5.3"
 visibility: public
 created_date: "2026-03-24"
+tier: core
+reasoning_types: [system_reasoning, rule_application, api_recall]
