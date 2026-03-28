@@ -27,7 +27,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: Three distinct priority values used
+    # Check 2: Three distinct priority values used (with #define resolution)
     # (LLM failure: same priority for all threads, inheritance has no effect)
     priority_matches = re.findall(
         r"K_THREAD_DEFINE\s*\([^,]+,\s*\d+,\s*\w+,"
@@ -35,6 +35,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         generated_code,
     )
     unique_priorities = set(priority_matches)
+    # Also resolve symbolic priorities via #define
+    sym_matches = re.findall(
+        r"K_THREAD_DEFINE\s*\([^,]+,\s*[^,]+,\s*\w+,"
+        r"[^,]*,[^,]*,[^,]*,\s*([A-Z_]\w*)",
+        generated_code,
+    )
+    for sym in sym_matches:
+        define_match = re.search(rf"#define\s+{re.escape(sym)}\s+(\d+)", generated_code)
+        if define_match:
+            unique_priorities.add(define_match.group(1))
     has_three_distinct = len(unique_priorities) >= 3
     details.append(
         CheckDetail(
@@ -106,31 +116,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_type="constraint",
         )
     )
-
-    # Check 7: three distinct priority values extracted from K_THREAD_DEFINE
-    # Complements Check 2 by also resolving symbolic #define constants and
-    # by catching cases where the existing regex misses non-digit argument forms.
-    # (LLM failure: all threads at same priority — inheritance has no effect)
-    prio_values: set = set()
-    for m in re.finditer(
-        r'K_THREAD_DEFINE\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*(\w+)',
-        generated_code,
-    ):
-        val = m.group(1)
-        num_match = re.search(rf'#define\s+{re.escape(val)}\s+(\d+)', generated_code)
-        if num_match:
-            prio_values.add(int(num_match.group(1)))
-        elif val.isdigit():
-            prio_values.add(int(val))
-        else:
-            prio_values.add(val)  # symbolic, still counts as distinct
-    details.append(CheckDetail(
-        check_name="three_priorities_via_define",
-        passed=len(prio_values) >= 3,
-        expected="Three distinct thread priorities (low, medium, high for inversion demo)",
-        actual=f"priorities: {prio_values}" if prio_values else "could not extract priorities",
-        check_type="constraint",
-    ))
 
     # Check: No cross-platform API contamination
     cross_plat = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])

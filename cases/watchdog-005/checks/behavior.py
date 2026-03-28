@@ -24,24 +24,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: Worker flag declared volatile (AI failure: non-volatile cross-thread flag)
-    # Matches: volatile int worker_alive, volatile bool alive, volatile uint8_t health_flag, etc.
-    has_volatile_flag = bool(
-        re.search(r"volatile\s+\w+\s+\w*(?:alive|health|flag|ready)\w*", generated_code)
-        or (
-            "volatile" in generated_code
-            and re.search(r"\b(?:worker_alive|alive|health_flag)\b", generated_code)
-        )
-    )
-    details.append(
-        CheckDetail(
-            check_name="worker_flag_volatile",
-            passed=has_volatile_flag,
-            expected="Health flag declared volatile for cross-thread visibility",
-            actual="volatile" if has_volatile_flag else "not volatile - compiler may cache",
-            check_type="constraint",
-        )
-    )
+    # Check 2: (removed — superseded by more robust Check 7: health_flag_not_plain_int)
 
     # Check 3: wdt_feed is conditional on health flag (not unconditional)
     # AI failure: always calling wdt_feed regardless of worker state

@@ -27,17 +27,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: pinctrl-names = "default" (correct state name)
-    has_default_name = 'pinctrl-names = "default"' in generated_code
-    details.append(
-        CheckDetail(
-            check_name="pinctrl_names_default",
-            passed=has_default_name,
-            expected='pinctrl-names = "default"',
-            actual="present" if has_default_name else "missing or wrong state name",
-            check_type="exact_match",
-        )
-    )
+    # Check 2 (removed — superseded by regex check 10 below)
 
     # Check 3: pinctrl-0 references a pinctrl phandle (contains &)
     has_phandle_ref = "pinctrl-0 = <&" in generated_code
