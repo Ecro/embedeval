@@ -11,7 +11,11 @@ from embedeval.models import (
     TokenUsage,
 )
 from embedeval.safety_guide import (
+    FACTOR_DEFINITIONS,
+    FactorDef,
     _calculate_category_pass_rates,
+    _calculate_check_pass_rates,
+    _compute_factor_verdict,
     _task_success_rate,
     generate_safety_guide,
 )
@@ -208,3 +212,130 @@ class TestCategoryPassRates:
     def test_no_matching_categories(self) -> None:
         rate = _task_success_rate(["watchdog"], {})
         assert "N/A" in rate
+
+
+class TestFactorCompetencyMatrix:
+
+    def test_matrix_appears_in_output(self, tmp_path: Path) -> None:
+        results = [_make_result()]
+        output = tmp_path / "guide.md"
+        generate_safety_guide(results, output)
+        content = output.read_text()
+        assert "Factor Competency Matrix" in content
+        assert "Hardware Awareness" in content
+        assert "Summary" in content
+
+    def test_verified_verdict_for_high_pass_rate(self) -> None:
+        """100% category pass rate → ✅ Verified."""
+        factor = FactorDef(
+            "X1", "test", "A. Hardware Awareness", "High",
+            mapped_categories=["dma"],
+        )
+        cat_rates = {"dma": 1.0}
+        rate, verdict, _ = _compute_factor_verdict(factor, cat_rates, {})
+        assert rate == 1.0
+        assert "Verified" in verdict
+
+    def test_caution_verdict_for_medium_pass_rate(self) -> None:
+        """67% category pass rate → ⚠️ Caution."""
+        factor = FactorDef(
+            "X2", "test", "A. Hardware Awareness", "Med",
+            mapped_categories=["isr-concurrency"],
+        )
+        cat_rates = {"isr-concurrency": 0.67}
+        rate, verdict, _ = _compute_factor_verdict(factor, cat_rates, {})
+        assert rate is not None
+        assert abs(rate - 0.67) < 0.01
+        assert "Caution" in verdict
+
+    def test_incapable_override(self) -> None:
+        """D9 MISRA → ❌ Incapable regardless of data."""
+        factor = FactorDef(
+            "D9", "MISRA", "D. Concurrency & Safety", "High",
+            verdict_override="incapable",
+        )
+        rate, verdict, _ = _compute_factor_verdict(factor, {"dma": 1.0}, {"x": 1.0})
+        assert rate is None
+        assert "Incapable" in verdict
+
+    def test_untested_for_no_data(self) -> None:
+        """Factor with no matching data → ❓ Untested."""
+        factor = FactorDef(
+            "F12", "Multicore", "F. Domain Knowledge", "Med",
+            verdict_override="untested",
+        )
+        rate, verdict, _ = _compute_factor_verdict(factor, {}, {})
+        assert rate is None
+        assert "Untested" in verdict
+
+    def test_untested_when_no_results_match(self) -> None:
+        """Factor with mapped categories but no matching results → ❓."""
+        factor = FactorDef(
+            "X3", "test", "A. Hardware Awareness", "Med",
+            mapped_categories=["nonexistent-category"],
+        )
+        rate, verdict, _ = _compute_factor_verdict(factor, {}, {})
+        assert rate is None
+        assert "Untested" in verdict
+
+    def test_check_level_rate_takes_priority(self) -> None:
+        """Check-level rate overrides category-level rate."""
+        factor = FactorDef(
+            "X4", "test", "A. Hardware Awareness", "High",
+            mapped_categories=["dma"],
+            mapped_checks=["volatile_shared"],
+        )
+        # Category says 100%, but check says 50%
+        cat_rates = {"dma": 1.0}
+        check_rates = {"volatile_shared": 0.5}
+        rate, verdict, _ = _compute_factor_verdict(factor, cat_rates, check_rates)
+        assert rate is not None
+        assert abs(rate - 0.5) < 0.01
+        assert "Incapable" in verdict
+
+    def test_summary_table_counts(self, tmp_path: Path) -> None:
+        """Summary table should account for all defined factors."""
+        results = [_make_result()]
+        output = tmp_path / "guide.md"
+        generate_safety_guide(results, output)
+        content = output.read_text()
+        # All factors should appear in the matrix
+        assert len(FACTOR_DEFINITIONS) >= 39
+        for f in FACTOR_DEFINITIONS:
+            assert f.id in content
+
+    def test_empty_results_all_untested(self, tmp_path: Path) -> None:
+        """Empty results → all non-override factors become ❓."""
+        output = tmp_path / "guide.md"
+        generate_safety_guide([], output, model="test")
+        content = output.read_text()
+        assert "Factor Competency Matrix" in content
+        # D9 should still be Incapable (override)
+        assert "Incapable" in content
+
+    def test_calculate_check_pass_rates(self) -> None:
+        """Check pass rates computed from LayerResult details."""
+        from embedeval.models import CheckDetail
+
+        results = [
+            _make_result("c1", passed=True, category=CaseCategory.ISR_CONCURRENCY),
+            _make_result("c2", passed=False, category=CaseCategory.ISR_CONCURRENCY,
+                        failed_checks=["volatile_shared"]),
+            _make_result("c3", passed=False, category=CaseCategory.ISR_CONCURRENCY,
+                        failed_checks=["volatile_shared"]),
+        ]
+        rates = _calculate_check_pass_rates(results)
+        # volatile_shared appears in c2 and c3 as failed
+        assert "volatile_shared" in rates
+        assert rates["volatile_shared"] == 0.0  # 0/2 passed
+
+    def test_incapable_verdict_for_low_pass_rate(self) -> None:
+        """Pass rate < 60% → ❌ Incapable (without override)."""
+        factor = FactorDef(
+            "X5", "test", "A. Hardware Awareness", "High",
+            mapped_categories=["linux-driver"],
+        )
+        cat_rates = {"linux-driver": 0.40}
+        rate, verdict, _ = _compute_factor_verdict(factor, cat_rates, {})
+        assert rate == 0.40
+        assert "Incapable" in verdict

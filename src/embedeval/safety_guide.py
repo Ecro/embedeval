@@ -4,14 +4,16 @@ Produces a developer-facing report with:
 1. LLM Capability Boundary (what LLMs can/cannot do)
 2. Per-task risk assessment with checklists
 3. Failure pattern statistics from benchmark data
+4. Embedded Factor Competency Matrix (44 validated factors)
 """
 
 import logging
 from collections import Counter, defaultdict
+from dataclasses import dataclass, field
 from pathlib import Path
 
-from embedeval.failure_taxonomy import FailurePattern, classify_failure
-from embedeval.models import EvalResult, ReasoningType
+from embedeval.failure_taxonomy import classify_failure
+from embedeval.models import EvalResult
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +131,367 @@ TASK_CHECKLISTS: dict[str, dict] = {
 }
 
 
+# --- Factor Competency Matrix: validated embedded failure factors ---
+
+
+@dataclass
+class FactorDef:
+    """Definition of an embedded failure factor for LLM competency assessment."""
+
+    id: str
+    name: str
+    group: str
+    strength: str  # High | Med | Low
+    mapped_categories: list[str] = field(default_factory=list)
+    mapped_checks: list[str] = field(default_factory=list)
+    verdict_override: str | None = None  # "incapable" | "untested" | None
+    description: str = ""
+
+
+FACTOR_DEFINITIONS: list[FactorDef] = [
+    # --- A. Hardware Awareness Gap ---
+    FactorDef("A1", "Register/MMIO access",
+              "A. Hardware Awareness", "High",
+              mapped_categories=["linux-driver"],
+              mapped_checks=["register_unregister_balanced"],
+              description="MMIO register address/bitfield hallucination"),
+    FactorDef("A2", "Peripheral init ordering",
+              "A. Hardware Awareness", "Med",
+              mapped_categories=["dma", "watchdog", "ota"],
+              mapped_checks=["dma_config_before_start",
+                             "wdt_install_before_setup"],
+              description="Datasheet-mandated initialization sequence"),
+    FactorDef("A4", "Pin muxing",
+              "A. Hardware Awareness", "Med",
+              mapped_categories=["device-tree"],
+              description="AF configuration, DT pinctrl bindings"),
+    FactorDef("A5", "DMA channel mapping",
+              "A. Hardware Awareness", "High",
+              mapped_categories=["dma"],
+              mapped_checks=["dma_config_before_start", "cache_aligned"],
+              description="DMA channel-peripheral mapping, burst/circular"),
+    FactorDef("A6", "Interrupt vector/priority",
+              "A. Hardware Awareness", "Med",
+              mapped_categories=["isr-concurrency"],
+              mapped_checks=["spinlock_used_in_both_contexts"],
+              description="NVIC priority group, preemption config"),
+    FactorDef("A10", "Endianness",
+              "A. Hardware Awareness", "Med",
+              verdict_override="untested",
+              description="Mixed endian byte order handling"),
+    FactorDef("A11", "Device Tree",
+              "A. Hardware Awareness", "Med",
+              mapped_categories=["device-tree"],
+              description="DT bindings, overlays, compatible strings"),
+    # --- B. Temporal Constraints ---
+    FactorDef("B3", "Deadline miss",
+              "B. Temporal Constraints", "Med",
+              mapped_categories=["threading", "timer"],
+              description="Hard real-time periodic deadline enforcement"),
+    FactorDef("B5", "Timer accuracy",
+              "B. Temporal Constraints", "Med",
+              mapped_categories=["timer"],
+              mapped_checks=["feed_interval_less_than_timeout"],
+              description="Prescaler/autoreload value calculation"),
+    # --- C. Resource Constraints ---
+    FactorDef("C1", "RAM budget",
+              "C. Resource Constraints", "High",
+              mapped_categories=["memory-opt"],
+              description="KB-scale RAM; LLMs generate large buffers"),
+    FactorDef("C2", "Stack overflow",
+              "C. Resource Constraints", "High",
+              verdict_override="untested",
+              description="Fixed per-task stack; recursion/deep calls"),
+    FactorDef("C3", "Heap fragmentation",
+              "C. Resource Constraints", "Med",
+              mapped_categories=["memory-opt"],
+              description="Long-running malloc/free causes unusable memory"),
+    FactorDef("C4", "Flash size",
+              "C. Resource Constraints", "Med",
+              verdict_override="untested",
+              description="Code size constraint; LLMs generate verbose code"),
+    FactorDef("C5", "No dynamic alloc",
+              "C. Resource Constraints", "High",
+              mapped_categories=["isr-concurrency"],
+              mapped_checks=["no_forbidden_apis_in_isr"],
+              description="MISRA/safety standards ban runtime malloc"),
+    FactorDef("C6", "Memory alignment",
+              "C. Resource Constraints", "Med",
+              mapped_categories=["dma"],
+              mapped_checks=["cache_aligned"],
+              description="Struct padding; Cortex-M0 unaligned = HardFault"),
+    FactorDef("C7", "MPU configuration",
+              "C. Resource Constraints", "Med",
+              mapped_categories=["kconfig"],
+              description="MPU regions, access permissions, cache policy"),
+    FactorDef("C8", "Linker script",
+              "C. Resource Constraints", "High",
+              verdict_override="untested",
+              description=".text/.bss/.data placement, Flash/RAM partition"),
+    FactorDef("C9", "volatile misuse",
+              "C. Resource Constraints", "High",
+              mapped_categories=["isr-concurrency", "watchdog"],
+              mapped_checks=["volatile_shared", "volatile_health_flag"],
+              description="Missing volatile on MMIO/shared variables"),
+    FactorDef("C10", "Barrier vs fence",
+              "C. Resource Constraints", "Med",
+              mapped_categories=["dma"],
+              mapped_checks=["cache_flush_before_dma",
+                             "cache_invalidate_after_dma"],
+              description="Compiler barrier vs HW fence (__DSB/__DMB)"),
+    FactorDef("C11", "Cache coherency",
+              "C. Resource Constraints", "Med",
+              mapped_categories=["dma"],
+              mapped_checks=["cache_flush_before_dma",
+                             "pre_invalidate_dest",
+                             "post_invalidate_dest"],
+              description="Missing DMA buffer cache flush/invalidate"),
+    FactorDef("C12", "Power budget",
+              "C. Resource Constraints", "High",
+              mapped_categories=["power-mgmt"],
+              description="Sleep modes, clock gating, retention RAM"),
+    # --- D. Concurrency & Safety ---
+    FactorDef("D1", "Race condition",
+              "D. Concurrency & Safety", "High",
+              mapped_categories=["isr-concurrency"],
+              mapped_checks=["volatile_shared", "atomic_indices"],
+              description="ISR-task shared variable contention"),
+    FactorDef("D2", "Priority inversion",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["threading"],
+              description="Mutex-holding task preempted by mid-priority"),
+    FactorDef("D3", "Deadlock",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["threading"],
+              description="Multi-lock ordering error"),
+    FactorDef("D4", "Critical section scope",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["isr-concurrency"],
+              mapped_checks=["spinlock_used_in_both_contexts"],
+              description="Minimize interrupt disable duration"),
+    FactorDef("D5", "Atomic operations",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["isr-concurrency"],
+              mapped_checks=["atomic_indices"],
+              description="Non-atomic RMW causes register corruption"),
+    FactorDef("D6", "ISR forbidden ops",
+              "D. Concurrency & Safety", "High",
+              mapped_categories=["isr-concurrency"],
+              mapped_checks=["no_forbidden_apis_in_isr",
+                             "no_mutex_in_isr"],
+              description="malloc/printk/blocking calls in ISR"),
+    FactorDef("D7", "Watchdog management",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["watchdog"],
+              mapped_checks=["wdt_install_before_setup",
+                             "conditional_feed"],
+              description="WDT across reset domains, bootloader handoff"),
+    FactorDef("D9", "MISRA compliance",
+              "D. Concurrency & Safety", "High",
+              verdict_override="incapable",
+              description="0/5 LLMs generate MISRA-compliant code (IEEE 2025)"),
+    FactorDef("D10", "Static analysis clean",
+              "D. Concurrency & Safety", "Med",
+              verdict_override="incapable",
+              description="Zero warnings from Polyspace/PC-lint/Coverity"),
+    FactorDef("D11", "Defensive programming",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["linux-driver", "boot", "ota"],
+              mapped_checks=["error_handling",
+                             "init_error_path_cleanup"],
+              description="LLMs favor happy path, skip error propagation"),
+    FactorDef("D12", "Fault tolerance",
+              "D. Concurrency & Safety", "Med",
+              mapped_categories=["ota", "boot"],
+              mapped_checks=["rollback_on_error",
+                             "self_test_before_confirm"],
+              description="HardFault handler, safe-state entry"),
+    # --- E. Toolchain & Verification ---
+    FactorDef("E1", "Cross-compilation",
+              "E. Toolchain & Verification", "High",
+              description="arm-none-eabi-gcc, target triple; validated by L1"),
+    FactorDef("E2", "SDK version deps",
+              "E. Toolchain & Verification", "High",
+              description="ESP-IDF/Zephyr API changes; validated by L1"),
+    FactorDef("E3", "Build system",
+              "E. Toolchain & Verification", "High",
+              mapped_categories=["kconfig"],
+              description="ESP-IDF component, Zephyr west, Yocto recipe"),
+    FactorDef("E4", "API hallucination",
+              "E. Toolchain & Verification", "High",
+              mapped_checks=["no_cross_platform_apis",
+                             "no_hallucinated_apis"],
+              description="Non-existent or deprecated API references"),
+    FactorDef("E7", "OTA pipeline",
+              "E. Toolchain & Verification", "Med",
+              mapped_categories=["ota"],
+              description="Dual-slot, rollback, CRC, power-loss recovery"),
+    FactorDef("E8", "Bootloader sequence",
+              "E. Toolchain & Verification", "Med",
+              mapped_categories=["boot"],
+              description="MCUboot, secure boot, image signing"),
+    # --- F. Domain Knowledge ---
+    FactorDef("F1", "System architecture",
+              "F. Domain Knowledge", "High",
+              verdict_override="untested",
+              description="Bare-metal vs RTOS, polling vs interrupt, task partition"),
+    FactorDef("F2", "Power state machine",
+              "F. Domain Knowledge", "High",
+              mapped_categories=["power-mgmt"],
+              description="Sleep/Deep Sleep/Standby transitions, wakeup sources"),
+    FactorDef("F3", "Protocol timing",
+              "F. Domain Knowledge", "Med",
+              mapped_categories=["spi-i2c", "networking"],
+              description="I2C clock stretching, SPI CPOL/CPHA, UART baud"),
+    FactorDef("F6", "ADC/DAC conversion",
+              "F. Domain Knowledge", "Low",
+              mapped_categories=["sensor-driver"],
+              description="ADC raw to physical, calibration, non-linearity"),
+    FactorDef("F10", "Long-term operation",
+              "F. Domain Knowledge", "Med",
+              verdict_override="untested",
+              description="10yr+ field operation; memory leaks, flash wear"),
+    FactorDef("F12", "Multicore/heterogeneous",
+              "F. Domain Knowledge", "Med",
+              verdict_override="untested",
+              description="Cortex-M+A, PRU, DSP IPC/shared memory"),
+]
+
+# Group labels for rendering
+FACTOR_GROUPS = [
+    "A. Hardware Awareness",
+    "B. Temporal Constraints",
+    "C. Resource Constraints",
+    "D. Concurrency & Safety",
+    "E. Toolchain & Verification",
+    "F. Domain Knowledge",
+]
+
+
+def _calculate_check_pass_rates(results: list[EvalResult]) -> dict[str, float]:
+    """Calculate pass rate per check_name across all results.
+
+    Scans all LayerResult.details for CheckDetail entries and computes
+    per-check pass rates. Only includes checks that appear at least once.
+    """
+    check_stats: dict[str, list[bool]] = defaultdict(list)
+    for r in results:
+        for layer in r.layers:
+            for detail in layer.details:
+                check_stats[detail.check_name].append(detail.passed)
+    return {
+        name: sum(passes) / len(passes)
+        for name, passes in check_stats.items()
+        if passes
+    }
+
+
+def _compute_factor_verdict(
+    factor: FactorDef,
+    cat_rates: dict[str, float],
+    check_rates: dict[str, float],
+) -> tuple[float | None, str, str]:
+    """Compute verdict for a single factor.
+
+    Returns (rate_or_none, verdict_emoji_label, action).
+    Priority: override > check-level rate > category-level rate > untested.
+    """
+    if factor.verdict_override == "incapable":
+        return (None, "❌ Incapable", "Do not use LLM — write manually")
+    if factor.verdict_override == "untested":
+        return (None, "❓ Untested", "Not benchmarked — no assumptions")
+
+    # Check-level rate (more precise)
+    rate: float | None = None
+    if factor.mapped_checks:
+        matched = [check_rates[c] for c in factor.mapped_checks
+                   if c in check_rates]
+        if matched:
+            rate = sum(matched) / len(matched)
+
+    # Fallback to category-level rate
+    if rate is None and factor.mapped_categories:
+        matched = [cat_rates[c] for c in factor.mapped_categories
+                   if c in cat_rates]
+        if matched:
+            rate = sum(matched) / len(matched)
+
+    if rate is None:
+        return (None, "❓ Untested", "Not benchmarked — no assumptions")
+    if rate >= 0.9:
+        return (rate, "✅ Verified", "LLM output usable — light review")
+    if rate >= 0.6:
+        return (rate, "⚠️ Caution", "Expert review required")
+    return (rate, "❌ Incapable", "Do not use LLM — write manually")
+
+
+def _factor_competency_matrix(
+    results: list[EvalResult],
+    cat_rates: dict[str, float] | None = None,
+) -> list[str]:
+    """Generate the Embedded Factor Competency Matrix section."""
+    n = len(FACTOR_DEFINITIONS)
+    lines = [
+        "## Embedded Factor Competency Matrix",
+        "",
+        f"> LLM competency assessment across {n} validated"
+        " embedded failure factors.",
+        "> Auto-computed from benchmark results."
+        " ❓ = not covered by current benchmark.",
+        "",
+    ]
+
+    if cat_rates is None:
+        cat_rates = _calculate_category_pass_rates(results)
+    check_rates = _calculate_check_pass_rates(results)
+
+    # Collect verdicts for summary
+    summary: dict[str, list[str]] = {
+        "✅ Verified": [],
+        "⚠️ Caution": [],
+        "❌ Incapable": [],
+        "❓ Untested": [],
+    }
+
+    for group_key in FACTOR_GROUPS:
+        group_factors = [f for f in FACTOR_DEFINITIONS
+                         if f.group == group_key]
+        if not group_factors:
+            continue
+
+        lines.append(f"### {group_key}")
+        lines.append("")
+        lines.append("| # | Factor | Strength | Pass Rate"
+                     " | Verdict | Action |")
+        lines.append("|---|--------|----------|-----------|"
+                     "---------|--------|")
+
+        for f in group_factors:
+            rate, verdict, action = _compute_factor_verdict(
+                f, cat_rates, check_rates,
+            )
+            rate_str = f"{rate:.0%}" if rate is not None else "—"
+            row = (f"| {f.id} | {f.name} | {f.strength}"
+                   f" | {rate_str} | {verdict} | {action} |")
+            lines.append(row)
+            summary[verdict].append(f.id)
+
+        lines.append("")
+
+    # Summary table
+    lines.append("### Summary")
+    lines.append("")
+    lines.append("| Verdict | Count | Factors |")
+    lines.append("|---------|-------|---------|")
+    for verdict_label in ["✅ Verified", "⚠️ Caution", "❌ Incapable", "❓ Untested"]:
+        ids = summary[verdict_label]
+        ids_str = ", ".join(ids) if ids else "—"
+        lines.append(f"| {verdict_label} | {len(ids)} | {ids_str} |")
+    lines.append("")
+
+    return lines
+
+
 def generate_safety_guide(
     results: list[EvalResult],
     output: Path,
@@ -163,8 +526,11 @@ def generate_safety_guide(
     lines.extend(_reasoning_risk_table(results))
     lines.append("")
 
+    # Pre-compute category pass rates (shared by sections 3 and 6)
+    cat_rates = _calculate_category_pass_rates(results)
+
     # Section 3: Task-specific checklists (static + dynamic stats)
-    lines.extend(_task_checklists(results))
+    lines.extend(_task_checklists(results, cat_rates))
     lines.append("")
 
     # Section 4: Failure Pattern Statistics (dynamic)
@@ -173,6 +539,10 @@ def generate_safety_guide(
 
     # Section 5: Engineer Guidelines
     lines.extend(_engineer_guidelines(results))
+    lines.append("")
+
+    # Section 6: Factor Competency Matrix (dynamic)
+    lines.extend(_factor_competency_matrix(results, cat_rates))
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -256,14 +626,18 @@ def _task_success_rate(
     return f"{weighted:.0%}"
 
 
-def _task_checklists(results: list[EvalResult]) -> list[str]:
+def _task_checklists(
+    results: list[EvalResult],
+    cat_rates: dict[str, float] | None = None,
+) -> list[str]:
     """Generate per-task checklists with dynamic failure data."""
     lines = [
         "## Task-Specific Checklists",
         "",
     ]
 
-    cat_rates = _calculate_category_pass_rates(results)
+    if cat_rates is None:
+        cat_rates = _calculate_category_pass_rates(results)
 
     for task_name, info in TASK_CHECKLISTS.items():
         categories = info["categories"]
