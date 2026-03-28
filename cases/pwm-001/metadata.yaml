@@ -1,4 +1,4 @@
-id: gpio-basic-004
+id: pwm-001
 category: pwm
 difficulty: easy
 title: "PWM LED Brightness Control"

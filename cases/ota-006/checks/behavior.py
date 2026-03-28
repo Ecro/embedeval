@@ -1,7 +1,9 @@
 """Behavioral checks for OTA image hash verification."""
 
+import re
+
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, check_return_after_error
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -39,11 +41,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Abort path when hash mismatches (no flash write on bad hash)
     # (LLM failure: ignoring hash mismatch result, writing anyway)
+    # Note: "return" in generated_code is always true for any C code — use
+    # check_return_after_error to verify that error blocks contain actual returns.
     has_abort_path = (
         "mismatch" in generated_code.lower()
         or "hash failed" in generated_code.lower()
         or "aborting" in generated_code.lower()
-        or ("memcmp" in generated_code and "return" in generated_code)
+        or ("memcmp" in generated_code and check_return_after_error(generated_code))
     )
     details.append(
         CheckDetail(

@@ -1,7 +1,7 @@
 """Behavioral checks for differential (delta) OTA patch application."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, check_return_after_error
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -41,9 +41,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Abort path if patch verification fails
     # (LLM failure: ignoring CRC mismatch return code, continuing to apply)
+    # Note: "return" in generated_code is always true for any C code — use
+    # check_return_after_error to verify error blocks actually contain returns.
     has_abort_on_verify_fail = (
         "verify" in generated_code.lower()
-        and ("return" in generated_code or "abort" in generated_code.lower())
+        and ("abort" in generated_code.lower() or check_return_after_error(generated_code))
         and ("!= 0" in generated_code or "< 0" in generated_code or "EBADMSG" in generated_code)
     )
     details.append(

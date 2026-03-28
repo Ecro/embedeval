@@ -1,7 +1,9 @@
 """Behavioral checks for K_HEAP vs K_MEM_SLAB selection."""
 
+import re
+
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -93,13 +95,47 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 7: no malloc/free cycle inside loops
     # (LLM failure: allocating and freeing inside a loop causes heap fragmentation over time)
-    import re
-    loop_regions = re.findall(
-        r'(?:while|for)\s*\([^)]*\)\s*\{[^}]*(?:k_malloc|k_heap_alloc)[^}]*(?:k_free|k_heap_free)',
-        generated_code,
-        re.DOTALL,
-    )
-    has_alloc_in_loop = len(loop_regions) > 0
+    # Two-pass approach: find loop positions, then extract full body with brace-depth counting
+    # so that nested braces (if/else inside loop) do not break the match.
+    stripped = strip_comments(generated_code)
+    alloc_funcs = ("k_malloc", "k_heap_alloc")
+    free_funcs = ("k_free", "k_heap_free")
+    has_alloc_in_loop = False
+    for loop_match in re.finditer(r'\b(?:while|for)\s*\(', stripped):
+        # Skip past the loop condition '(...)'
+        cond_start = loop_match.end() - 1  # position of '('
+        depth = 0
+        i = cond_start
+        while i < len(stripped):
+            if stripped[i] == '(':
+                depth += 1
+            elif stripped[i] == ')':
+                depth -= 1
+                if depth == 0:
+                    i += 1
+                    break
+            i += 1
+        # Skip optional whitespace to find '{'
+        while i < len(stripped) and stripped[i] in ' \t\n\r':
+            i += 1
+        if i >= len(stripped) or stripped[i] != '{':
+            continue  # no brace body (single-statement loop) — skip
+        # Extract body using brace-depth counting
+        body_start = i + 1
+        depth = 1
+        j = body_start
+        while j < len(stripped) and depth > 0:
+            if stripped[j] == '{':
+                depth += 1
+            elif stripped[j] == '}':
+                depth -= 1
+            j += 1
+        loop_body = stripped[body_start : j - 1]
+        has_alloc = any(fn in loop_body for fn in alloc_funcs)
+        has_free = any(fn in loop_body for fn in free_funcs)
+        if has_alloc and has_free:
+            has_alloc_in_loop = True
+            break
     details.append(CheckDetail(
         check_name="no_malloc_free_in_loop",
         passed=not has_alloc_in_loop,

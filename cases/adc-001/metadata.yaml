@@ -1,4 +1,4 @@
-id: gpio-basic-003
+id: adc-001
 category: adc
 difficulty: medium
 title: "ADC Single Channel Read"

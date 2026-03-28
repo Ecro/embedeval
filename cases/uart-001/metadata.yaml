@@ -1,4 +1,4 @@
-id: gpio-basic-002
+id: uart-001
 category: uart
 difficulty: easy
 title: "UART Echo"

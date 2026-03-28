@@ -1,4 +1,4 @@
-id: gpio-basic-009
+id: uart-003
 category: uart
 difficulty: medium
 title: "Multi-UART with Runtime Baudrate Change"

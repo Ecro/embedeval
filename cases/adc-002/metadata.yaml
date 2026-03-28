@@ -1,4 +1,4 @@
-id: gpio-basic-008
+id: adc-002
 category: adc
 difficulty: hard
 title: "ADC with Hardware Averaging and Oversampling"

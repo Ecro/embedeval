@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, check_qualifier_on_variable
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -23,7 +23,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Counter is volatile (ISR-safe access)
-    has_volatile = "volatile" in generated_code and "counter" in generated_code.lower()
+    # Uses word-boundary + qualifier-on-variable check to avoid matching comments
+    # e.g., "/* counter should be volatile */" must not pass
+    has_volatile = check_qualifier_on_variable(generated_code, "volatile", r"counter")
     details.append(
         CheckDetail(
             check_name="counter_is_volatile",

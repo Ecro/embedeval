@@ -105,14 +105,14 @@ After (dma-005, implicit):
 
 ### Category Restructure: gpio-basic → uart/adc/pwm
 
-| TC | Old Category | New Category |
-|----|-------------|-------------|
-| gpio-basic-002 | gpio-basic | **uart** |
-| gpio-basic-003 | gpio-basic | **adc** |
-| gpio-basic-004 | gpio-basic | **pwm** |
-| gpio-basic-007 | gpio-basic | **uart** |
-| gpio-basic-008 | gpio-basic | **adc** |
-| gpio-basic-009 | gpio-basic | **uart** |
+| Old ID | New ID | New Category |
+|--------|--------|-------------|
+| gpio-basic-002 | **uart-001** | uart |
+| gpio-basic-003 | **adc-001** | adc |
+| gpio-basic-004 | **pwm-001** | pwm |
+| gpio-basic-007 | **uart-002** | uart |
+| gpio-basic-008 | **adc-002** | adc |
+| gpio-basic-009 | **uart-003** | uart |
 
 Updated: `models.py` (3 new enum values), `cli.py` (dynamic category count), `safety_guide.py`, `CLAUDE.md`, `README.md`, `METHODOLOGY.md`, `TEST_CASE_CATALOG.md`
 

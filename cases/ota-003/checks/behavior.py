@@ -1,7 +1,7 @@
 """Behavioral checks for DFU target flash write."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, check_return_after_error
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -94,9 +94,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 7: No partial write to flash if error occurs (error path leads to abort, not continue)
     # (LLM failure: continuing to write chunks after a write error)
+    # Note: "return" in generated_code is always true for any C code — use
+    # check_return_after_error to verify that error-handling blocks contain returns.
     abort_returns = (
         "dfu_target_done(false)" in generated_code
-        and "return" in generated_code
+        and check_return_after_error(generated_code)
     )
     details.append(
         CheckDetail(

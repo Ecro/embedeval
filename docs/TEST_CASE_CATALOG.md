@@ -1,6 +1,6 @@
 # EmbedEval Test Case Catalog
 
-23 categories × 10 cases = **200+ test cases** targeting LLM failure patterns in embedded firmware development.
+23 categories × ~10 cases = **200+ test cases** targeting LLM failure patterns in embedded firmware development.
 
 ## Difficulty Legend
 
@@ -15,7 +15,7 @@
 | Metric | Value |
 |--------|-------|
 | Total Cases | 200 |
-| Categories | 20 |
+| Categories | 23 |
 | Easy | 28 |
 | Medium | 88 |
 | Hard | 84 |
@@ -93,20 +93,14 @@
 
 ## gpio-basic
 
-**10 cases** (Easy: 3, Medium: 4, Hard: 3)
+**4 cases** (Easy: 1, Medium: 1, Hard: 2)
 
 | # | Case ID | Difficulty | Title | What It Tests | Why Included | Checks |
 |---|---------|-----------|-------|--------------|-------------|--------|
 | 1 | `gpio-basic-001` | 🟢 easy | GPIO Button Interrupt with LED Toggle | Configure a GPIO button interrupt callback that toggles an L... | Baseline — LLM should pass this reliably | S:6 B:6 |
-| 2 | `gpio-basic-002` | 🟢 easy | UART Echo | Read bytes from UART and echo them back using the Zephyr UAR... | Baseline — LLM should pass this reliably | S:7 B:6 |
-| 3 | `gpio-basic-003` | 🟡 medium | ADC Single Channel Read | Read a single ADC channel and convert the raw sample to mill... | API ordering/dependencies needed — common LLM blind spot | S:6 B:6 |
-| 4 | `gpio-basic-004` | 🟢 easy | PWM LED Brightness Control | Control LED brightness by varying PWM duty cycle using the Z... | Baseline — LLM should pass this reliably | S:6 B:6 |
-| 5 | `gpio-basic-005` | 🟡 medium | Multi-LED Sequential Blink | Toggle 4 LEDs in sequence using GPIO pin configuration and i... | API ordering/dependencies needed — common LLM blind spot | S:6 B:6 |
-| 6 | `gpio-basic-006` | 🔴 hard | GPIO Interrupt Debounce with Timer | Button interrupt triggers a k_timer for 50ms debounce; timer... | Concurrency/security/hallucination trap — LLM frontier | S:7 B:6 |
-| 7 | `gpio-basic-007` | 🟡 medium | UART Async API with DMA | Use the Zephyr async UART API (uart_tx/uart_rx_enable) with ... | API ordering/dependencies needed — common LLM blind spot | S:7 B:6 |
-| 8 | `gpio-basic-008` | 🔴 hard | ADC with Hardware Averaging and Oversampling | Configure ADC oversampling before reading, validate resoluti... | Concurrency/security/hallucination trap — LLM frontier | S:7 B:6 |
-| 9 | `gpio-basic-009` | 🟡 medium | Multi-UART with Runtime Baudrate Change | Configure two UARTs with different baudrates and change one ... | API ordering/dependencies needed — common LLM blind spot | S:6 B:6 |
-| 10 | `gpio-basic-010` | 🔴 hard | GPIO Wakeup from Deep Sleep | Configure a GPIO as wakeup source, force deep sleep power st... | Concurrency/security/hallucination trap — LLM frontier | S:7 B:6 |
+| 2 | `gpio-basic-005` | 🟡 medium | Multi-LED Sequential Blink | Toggle 4 LEDs in sequence using GPIO pin configuration and i... | API ordering/dependencies needed — common LLM blind spot | S:6 B:6 |
+| 3 | `gpio-basic-006` | 🔴 hard | GPIO Interrupt Debounce with Timer | Button interrupt triggers a k_timer for 50ms debounce; timer... | Concurrency/security/hallucination trap — LLM frontier | S:7 B:6 |
+| 4 | `gpio-basic-010` | 🔴 hard | GPIO Wakeup from Deep Sleep | Configure a GPIO as wakeup source, force deep sleep power st... | Concurrency/security/hallucination trap — LLM frontier | S:7 B:6 |
 
 ## isr-concurrency
 
@@ -362,4 +356,31 @@
 | 8 | `yocto-008` | 🔴 hard | Yocto Recipe with Multi-License Parsing | Write a BitBake recipe with multiple SPDX licenses and corre... | Concurrency/security/hallucination trap — LLM frontier | S:5 B:6 |
 | 9 | `yocto-009` | 🟡 medium | Yocto Machine Configuration Fragment | Write a machine .conf fragment with MACHINE_FEATURES, KERNEL... | API ordering/dependencies needed — common LLM blind spot | S:4 B:5 |
 | 10 | `yocto-010` | 🔴 hard | Yocto Recipe with Runtime Tests (ptest) | Write a BitBake recipe that implements Yocto ptest for runti... | Concurrency/security/hallucination trap — LLM frontier | S:5 B:6 |
+
+## adc
+
+**2 cases** (Easy: 0, Medium: 1, Hard: 1)
+
+| # | Case ID | Difficulty | Title | What It Tests | Why Included | Checks |
+|---|---------|-----------|-------|--------------|-------------|--------|
+| 1 | `adc-001` | 🟡 medium | ADC Single Channel Read | Read a single ADC channel and convert the raw sample to mill... | API ordering/dependencies needed — common LLM blind spot | S:6 B:6 |
+| 2 | `adc-002` | 🔴 hard | ADC with Hardware Averaging and Oversampling | Configure ADC oversampling before reading, validate resoluti... | Concurrency/security/hallucination trap — LLM frontier | S:7 B:6 |
+
+## pwm
+
+**1 case** (Easy: 1, Medium: 0, Hard: 0)
+
+| # | Case ID | Difficulty | Title | What It Tests | Why Included | Checks |
+|---|---------|-----------|-------|--------------|-------------|--------|
+| 1 | `pwm-001` | 🟢 easy | PWM LED Brightness Control | Control LED brightness by varying PWM duty cycle using the Z... | Baseline — LLM should pass this reliably | S:6 B:6 |
+
+## uart
+
+**3 cases** (Easy: 1, Medium: 2, Hard: 0)
+
+| # | Case ID | Difficulty | Title | What It Tests | Why Included | Checks |
+|---|---------|-----------|-------|--------------|-------------|--------|
+| 1 | `uart-001` | 🟢 easy | UART Echo | Read bytes from UART and echo them back using the Zephyr UAR... | Baseline — LLM should pass this reliably | S:7 B:6 |
+| 2 | `uart-002` | 🟡 medium | UART Async API with DMA | Use the Zephyr async UART API (uart_tx/uart_rx_enable) with ... | API ordering/dependencies needed — common LLM blind spot | S:7 B:6 |
+| 3 | `uart-003` | 🟡 medium | Multi-UART with Runtime Baudrate Change | Configure two UARTs with different baudrates and change one ... | API ordering/dependencies needed — common LLM blind spot | S:6 B:6 |
 

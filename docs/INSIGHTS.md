@@ -114,11 +114,11 @@ L3 체크가 진짜 변별기.
 | boot (10) | 10/10 | 10/10 | 변화 없음 (수정 안 함) |
 | device-tree (10) | 10/10 | 10/10 | 변화 없음 (수정 안 함) |
 | dma (10) | 9/10 | **8/10** | **dma-004 NEW FAIL** |
-| gpio-basic (10) | 9/10 | **8/10** | **gpio-basic-007 NEW FAIL** |
+| gpio-basic (10) | 9/10 | **8/10** | **uart-002 NEW FAIL** |
 
 **새로 실패한 케이스:**
 - **dma-004**: 프롬프트에서 hint 제거 → 새로운 behavioral check 실패
-- **gpio-basic-007**: 프롬프트에서 hint 제거 → 새로운 behavioral check 실패
+- **uart-002**: 프롬프트에서 hint 제거 → 새로운 behavioral check 실패
 
 **초기 결론:**
 - 수정된 카테고리(dma, gpio)에서 실패율 상승 확인

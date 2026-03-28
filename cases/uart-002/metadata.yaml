@@ -1,4 +1,4 @@
-id: gpio-basic-007
+id: uart-002
 category: uart
 difficulty: medium
 title: "UART Async API with DMA"
