@@ -550,6 +550,233 @@ def _append_history(output_base: Path, run_summary: dict[str, object]) -> None: 
     )
 
 
+def generate_safe_guide(
+    output_base: Path,
+) -> Path | None:
+    """Generate SAFE_GUIDE.md from all available run data.
+
+    Aggregates per-category pass rates across all models in results/runs/,
+    then produces risk-tier guidance for embedded engineers.
+
+    Returns the output path, or None if no data available.
+    """
+    runs_dir = output_base / "runs"
+    if not runs_dir.is_dir():
+        return None
+
+    # Collect per-model, per-category results from summary.json files
+    model_data: dict[str, dict[str, dict]] = {}  # model -> {cat -> {passed, total}}
+
+    for run_dir in sorted(runs_dir.iterdir()):
+        summary_file = run_dir / "summary.json"
+        if not summary_file.is_file():
+            continue
+        try:
+            summary = json.loads(summary_file.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+        model = summary.get("model", "unknown")
+        categories = summary.get("categories", [])
+        if not categories:
+            continue
+
+        # Keep latest run per model (dirs are sorted by date)
+        cat_map: dict[str, dict] = {}
+        for cat in categories:
+            cat_name = cat.get("category", "")
+            if cat_name:
+                cat_map[cat_name] = {
+                    "passed": cat.get("passed_cases", 0),
+                    "total": cat.get("total_cases", 0),
+                    "pass_at_1": cat.get("pass_at_1", 0.0),
+                }
+        model_data[model] = cat_map
+
+    if not model_data:
+        return None
+
+    # Collect all categories
+    all_cats = sorted({cat for cats in model_data.values() for cat in cats})
+    models = sorted(model_data.keys())
+
+    # Classify categories into risk tiers based on worst-model performance
+    risk_tiers: dict[str, list[tuple[str, dict[str, float]]]] = {
+        "critical": [],   # <50% on any model — DO NOT trust
+        "caution": [],    # 50-79% — always review
+        "moderate": [],   # 80-89% — spot check
+        "reliable": [],   # 90%+ on all models — generally safe
+    }
+
+    for cat in all_cats:
+        rates: dict[str, float] = {}
+        for model in models:
+            cat_data = model_data[model].get(cat)
+            if cat_data:
+                rates[model] = cat_data["pass_at_1"]
+
+        if not rates:
+            continue
+
+        worst = min(rates.values())
+        if worst < 0.5:
+            risk_tiers["critical"].append((cat, rates))
+        elif worst < 0.8:
+            risk_tiers["caution"].append((cat, rates))
+        elif worst < 0.9:
+            risk_tiers["moderate"].append((cat, rates))
+        else:
+            risk_tiers["reliable"].append((cat, rates))
+
+    # Collect common failure patterns from detail JSONs
+    failure_patterns: dict[str, int] = {}
+    for run_dir in runs_dir.iterdir():
+        details_dir = run_dir / "details"
+        if not details_dir.is_dir():
+            continue
+        for detail_file in details_dir.glob("*.json"):
+            try:
+                data = json.loads(detail_file.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if data.get("passed", True):
+                continue
+            for layer in data.get("layers", []):
+                for check in layer.get("details", []):
+                    if not check.get("passed", True):
+                        name = check.get("check_name", "")
+                        if name:
+                            failure_patterns[name] = failure_patterns.get(name, 0) + 1
+
+    top_failures = sorted(failure_patterns.items(), key=lambda x: -x[1])[:20]
+
+    # Build the guide
+    lines: list[str] = []
+    lines.append("# EmbedEval Safe Guide for Embedded Engineers")
+    lines.append("")
+    lines.append("*Auto-generated from benchmark results. "
+                 "Use this to decide when LLM-generated code needs human review.*")
+    lines.append("")
+    timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines.append(f"**Last updated:** {timestamp}")
+    lines.append("")
+
+    # Model overview
+    lines.append("## Models Tested")
+    lines.append("")
+    lines.append("| Model | pass@1 | Cases |")
+    lines.append("|-------|--------|-------|")
+    for model in models:
+        cats = model_data[model]
+        total = sum(c["total"] for c in cats.values())
+        passed = sum(c["passed"] for c in cats.values())
+        rate = passed / total if total > 0 else 0.0
+        short_name = model.replace("claude-code://", "")
+        lines.append(f"| {short_name} | {rate:.1%} | {total} |")
+    lines.append("")
+
+    # Risk tiers
+    _tier_header = {
+        "critical": ("CRITICAL — Do Not Trust", "LLM fails >50% of the time. "
+                     "Always write this code manually or review every line."),
+        "caution": ("CAUTION — Always Review", "LLM fails 20-50%. "
+                    "Use as starting point only. Expert review mandatory."),
+        "moderate": ("MODERATE — Spot Check", "LLM is mostly correct (80-89%). "
+                     "Review safety-critical patterns (volatile, ISR, error paths)."),
+        "reliable": ("RELIABLE — Generally Safe", "LLM passes 90%+. "
+                     "Standard code review is sufficient."),
+    }
+
+    for tier_key in ["critical", "caution", "moderate", "reliable"]:
+        cats_in_tier = risk_tiers[tier_key]
+        if not cats_in_tier:
+            continue
+        title, desc = _tier_header[tier_key]
+        lines.append(f"## {title}")
+        lines.append("")
+        lines.append(f"*{desc}*")
+        lines.append("")
+
+        # Model columns
+        header = "| Category |"
+        sep = "|----------|"
+        for model in models:
+            short = model.replace("claude-code://", "")
+            header += f" {short} |"
+            sep += "------|"
+        lines.append(header)
+        lines.append(sep)
+
+        for cat, rates in sorted(cats_in_tier, key=lambda x: min(x[1].values())):
+            row = f"| {cat} |"
+            for model in models:
+                r = rates.get(model)
+                if r is not None:
+                    row += f" {r:.0%} |"
+                else:
+                    row += " - |"
+            lines.append(row)
+        lines.append("")
+
+    # Common failure patterns
+    if top_failures:
+        lines.append("## Most Common Failure Patterns")
+        lines.append("")
+        lines.append("*These checks fail most often across all models and runs. "
+                     "Pay special attention to these patterns in LLM-generated code.*")
+        lines.append("")
+        lines.append("| Pattern | Failures | What to Check |")
+        lines.append("|---------|----------|---------------|")
+        for check_name, count in top_failures:
+            hint = _failure_hint(check_name)
+            lines.append(f"| `{check_name}` | {count} | {hint} |")
+        lines.append("")
+
+    # Practical recommendations
+    lines.append("## Practical Recommendations")
+    lines.append("")
+    lines.append("### When using LLM for embedded code:")
+    lines.append("")
+    lines.append("1. **Always review** volatile qualifiers, memory barriers, "
+                 "and ISR-safe patterns")
+    lines.append("2. **Never trust** DMA configuration, memory domain setup, "
+                 "or lock ordering without verification")
+    lines.append("3. **Verify** error handling paths — LLMs often generate "
+                 "happy-path-only code")
+    lines.append("4. **Check** that Kconfig/prj.conf options match the APIs used "
+                 "in the code")
+    lines.append("5. **Test** on actual hardware or QEMU — static checks alone "
+                 "miss runtime issues")
+    lines.append("")
+
+    # Write
+    output_path = output_base / "SAFE_GUIDE.md"
+    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    logger.info("Safe guide written to %s", output_path)
+    return output_path
+
+
+def _failure_hint(check_name: str) -> str:
+    """Return a human-readable hint for a check failure pattern."""
+    hints: dict[str, str] = {
+        "volatile": "Variable shared with ISR/callback must be volatile",
+        "memory_barrier": "Data + index update needs compiler_barrier() or __dmb()",
+        "lock_order": "Consistent lock acquisition order prevents deadlock",
+        "error_handling": "Check return values of all API calls",
+        "printk_in_isr": "Never use printk/printf inside ISR handlers",
+        "cache": "DMA buffers need cache flush/invalidate",
+        "dma_config": "Use correct Zephyr DMA API (dma_config, not dma_configure)",
+        "mem_slab": "Use K_MEM_SLAB_DEFINE for static memory pools",
+        "sentinel": "Device tree match tables must end with empty {} entry",
+        "cleanup": "Init error paths must free all previously acquired resources",
+    }
+    name_lower = check_name.lower()
+    for key, hint in hints.items():
+        if key in name_lower:
+            return hint
+    return "Review LLM output against hardware/RTOS requirements"
+
+
 def _pass_fail_icon(rate: float) -> str:
     """Return a pass/fail status icon based on the rate."""
     if rate >= 0.8:

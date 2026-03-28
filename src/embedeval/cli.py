@@ -199,6 +199,7 @@ def run(
         generate_json,
         generate_leaderboard,
         generate_run_archive,
+        generate_safe_guide,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -226,10 +227,15 @@ def run(
         tracker, output_dir / "TEST_RESULTS.md", cases_dir
     )
 
+    # Generate safe guide from all available runs
+    guide_path = generate_safe_guide(output_dir)
+
     typer.echo(f"Results: {json_path}")
     typer.echo(f"Leaderboard: {leaderboard_path}")
     typer.echo(f"Detailed: {run_dir}/")
     typer.echo(f"Tracker: {output_dir / 'test_tracker.json'}")
+    if guide_path:
+        typer.echo(f"Safe guide: {guide_path}")
 
 
 @app.command()
