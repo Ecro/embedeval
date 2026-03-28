@@ -94,6 +94,26 @@ For each failed case:
 2. Show which specific checks failed and why
 3. Show the first 30 lines of generated code for context
 
+### Step 3.5: Verify Results (False Result Detection)
+
+After analyzing failures, run the verification script to cross-check results:
+
+```bash
+uv run python scripts/verify_results.py results/runs/{run_dir}/ --verbose
+```
+
+This script:
+1. **Re-runs check scripts** on each case's generated code and compares with stored results
+2. **Runs reference solutions** through the same checks — if reference fails = check script bug
+3. Reports:
+   - **FALSE NEGATIVES**: Reference solution fails a check → the check script has a bug
+   - **DISCREPANCIES**: Stored result differs from re-run → data integrity issue
+
+If issues are found:
+- For FALSE NEGATIVES: Show the problematic check script and the reference code, explain the bug
+- For DISCREPANCIES: Note them but these usually mean checks were updated after the run
+- Summarize how many cases verified OK vs issues found
+
 ### Step 4: Summary Output
 
 ```markdown
