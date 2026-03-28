@@ -224,7 +224,7 @@ docker build -f Dockerfile.stm32 -t embedeval-stm32 .
 
 ```
 embedeval/
-├── src/embedeval/           # Core library (14 modules)
+├── src/embedeval/           # Core library (15 modules)
 │   ├── evaluator.py         # 5-layer evaluation pipeline (Docker/local/skip)
 │   ├── runner.py            # Benchmark orchestration + feedback loop
 │   ├── scorer.py            # Unbiased pass@k + Wilson 95% CI
@@ -242,7 +242,7 @@ embedeval/
 │   ├── {category}-{NNN}/    # Zephyr cases (20 categories × 10+)
 │   ├── esp-*/               # ESP-IDF cases (10)
 │   └── stm32-*/             # STM32 HAL + FreeRTOS cases (10)
-├── tests/                   # 945 tests
+├── tests/                   # 966 tests
 │   ├── test_e2e.py          # E2E: 220 reference solutions + pipeline
 │   ├── test_negatives.py    # 20 must_fail + 15 subtle mutations
 │   ├── test_bugfix.py       # Bug fix scenario tests

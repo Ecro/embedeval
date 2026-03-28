@@ -381,6 +381,51 @@ def agent(
 
 
 @app.command()
+def guide(
+    results_dir: Annotated[
+        Path,
+        typer.Option("--results", help="Directory containing result JSON files"),
+    ] = Path("results"),
+    output: Annotated[
+        Path,
+        typer.Option("--output", "-o", help="Output Safety Guide path"),
+    ] = Path("SAFETY-GUIDE.md"),
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose logging"),
+    ] = False,
+) -> None:
+    """Generate LLM Embedded Code Safety Guide from benchmark results."""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, force=True)
+
+    import json
+
+    from embedeval.models import EvalResult
+    from embedeval.safety_guide import generate_safety_guide
+
+    # Load results from run archive detail files
+    all_results: list[EvalResult] = []
+    for run_dir in sorted(results_dir.glob("runs/*")):
+        details_dir = run_dir / "details"
+        if not details_dir.is_dir():
+            continue
+        for detail_file in sorted(details_dir.glob("*.json")):
+            try:
+                data = json.loads(detail_file.read_text(encoding="utf-8"))
+                all_results.append(EvalResult(**data))
+            except Exception:
+                continue
+
+    if not all_results:
+        typer.echo("No benchmark results found. Run a benchmark first.")
+        raise typer.Exit(code=1)
+
+    generate_safety_guide(all_results, output)
+    typer.echo(f"Safety Guide written to {output}")
+
+
+@app.command()
 def sensitivity(
     model: Annotated[
         str,
