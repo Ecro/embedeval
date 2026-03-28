@@ -183,6 +183,7 @@ class BenchmarkReport(BaseModel):
     models: list[ModelScore]
     categories: list[CategoryScore]
     overall: OverallScore
+    scenario: str = "generation"
     temperature: float = Field(default=0.0, ge=0.0)
     n_samples_per_case: int = Field(default=1, ge=1)
     n_runs: int = Field(default=1, ge=1)

@@ -61,6 +61,8 @@ def generate_leaderboard(
         "",
     ]
 
+    lines.extend(_scenario_summary(reports))
+    lines.append("")
     lines.extend(_model_comparison_table(reports))
     lines.append("")
     lines.extend(_category_heatmap(reports))
@@ -75,6 +77,29 @@ def generate_leaderboard(
 
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     logger.info("Leaderboard written to %s", output)
+
+
+def _scenario_summary(reports: list[BenchmarkReport]) -> list[str]:
+    """Generate scenario summary when multiple scenarios are present."""
+    scenarios = {r.scenario for r in reports}
+    if len(scenarios) <= 1 and "generation" in scenarios:
+        return []
+
+    lines: list[str] = [
+        "## Scenario Comparison",
+        "",
+        "| Scenario | Model | pass@1 | Cases |",
+        "|----------|-------|--------|-------|",
+    ]
+    for report in reports:
+        for model_score in report.models:
+            lines.append(
+                f"| {report.scenario} "
+                f"| {model_score.model} "
+                f"| {model_score.pass_at_1:.1%} "
+                f"| {model_score.total_cases} |"
+            )
+    return lines
 
 
 def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
@@ -287,11 +312,13 @@ def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
     if not has_data:
         return []
 
-    lines.extend([
-        "",
-        "*Embed Gap = EmbedEval pass@1 - HumanEval. "
-        "Negative = harder than general coding.*",
-    ])
+    lines.extend(
+        [
+            "",
+            "*Embed Gap = EmbedEval pass@1 - HumanEval. "
+            "Negative = harder than general coding.*",
+        ]
+    )
     return lines
 
 
@@ -325,6 +352,7 @@ def generate_run_archive(
     summary = report.model_dump(mode="json")
     summary["run_timestamp"] = timestamp
     summary["model"] = model
+    summary["scenario"] = report.scenario
     summary["total_results"] = len(results)
     summary["passed"] = sum(1 for r in results if r.passed)
     summary["failed"] = sum(1 for r in results if not r.passed)
@@ -356,8 +384,8 @@ def generate_failure_report(
     lines.append(f"# Benchmark Report: {model}")
     lines.append(f"\n**Date:** {timestamp}")
     lines.append(f"\n## Summary\n")
-    lines.append(f"| Metric | Value |")
-    lines.append(f"|--------|-------|")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
     lines.append(f"| Model | {model} |")
     lines.append(f"| Total Cases | {total} |")
     lines.append(f"| Passed | {passed} |")
@@ -381,9 +409,7 @@ def generate_failure_report(
                     layer_name = layer.name
                     failed_checks.extend(fc)
             checks_str = ", ".join(failed_checks) if failed_checks else "unknown"
-            lines.append(
-                f"| `{r.case_id}` | {diff} | {layer_name} | {checks_str} |"
-            )
+            lines.append(f"| `{r.case_id}` | {diff} | {layer_name} | {checks_str} |")
 
     # Failure pattern analysis
     pattern_counts: dict[str, list[str]] = {}
@@ -397,12 +423,10 @@ def generate_failure_report(
         lines.append(f"\n## Failure Patterns\n")
         lines.append("| Check Name | Failures | Cases |")
         lines.append("|-----------|----------|-------|")
-        for check, cases in sorted(
-            pattern_counts.items(), key=lambda x: -len(x[1])
-        ):
+        for check, cases in sorted(pattern_counts.items(), key=lambda x: -len(x[1])):
             case_list = ", ".join(cases[:5])
             if len(cases) > 5:
-                case_list += f" (+{len(cases)-5} more)"
+                case_list += f" (+{len(cases) - 5} more)"
             lines.append(f"| `{check}` | {len(cases)} | {case_list} |")
 
     # By difficulty

@@ -64,19 +64,37 @@ def run(
     ] = None,
     after_date: Annotated[
         str | None,
-        typer.Option("--after-date", help="Only include cases created after this date (YYYY-MM-DD)"),
+        typer.Option(
+            "--after-date",
+            help="Only include cases created after this date (YYYY-MM-DD)",
+        ),
     ] = None,
     feedback_rounds: Annotated[
         int,
-        typer.Option("--feedback-rounds", "-f", help="Compiler feedback rounds (0=disabled)"),
+        typer.Option(
+            "--feedback-rounds", "-f", help="Compiler feedback rounds (0=disabled)"
+        ),
     ] = 0,
     temperature: Annotated[
         float,
-        typer.Option("--temperature", "-t", help="LLM temperature (recorded in report metadata)"),
+        typer.Option(
+            "--temperature", "-t", help="LLM temperature (recorded in report metadata)"
+        ),
     ] = 0.0,
+    scenario: Annotated[
+        str,
+        typer.Option(
+            "--scenario",
+            "-s",
+            help="Evaluation scenario: generation or bugfix",
+        ),
+    ] = "generation",
     include_private: Annotated[
         bool,
-        typer.Option("--include-private", help="Include private held-out cases (default: public only)"),
+        typer.Option(
+            "--include-private",
+            help="Include private held-out cases (default: public only)",
+        ),
     ] = False,
     verbose: Annotated[
         bool,
@@ -86,6 +104,10 @@ def run(
     """Run benchmark evaluation on cases."""
     if verbose:
         logging.basicConfig(level=logging.DEBUG, force=True)
+
+    if scenario not in ("generation", "bugfix"):
+        typer.echo(f"Unknown scenario: {scenario}. Use 'generation' or 'bugfix'.")
+        raise typer.Exit(code=1)
 
     from embedeval.runner import Filters, run_benchmark
     from embedeval.scorer import score as score_results
@@ -100,21 +122,35 @@ def run(
     if after_date:
         filters.after_date = after_date
 
-    typer.echo(f"Running benchmark: model={model}, cases={cases_dir}")
-    results = run_benchmark(
-        cases_dir=cases_dir,
-        model=model,
-        filters=filters,
-        attempts=attempts,
-        feedback_rounds=feedback_rounds,
-        include_private=include_private,
+    typer.echo(
+        f"Running benchmark: model={model}, cases={cases_dir}, scenario={scenario}"
     )
+
+    if scenario == "bugfix":
+        from embedeval.bugfix import run_bugfix_benchmark
+
+        results = run_bugfix_benchmark(
+            cases_dir=cases_dir,
+            model=model,
+            filters=filters,
+            include_private=include_private,
+        )
+    else:
+        results = run_benchmark(
+            cases_dir=cases_dir,
+            model=model,
+            filters=filters,
+            attempts=attempts,
+            feedback_rounds=feedback_rounds,
+            include_private=include_private,
+        )
 
     if not results:
         typer.echo("No results generated.")
         raise typer.Exit(code=1)
 
     report = score_results(results)
+    report.scenario = scenario
     report.temperature = temperature
     report.n_samples_per_case = attempts
 
@@ -254,7 +290,9 @@ def list_categories(
         diff_counts.setdefault(cat, Counter())[meta.difficulty.value] += 1
 
     typer.echo(f"20 categories, {len(cases)} total cases:\n")
-    typer.echo(f"  {'Category':<20s} {'Cases':>5s}  {'Easy':>4s} {'Med':>4s} {'Hard':>4s}")
+    typer.echo(
+        f"  {'Category':<20s} {'Cases':>5s}  {'Easy':>4s} {'Med':>4s} {'Hard':>4s}"
+    )
     typer.echo(f"  {'─' * 20} {'─' * 5}  {'─' * 4} {'─' * 4} {'─' * 4}")
     for cat in sorted(cat_counts):
         dc = diff_counts[cat]
@@ -305,7 +343,9 @@ def agent(
         typer.echo("No cases found.")
         raise typer.Exit(code=1)
 
-    typer.echo(f"Agent mode: model={model}, max_turns={max_turns}, cases={len(cases)}\n")
+    typer.echo(
+        f"Agent mode: model={model}, max_turns={max_turns}, cases={len(cases)}\n"
+    )
 
     from embedeval.runner import _load_prompt
 
