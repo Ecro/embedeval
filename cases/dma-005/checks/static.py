@@ -19,13 +19,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: Cache header included
-    has_cache_h = "zephyr/cache.h" in generated_code
+    # Check 2: Cache header included (accept both old and new paths)
+    has_cache_h = (
+        "zephyr/cache.h" in generated_code
+        or "zephyr/sys/cache.h" in generated_code
+    )
     details.append(
         CheckDetail(
             check_name="cache_header_included",
             passed=has_cache_h,
-            expected="zephyr/cache.h included",
+            expected="zephyr/cache.h or zephyr/sys/cache.h included",
             actual="present" if has_cache_h else "missing",
             check_type="exact_match",
         )

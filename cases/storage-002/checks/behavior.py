@@ -11,7 +11,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 1: settings_subsys_init before save/load (correct ordering)
     init_pos = generated_code.find("settings_subsys_init")
     save_pos = generated_code.find("settings_save_one")
-    load_pos = generated_code.find("settings_load")
+    load_pos = generated_code.find("settings_load(")
     init_first = (
         init_pos != -1
         and save_pos != -1

@@ -13,7 +13,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 1: Timer period < WDT timeout
     # WDT max must be > timer period (in seconds)
     # Heuristic: find window.max value and timer period, compare
-    wdt_max_match = re.search(r"window\.max\s*=\s*(\d+)", generated_code)
+    wdt_max_match = re.search(r"\.max\s*=\s*(\d+)", generated_code)
     timer_period_match = re.search(r"K_SECONDS\((\d+)\)", generated_code)
     period_ok = False
     if wdt_max_match and timer_period_match:

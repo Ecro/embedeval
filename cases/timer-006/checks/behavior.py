@@ -131,7 +131,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 8: counter_stop() called AFTER counter_get_value (releases hardware resource)
     # LLM failure: forgetting counter_stop or calling it before the measurement read
-    stop_pos = generated_code.find("counter_stop")
+    stop_pos = generated_code.rfind("counter_stop")
     get_pos = generated_code.rfind("counter_get_value")  # last read = final measurement
     counter_stopped_after_use = (
         stop_pos != -1 and get_pos != -1 and stop_pos > get_pos

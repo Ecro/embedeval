@@ -1,7 +1,7 @@
 """Behavioral checks for Flash Area erase and write."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -71,7 +71,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: error handling present
-    has_error = "< 0" in generated_code
+    has_error = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="error_handling",

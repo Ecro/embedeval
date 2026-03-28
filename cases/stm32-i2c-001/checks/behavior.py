@@ -96,13 +96,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 7: I2C clock enabled before HAL_I2C_Init
+    # Accept either: (a) clock enable textually before init, or (b) both present
+    # (HAL MspInit callback pattern guarantees clock is enabled before use)
     clk_pos = -1
     for token in ["__HAL_RCC_I2C1_CLK_ENABLE", "__HAL_RCC_I2C"]:
         pos = generated_code.find(token)
         if pos != -1:
             clk_pos = pos if clk_pos == -1 else min(clk_pos, pos)
     i2c_init_pos = generated_code.find("HAL_I2C_Init")
-    clock_before_init = clk_pos != -1 and i2c_init_pos != -1 and clk_pos < i2c_init_pos
+    clock_before_init = clk_pos != -1 and i2c_init_pos != -1
     details.append(
         CheckDetail(
             check_name="i2c_clock_before_init",

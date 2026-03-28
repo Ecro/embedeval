@@ -3,6 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import has_output_call
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -63,14 +64,14 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: printk present for status output
-    has_printk = "printk" in generated_code
+    # Check 5: output call present for status output
+    has_output = has_output_call(generated_code)
     details.append(
         CheckDetail(
             check_name="printk_present",
-            passed=has_printk,
-            expected="printk() used for status output",
-            actual="present" if has_printk else "missing",
+            passed=has_output,
+            expected="printk/printf/LOG_* used for status output",
+            actual="present" if has_output else "missing",
             check_type="exact_match",
         )
     )

@@ -78,13 +78,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Both ISRs print something (short observable work, not empty)
-    has_printk_in_isrs = generated_code.count("printk") >= 2
+    # Accept both printk and printf as observable output
+    output_count = generated_code.count("printk") + generated_code.count("printf")
+    has_output_in_isrs = output_count >= 2
     details.append(
         CheckDetail(
             check_name="isrs_have_observable_work",
-            passed=has_printk_in_isrs,
-            expected="Both ISR bodies do observable work (printk)",
-            actual=f"printk count={generated_code.count('printk')}",
+            passed=has_output_in_isrs,
+            expected="Both ISR bodies do observable work (printk/printf)",
+            actual=f"printk+printf count={output_count}",
             check_type="constraint",
         )
     )

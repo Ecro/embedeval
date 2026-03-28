@@ -1,7 +1,7 @@
 """Behavioral checks for PM device action handler."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -62,7 +62,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 5: Error handling for pm_device_action_run return
     # (LLM failure: ignoring return value of PM API)
-    has_ret_check = "< 0" in generated_code or "!= 0" in generated_code
+    has_ret_check = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="pm_error_handling",

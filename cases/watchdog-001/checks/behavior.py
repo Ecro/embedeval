@@ -1,7 +1,7 @@
 """Behavioral checks for watchdog timer application."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_sleep_call
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -61,12 +61,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 5: Feed in a loop (periodic feeding)
     has_loop = "while" in generated_code or "for" in generated_code
-    has_sleep_in_loop = "k_sleep" in generated_code and has_loop
+    has_sleep_in_loop = has_sleep_call(generated_code) and has_loop
     details.append(
         CheckDetail(
             check_name="periodic_feed_in_loop",
             passed=has_sleep_in_loop,
-            expected="wdt_feed in loop with k_sleep (periodic feeding)",
+            expected="wdt_feed in loop with k_sleep/k_msleep (periodic feeding)",
             actual=f"loop={has_loop}, sleep={has_sleep_in_loop}",
             check_type="constraint",
         )

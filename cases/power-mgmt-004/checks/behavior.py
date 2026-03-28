@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -42,7 +42,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Return values checked for enable/get/put
     # (LLM failure: ignoring error returns from runtime PM API)
-    has_ret_check = "< 0" in generated_code or "!= 0" in generated_code
+    has_ret_check = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="return_values_checked",

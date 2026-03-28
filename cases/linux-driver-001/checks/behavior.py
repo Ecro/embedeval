@@ -124,27 +124,35 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         init_body = generated_code[init_body_start:pos]
         # Both cleanup calls must appear somewhere inside __init (covers both
         # `if (ret < 0)` blocks and `if (IS_ERR(...))` blocks).
+        # Accept new API (cdev_del + unregister_chrdev_region) OR old API (unregister_chrdev)
         init_has_cdev_del = "cdev_del" in init_body
-        init_has_unregister = "unregister_chrdev_region" in init_body
-        cleanup_complete = init_has_cdev_del and init_has_unregister
+        init_has_unregister_region = "unregister_chrdev_region" in init_body
+        init_has_unregister_old = "unregister_chrdev" in init_body and "unregister_chrdev_region" not in init_body
+        cleanup_complete = (init_has_cdev_del and init_has_unregister_region) or init_has_unregister_old
         actual_cleanup = (
-            "complete: both cdev_del and unregister_chrdev_region in __init"
+            "complete: cleanup in __init"
             if cleanup_complete
             else (
                 f"partial: cdev_del={init_has_cdev_del}, "
-                f"unregister_chrdev_region={init_has_unregister} — resource leak on init failure"
+                f"unregister_chrdev_region={init_has_unregister_region}, "
+                f"unregister_chrdev={init_has_unregister_old} — resource leak on init failure"
             )
         )
     else:
         # Fallback when __init annotation is absent: require both in any error block
+        # Accept new API (cdev_del + unregister_chrdev_region) OR old API (unregister_chrdev)
         error_blocks = extract_error_blocks(generated_code)
         init_has_cdev_del = any("cdev_del" in block for block in error_blocks)
-        init_has_unregister = any("unregister_chrdev_region" in block for block in error_blocks)
-        cleanup_complete = init_has_cdev_del and init_has_unregister
+        init_has_unregister_region = any("unregister_chrdev_region" in block for block in error_blocks)
+        init_has_unregister_old = any(
+            "unregister_chrdev" in block and "unregister_chrdev_region" not in block
+            for block in error_blocks
+        )
+        cleanup_complete = (init_has_cdev_del and init_has_unregister_region) or init_has_unregister_old
         actual_cleanup = (
             "complete cleanup (no __init marker)"
             if cleanup_complete
-            else f"partial: cdev_del={init_has_cdev_del}, unregister_chrdev_region={init_has_unregister}"
+            else f"partial: cdev_del={init_has_cdev_del}, unregister_chrdev_region={init_has_unregister_region}, unregister_chrdev={init_has_unregister_old}"
         )
     details.append(
         CheckDetail(
@@ -178,14 +186,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
                 s_pos += 1
             stripped_init_body = stripped[s_start:s_pos]
             stripped_has_cdev_del = "cdev_del" in stripped_init_body
-            stripped_has_unregister = "unregister_chrdev_region" in stripped_init_body
-            stripped_cleanup_complete = stripped_has_cdev_del and stripped_has_unregister
+            stripped_has_unregister_region = "unregister_chrdev_region" in stripped_init_body
+            stripped_has_unregister_old = "unregister_chrdev" in stripped_init_body and "unregister_chrdev_region" not in stripped_init_body
+            stripped_cleanup_complete = (stripped_has_cdev_del and stripped_has_unregister_region) or stripped_has_unregister_old
             actual_stripped = (
                 "complete (comments stripped)"
                 if stripped_cleanup_complete
                 else (
                     f"partial (stripped): cdev_del={stripped_has_cdev_del}, "
-                    f"unregister_chrdev_region={stripped_has_unregister} — commented-out cleanup"
+                    f"unregister_chrdev_region={stripped_has_unregister_region}, "
+                    f"unregister_chrdev={stripped_has_unregister_old} — commented-out cleanup"
                 )
             )
         else:

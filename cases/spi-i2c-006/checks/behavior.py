@@ -1,7 +1,7 @@
 """Behavioral checks for I2C clock stretching timeout handling."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_output_call
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -68,7 +68,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 5: Error message printed on failure
     has_error_print = (
-        "printk" in generated_code
+        has_output_call(generated_code)
         and ("error" in generated_code.lower() or "fail" in generated_code.lower()
              or "timeout" in generated_code.lower())
     )

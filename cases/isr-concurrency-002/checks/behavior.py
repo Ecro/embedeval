@@ -5,7 +5,9 @@ import re
 from embedeval.check_utils import (
     check_no_cross_platform_apis,
     check_no_isr_forbidden,
+    extract_numeric,
     find_isr_bodies,
+    has_sleep_call,
     strip_comments,
 )
 from embedeval.models import CheckDetail
@@ -30,17 +32,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: K_MSGQ_DEFINE used with at least 4 slots
-    msgq_def = re.search(r'K_MSGQ_DEFINE\s*\([^,]+,[^,]+,\s*(\d+)', generated_code)
-    adequate_slots = False
-    if msgq_def:
-        slots = int(msgq_def.group(1))
-        adequate_slots = slots >= 4
+    # Use extract_numeric to resolve both literal digits and #define macros
+    msgq_pat = r'K_MSGQ_DEFINE\s*\([^,]+,[^,]+,\s*(\w+)'
+    slots_val = extract_numeric(generated_code, msgq_pat)
+    adequate_slots = slots_val is not None and slots_val >= 4
     details.append(
         CheckDetail(
             check_name="msgq_adequate_depth",
             passed=adequate_slots,
             expected="K_MSGQ_DEFINE with >= 4 slots",
-            actual=f"slots={msgq_def.group(1) if msgq_def else 'not found'}",
+            actual=f"slots={slots_val if slots_val is not None else 'not found'}",
             check_type="constraint",
         )
     )
@@ -83,13 +84,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: k_sleep present in main (allows thread to run)
-    has_sleep = "k_sleep" in generated_code
+    # Check 6: k_sleep or k_msleep present in main (allows thread to run)
+    has_sleep = has_sleep_call(generated_code)
     details.append(
         CheckDetail(
             check_name="k_sleep_in_main",
             passed=has_sleep,
-            expected="k_sleep() in main to allow consumer thread to run",
+            expected="k_sleep/k_msleep() in main to allow consumer thread to run",
             actual="present" if has_sleep else "missing (thread may never run)",
             check_type="constraint",
         )

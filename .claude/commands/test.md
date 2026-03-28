@@ -5,7 +5,7 @@ Run LLM benchmark, save detailed results, generate failure analysis report.
 ## Usage
 
 ```
-/test <model> [category] [--attempts N]
+/test <model> [category] [--attempts N] [--retest-only]
 ```
 
 **Examples:**
@@ -20,14 +20,17 @@ Run LLM benchmark, save detailed results, generate failure analysis report.
 /test sonnet kconfig --attempts 3     # Category + attempts
 /test opus                            # All cases with Opus
 /test haiku gpio-basic                # GPIO cases with Haiku
+/test sonnet --retest-only            # Only re-run cases that changed since last test
+/test haiku dma --retest-only         # Retest only changed DMA cases
 ```
 
 ## Arguments
 
-- `$ARGUMENTS` is parsed as: `<model> [category] [--attempts N]`
+- `$ARGUMENTS` is parsed as: `<model> [category] [--attempts N] [--retest-only]`
 - Model: passed to `claude-code://<model>` (e.g., sonnet, opus, haiku, claude-sonnet-4-6)
 - Category: optional, one of the 20 EmbedEval categories (comma-separated for multiple)
 - Attempts: optional, default 1
+- `--retest-only`: only run cases where TC changed since last test (uses test_tracker.json)
 
 ## Implementation
 
@@ -66,9 +69,12 @@ if category:
         CMD += " -c {cat}"
 if attempts:
     CMD += " --attempts {attempts}"
+if --retest-only:
+    CMD += " --retest-only"
 
-# Clean previous results for this model
-rm -rf results/claude-code*
+# Clean previous results for this model (skip if --retest-only to preserve tracker)
+if not --retest-only:
+    rm -rf results/claude-code*
 
 # Run
 {CMD} -v
@@ -118,4 +124,7 @@ Detailed results: results/runs/{run_dir}/
 - Uses `claude-code://` provider (subscription, no API key needed)
 - Results preserved in `results/runs/` with per-case JSONs
 - History appended to `results/history.json`
+- Test tracker at `results/test_tracker.json` — tracks per-case results with content hashes
+- `results/TEST_RESULTS.md` — human-readable test result doc, auto-updated after each run
+- `--retest-only` compares current case content hash to stored hash, only runs changed cases
 - Reference: `memory/llm-embedded-failure-patterns.md` for LLM failure patterns

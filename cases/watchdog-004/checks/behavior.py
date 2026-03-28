@@ -24,20 +24,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: Two different timeout windows (1000 and 5000 ms)
+    # Check 2: Two different timeout windows (distinct .max values)
     # AI failure: using same timeout for both channels
-    has_1000ms_window = bool(re.search(r"\.max\s*=\s*1000", generated_code))
-    has_5000ms_window = bool(re.search(r"\.max\s*=\s*5000", generated_code))
-    has_distinct_timeouts = has_1000ms_window and has_5000ms_window
+    max_values = set(int(m.group(1)) for m in re.finditer(r"\.max\s*=\s*(\d+)", generated_code))
+    has_distinct_timeouts = len(max_values) >= 2
     details.append(
         CheckDetail(
             check_name="distinct_channel_timeouts",
             passed=has_distinct_timeouts,
-            expected="Channel 0: window.max=1000ms, Channel 1: window.max=5000ms",
-            actual=(
-                f"1000ms={'present' if has_1000ms_window else 'missing'}, "
-                f"5000ms={'present' if has_5000ms_window else 'missing'}"
-            ),
+            expected="At least 2 distinct .max timeout values for different channels",
+            actual=f"found {len(max_values)} distinct value(s): {sorted(max_values)}",
             check_type="exact_match",
         )
     )
@@ -77,14 +73,20 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: WDT_FLAG_RESET_SOC used for both channels
+    # Accept either: flag appears >= 2 times, or flag appears once + struct reuse
+    # (wdt_install_timeout called >= 2 times with shared config)
     reset_flag_count = generated_code.count("WDT_FLAG_RESET_SOC")
-    has_reset_flags = reset_flag_count >= 2
+    install_count = generated_code.count("wdt_install_timeout")
+    has_reset_flags = (
+        reset_flag_count >= 2
+        or (reset_flag_count >= 1 and install_count >= 2)
+    )
     details.append(
         CheckDetail(
             check_name="reset_flag_on_both_channels",
             passed=has_reset_flags,
             expected="WDT_FLAG_RESET_SOC used on both channel configurations",
-            actual=f"{reset_flag_count} WDT_FLAG_RESET_SOC found",
+            actual=f"{reset_flag_count} WDT_FLAG_RESET_SOC, {install_count} wdt_install_timeout",
             check_type="constraint",
         )
     )

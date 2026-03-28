@@ -70,6 +70,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 5: Poll loop has upper bound (no infinite loop)
     has_bound = bool(
         re.search(r"for\s*\(.*<.*\)", generated_code)
+        or re.search(r"while\s*\(.*<.*\)", generated_code)
         or re.search(r"POLL_MAX|MAX_POLL|MAX_RETRY|MAX_WAIT", generated_code)
         or re.search(r"i\s*<\s*\d+", generated_code)
     )

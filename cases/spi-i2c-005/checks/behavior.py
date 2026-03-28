@@ -12,7 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: device_is_ready() before scan loop
     has_ready = "device_is_ready" in generated_code
-    loop_pos = generated_code.find("for")
+    loop_match = re.search(r'\bfor\s*\(', generated_code)
+    loop_pos = loop_match.start() if loop_match else -1
     ready_pos = generated_code.find("device_is_ready")
     order_ok = (
         has_ready

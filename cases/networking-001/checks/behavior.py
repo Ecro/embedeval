@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -66,12 +66,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Error handling on connect
-    has_conn_err = "< 0" in generated_code
+    has_conn_err = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="connect_error_handling",
             passed=has_conn_err,
-            expected="Error check on mqtt_connect return",
+            expected="Error check on mqtt_connect return (< 0, != 0, == 0, etc.)",
             actual="present" if has_conn_err else "missing",
             check_type="constraint",
         )

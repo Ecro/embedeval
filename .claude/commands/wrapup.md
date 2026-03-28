@@ -329,7 +329,24 @@ You are a task finalizer for vault-system project. Follow these steps:
       /reflect {task-slug}
    ```
 
-9. **Update CLAUDE.md Corrections (Self-Learning)**
+9. **Refresh Test Tracker (if cases/ changed)**
+
+   After committing, check if any `cases/` files were modified. If so, refresh the tracker
+   so `TEST_RESULTS.md` shows which TCs need retesting:
+
+   ```bash
+   # Check if cases/ files changed in the commit
+   if git diff --name-only HEAD~1 -- cases/ | grep -q .; then
+       uv run embedeval refresh-tracker --cases cases/ --results results/
+   fi
+   ```
+
+   This will:
+   - Detect which TCs changed in the commit
+   - Mark them as "needs retest" in `results/test_tracker.json`
+   - Regenerate `results/TEST_RESULTS.md` with retest status
+
+10. **Update CLAUDE.md Corrections (Self-Learning)**
 
    Reflect on mistakes made during this session and append corrections to CLAUDE.md:
 
@@ -406,7 +423,7 @@ You are a task finalizer for vault-system project. Follow these steps:
 
    **Important:** This step is non-blocking. If no corrections are identified, simply note that in the WRAPUP and continue.
 
-10. **Sync to Vault TODO**
+11. **Sync to Vault TODO**
    ```bash
    # Add LEARNING link if generated
    if [ -f "$learning_file" ]; then
@@ -423,7 +440,7 @@ You are a task finalizer for vault-system project. Follow these steps:
    - Check the task checkbox (mark complete)
    - Update timestamp
 
-11. **Update RAG Index**
+12. **Update RAG Index**
    ```bash
    # Run janitor to update RAG index with all new documents (WRAPUP + LEARNING)
    if command -v python3 &> /dev/null; then
@@ -431,7 +448,7 @@ You are a task finalizer for vault-system project. Follow these steps:
    fi
    ```
 
-12. **Update Prompt Effectiveness** (Knowledge Evolution)
+13. **Update Prompt Effectiveness** (Knowledge Evolution)
     ```bash
     # Find latest SESSION document for this task
     session_file=$(ls -t "${vault_path}/work-docs/${project}/sessions/SESSION-${task_slug}-"*.md 2>/dev/null | head -1)
@@ -448,7 +465,7 @@ You are a task finalizer for vault-system project. Follow these steps:
     - Generates usage analytics for `/meta` integration
     - Closes the knowledge evolution feedback loop
 
-13. **Output Summary**
+14. **Output Summary**
     ```markdown
     ## ✅ Task Complete!
 

@@ -1,7 +1,9 @@
 """Behavioral checks for ADC oversampling application."""
 
+import re
+
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, extract_numeric
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -23,16 +25,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Resolution is a valid value (8, 10, 12, 14, 16)
-    import re
-    res_match = re.search(r"resolution\s*=\s*(\d+)", generated_code)
     valid_resolutions = {8, 10, 12, 14, 16}
-    res_ok = bool(res_match and int(res_match.group(1)) in valid_resolutions)
+    res_val = extract_numeric(generated_code, r"resolution\s*=\s*(\w+)")
+    res_ok = res_val is not None and res_val in valid_resolutions
     details.append(
         CheckDetail(
             check_name="valid_adc_resolution",
             passed=res_ok,
             expected="ADC resolution set to valid value (8/10/12/14/16 bits)",
-            actual=res_match.group(0) if res_match else "not set",
+            actual=f"resolution={res_val}" if res_val is not None else "not set",
             check_type="constraint",
         )
     )

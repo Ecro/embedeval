@@ -100,6 +100,13 @@ def run(
             help="Include private held-out cases (default: public only)",
         ),
     ] = False,
+    retest_only: Annotated[
+        bool,
+        typer.Option(
+            "--retest-only",
+            help="Only run cases that changed since last test or were never tested",
+        ),
+    ] = False,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -129,6 +136,31 @@ def run(
         filters.visibility = Visibility(visibility)
     if after_date:
         filters.after_date = after_date
+
+    # Retest-only filtering
+    if retest_only:
+        from embedeval.runner import discover_cases as _discover
+        from embedeval.runner import filter_cases as _filter
+        from embedeval.test_tracker import (
+            find_cases_needing_retest,
+            load_tracker,
+        )
+
+        tracker = load_tracker(output_dir)
+        all_cases = _discover(cases_dir)
+        selected = _filter(all_cases, filters)
+        all_case_ids = [meta.id for _, meta in selected]
+        needs_retest = find_cases_needing_retest(
+            tracker, model, cases_dir, all_case_ids
+        )
+        if not needs_retest:
+            typer.echo("All cases up to date — nothing to retest.")
+            raise typer.Exit(code=0)
+        typer.echo(
+            f"Retest: {len(needs_retest)}/{len(all_case_ids)} cases need retesting"
+        )
+        # Override filters to only include cases needing retest
+        filters.case_ids = needs_retest
 
     typer.echo(
         f"Running benchmark: model={model}, cases={cases_dir}, scenario={scenario}"
@@ -179,9 +211,25 @@ def run(
     run_dir = generate_run_archive(results, report, output_dir, model)
     generate_failure_report(results, run_dir / "report.md", model)
 
+    # Update test tracker with results
+    from embedeval.test_tracker import (
+        generate_results_doc,
+        load_tracker,
+        save_tracker,
+        update_tracker,
+    )
+
+    tracker = load_tracker(output_dir)
+    tracker = update_tracker(tracker, results, cases_dir, model)
+    save_tracker(tracker, output_dir)
+    generate_results_doc(
+        tracker, output_dir / "TEST_RESULTS.md", cases_dir
+    )
+
     typer.echo(f"Results: {json_path}")
     typer.echo(f"Leaderboard: {leaderboard_path}")
     typer.echo(f"Detailed: {run_dir}/")
+    typer.echo(f"Tracker: {output_dir / 'test_tracker.json'}")
 
 
 @app.command()
@@ -483,6 +531,52 @@ def sensitivity(
         typer.echo(f"\nMost robust cases ({len(report.most_robust)}):")
         for cid in report.most_robust[:3]:
             typer.echo(f"  {cid}: robustness=100%")
+
+
+@app.command(name="refresh-tracker")
+def refresh_tracker(
+    cases_dir: Annotated[
+        Path,
+        typer.Option("--cases", help="Path to cases directory"),
+    ] = Path("cases"),
+    results_dir: Annotated[
+        Path,
+        typer.Option(
+            "--results", help="Results directory with tracker"
+        ),
+    ] = Path("results"),
+) -> None:
+    """Refresh test tracker after TC changes (used by /wrapup)."""
+    from embedeval.test_tracker import (
+        detect_changed_cases_from_git,
+        generate_results_doc,
+        load_tracker,
+        mark_cases_changed,
+        save_tracker,
+    )
+
+    tracker = load_tracker(results_dir)
+    if not tracker.results:
+        typer.echo("No test results tracked yet.")
+        raise typer.Exit(code=0)
+
+    changed = detect_changed_cases_from_git(cases_dir)
+    if not changed:
+        typer.echo("No cases changed in last commit.")
+    else:
+        n = mark_cases_changed(
+            tracker, changed, cases_dir
+        )
+        save_tracker(tracker, results_dir)
+        typer.echo(
+            f"Marked {n} case/model pairs for retest: "
+            f"{', '.join(changed)}"
+        )
+
+    generate_results_doc(
+        tracker, results_dir / "TEST_RESULTS.md", cases_dir
+    )
+    typer.echo("TEST_RESULTS.md refreshed.")
 
 
 @app.command(name="list")

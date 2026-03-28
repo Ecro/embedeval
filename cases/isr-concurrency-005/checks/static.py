@@ -77,11 +77,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 6: k_work_init called BEFORE isr_handler invocation in main
-    # Use regex to find a *call* to isr_handler (preceded by ; { or newline, not 'void')
-    # This avoids matching the function definition line.
+    # Check 6: k_work_init called BEFORE any ISR-like function invocation in main
+    # Dynamically find any function with isr/interrupt/handler in its name.
     init_pos = generated_code.find("k_work_init")
-    isr_calls = list(re.finditer(r'(?<![a-zA-Z_])isr_handler\s*\(', generated_code))
+    isr_calls = list(re.finditer(
+        r'(?<![a-zA-Z_])(?:\w+_)?(?:isr|interrupt|handler)\s*\(',
+        generated_code, re.IGNORECASE
+    ))
     # Filter out the definition: a call is not preceded by a return type keyword on the same line
     isr_call_positions = []
     for m in isr_calls:
@@ -94,7 +96,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         CheckDetail(
             check_name="init_before_isr_call",
             passed=init_pos != -1 and first_isr_call != -1 and init_pos < first_isr_call,
-            expected="k_work_init() before first isr_handler() call in main",
+            expected="k_work_init() before first ISR-like function call in main",
             actual="correct" if (init_pos != -1 and first_isr_call != -1 and init_pos < first_isr_call) else "wrong order or missing",
             check_type="constraint",
         )

@@ -1,7 +1,7 @@
 """Behavioral checks for UART async API with DMA application."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, extract_numeric
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -21,9 +21,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: RX buffer defined with positive size
-    import re
-    buf_match = re.search(r"uint8_t\s+\w+\[(\d+)\]", generated_code)
-    buf_size_ok = bool(buf_match and int(buf_match.group(1)) > 0)
+    buf_size = extract_numeric(generated_code, r"uint8_t\s+\w+\[(\w+)\]")
+    buf_size_ok = buf_size is not None and buf_size > 0
     details.append(
         CheckDetail(
             check_name="rx_buffer_nonzero",

@@ -50,9 +50,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Varying duty cycle (fade up/down or stepped change)
     # Code must modify duty in a loop — look for += or -= on a duty variable
-    has_varying_duty = any(
-        p in generated_code
-        for p in ["duty +=", "duty -=", "duty++", "duty--", "duty = i", "duty = step"]
+    import re
+    has_varying_duty = bool(
+        re.search(r'duty\w*\s*[+\-]?=', generated_code)
+        or "duty++" in generated_code
+        or "duty--" in generated_code
     )
     details.append(
         CheckDetail(

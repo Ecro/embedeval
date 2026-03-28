@@ -323,6 +323,43 @@ def check_cleanup_reverse_order(
     return True
 
 
+def has_error_check(code: str) -> bool:
+    """Check if code has return-value error handling.
+
+    Accepts: < 0, != 0, if(ret..), if(err..), if(rc..), if(status..).
+    Note: does NOT verify an error branch is taken — use
+    check_return_after_error() for flow verification.
+    """
+    stripped = strip_comments(code)
+    patterns = [
+        r"<\s*0",
+        r"!=\s*0",
+        r"if\s*\(\s*ret\b",
+        r"if\s*\(\s*err\b",
+        r"if\s*\(\s*rc\b",
+        r"if\s*\(\s*status\b",
+    ]
+    return any(re.search(p, stripped) for p in patterns)
+
+
+def has_sleep_call(code: str) -> bool:
+    """Check for any Zephyr sleep variant."""
+    stripped = strip_comments(code)
+    return bool(re.search(
+        r'\b(?:k_sleep|k_msleep|k_usleep)\s*\(', stripped
+    ))
+
+
+def has_output_call(code: str) -> bool:
+    """Check for any output/logging function."""
+    stripped = strip_comments(code)
+    return bool(re.search(
+        r'\b(?:printk|printf|LOG_INF|LOG_ERR|LOG_WRN|LOG_DBG'
+        r'|pr_info|pr_err|pr_warn|pr_debug)\s*\(',
+        stripped,
+    ))
+
+
 def resolve_define(code: str, name: str) -> int | None:
     """Resolve a #define macro to its integer value."""
     match = re.search(

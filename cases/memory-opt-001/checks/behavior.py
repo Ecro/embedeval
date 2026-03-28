@@ -1,7 +1,7 @@
 """Behavioral checks for memory slab allocation."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -24,7 +24,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Error handling for alloc failure
     # (LLM failure: not checking if alloc returns NULL/error)
-    has_alloc_check = "< 0" in generated_code or "!= 0" in generated_code
+    has_alloc_check = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="alloc_error_check",

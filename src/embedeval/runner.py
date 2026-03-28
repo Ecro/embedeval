@@ -24,6 +24,7 @@ class Filters:
     tags: list[str] = field(default_factory=list)
     visibility: Visibility | None = None
     after_date: str | None = None  # ISO date string; only include cases created after this date
+    case_ids: list[str] | None = None  # explicit case ID whitelist (for retest-only)
 
 
 def load_case_metadata(case_dir: Path) -> CaseMetadata | None:
@@ -91,6 +92,8 @@ def filter_cases(
     """
     filtered: list[tuple[Path, CaseMetadata]] = []
     for case_dir, meta in cases:
+        if filters.case_ids is not None and meta.id not in filters.case_ids:
+            continue
         if filters.categories and meta.category not in filters.categories:
             continue
         if filters.difficulties and meta.difficulty not in filters.difficulties:

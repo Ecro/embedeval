@@ -24,11 +24,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 2: volatile applied specifically to the error flag variable (not just any variable).
     # Reject code that declares `volatile` elsewhere (e.g. on a DMA buffer) while the flag itself
     # is non-volatile — the LLM blind spot being targeted here.
+    # Also accept atomic_t as equivalent to volatile for error flags.
     has_volatile_flag = bool(re.search(
         r'volatile\s+(?:int|uint\w+|bool|_Bool)\s+\w*(?:error|err|fail|fault|status)\w*',
         generated_code,
     )) or bool(re.search(
         r'(?:int|uint\w+|bool|_Bool)\s+volatile\s+\w*(?:error|err|fail|fault|status)\w*',
+        generated_code,
+    )) or bool(re.search(
+        r'atomic_t\s+\w*(?:error|err|fail|fault|status)\w*',
         generated_code,
     ))
     details.append(

@@ -1,5 +1,8 @@
 """Static analysis checks for I2C multi-register burst read."""
 
+import re
+
+from embedeval.check_utils import resolve_define
 from embedeval.models import CheckDetail
 
 
@@ -57,6 +60,19 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         or ", 6" in generated_code
         or "ACCEL_DATA_LEN" in generated_code
     )
+    # Also accept macros that resolve to 6 via #define
+    if not has_six_bytes:
+        for m in re.finditer(r'\[(\w+)\]', generated_code):
+            token = m.group(1)
+            if token.isdigit():
+                if int(token) == 6:
+                    has_six_bytes = True
+                    break
+            else:
+                resolved = resolve_define(generated_code, token)
+                if resolved == 6:
+                    has_six_bytes = True
+                    break
     details.append(
         CheckDetail(
             check_name="six_byte_buffer",

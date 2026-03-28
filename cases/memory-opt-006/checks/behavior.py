@@ -1,7 +1,7 @@
 """Behavioral checks for Zephyr stack overflow detection."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_output_call
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -22,12 +22,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Warning before overflow (proactive check, not post-crash)
-    has_warn = (
-        "LOG_WRN" in generated_code
-        or "printk" in generated_code
-        or "LOG_ERR" in generated_code
-        or "pr_warn" in generated_code
-    )
+    has_warn = has_output_call(generated_code)
     details.append(
         CheckDetail(
             check_name="warning_emitted_on_low_stack",

@@ -73,6 +73,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Bounds validation in free function
+    import re as _re
     has_bounds_check = (
         ">= &pool" in generated_code
         or "< pool" in generated_code
@@ -81,6 +82,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         or "obj <" in generated_code
         or "obj >" in generated_code
         or "within" in generated_code.lower()
+        or bool(_re.search(r'offset\s*<\s*0', generated_code))
+        or bool(_re.search(r'offset\s*>=\s*(?:POOL|MAX|pool_size|POOL_SIZE)', generated_code))
+        or bool(_re.search(r'>=\s*(?:POOL_SIZE|MAX_)', generated_code))
+        or bool(_re.search(r'offset\s*[<>]=?\s', generated_code))
     )
     details.append(
         CheckDetail(

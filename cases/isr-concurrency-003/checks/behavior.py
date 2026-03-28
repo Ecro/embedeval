@@ -158,7 +158,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 10: Spinlock used in BOTH ISR and thread contexts
     # LLM failure: protecting only one side (ISR or thread, not both)
     isr_fn_match = re.search(
-        r'\bvoid\s+(?:isr_handler|ISR|irq_handler)\s*\(', generated_code, re.IGNORECASE
+        r'\bvoid\s+\w*(?:isr|irq|handler)\w*\s*\(', generated_code, re.IGNORECASE
     )
     thread_fn_match = re.search(
         r'\bvoid\s+\w*(?:reader|thread|consumer|worker)\w*\s*\(', generated_code, re.IGNORECASE

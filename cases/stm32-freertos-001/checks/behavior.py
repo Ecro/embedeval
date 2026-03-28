@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, extract_numeric, resolve_define
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -71,9 +71,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Different priorities for producer and consumer
-    # Native API: xTaskCreate(..., priority, ...)
+    # Native API: xTaskCreate(..., priority, ...) — accept both digits and macros
     priority_matches = re.findall(
-        r"xTaskCreate\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*(\d+)",
+        r"xTaskCreate\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*(\w+)",
         generated_code,
     )
     if len(priority_matches) < 2:
@@ -83,7 +83,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             generated_code,
         )
         priority_matches = [m[0] or m[1] for m in priority_matches]
-    different_prio = len(priority_matches) >= 2 and len(set(priority_matches)) >= 2
+    # Resolve macros to numeric values for comparison
+    resolved = []
+    for p in priority_matches:
+        if p.isdigit():
+            resolved.append(int(p))
+        else:
+            val = resolve_define(generated_code, p)
+            resolved.append(val if val is not None else p)
+    different_prio = len(resolved) >= 2 and len(set(resolved)) >= 2
     details.append(
         CheckDetail(
             check_name="different_task_priorities",

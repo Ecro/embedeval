@@ -63,12 +63,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Sufficient nesting depth (many peripheral nodes)
-    has_deep_nesting = open_count >= 6
+    has_deep_nesting = open_count >= 5
     details.append(
         CheckDetail(
             check_name="sufficient_node_count",
             passed=has_deep_nesting,
-            expected="At least 6 opening braces (3 buses + 3 child nodes minimum)",
+            expected="At least 5 opening braces (3 buses + child nodes, gpio0 may use property-based config)",
             actual=f"{open_count} opening braces found",
             check_type="constraint",
         )

@@ -78,7 +78,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     has_struct = "struct" in generated_code
     has_data_field = bool(
         re.search(
-            r"uint\d+_t\s+\w+", generated_code
+            r"(?:u?int\d*_t|int|char|float|double|size_t|bool)\s+\w+",
+            generated_code,
         )
     )
     details.append(

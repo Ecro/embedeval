@@ -41,8 +41,17 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: memcmp verification before primary write
+    # Check 2: memcmp or field-by-field verification before primary write
     memcmp_pos = generated_code.find("memcmp")
+    # Also accept field-by-field comparison (e.g., read_back.field != expected)
+    if memcmp_pos == -1:
+        field_cmp = bool(re.search(
+            r'\b(?:read_back|readback|verify)\.\w+\s*!=', generated_code
+        ))
+        if field_cmp:
+            # Find position of first field comparison
+            m = re.search(r'\b(?:read_back|readback|verify)\.\w+\s*!=', generated_code)
+            memcmp_pos = m.start() if m else -1
     verify_before_commit = (
         memcmp_pos != -1
         and primary_write_pos != -1

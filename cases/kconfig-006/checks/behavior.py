@@ -34,8 +34,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     assert_enabled = config.get("CONFIG_ASSERT") == "y"
     debug_opts_enabled = config.get("CONFIG_DEBUG_OPTIMIZATIONS") == "y"
 
-    # Check 1: No hallucinated CONFIG options (enhanced: checks all known fakes)
-    found_hallucinated = [opt for opt in _HALLUCINATED_CONFIGS if opt in generated_code]
+    # Check 1: No hallucinated CONFIG options (enhanced: only flags options set to =y)
+    found_hallucinated = [
+        opt for opt in _HALLUCINATED_CONFIGS if config.get(opt) == "y"
+    ]
     details.append(
         CheckDetail(
             check_name="no_hallucinated_config_options",

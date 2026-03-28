@@ -17,7 +17,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     ))
 
     # Check 2: esp_timer_create error checked
-    create_pos = generated_code.find("esp_timer_create")
+    create_pos = generated_code.find("esp_timer_create(")
     post_create = generated_code[create_pos:create_pos + 300] if create_pos != -1 else ""
     has_create_check = "ESP_OK" in post_create or "!= ESP_OK" in post_create or "ret" in post_create
     details.append(CheckDetail(

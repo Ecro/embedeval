@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_sleep_call, has_output_call
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -61,8 +61,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         generated_code,
         re.DOTALL,
     )
+    lock_section = between_lock.group(0) if between_lock else ""
     has_work_between = between_lock is not None and (
-        "k_sleep" in between_lock.group(0) or "printk" in between_lock.group(0)
+        has_sleep_call(lock_section) or has_output_call(lock_section)
     )
     details.append(
         CheckDetail(

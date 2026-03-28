@@ -227,7 +227,7 @@ docker build -f Dockerfile.stm32 -t embedeval-stm32 .
 
 ```
 embedeval/
-├── src/embedeval/           # Core library (15 modules)
+├── src/embedeval/           # Core library (16 modules)
 │   ├── evaluator.py         # 5-layer evaluation pipeline (Docker/local/skip)
 │   ├── runner.py            # Benchmark orchestration + feedback loop
 │   ├── scorer.py            # Unbiased pass@k + Wilson 95% CI

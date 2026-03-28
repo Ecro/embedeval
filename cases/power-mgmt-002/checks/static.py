@@ -19,26 +19,28 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: k_sleep used (not busy-wait)
-    has_sleep = "k_sleep" in generated_code
+    # Check 2: k_sleep or k_msleep used (not busy-wait)
+    has_sleep = "k_sleep" in generated_code or "k_msleep" in generated_code
     details.append(
         CheckDetail(
             check_name="k_sleep_used",
             passed=has_sleep,
-            expected="k_sleep() called for CPU yield",
+            expected="k_sleep() or k_msleep() called for CPU yield",
             actual="present" if has_sleep else "missing",
             check_type="exact_match",
         )
     )
 
-    # Check 3: K_MSEC used with k_sleep
+    # Check 3: K_MSEC used with k_sleep (not needed for k_msleep which takes raw int ms)
     has_kmsec = "K_MSEC" in generated_code
+    has_kmsleep = "k_msleep" in generated_code
+    kmsec_ok = has_kmsec or has_kmsleep
     details.append(
         CheckDetail(
             check_name="k_msec_time_macro",
-            passed=has_kmsec,
-            expected="K_MSEC() time macro used",
-            actual="present" if has_kmsec else "missing",
+            passed=kmsec_ok,
+            expected="K_MSEC() time macro used (or k_msleep with raw ms)",
+            actual="present" if kmsec_ok else "missing",
             check_type="exact_match",
         )
     )

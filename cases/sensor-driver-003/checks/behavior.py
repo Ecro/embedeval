@@ -1,7 +1,7 @@
 """Behavioral checks for multi-channel accelerometer read."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, has_sleep_call
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -68,7 +68,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 5: Periodic loop with sleep
     has_loop = "while" in generated_code
-    has_sleep = "k_sleep" in generated_code
+    has_sleep = has_sleep_call(generated_code)
     details.append(
         CheckDetail(
             check_name="periodic_loop",

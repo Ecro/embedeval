@@ -1,5 +1,7 @@
 """Behavioral checks for DNS resolution with timeout."""
 
+import re
+
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 
@@ -9,9 +11,28 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: Timeout is not infinite (K_FOREVER or 0 means no timeout)
+    # Context-aware: K_FOREVER is OK in k_sem_take/k_mutex_lock but NOT in
+    # dns_resolve_name or other timeout-sensitive APIs.
+    _timeout_sensitive_apis = [
+        r"dns_resolve_name\s*\([^)]*K_FOREVER",
+        r"dns_get_addr_info\s*\([^)]*K_FOREVER",
+        r"k_sleep\s*\(\s*K_FOREVER\s*\)",
+        r"zsock_poll\s*\([^)]*K_FOREVER",
+    ]
+    has_dangerous_forever = any(
+        re.search(pat, generated_code) for pat in _timeout_sensitive_apis
+    )
+    # Also flag if K_FOREVER is the ONLY timeout macro used (no finite timeout at all)
+    has_any_finite_timeout = bool(re.search(
+        r"K_MSEC\(\s*[1-9]|K_SECONDS\(\s*[1-9]|K_MINUTES\(\s*[1-9]", generated_code
+    ))
     has_k_forever = "K_FOREVER" in generated_code
     has_zero_timeout = "K_MSEC(0)" in generated_code or "K_SECONDS(0)" in generated_code
-    timeout_is_finite = not has_k_forever and not has_zero_timeout
+    timeout_is_finite = (
+        not has_dangerous_forever
+        and not has_zero_timeout
+        and (has_any_finite_timeout if has_k_forever else True)
+    )
     details.append(
         CheckDetail(
             check_name="timeout_not_infinite",

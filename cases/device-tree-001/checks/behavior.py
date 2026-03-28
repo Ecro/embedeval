@@ -85,14 +85,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 5: GPIO interrupt connected (int-gpios present)
-    has_int_gpios = "int-gpios" in generated_code
+    # Check 5: GPIO interrupt connected (int-gpios or interrupt-parent + interrupts)
+    gc = generated_code
+    has_int = "int-gpios" in gc or ("interrupt-parent" in gc and "interrupts" in gc)
     details.append(
         CheckDetail(
             check_name="interrupt_gpio_present",
-            passed=has_int_gpios,
-            expected="int-gpios property present",
-            actual="present" if has_int_gpios else "missing",
+            passed=has_int,
+            expected="int-gpios or interrupt-parent + interrupts properties present",
+            actual="present" if has_int else "missing",
             check_type="exact_match",
         )
     )

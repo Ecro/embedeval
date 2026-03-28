@@ -34,6 +34,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         r'(deadline_miss|overrun_count|over_time|missed.*deadline'
         r'|deadline.*overrun)',
         generated_code, re.IGNORECASE,
+    )) or bool(re.search(
+        r'remaining\s*<=?\s*0',
+        generated_code,
+    )) or bool(re.search(
+        r'if\s*\([^)]*remaining\s*>\s*0[^)]*\)\s*\{[^}]*\}\s*else\b',
+        generated_code, re.DOTALL,
     ))
     details.append(
         CheckDetail(
@@ -54,6 +60,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )) or bool(re.search(
         r'(?:deadline_miss(?:es)?|overrun_count|miss_count)\s*[+][+]',
         generated_code,
+    )) or bool(re.search(
+        r'if\s*\([^)]*remaining\s*[<>]=?\s*0[^)]*\)\s*\{',
+        generated_code,
+    )) or bool(re.search(
+        r'if\s*\([^)]*remaining\s*>\s*0[^)]*\)\s*\{[^}]*\}\s*else\s*\{',
+        generated_code, re.DOTALL,
     ))
     details.append(
         CheckDetail(
