@@ -63,6 +63,22 @@ embedeval/
 - `/review [task]` - Code review and quality check
 - `/wrapup [task]` - Finalize, commit, PR, and complete
 
+## Documentation Auto-Sync (MANDATORY)
+
+**At `/wrapup` or before any commit that changes `cases/`, `src/`, or `tests/`:**
+
+```bash
+uv run python scripts/sync_docs.py
+```
+
+This auto-updates:
+- `docs/METHODOLOGY.md` — TC count, platform/difficulty distribution, negatives count
+- `README.md` — test count, module count, case count, insights count
+
+**Always commit the updated docs together with code changes.**
+
+If `sync_docs.py` output shows "already up to date", no action needed.
+
 ## 20 Evaluation Categories
 
 Platform-agnostic: `gpio-basic`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`

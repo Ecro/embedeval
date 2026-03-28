@@ -224,24 +224,36 @@ docker build -f Dockerfile.stm32 -t embedeval-stm32 .
 
 ```
 embedeval/
-├── src/embedeval/           # Core library
-│   ├── evaluator.py         # 5-layer evaluation pipeline
+├── src/embedeval/           # Core library (14 modules)
+│   ├── evaluator.py         # 5-layer evaluation pipeline (Docker/local/skip)
 │   ├── runner.py            # Benchmark orchestration + feedback loop
-│   ├── scorer.py            # pass@k + weighted scoring
-│   ├── reporter.py          # Leaderboard + cross-benchmark comparison
+│   ├── scorer.py            # Unbiased pass@k + Wilson 95% CI
+│   ├── reporter.py          # Leaderboard + cross-benchmark + scenario comparison
+│   ├── bugfix.py            # Bug fix scenario (mutation-based)
+│   ├── sensitivity.py       # Prompt sensitivity analysis
+│   ├── difficulty.py        # IRT difficulty calibration
+│   ├── ablation.py          # Layer contribution ablation study
+│   ├── failure_taxonomy.py  # Automated failure classification (8 patterns)
+│   ├── check_utils.py       # Scope-aware check utilities (word boundary, AST-like)
 │   ├── agent.py             # Multi-turn agent evaluation
 │   ├── llm_client.py        # LiteLLM + claude-code:// provider
-│   └── cli.py               # Typer CLI (run, agent, validate, list)
-├── cases/                   # 220 test cases
-│   ├── {category}-{NNN}/    # Zephyr cases
-│   ├── esp-*/               # ESP-IDF cases
-│   └── stm32-*/             # STM32 HAL + FreeRTOS cases
-├── tests/                   # 818 tests
-│   ├── test_e2e.py          # End-to-end evaluation
-│   ├── test_negatives.py    # Trivial + subtle negative tests
-│   └── test_new_features.py # v3 feature tests
+│   └── cli.py               # Typer CLI (run, agent, validate, sensitivity, list)
+├── cases/                   # 220 test cases (170 public + 50 private)
+│   ├── {category}-{NNN}/    # Zephyr cases (20 categories × 10+)
+│   ├── esp-*/               # ESP-IDF cases (10)
+│   └── stm32-*/             # STM32 HAL + FreeRTOS cases (10)
+├── tests/                   # 945 tests
+│   ├── test_e2e.py          # E2E: 220 reference solutions + pipeline
+│   ├── test_negatives.py    # 20 must_fail + 15 subtle mutations
+│   ├── test_bugfix.py       # Bug fix scenario tests
+│   ├── test_check_utils.py  # Scope-aware check utility tests
+│   ├── test_sensitivity.py  # Prompt sensitivity tests
+│   ├── test_difficulty.py   # IRT difficulty tests
+│   ├── test_ablation.py     # Ablation study tests
+│   └── test_failure_taxonomy.py # Failure classification tests
 ├── docs/
-│   └── INSIGHTS.md          # 12 accumulated insights
+│   ├── METHODOLOGY.md       # Full benchmark methodology
+│   └── INSIGHTS.md          # 13 accumulated insights
 ├── external_benchmarks.yaml # HumanEval/SWE-bench reference scores
 ├── Dockerfile               # Zephyr SDK (west build)
 ├── Dockerfile.esp           # ESP-IDF (idf.py build)
@@ -251,13 +263,12 @@ embedeval/
 
 ## Known Limitations
 
-- **Static heuristic precision: 80%** — 20% of subtle bugs undetectable by regex (need L1/L2)
-- **Platform bias** — 68% Zephyr, 5% ESP-IDF, 5% STM32 (expanding)
-- **n=10 per category** — Statistical significance limited; pass@3 recommended
-- **Single-run benchmark data** — Confidence intervals not yet reported
-- **Public test set** — 20 cases marked private, temporal rotation planned
+- **Static heuristic precision: ~80%** — Scope-aware checks catch most bugs, but true semantic verification requires L1/L2 compilation
+- **Platform bias** — 77% Zephyr, 5% ESP-IDF, 5% STM32 (expanding)
+- **Difficulty calibration** — Assigned labels may not match empirical difficulty (IRT tool available)
+- **50 private cases** — 23% held-out set; periodic rotation planned
 
-See [Insight #7](docs/INSIGHTS.md) and [Insight #12](docs/INSIGHTS.md) for our full self-critical analysis and competitive comparison.
+See [Insight #7](docs/INSIGHTS.md) and [Insight #12](docs/INSIGHTS.md) for our full self-critical analysis, and [METHODOLOGY.md](docs/METHODOLOGY.md) for complete benchmark design.
 
 ## Contributing
 
