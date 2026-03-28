@@ -238,11 +238,11 @@ embedeval/
 │   ├── agent.py             # Multi-turn agent evaluation
 │   ├── llm_client.py        # LiteLLM + claude-code:// provider
 │   └── cli.py               # Typer CLI (run, agent, validate, sensitivity, list)
-├── cases/                   # 220 test cases (170 public + 50 private)
+├── cases/                   # 223 test cases (173 public + 50 private)
 │   ├── {category}-{NNN}/    # Zephyr cases (20 categories × 10+)
 │   ├── esp-*/               # ESP-IDF cases (10)
 │   └── stm32-*/             # STM32 HAL + FreeRTOS cases (10)
-├── tests/                   # 974 tests
+├── tests/                   # 994 tests
 │   ├── test_e2e.py          # E2E: 220 reference solutions + pipeline
 │   ├── test_negatives.py    # 20 must_fail + 15 subtle mutations
 │   ├── test_bugfix.py       # Bug fix scenario tests

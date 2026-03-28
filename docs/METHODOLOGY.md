@@ -8,10 +8,10 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 
 | Metric | Value |
 |--------|-------|
-| **Total cases** | 220 |
+| **Total cases** | 223 |
 | **Categories** | 20 |
 | **Platforms** | 6 (docker_only, esp_idf, native_sim, qemu_arm, stm32_hal, yocto_build) |
-| **Difficulty** | 30 easy, 99 medium, 91 hard |
+| **Difficulty** | 30 easy, 99 medium, 94 hard |
 | **Private held-out** | 50 cases (22%) for contamination prevention |
 | **Evaluation scenarios** | 2 (generation, bugfix) |
 | **Negatives (mutation tests)** | 10 cases, 20 must_fail mutations |
@@ -36,10 +36,10 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | device-tree | 2 | 4 | 4 | 10 |
 | dma | 1 | 4 | 6 | 11 |
 | gpio-basic | 4 | 5 | 3 | 12 |
-| isr-concurrency | 0 | 3 | 8 | 11 |
+| isr-concurrency | 0 | 3 | 9 | 12 |
 | kconfig | 2 | 4 | 4 | 10 |
 | linux-driver | 0 | 4 | 6 | 10 |
-| memory-opt | 1 | 5 | 4 | 10 |
+| memory-opt | 1 | 5 | 5 | 11 |
 | networking | 1 | 7 | 4 | 12 |
 | ota | 1 | 4 | 6 | 11 |
 | power-mgmt | 2 | 6 | 4 | 12 |
@@ -47,7 +47,7 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | sensor-driver | 1 | 6 | 5 | 12 |
 | spi-i2c | 1 | 9 | 4 | 14 |
 | storage | 3 | 5 | 3 | 11 |
-| threading | 1 | 5 | 5 | 11 |
+| threading | 1 | 5 | 6 | 12 |
 | timer | 3 | 6 | 3 | 12 |
 | watchdog | 3 | 4 | 3 | 10 |
 | yocto | 1 | 5 | 4 | 10 |
