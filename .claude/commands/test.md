@@ -5,15 +5,15 @@ Run LLM benchmark, save detailed results, generate failure analysis report.
 ## Usage
 
 ```
-/test <model> [category] [--attempts N] [--retest-only]
+/test <model> [category] [--attempts N] [--retest-only] [--with-private]
 ```
 
 **Examples:**
 ```
 /test help                            # Show this help + category list
 /test list                            # Show all categories with case counts
-/test sonnet                          # All 200 cases with Sonnet
-/test sonnet kconfig                  # Only kconfig category (10 cases)
+/test sonnet                          # All 179 public cases with Sonnet
+/test sonnet kconfig                  # Only kconfig category
 /test sonnet isr-concurrency          # Only isr-concurrency
 /test sonnet security,ble             # Multiple categories (comma-separated)
 /test sonnet --attempts 5             # 5 attempts per case (for pass@5)
@@ -22,15 +22,18 @@ Run LLM benchmark, save detailed results, generate failure analysis report.
 /test haiku gpio-basic                # GPIO cases with Haiku
 /test sonnet --retest-only            # Only re-run cases that changed since last test
 /test haiku dma --retest-only         # Retest only changed DMA cases
+/test sonnet --with-private           # Include 48 held-out private cases
+/test haiku --with-private --retest-only  # Retest changed cases including private
 ```
 
 ## Arguments
 
-- `$ARGUMENTS` is parsed as: `<model> [category] [--attempts N] [--retest-only]`
+- `$ARGUMENTS` is parsed as: `<model> [category] [--attempts N] [--retest-only] [--with-private]`
 - Model: passed to `claude-code://<model>` (e.g., sonnet, opus, haiku, claude-sonnet-4-6)
-- Category: optional, one of the 20 EmbedEval categories (comma-separated for multiple)
+- Category: optional, one of the 23 EmbedEval categories (comma-separated for multiple)
 - Attempts: optional, default 1
 - `--retest-only`: only run cases where TC changed since last test (uses test_tracker.json)
+- `--with-private`: include 48 held-out private cases from `../embedeval-private/cases/`
 
 ## Implementation
 
@@ -71,6 +74,8 @@ if attempts:
     CMD += " --attempts {attempts}"
 if --retest-only:
     CMD += " --retest-only"
+if --with-private:
+    CMD += " --private-cases ../embedeval-private/cases/ --include-private"
 
 # Clean previous results for this model (skip if --retest-only to preserve tracker)
 if not --retest-only:
@@ -147,4 +152,6 @@ Detailed results: results/runs/{run_dir}/
 - Test tracker at `results/test_tracker.json` — tracks per-case results with content hashes
 - `results/TEST_RESULTS.md` — human-readable test result doc, auto-updated after each run
 - `--retest-only` compares current case content hash to stored hash, only runs changed cases
+- `--with-private` loads 48 held-out cases from `../embedeval-private/cases/` (separate private repo)
+- Private cases repo: `git@github.com:Ecro/embedeval-private.git`
 - Reference: `memory/llm-embedded-failure-patterns.md` for LLM failure patterns
