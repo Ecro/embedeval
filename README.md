@@ -1,281 +1,378 @@
 # EmbedEval
 
-[![CI](https://img.shields.io/badge/CI-passing-brightgreen)]()
+[![CI](https://github.com/Ecro/embedeval/actions/workflows/ci.yml/badge.svg)](https://github.com/Ecro/embedeval/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
-[![Cases](https://img.shields.io/badge/cases-220-orange)]()
-[![Tests](https://img.shields.io/badge/tests-818-green)]()
+[![Cases](https://img.shields.io/badge/cases-227-orange)]()
+[![Tests](https://img.shields.io/badge/tests-859-green)]()
 
-**LLM Embedded Domain Knowledge Probe.**
+**LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 
-EmbedEval measures how well LLMs understand embedded firmware development — not just whether code compiles, but whether the LLM possesses the domain knowledge to write **safe** embedded code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL + FreeRTOS, Linux kernel drivers, and Yocto recipes across 220 test cases.
+EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, Linux kernel drivers, and Yocto recipes across 227 test cases (179 public + 48 private held-out).
 
-Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://www.swebench.com/) which test general coding, EmbedEval tests **implicit domain knowledge**: interrupt safety, cache coherency, DMA alignment, power management, and real-time constraints that only embedded experts would know — without telling the LLM what to do.
+Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://www.swebench.com/) which test general coding, EmbedEval tests knowledge that only embedded engineers would have: interrupt safety, cache coherency, DMA alignment, power management, and real-time constraints — **without telling the LLM what to check**.
 
-## Leaderboard
+---
 
-| Model | pass@1 | HumanEval | Embed Gap | Cases |
-|-------|--------|-----------|-----------|-------|
-| **Sonnet 4.6** | **89.5%** | 93.7% | **-4.2%p** | 220 |
-| Haiku 4.5 | 78.1% | 84.0% | -5.9%p | 220 |
+## Key Insight: The Implicit Knowledge Gap
 
-*Embed Gap = EmbedEval pass@1 − HumanEval pass@1. Negative = embedded is harder than general coding.*
-
-### Category Breakdown (Sonnet vs Haiku)
-
-```
-Category          Sonnet   Haiku    Delta    Interpretation
-────────────────  ───────  ───────  ───────  ──────────────────────
-kconfig           100%     100%     0        Config generation — easy
-boot              100%     100%     0        Kconfig fragments — easy
-ble               100%      73%    -27%p     BLE stack API complexity
-spi-i2c            92%      58%    -34%p     HW protocol knowledge
-device-tree        90%      60%    -30%p     DT syntax confusion
-isr-concurrency    80%      60%    -20%p     ISR safety rules
-linux-driver       80%      80%     0        Error cleanup — universal
-dma                90%      70%    -20%p     Cache/alignment patterns
-ESP-IDF            80%      70%    -10%p     Cross-platform knowledge
-STM32 HAL          TBD      TBD     —        FreeRTOS + HAL (new)
-```
-
-**Key finding:** HW-related categories (spi-i2c, device-tree, ble) show the largest model-size sensitivity. SW-pattern categories (boot, kconfig) show zero difference.
-
-## Quick Start
-
-```bash
-# Install
-uv sync
-
-# Run benchmark (single-shot)
-uv run embedeval run --model claude-code://sonnet --cases cases/
-
-# With compiler feedback (3 rounds of error correction)
-uv run embedeval run --model claude-code://sonnet --cases cases/ --feedback-rounds 3
-
-# Multi-turn agent mode (5 attempts with accumulated context)
-uv run embedeval agent claude-code://sonnet --max-turns 5
-
-# Temporal filtering (contamination prevention)
-uv run embedeval run --model claude-code://sonnet --cases cases/ --after-date 2026-01-01
-
-# View results
-cat results/LEADERBOARD.md
-```
-
-## What Makes EmbedEval Different
-
-### 1. Tests Implicit Domain Knowledge
-
-Most coding benchmarks tell the LLM exactly what to do. EmbedEval tells the LLM **what** to build but not **how** to make it safe:
+Most benchmarks tell the LLM exactly what to do. EmbedEval tells the LLM **what** to build but not **how** to make it safe:
 
 ```
 Prompt:  "Implement DMA transfer from src to dst buffer.
           Use a callback to signal completion."
 
-Hidden requirements (not in prompt):
+What an embedded engineer knows (not in prompt):
   - Buffer must be cache-line aligned (__aligned(32))
   - Cache flush before DMA start
   - Cache invalidate after DMA complete
-  - Error flag must be volatile (shared with ISR)
-  - Error flag checked AFTER synchronization, not before
+  - Completion flag must be volatile (shared with ISR)
+  - Flag checked AFTER synchronization, not before
 ```
 
-**Measured impact:** Explicit prompts → ~95% pass. Implicit prompts → ~60% pass. **35%p gap.**
+**Measured impact:** Explicit prompts ("use volatile") pass at ~95%. Implicit prompts (derive from domain knowledge) pass at ~60%. This **35%p gap** means current benchmarks overestimate LLM capability in embedded domains.
 
-### 2. Multi-Platform (5 platforms)
+---
 
-| Platform | Cases | Build System | Docker |
-|----------|-------|-------------|--------|
-| Zephyr RTOS | 150 | `west build` | Dockerfile |
-| ESP-IDF | 10 | `idf.py build` | Dockerfile.esp |
-| STM32 HAL + FreeRTOS | 10 | `arm-none-eabi-gcc` | Dockerfile.stm32 |
-| Linux kernel | 10 | `kbuild` | — |
-| Yocto | 10 | `bitbake` | — |
-| Kconfig/DT/Boot | 30 | N/A (config files) | — |
+## Leaderboard
 
-### 3. Self-Validated Check Precision
+Benchmark run on 179 public cases (2026-03-29):
 
-We don't just test LLMs — we test our own checks with **subtle negative tests** (intentionally broken code that tries to evade detection):
+| Model | pass@1 | 95% CI | Weakest Category | Strongest |
+|-------|--------|--------|------------------|-----------|
+| **Sonnet 4** | **84.9%** (152/179) | [79.1%, 89.6%] | threading (42%), isr-concurrency (44%) | kconfig, boot, gpio-basic (100%) |
+| Haiku 4.5 | 70.4% (126/179) | [63.2%, 76.8%] | dma (11%), threading (25%) | kconfig (100%) |
+
+**Model gap:** 14.5%p overall, up to 67%p on DMA. 78% of all failures occur at L3 (behavioral heuristic), 22% at L0 (static analysis).
+
+### Category Heatmap
 
 ```
-Check Precision Progression:
-  Round 1:  6/15 caught (40%)  — checks were too naive
-  Round 2:  9/15 caught (60%)  — fixed substring matching, deny lists
-  Round 3: 12/15 caught (80%)  — added return verification, comment stripping
-
-  Remaining 3/15 (20%) are regex-unsolvable → need L1/L2 execution
+Category          Sonnet   Haiku    Gap      What it tests
+────────────────  ───────  ───────  ───────  ──────────────────────────
+kconfig           100%     100%       0      Build config generation
+boot              100%      88%     12%p     Boot sequence + Kconfig
+gpio-basic        100%      80%     20%p     GPIO init/interrupt patterns
+timer             100%      78%     22%p     Timer callback safety
+networking         90%      80%     10%p     Socket lifecycle, error paths
+ble                88%      75%     13%p     BLE stack API, connection mgmt
+device-tree        88%      75%     13%p     DT syntax, node references
+spi-i2c            83%      67%     16%p     Bus protocol, transfer sequences
+watchdog           78%      56%     22%p     WDT feed timing, reset handling
+security           75%      63%     12%p     Crypto API, key management
+dma                78%      11%     67%p     Cache alignment, DMA lifecycle
+isr-concurrency    44%      44%      0       ISR safety, volatile, barriers
+threading          42%      25%     17%p     Mutex ordering, thread safety
 ```
 
-### 4. Cross-Platform Hallucination Detection
+---
 
-```c
-// ESP-IDF code with Zephyr API hallucination
-#include "driver/gpio.h"
-#include <zephyr/kernel.h>    // HALLUCINATION — Zephyr in ESP-IDF code
-k_sleep(K_SECONDS(1));        // HALLUCINATION — Zephyr API
+## Quick Start
+
+```bash
+# Prerequisites: Python 3.12+, uv
+pip install uv  # if not installed
+
+# Clone and install
+git clone https://github.com/Ecro/embedeval.git
+cd embedeval
+uv sync
+
+# Run benchmark (L0 + L3 static checks, no Docker needed)
+uv run embedeval run --model claude-code://sonnet --cases cases/
+
+# View results
+cat results/LEADERBOARD.md
 ```
 
-### 5. Evaluation Modes (inspired by leading benchmarks)
+### LLM Connection Modes
 
-| Mode | Inspired By | CLI |
-|------|-------------|-----|
-| Single-shot | HumanEval | `embedeval run` |
-| Compiler feedback | EmbedBench (ICSE'26) | `--feedback-rounds 3` |
-| Multi-turn agent | SWE-bench | `embedeval agent --max-turns 5` |
-| Temporal filtering | LiveCodeBench (ICLR'25) | `--after-date 2026-01-01` |
+| Mode | Example | Requirement |
+|------|---------|-------------|
+| Claude Code (subscription) | `--model claude-code://sonnet` | Claude Code CLI installed |
+| LiteLLM (API key) | `--model anthropic/claude-sonnet-4-20250514` | `ANTHROPIC_API_KEY` env var |
+| Mock (testing) | `--model mock` | None |
 
-## 221 Test Cases, 23 Categories
+### Common Commands
 
-| Category | Cases | Platform | L1 Build |
-|----------|-------|----------|----------|
-| gpio-basic | 4 | Zephyr | native_sim |
-| uart | 3 | Zephyr | nrf52840dk |
-| adc | 2 | Zephyr | nrf52840dk |
-| pwm | 1 | Zephyr | nrf52840dk |
-| spi-i2c | 10 | Zephyr | nrf52840dk |
-| dma | 10 | Zephyr | native_sim |
-| isr-concurrency | 10 | Zephyr | native_sim |
-| threading | 10 | Zephyr | native_sim |
-| timer | 10 | Zephyr | native_sim |
-| sensor-driver | 10 | Zephyr | nrf52840dk |
-| networking | 10 | Zephyr | native_sim |
-| ble | 10 | Zephyr | native_sim |
-| security | 10 | Zephyr | native_sim |
-| storage | 10 | Zephyr | native_sim |
-| kconfig | 10 | Zephyr | N/A |
-| device-tree | 10 | Zephyr | N/A |
-| boot | 10 | Zephyr | N/A |
-| ota | 10 | Zephyr | nrf52840dk |
-| power-mgmt | 10 | Zephyr | nrf52840dk |
-| watchdog | 10 | Zephyr | nrf52840dk |
-| memory-opt | 10 | Zephyr | native_sim |
-| yocto | 10 | Yocto | N/A |
-| linux-driver | 10 | Linux | N/A |
-| esp-* | 10 | ESP-IDF | idf.py |
-| stm32-* | 10 | STM32 HAL | arm-gcc |
+```bash
+# Filter by category or difficulty
+uv run embedeval run --model claude-code://sonnet --cases cases/ -c isr-concurrency
+uv run embedeval run --model claude-code://sonnet --cases cases/ -d hard
 
-## Evaluation Layers
+# Multiple attempts for pass@k
+uv run embedeval run --model claude-code://sonnet --cases cases/ --attempts 5
 
-| Layer | Name | Method | Status |
-|-------|------|--------|--------|
-| L0 | Static Analysis | Regex pattern matching | Active |
-| L1 | Compilation | Docker builds (west/idf.py/arm-gcc) | Active (15/15 verified) |
-| L2 | Runtime | `native_sim` + expected output | Ready |
-| L3 | Static Heuristic | Domain-specific pattern checks (precision: 80%) | Active |
-| L4 | Mutation Testing | Robustness via code mutation | Planned |
+# With compiler feedback (self-correction measurement)
+uv run embedeval run --model claude-code://sonnet --cases cases/ --feedback-rounds 3
 
-**Honest naming:** We call L3 "Static Heuristic" not "Behavioral" — our checks are regex-based pattern matching with 80% precision, not execution-based testing.
+# Multi-turn agent mode
+uv run embedeval agent claude-code://sonnet --cases cases/ --max-turns 5
+
+# Bug fix scenario (LLM diagnoses + fixes seeded bugs)
+uv run embedeval run --model claude-code://sonnet --cases cases/ --scenario bugfix
+
+# Temporal filtering (contamination prevention)
+uv run embedeval run --model claude-code://sonnet --cases cases/ --after-date 2026-01-01
+
+# Include private held-out cases (separate repo)
+uv run embedeval run --model claude-code://sonnet \
+    --cases cases/ --private-cases ../embedeval-private/cases/ --include-private
+
+# Only retest cases changed since last run
+uv run embedeval run --model claude-code://sonnet --cases cases/ --retest-only
+
+# Validate all reference solutions pass
+uv run embedeval validate --cases cases/
+
+# List cases with metadata
+uv run embedeval list --cases cases/
+
+# Prompt sensitivity analysis
+uv run embedeval sensitivity claude-code://sonnet --sample 30 --variants 3
+
+# Generate safety guide from results
+uv run embedeval guide --results results/
+```
+
+---
+
+## 5-Layer Evaluation Architecture
+
+Each case is evaluated through five progressive layers. Failure at any layer halts evaluation.
+
+```
+  Generated Code
+       │
+       ▼
+  ┌─────────────┐
+  │ L0 Static   │  checks/static.py — includes, CONFIG symbols, ISR signatures
+  └──────┬──────┘
+         ▼
+  ┌─────────────┐
+  │ L1 Compile  │  west build / idf.py / arm-gcc (Docker or local, skippable)
+  └──────┬──────┘
+         ▼
+  ┌─────────────┐
+  │ L2 Runtime  │  native_sim execution with 10s timeout + output validation
+  └──────┬──────┘
+         ▼
+  ┌─────────────┐
+  │ L3 Heuristic│  checks/behavior.py — domain-specific pattern analysis
+  └──────┬──────┘
+         ▼
+  ┌─────────────┐
+  │ L4 Mutation │  checks/negatives.py — meta-verification (9 cases, 18 mutations)
+  └─────────────┘
+```
+
+| Layer | Method | What it catches | Docker needed |
+|-------|--------|-----------------|---------------|
+| L0 | Static pattern matching | Missing headers, wrong CONFIG, bad ISR signatures | No |
+| L1 | SDK compilation | Syntax errors, undefined symbols, type mismatches | Yes (or `ZEPHYR_BASE`) |
+| L2 | QEMU/native_sim execution | Segfaults, deadlocks, wrong output | Yes |
+| L3 | Domain heuristic checks | Missing volatile, wrong lock order, no error cleanup | No |
+| L4 | Mutation testing | Validates that L0/L3 checks themselves are sound | No |
+
+**Default mode (no Docker):** L0 + L3 provide strong discriminative power. L1/L2 auto-skip when `EMBEDEVAL_ENABLE_BUILD` is unset.
+
+See [METHODOLOGY.md](docs/METHODOLOGY.md) for detailed architecture diagrams and implementation details.
+
+---
+
+## 23 Categories, 6 Platforms
+
+### Platform Coverage
+
+| Platform | Cases | Build System | Evaluation |
+|----------|-------|-------------|------------|
+| Zephyr RTOS (native_sim) | 145 | `west build` | Full (L0-L4) |
+| Zephyr RTOS (qemu_arm) | 8 | `west build` | L0-L3 |
+| ESP-IDF | 5 | `idf.py build` | L0-L1, L3 |
+| STM32 HAL + FreeRTOS | 5 | `arm-none-eabi-gcc` | L0-L1, L3 |
+| Linux kernel | 8 | `kbuild` | L0, L3 |
+| Yocto/Embedded Linux | 8 | `bitbake` | L0, L3 |
+
+### Categories
+
+**Peripheral & Communication:** gpio-basic, uart, adc, pwm, spi-i2c, dma, ble, networking
+
+**Concurrency & Timing:** isr-concurrency, threading, timer, watchdog
+
+**System Configuration:** kconfig, device-tree, boot, ota, power-mgmt
+
+**Safety & Resources:** security, storage, sensor-driver, memory-opt
+
+**Platform-Specific:** yocto, linux-driver
+
+---
 
 ## Scoring
 
-- **pass@1, pass@3, pass@5**: First/any-of-k attempt pass rates
-- **Weighted scoring**: Partial credit — 9/10 checks = 0.9, not binary FAIL
-- **Embed Gap**: EmbedEval pass@1 − HumanEval pass@1 (cross-benchmark)
-- **Check Precision**: 80% (12/15 subtle mutations caught by checks)
+### Metrics
 
-## 12 Key Insights
+| Metric | Description |
+|--------|-------------|
+| **pass@1** | First-attempt accuracy (primary metric) |
+| **pass@k** | Unbiased estimator from Chen et al. (2021): `1 - C(n-c,k) / C(n,k)` |
+| **95% CI** | Wilson score confidence interval on pass@1 |
+| **Embed Gap** | EmbedEval pass@1 minus HumanEval pass@1 (negative = harder than general coding) |
 
-Documented in [docs/INSIGHTS.md](docs/INSIGHTS.md):
+### Aggregation Dimensions
 
-1. **Implicit vs Explicit Gap** — 35%p difference when removing API hints
-2. **General SW vs Embedded failures** — 56% general, 44% embedded-specific
-3. **6 LLM failure patterns** — Happy path bias, semantic ignorance, resource imbalance, ordering, magic numbers, demo mindset
-4. **4-Level implicit knowledge model** — C → RTOS → Hardware → System safety
-5. **Syntactic vs Behavioral gap** — L0-L2 perfect, L3 where models diverge
-6. **Implicit prompt validation** — Modified categories show pass rate decrease
-7. **Critical self-analysis** — Honest assessment of benchmark limitations
-8. **Cross-benchmark comparison** — Embed Gap metric
-9. **Re-benchmark results** — 91% → 89.5% with harder checks
-10. **Sonnet vs Haiku** — 11.4%p gap, HW categories most discriminating
-11. **Check Precision** — 40% → 60% → 80% through iterative blind spot fixing
-12. **Cross-benchmark competitive analysis** — vs EmbedBench, LiveCodeBench, SWE-bench
+Results are sliced by model, category (23), difficulty tier (easy/medium/hard), evaluation tier (sanity/core/challenge), and reasoning type (api_recall, rule_application, cross_domain, system_reasoning).
 
-## CLI Reference
+### Report Outputs
 
-```bash
-# Benchmark modes
-embedeval run --model sonnet --cases cases/              # Single-shot
-embedeval run --model sonnet --feedback-rounds 3         # With compiler feedback
-embedeval agent sonnet --max-turns 5                     # Multi-turn agent
-embedeval run --model sonnet --attempts 3                # pass@3
+A single benchmark run generates:
 
-# Filtering
-embedeval run --model sonnet -c isr-concurrency -c dma   # By category
-embedeval run --model sonnet --visibility public          # Exclude private set
-embedeval run --model sonnet --after-date 2026-01-01      # Temporal filter
+| File | Content |
+|------|---------|
+| `results/LEADERBOARD.md` | Model comparison, category heatmap, layer pass rates |
+| `results/<model>-results.json` | Full machine-readable report |
+| `results/runs/<date>_<model>/report.md` | Per-case failure analysis with patterns |
+| `results/SAFE_GUIDE.md` | Risk-tier guidance for embedded engineers |
 
-# Utilities
-embedeval validate --cases cases/                         # Validate references
-embedeval list --cases cases/                             # List cases
+---
+
+## Evaluation Modes
+
+| Mode | What it measures | CLI |
+|------|-----------------|-----|
+| **Single-shot** | Raw first-attempt accuracy | `embedeval run` |
+| **Multi-attempt** | pass@k across N samples | `embedeval run --attempts 5` |
+| **Feedback** | Self-correction on L0/L1 errors | `embedeval run --feedback-rounds 3` |
+| **Agent** | Multi-turn iterative refinement | `embedeval agent --max-turns 5` |
+| **Bug fix** | Diagnose + fix seeded mutations | `embedeval run --scenario bugfix` |
+
+---
+
+## Case Structure
+
+```
+cases/isr-concurrency-003/
+├── metadata.yaml       # id, category, difficulty, platform, reasoning_types, ...
+├── prompt.md           # Task prompt (functional requirements, no safety hints)
+├── reference/main.c    # Verified correct solution
+├── checks/
+│   ├── static.py       # L0: required includes, struct layout, ISR signature
+│   └── behavior.py     # L3: volatile qualifiers, lock ordering, ISR safety
+├── CMakeLists.txt      # Zephyr build config
+└── prj.conf            # Zephyr Kconfig
 ```
 
-## Docker (L1 Build Verification)
+**Design principles:**
+1. **Self-contained** — each case is a standalone Zephyr/ESP-IDF/STM32 project
+2. **Deterministic** — all checks are regex/pattern-based, no LLM-as-judge
+3. **Implicit knowledge** — prompts describe *what* to build, not *how* to make it safe
+4. **Reference verified** — every case has a reference solution that passes all layers
 
-```bash
-# Zephyr (15/15 categories verified)
-docker build -t embedeval-zephyr .
-docker run --rm --entrypoint bash embedeval-zephyr -c 'west build -b native_sim cases/ble-001'
+---
 
-# ESP-IDF
-docker build -f Dockerfile.esp -t embedeval-esp .
+## Contamination Prevention
 
-# STM32 HAL
-docker build -f Dockerfile.stm32 -t embedeval-stm32 .
-```
+- **48 private cases** in a [separate repository](https://github.com/Ecro/embedeval-private) — never exposed to LLM training data
+- **Temporal cutoff** — `--after-date` filter for training data freshness analysis
+- **Content-hash tracking** — `--retest-only` detects modified cases for efficient re-evaluation
+
+---
 
 ## Project Structure
 
 ```
 embedeval/
 ├── src/embedeval/           # Core library (16 modules)
-│   ├── evaluator.py         # 5-layer evaluation pipeline (Docker/local/skip)
-│   ├── runner.py            # Benchmark orchestration + feedback loop
-│   ├── scorer.py            # Unbiased pass@k + Wilson 95% CI
-│   ├── reporter.py          # Leaderboard + cross-benchmark + scenario comparison
+│   ├── cli.py               # Typer CLI entry point
+│   ├── runner.py            # Case discovery, filtering, benchmark orchestration
+│   ├── llm_client.py        # LiteLLM + claude-code:// + mock providers
+│   ├── evaluator.py         # 5-layer evaluation pipeline
+│   ├── scorer.py            # pass@k (unbiased) + Wilson 95% CI
+│   ├── reporter.py          # JSON, Markdown, failure analysis, safe guide
+│   ├── models.py            # Pydantic models (EvalResult, BenchmarkReport, ...)
+│   ├── check_utils.py       # Scope-aware check utilities
+│   ├── agent.py             # Multi-turn agent evaluation
 │   ├── bugfix.py            # Bug fix scenario (mutation-based)
 │   ├── sensitivity.py       # Prompt sensitivity analysis
 │   ├── difficulty.py        # IRT difficulty calibration
 │   ├── ablation.py          # Layer contribution ablation study
 │   ├── failure_taxonomy.py  # Automated failure classification (8 patterns)
-│   ├── check_utils.py       # Scope-aware check utilities (word boundary, AST-like)
-│   ├── agent.py             # Multi-turn agent evaluation
-│   ├── llm_client.py        # LiteLLM + claude-code:// provider
-│   └── cli.py               # Typer CLI (run, agent, validate, sensitivity, list)
-├── cases/                   # 179 test cases (179 public + 0 private)
-│   ├── {category}-{NNN}/    # Zephyr cases (23 categories × 10+)
-│   ├── esp-*/               # ESP-IDF cases (10)
-│   └── stm32-*/             # STM32 HAL + FreeRTOS cases (10)
-├── tests/                   # 859 tests
-│   ├── test_e2e.py          # E2E: 220 reference solutions + pipeline
-│   ├── test_negatives.py    # 20 must_fail + 15 subtle mutations
-│   ├── test_bugfix.py       # Bug fix scenario tests
-│   ├── test_check_utils.py  # Scope-aware check utility tests
-│   ├── test_sensitivity.py  # Prompt sensitivity tests
-│   ├── test_difficulty.py   # IRT difficulty tests
-│   ├── test_ablation.py     # Ablation study tests
-│   └── test_failure_taxonomy.py # Failure classification tests
+│   ├── safety_guide.py      # Risk-tier safety guide generation
+│   └── test_tracker.py      # Incremental retest tracking
+├── cases/                   # 179 public test cases
+├── tests/                   # 859 pytest tests
 ├── docs/
-│   ├── METHODOLOGY.md       # Full benchmark methodology
-│   └── INSIGHTS.md          # 13 accumulated insights
+│   ├── METHODOLOGY.md       # Full benchmark methodology + architecture diagrams
+│   ├── CONTRIBUTING.md      # How to add new test cases
+│   └── INSIGHTS.md          # 13 accumulated research insights
 ├── external_benchmarks.yaml # HumanEval/SWE-bench reference scores
-├── Dockerfile               # Zephyr SDK (west build)
-├── Dockerfile.esp           # ESP-IDF (idf.py build)
-├── Dockerfile.stm32         # STM32 HAL (arm-none-eabi-gcc)
-└── .github/workflows/       # CI: validate + L1 Docker build
+├── Dockerfile               # Zephyr SDK build environment
+├── Dockerfile.esp           # ESP-IDF build environment
+├── Dockerfile.stm32         # STM32 HAL build environment
+└── .github/workflows/       # CI + benchmark dispatch + case validation
 ```
+
+---
+
+## Development
+
+```bash
+uv run pytest                        # Run all tests
+uv run ruff check src/ tests/        # Lint
+uv run ruff format src/ tests/       # Format
+uv run mypy src/                     # Type check
+uv run embedeval validate --cases cases/  # Validate reference solutions
+```
+
+---
+
+## Key Research Findings
+
+Documented in [INSIGHTS.md](docs/INSIGHTS.md):
+
+1. **Implicit vs Explicit Gap** — 35%p pass rate drop when removing safety hints from prompts
+2. **4-Level Implicit Knowledge Model** — C language → RTOS patterns → Hardware constraints → System safety
+3. **Failure Distribution** — 78% of failures at L3 (behavioral), 22% at L0 (static)
+4. **General vs Embedded** — 56% of failures are general SW problems, 44% are embedded-specific
+5. **Model Size Sensitivity** — HW categories (DMA, threading) show largest Sonnet-Haiku gap (up to 67%p)
+6. **6 LLM Failure Patterns** — happy path bias, semantic mismatch, resource imbalance, order violation, cross-platform hallucination, missing safety guards
+
+---
 
 ## Known Limitations
 
-- **Static heuristic precision: ~80%** — Scope-aware checks catch most bugs, but true semantic verification requires L1/L2 compilation
-- **Platform bias** — 77% Zephyr, 5% ESP-IDF, 5% STM32 (expanding)
-- **Difficulty calibration** — Assigned labels may not match empirical difficulty (IRT tool available)
-- **50 private cases** — 23% held-out set; periodic rotation planned
+- **Platform bias** — 81% Zephyr, with ESP-IDF and STM32 at 5 cases each
+- **L3 precision** — Static heuristic checks are regex-based; true semantic verification needs L1/L2
+- **Single-file scope** — Cases test single-file code generation, not multi-file project scaffolding
+- **Difficulty calibration** — Assigned labels may not match empirical difficulty (IRT tool available via `embedeval difficulty`)
 
-See [Insight #7](docs/INSIGHTS.md) and [Insight #12](docs/INSIGHTS.md) for our full self-critical analysis, and [METHODOLOGY.md](docs/METHODOLOGY.md) for complete benchmark design.
+See [METHODOLOGY.md](docs/METHODOLOGY.md) for our complete self-assessment.
+
+---
+
+## Comparison with Related Work
+
+| Dimension | HumanEval | SWE-bench | EmbedAgent (ICSE'26) | **EmbedEval** |
+|-----------|-----------|-----------|----------------------|---------------|
+| Domain | General Python | Python SWE | Arduino/ESP32/RPi | **Zephyr/ESP-IDF/STM32/Linux** |
+| Cases | 164 | 2,294 | 126 | **227** |
+| Platforms | 1 | 1 | 3 | **6** |
+| Verification | assert | pytest | Wokwi sim | **5-layer pipeline** |
+| Contamination | None | PR-based | HW combos | **Separate private repo + temporal** |
+| Scoring | pass@k | % resolved | pass@1 | **pass@k + 95% CI + Embed Gap** |
+| Unique | — | — | Circuit design | **Implicit Knowledge Gap** |
+
+---
 
 ## Contributing
 
-See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for how to add new test cases. In brief:
+
+1. Create `cases/<category>-<NNN>/` with `metadata.yaml`, `prompt.md`, `reference/main.c`
+2. Write `checks/static.py` (L0) and `checks/behavior.py` (L3)
+3. Verify with `uv run embedeval validate --cases cases/ -c <category>`
+4. Run `uv run pytest` to ensure all tests pass
+
+---
 
 ## License
 
