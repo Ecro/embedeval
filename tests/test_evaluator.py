@@ -242,6 +242,11 @@ class TestDockerLayers:
     ) -> None:
         import subprocess as sp
 
+        # Add CMakeLists.txt so the compile gate doesn't skip
+        (empty_case_dir / "CMakeLists.txt").write_text(
+            "cmake_minimum_required(VERSION 3.20)"
+        )
+
         mock_subprocess.run.side_effect = sp.TimeoutExpired(  # type: ignore[union-attr]
             cmd="west build", timeout=300.0
         )
@@ -255,6 +260,18 @@ class TestDockerLayers:
         assert result.layers[1].passed is False
         assert result.layers[1].error is not None
         assert "timed out" in result.layers[1].error
+
+    @patch("embedeval.evaluator._build_env_available", return_value=True)
+    def test_compile_skip_no_cmakelists(
+        self, _mock_build: object, empty_case_dir: Path
+    ) -> None:
+        """Non-compilable cases (no CMakeLists.txt) skip L1."""
+        result = evaluate(
+            case_dir=empty_case_dir,
+            generated_code="test",
+        )
+        assert result.layers[1].passed is True
+        assert "not a compilable case" in result.layers[1].details[0].actual
 
 
 @patch("embedeval.evaluator._build_env_available", return_value=False)

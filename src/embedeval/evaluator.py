@@ -35,6 +35,34 @@ DEFAULT_TIMEOUT = 300.0
 RUNTIME_TIMEOUT = 10.0
 
 
+def _extract_build_errors(stdout: str, stderr: str) -> str:
+    """Extract meaningful error lines from build output.
+
+    Build logs can be very long. Instead of blindly truncating the tail,
+    extract lines containing 'error:' or 'fatal error:' which carry the
+    actual compiler diagnostics, then append the tail for context.
+    """
+    combined = stdout + "\n" + stderr
+    lines = combined.splitlines()
+
+    error_lines = [
+        line for line in lines
+        if any(marker in line.lower() for marker in (
+            "error:", "fatal error:", "undefined reference", "no such file",
+            "undeclared", "linker command failed",
+        ))
+    ]
+
+    if error_lines:
+        # Error lines first (most valuable), then tail for context
+        error_section = "\n".join(error_lines[:30])
+        tail_section = "\n".join(lines[-10:])
+        return f"{error_section}\n\n--- build tail ---\n{tail_section}"
+
+    # No recognizable error lines — fall back to tail
+    return "\n".join(lines[-40:])
+
+
 def evaluate(
     case_dir: Path,
     generated_code: str,
@@ -69,7 +97,7 @@ def evaluate(
     # Shared build directory: created once, used by L1 (compile) and L2 (runtime),
     # cleaned up after all layers complete.
     build_dir: Path | None = None
-    if _get_build_mode() != "skip":
+    if _get_build_mode() != "skip" and (case_dir / "CMakeLists.txt").is_file():
         build_dir = _prepare_build_dir(case_dir, generated_code)
 
     try:
@@ -239,6 +267,29 @@ def _run_compile_gate(
 
     build_mode = _get_build_mode()
 
+    # Cases without CMakeLists.txt are not compilable (kconfig, device-tree, etc.)
+    if not (case_dir / "CMakeLists.txt").is_file():
+        logger.info(
+            "No CMakeLists.txt in %s, skipping compile gate (pass)",
+            case_dir.name,
+        )
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="build_env",
+                    passed=True,
+                    expected="CMakeLists.txt present",
+                    actual="skipped (not a compilable case)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
     if build_mode == "skip":
         logger.info("Build disabled, skipping compile gate (pass)")
         return LayerResult(
@@ -329,9 +380,11 @@ def _run_compile_docker(
         elapsed = time.monotonic() - start
         passed = result.returncode == 0
 
-        error_output = result.stderr
-        if not passed and result.stdout:
-            error_output = result.stdout[-2000:] + "\n" + (error_output or "")
+        error_output = ""
+        if not passed:
+            error_output = _extract_build_errors(
+                result.stdout or "", result.stderr or ""
+            )
 
         return LayerResult(
             layer=1,
@@ -397,7 +450,13 @@ def _run_compile_local(
                     check_type="compile",
                 )
             ],
-            error=result.stderr[:4000] if not passed else None,
+            error=(
+                _extract_build_errors(
+                    result.stdout or "", result.stderr or ""
+                )[:4000]
+                if not passed
+                else None
+            ),
             duration_seconds=elapsed,
         )
     except subprocess.TimeoutExpired:
@@ -427,6 +486,25 @@ def _run_runtime(
     Only native_sim board target supports runtime execution. HW targets
     (nrf52840dk, etc.) are skipped since they need physical hardware.
     """
+    if not (case_dir / "CMakeLists.txt").is_file():
+        logger.info("No CMakeLists.txt, skipping runtime execution (pass)")
+        return LayerResult(
+            layer=2,
+            name="runtime_execution",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="build_env",
+                    passed=True,
+                    expected="CMakeLists.txt present",
+                    actual="skipped (not a compilable case)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
     if not _build_env_available():
         logger.info("Build not available, skipping runtime execution (pass)")
         return LayerResult(

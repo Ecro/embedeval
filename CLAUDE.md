@@ -123,6 +123,9 @@ Platform-specific: `yocto`, `linux-driver`, `memory-opt`
 ## Learned Corrections
 
 ### 2026
+- 2026-03-30: [embedeval] L1/L2 must skip for non-compilable cases (no CMakeLists.txt) — kconfig/device-tree/boot/yocto generate config fragments, not C code
+- 2026-03-30: [embedeval] L4 mutation lambdas must not hardcode literal values from reference — LLM may use #define macros instead
+- 2026-03-30: [embedeval] Build error logs: extract `error:` lines first, then tail — raw truncation loses the actual compiler diagnostics
 - 2026-03-29: [embedeval] Check regexes must accept API variants (k_msleep=k_sleep, printf=printk=LOG_*) — use shared check_utils utilities
 - 2026-03-29: [embedeval] Check regexes must resolve #define macros — use extract_numeric/resolve_define, not bare \d+ patterns
 - 2026-03-29: [embedeval] Use find("func(") not find("func") — avoids matching typedefs like esp_timer_create_args_t

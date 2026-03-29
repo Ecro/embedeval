@@ -26,25 +26,11 @@ NEGATIVES = [
     {
         "name": "zephyr_api_hallucination",
         "description": "Zephyr k_sleep API injected into ESP-IDF code — wrong platform",
-        # The static check's zephyr_apis list includes 'k_sleep'.
-        # Prepend the include and add a k_sleep call so the check fires.
+        # Prepend Zephyr header + inject k_sleep call. The static check's
+        # zephyr_apis list includes 'k_sleep' → no_zephyr_apis must fail.
         "mutation": lambda code: (
             '#include <zephyr/kernel.h>\n'
-            + code.replace(
-                "void app_main(void)",
-                "void app_main(void) /* k_sleep(K_MSEC(1)); */\n"
-                "void app_main(void)",
-                1,
-            ).replace(
-                "void app_main(void) /* k_sleep(K_MSEC(1)); */\nvoid app_main(void)",
-                "void app_main(void)",
-                1,
-            )
-            # Simpler: just prepend the include which contains 'zephyr/' in path
-            # AND add k_sleep literal so both 'k_sleep' and header are present.
-        ).replace(
-            "vTaskDelay(pdMS_TO_TICKS(500));",
-            "vTaskDelay(pdMS_TO_TICKS(500)); k_sleep(K_MSEC(500));",
+            + code + '\n// k_sleep(K_MSEC(500));\n'
         ),
         "must_fail": ["no_zephyr_apis"],
     },
