@@ -1,0 +1,1 @@
+SPI full-duplex OK. Received: 0x

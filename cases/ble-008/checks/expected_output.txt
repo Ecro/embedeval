@@ -1,0 +1,3 @@
+Target device found, stopping scan and connecting
+GATT service discovered at handle
+Disconnected (reason

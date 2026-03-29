@@ -1,0 +1,3 @@
+Swap type: UNKNOWN (
+Boot status check complete
+Swap type: REVERT

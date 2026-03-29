@@ -1,0 +1,2 @@
+Sensor pipeline started (RAM budget: 32KB target)
+Pipeline complete

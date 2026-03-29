@@ -1,0 +1,2 @@
+Stopping feed - reset expected
+Heartbeat

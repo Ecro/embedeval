@@ -1,0 +1,2 @@
+main: user thread finished, counter=
+user_thread: shared_counter =

@@ -1,0 +1,2 @@
+Derived key[0..3]:
+HKDF OK

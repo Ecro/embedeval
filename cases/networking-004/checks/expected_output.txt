@@ -1,0 +1,2 @@
+CoAP response code: 0x
+CoAP GET sent to

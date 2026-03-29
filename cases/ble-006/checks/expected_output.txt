@@ -1,0 +1,3 @@
+DFU data received:
+DFU client connected, upgrading security
+DFU client disconnected (reason

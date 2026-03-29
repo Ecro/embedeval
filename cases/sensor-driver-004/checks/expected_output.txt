@@ -1,0 +1,2 @@
+Accel:
+Sensor configured: 100 Hz, 4g

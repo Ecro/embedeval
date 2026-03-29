@@ -1,0 +1,3 @@
+Med: running (should not preempt low)
+Low: releasing mutex
+High: acquired mutex

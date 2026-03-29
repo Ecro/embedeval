@@ -1,2 +1,2 @@
-Producer sent:
 Consumer received:
+Producer sent:

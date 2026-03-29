@@ -1,0 +1,1 @@
+SPI loopback successful

@@ -1,0 +1,3 @@
+Shared-memory IPC demo started
+[consumer] received sample
+[producer] wrote sample

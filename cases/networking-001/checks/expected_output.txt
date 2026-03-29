@@ -1,0 +1,3 @@
+MQTT disconnected
+MQTT connected
+MQTT published

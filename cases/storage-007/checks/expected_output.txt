@@ -1,0 +1,2 @@
+Test file written OK
+FS MOUNTED OK

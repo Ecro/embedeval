@@ -1,0 +1,2 @@
+DFU complete, resetting
+Writing chunk

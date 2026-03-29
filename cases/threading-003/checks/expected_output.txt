@@ -1,0 +1,2 @@
+Producer: event signaled
+Consumer: event received

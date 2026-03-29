@@ -334,6 +334,8 @@ All Zephyr compilation uses temporary directories (copied from case files + gene
 
 **Implementation:** `west build -t run` under native_sim with a 10-second timeout. Embedded firmware runs forever (`while(1)` + `k_sleep`), so timeout is the expected exit — the process is killed and captured stdout is validated against `checks/expected_output.txt` keyword lines. Hardware-only boards (nrf52840dk, etc.) and ESP-IDF/STM32 cases auto-skip runtime.
 
+**Output validation coverage:** 119 of 145 native_sim cases have `expected_output.txt` with 1-3 printk keyword prefixes extracted from reference solutions. The remaining 26 cases are Kconfig-only (18) or have no printk output (8).
+
 ### Layer 3: Static Heuristic
 
 **Purpose:** Verify domain-specific behavioral correctness via pattern analysis.

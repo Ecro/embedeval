@@ -1,0 +1,3 @@
+suspend_all:
+resume_all:
+device

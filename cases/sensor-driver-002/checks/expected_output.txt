@@ -1,0 +1,2 @@
+Temperature (trigger):
+Trigger configured, waiting for data

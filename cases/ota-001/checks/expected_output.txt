@@ -1,0 +1,3 @@
+Unconfirmed image — running self-test
+Image confirmed successfully
+Application running normally

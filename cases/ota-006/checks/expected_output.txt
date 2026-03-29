@@ -1,0 +1,3 @@
+Hash verified OK — proceeding with flash write
+OTA image written successfully
+OTA hash verification demo

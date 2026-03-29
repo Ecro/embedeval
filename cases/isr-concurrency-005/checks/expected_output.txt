@@ -1,0 +1,2 @@
+work_handler: events=
+  processing step

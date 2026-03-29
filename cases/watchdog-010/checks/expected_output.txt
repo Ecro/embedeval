@@ -1,0 +1,3 @@
+Boot count:
+Reboot counter reset to 0 in recovery mode
+Will clear reboot counter after

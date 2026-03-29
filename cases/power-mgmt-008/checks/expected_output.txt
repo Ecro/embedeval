@@ -1,0 +1,3 @@
+Entering deep sleep, wakeup in
+Returned from deep sleep
+Wakeup timer fired

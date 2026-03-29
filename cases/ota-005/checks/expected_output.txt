@@ -1,0 +1,3 @@
+OTA state:
+Unconfirmed image detected — entering CONFIRMING state
+Image confirmed successfully

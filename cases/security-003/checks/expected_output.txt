@@ -1,0 +1,2 @@
+Non-zero bytes:
+RNG OK

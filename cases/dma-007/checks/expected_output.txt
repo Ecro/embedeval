@@ -1,0 +1,3 @@
+Both DMA channels verified OK
+High priority channel done
+Low priority channel done

@@ -1,0 +1,3 @@
+Insufficient space, skipping write id=
+Free space after writes:
+Free space after delete:

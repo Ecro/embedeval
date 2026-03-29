@@ -1,0 +1,3 @@
+Slab freed, used=
+Slab demo: allocating 32-byte block (fixed size -> use slab)
+Heap demo: allocating 100 bytes (variable size -> use heap)

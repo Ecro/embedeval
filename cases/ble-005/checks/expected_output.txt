@@ -1,0 +1,3 @@
+Pairing complete, bonded=
+Confirm passkey:
+Passkey:

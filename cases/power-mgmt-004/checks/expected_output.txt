@@ -1,0 +1,3 @@
+Released device reference
+Doing work with device
+Got device reference

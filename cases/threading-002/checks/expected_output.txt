@@ -1,0 +1,3 @@
+Thread A: counter=
+Thread B: counter=
+Final counter:

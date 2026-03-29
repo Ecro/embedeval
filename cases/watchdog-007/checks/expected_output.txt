@@ -1,0 +1,3 @@
+Health: t0=
+Unhealthy thread detected — not feeding WDT
+All healthy — WDT fed

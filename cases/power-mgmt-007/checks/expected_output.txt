@@ -1,0 +1,3 @@
+Network active — deep sleep prevented
+Network idle — deep sleep allowed
+PM policy override demo
