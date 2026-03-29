@@ -100,6 +100,13 @@ def run(
             help="Include private held-out cases (default: public only)",
         ),
     ] = False,
+    private_cases: Annotated[
+        Optional[Path],
+        typer.Option(
+            "--private-cases",
+            help="Path to private cases directory (separate repo)",
+        ),
+    ] = None,
     retest_only: Annotated[
         bool,
         typer.Option(
@@ -149,6 +156,8 @@ def run(
 
         tracker = load_tracker(output_dir)
         all_cases = _discover(cases_dir)
+        if private_cases:
+            all_cases.extend(_discover(private_cases))
         # Apply same visibility filter that run_benchmark will use,
         # so we don't count private cases that will be excluded later
         retest_filters = Filters(
@@ -163,8 +172,10 @@ def run(
         )
         selected = _filter(all_cases, retest_filters)
         all_case_ids = [meta.id for _, meta in selected]
+        case_dir_map = {meta.id: cd for cd, meta in selected}
         needs_retest = find_cases_needing_retest(
-            tracker, model, cases_dir, all_case_ids
+            tracker, model, cases_dir, all_case_ids,
+            case_dir_map=case_dir_map,
         )
         if not needs_retest:
             typer.echo("All cases up to date — nothing to retest.")
@@ -189,6 +200,7 @@ def run(
             include_private=include_private,
         )
     else:
+        extra_dirs = [private_cases] if private_cases else None
         results = run_benchmark(
             cases_dir=cases_dir,
             model=model,
@@ -196,6 +208,7 @@ def run(
             attempts=attempts,
             feedback_rounds=feedback_rounds,
             include_private=include_private,
+            extra_cases_dirs=extra_dirs,
         )
 
     if not results:

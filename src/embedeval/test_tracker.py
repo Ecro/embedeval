@@ -147,12 +147,18 @@ def find_cases_needing_retest(
     model: str,
     cases_dir: Path,
     all_case_ids: list[str],
+    case_dir_map: dict[str, Path] | None = None,
 ) -> list[str]:
     """Find cases that need retesting for a given model.
 
     A case needs retest if:
     1. It has never been tested with this model
     2. The case directory content changed since last test
+
+    Args:
+        case_dir_map: Optional mapping of case_id -> case_dir Path.
+            When provided, used instead of cases_dir / case_id to
+            support cases spread across multiple directories.
     """
     model_results = tracker.results.get(model, {})
     needs_retest: list[str] = []
@@ -165,7 +171,10 @@ def find_cases_needing_retest(
             continue
 
         # Check if case content changed
-        case_dir = cases_dir / case_id
+        if case_dir_map and case_id in case_dir_map:
+            case_dir = case_dir_map[case_id]
+        else:
+            case_dir = cases_dir / case_id
         if not case_dir.is_dir():
             continue  # Case deleted — skip
         current_hash = _case_content_hash(case_dir)

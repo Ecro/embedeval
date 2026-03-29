@@ -152,6 +152,7 @@ def run_benchmark(
     attempts: int = 1,
     feedback_rounds: int = 0,
     include_private: bool = False,
+    extra_cases_dirs: list[Path] | None = None,
 ) -> list[EvalResult]:
     """Run the benchmark pipeline: discover, filter, LLM call, evaluate.
 
@@ -165,6 +166,8 @@ def run_benchmark(
             to the LLM for up to `feedback_rounds` additional attempts.
         include_private: If True, include private (held-out) cases.
             Defaults to False for contamination prevention.
+        extra_cases_dirs: Additional directories to discover cases from
+            (e.g., private cases from a separate repo).
 
     Returns:
         List of EvalResult for all case/attempt combinations.
@@ -173,6 +176,8 @@ def run_benchmark(
     if not include_private and effective_filters.visibility is None:
         effective_filters.visibility = Visibility.PUBLIC
     all_cases = discover_cases(cases_dir)
+    for extra_dir in extra_cases_dirs or []:
+        all_cases.extend(discover_cases(extra_dir))
     selected = filter_cases(all_cases, effective_filters)
 
     if not selected:
