@@ -8,6 +8,7 @@ Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS,
 - **Repository:** /home/noel/embedeval
 - **TODO Sync:** Enabled
 - **GitHub:** https://github.com/Ecro/embedeval
+- **Private Cases:** https://github.com/Ecro/embedeval-private (48 held-out TCs)
 
 ## Tech Stack
 
@@ -34,10 +35,11 @@ embedeval/
 │   ├── reporter.py      # JSON + Markdown report generation
 │   ├── llm_client.py    # LiteLLM wrapper with retry logic
 │   └── cli.py           # Typer CLI (run, list, validate, report)
-├── cases/               # Test cases (each case is a directory)
+├── cases/               # Public test cases (179 TCs)
 │   ├── kconfig-001/
 │   ├── device-tree-001/
 │   └── isr-concurrency-001/
+│                        # Private cases in separate repo: ../embedeval-private/cases/
 ├── tests/               # pytest test suite
 ├── docs/                # METHODOLOGY.md, CONTRIBUTING.md
 └── .github/workflows/   # CI, case validation, benchmark dispatch
@@ -54,6 +56,7 @@ embedeval/
 | `uv run embedeval --help` | CLI help |
 | `uv run embedeval list --cases cases/` | List cases |
 | `uv run embedeval validate --cases cases/` | Validate cases |
+| `uv run embedeval run ... --private-cases ../embedeval-private/cases/ --include-private` | Include private cases |
 
 ## Available Workflow Commands
 
