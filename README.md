@@ -40,7 +40,7 @@ Benchmark run on 179 public cases (2026-03-29):
 
 | Model | pass@1 | 95% CI | Weakest Category | Strongest |
 |-------|--------|--------|------------------|-----------|
-| **Sonnet 4** | **84.9%** (152/179) | [79.1%, 89.6%] | threading (42%), isr-concurrency (44%) | kconfig, boot, gpio-basic (100%) |
+| **Sonnet 4.6** | **84.9%** (152/179) | [79.1%, 89.6%] | threading (42%), isr-concurrency (44%) | kconfig, boot, gpio-basic (100%) |
 | Haiku 4.5 | 70.4% (126/179) | [63.2%, 76.8%] | dma (11%), threading (25%) | kconfig (100%) |
 
 **Model gap:** 14.5%p overall, up to 67%p on DMA. 78% of all failures occur at L3 (behavioral heuristic), 22% at L0 (static analysis).
