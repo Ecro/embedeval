@@ -139,6 +139,7 @@ def run(
 
     # Retest-only filtering
     if retest_only:
+        from embedeval.runner import Visibility as _Vis
         from embedeval.runner import discover_cases as _discover
         from embedeval.runner import filter_cases as _filter
         from embedeval.test_tracker import (
@@ -148,7 +149,19 @@ def run(
 
         tracker = load_tracker(output_dir)
         all_cases = _discover(cases_dir)
-        selected = _filter(all_cases, filters)
+        # Apply same visibility filter that run_benchmark will use,
+        # so we don't count private cases that will be excluded later
+        retest_filters = Filters(
+            categories=filters.categories,
+            difficulties=filters.difficulties,
+            tiers=filters.tiers,
+            tags=filters.tags,
+            visibility=filters.visibility
+            if filters.visibility is not None
+            else (None if include_private else _Vis.PUBLIC),
+            after_date=filters.after_date,
+        )
+        selected = _filter(all_cases, retest_filters)
         all_case_ids = [meta.id for _, meta in selected]
         needs_retest = find_cases_needing_retest(
             tracker, model, cases_dir, all_case_ids
