@@ -21,9 +21,10 @@ requirements through deployment — without shipping demos as products.
 7. **Test** on hardware — [6 test levels](#phase-5-testing-6-levels)
 
 **Already using LLMs for embedded?** Jump to:
-- [Prompt engineering techniques](#5-prompt-engineering-for-embedded--how-to-ask) — 16 specific techniques
-- [Anti-patterns](#6-anti-patterns--common-mistakes) — 20 common mistakes ranked by impact
-- [Maturity model](#7-maturity-model--growing-your-llm-practice) — assess your current level
+- [Model selection](#5-model-selection-for-embedded-tasks) — which model for which task
+- [Prompt engineering techniques](#6-prompt-engineering-for-embedded--how-to-ask) — 16 specific techniques
+- [Anti-patterns](#7-anti-patterns--common-mistakes) — 20 common mistakes ranked by impact
+- [Maturity model](#8-maturity-model--growing-your-llm-practice) — assess your current level
 
 ---
 
@@ -35,10 +36,11 @@ requirements through deployment — without shipping demos as products.
 3. [Context Templates & Assembly](#3-context-templates--assembly)
    - [Universal Context](#31-universal-context-always-include) · [Template Library](#32-module-type-templates) (9 templates) · [Checklist](#33-context-assembly-checklist)
 4. [Environment Setup](#4-environment-setup) — Tooling + CLAUDE.md
-5. [Prompt Engineering](#5-prompt-engineering-for-embedded--how-to-ask)
-   - [Structural](#51-structural-techniques) · [Knowledge Injection](#52-knowledge-injection-techniques) · [Reasoning](#53-reasoning-techniques) · [Iteration](#54-iteration-techniques) · [Future Work](#55-techniques-to-explore-future-work)
-6. [Anti-Patterns](#6-anti-patterns--common-mistakes) — 21 mistakes ranked by impact
-7. [Maturity Model](#7-maturity-model--growing-your-llm-practice) — 4 levels
+5. [Model Selection](#5-model-selection-for-embedded-tasks) — Benchmark-based guidance
+6. [Prompt Engineering](#6-prompt-engineering-for-embedded--how-to-ask)
+   - [Structural](#61-structural-techniques) · [Knowledge Injection](#62-knowledge-injection-techniques) · [Reasoning](#63-reasoning-techniques) · [Iteration](#64-iteration-techniques) · [Future Work](#65-techniques-to-explore-future-work)
+7. [Anti-Patterns](#7-anti-patterns--common-mistakes) — 21 mistakes ranked by impact
+8. [Maturity Model](#8-maturity-model--growing-your-llm-practice) — 4 levels
 
 ---
 
@@ -1085,15 +1087,74 @@ gpio_set_level, esp_log_write, analogRead, digitalWrite, delay().
 
 ---
 
-## 5. Prompt Engineering for Embedded — How to Ask
+## 5. Model Selection for Embedded Tasks
+
+Not all LLMs perform equally on embedded code. EmbedEval benchmark data
+(2026-03-29, 179 test cases across 23 categories) shows significant
+performance gaps between model tiers.
+
+### 5.1 Overall Performance
+
+| Model | pass@1 | 95% CI | Failed | Strongest | Weakest |
+|-------|--------|--------|--------|-----------|---------|
+| Sonnet 4 | 84.9% | [78.9%, 89.4%] | 27/179 | 10 categories at 100% | threading (42%), isr-concurrency (44%) |
+| Haiku 3.5 | 70.4% | - | 53/179 | 5 categories at 100% | dma (11%), threading (25%) |
+
+**Gap: 14.5 percentage points overall, up to 67pp on hardware-specific tasks.**
+
+### 5.2 Category Risk Tiers
+
+Based on benchmark failure rates, embedded tasks fall into three risk tiers:
+
+| Risk Tier | Categories | Sonnet | Haiku | Recommendation |
+|-----------|-----------|--------|-------|----------------|
+| **Safe** (>95% both) | boot, security, uart, pwm, adc | 100% | 100% | Either model works. Haiku sufficient for cost savings. |
+| **Moderate** (>80% Sonnet) | ble, device-tree, kconfig, networking, ota, storage, sensor-driver, power-mgmt, yocto, spi-i2c, timer, gpio-basic | 88-100% | 63-100% | Sonnet recommended. Haiku acceptable with extra review. |
+| **Dangerous** (<80% Sonnet) | threading, isr-concurrency, dma, linux-driver, memory-opt, watchdog | 42-80% | 11-50% | Sonnet minimum. Always manual expert review. Haiku not recommended. |
+
+### 5.3 When to Use Which Model
+
+**Use a larger model (Sonnet/Opus) when:**
+- Task involves ISR handlers, DMA configuration, or threading synchronization
+- Code has shared state between ISR and thread (volatile, spinlock, atomic)
+- Linux kernel module with error path cleanup (goto unwinding)
+- Memory optimization using Zephyr-specific APIs (mem_slab, mem_domain)
+- Any task in the "Dangerous" tier above
+
+**Haiku is acceptable when:**
+- Simple GPIO, UART, or ADC driver with well-defined interface
+- Boot sequence, security configuration, BLE service setup
+- Kconfig generation from clear requirements
+- Boilerplate generation where the template provides most of the logic
+
+### 5.4 What No Model Gets Right
+
+Even the best models fail on these patterns — always verify manually:
+
+| Pattern | Sonnet Fail Rate | Why LLMs Struggle |
+|---------|-----------------|-------------------|
+| `volatile` on shared flags | ~60% miss | Implicit knowledge: compiler optimization is invisible |
+| Memory barriers (ISR↔thread) | ~80% miss | Requires CPU architecture + compiler model reasoning |
+| Error path cleanup (goto unwinding) | ~50% miss | Requires tracking all allocated resources across branches |
+| ISR-safe signaling (k_sem_give, not mutex) | ~40% miss | Requires knowing which APIs are ISR-safe |
+| Thread priority differentiation | ~50% miss | Requires understanding scheduling implications |
+| Named constants (no magic numbers) | ~30% miss | Style discipline, not domain knowledge |
+
+These are the patterns where the **implicit/explicit gap** (Section 6.3.5)
+is largest. Even with the best model, include these requirements explicitly
+in your prompt or context template.
+
+---
+
+## 6. Prompt Engineering for Embedded — How to Ask
 
 How you structure the prompt matters as much as what context you include.
 This section catalogs techniques that measurably improve LLM output quality
 for embedded code generation.
 
-### 5.1 Structural Techniques — How to Organize the Prompt
+### 6.1 Structural Techniques — How to Organize the Prompt
 
-#### 5.1.1 Constraint-First Ordering
+#### 6.1.1 Constraint-First Ordering
 
 State constraints and restrictions BEFORE the task description. LLMs weight
 earlier tokens more heavily during generation.
@@ -1108,7 +1169,7 @@ earlier tokens more heavily during generation.
 **Why it works:** When constraints come last, the LLM has already planned
 its approach. Constraints first shape the generation from the start.
 
-#### 5.1.2 Negative Constraints (Deny List)
+#### 6.1.2 Negative Constraints (Deny List)
 
 Explicitly state what NOT to do. LLMs are better at avoiding named patterns
 than inferring what's forbidden.
@@ -1125,7 +1186,7 @@ than inferring what's forbidden.
 **Why it works:** The 35%p explicit/implicit gap. Naming the forbidden pattern
 makes the LLM avoid it; leaving it implicit means ~40% chance it appears.
 
-#### 5.1.3 Output Format Specification
+#### 6.1.3 Output Format Specification
 
 Tell the LLM exactly what files and structure to produce.
 
@@ -1143,7 +1204,7 @@ Each function must have:
 - Error handling on every API call
 ```
 
-#### 5.1.4 Structured Prompt Sections
+#### 6.1.4 Structured Prompt Sections
 
 Use clear section headers. The LLM treats markdown headers as semantic
 boundaries.
@@ -1162,9 +1223,9 @@ context under `## Constraints` is weighted differently than context under
 `## Task`. Structured sections also prevent the LLM from treating hardware
 constraints as part of the task description, which causes constraint violations.
 
-### 5.2 Knowledge Injection Techniques — How to Feed Context
+### 6.2 Knowledge Injection Techniques — How to Feed Context
 
-#### 5.2.1 Reference Implementation Pattern
+#### 6.2.1 Reference Implementation Pattern
 
 Provide a working example of a SIMILAR (not identical) module. LLMs excel at
 pattern adaptation.
@@ -1184,7 +1245,7 @@ error handling patterns, project conventions) without having to spell each
 one out. IoT-SkillsBench (2026) found that "human-expert skills" (structured
 examples) achieve near-perfect success rates.
 
-#### 5.2.2 Register Map Injection
+#### 6.2.2 Register Map Injection
 
 For low-level drivers, paste the relevant register subset (not entire
 datasheet).
@@ -1202,7 +1263,7 @@ datasheet).
 - I2C address: 0x19 (SDO/SA0 = HIGH)
 ```
 
-#### 5.2.3 Existing Header Injection
+#### 6.2.3 Existing Header Injection
 
 Paste the header files that define types and interfaces this module must use.
 
@@ -1227,7 +1288,7 @@ int sensor_driver_read_batch(struct accel_batch *batch);
 void sensor_driver_deinit(void);
 ```
 
-#### 5.2.4 Error Context from Previous Attempt
+#### 6.2.4 Error Context from Previous Attempt
 
 When iterating, feed the specific error — not just "it didn't work."
 
@@ -1246,9 +1307,9 @@ Fix this and check for any other deprecated API usage.
 "try again." Abtahi (2025) showed 92.4% vulnerability remediation with
 targeted feedback loops.
 
-### 5.3 Reasoning Techniques — How to Make the LLM Think Harder
+### 6.3 Reasoning Techniques — How to Make the LLM Think Harder
 
-#### 5.3.1 Chain-of-Thought for Hardware Reasoning
+#### 6.3.1 Chain-of-Thought for Hardware Reasoning
 
 Ask the LLM to reason through hardware constraints before writing code.
 
@@ -1267,7 +1328,7 @@ SCoT improves pass@1 by **+13-14%** vs standard CoT's +2-7% (arXiv:2305.06599).
 Note: standard CoT's value is decreasing with newer models that do internal
 reasoning by default (arXiv:2506.07142).
 
-#### 5.3.2 Failure Mode Enumeration
+#### 6.3.2 Failure Mode Enumeration
 
 Ask the LLM to enumerate failure modes before implementing error handling.
 
@@ -1285,7 +1346,7 @@ Now implement with error handling for each case.
 **Why it works:** Directly addresses the #1 LLM failure (happy-path bias).
 Enumerating failures before coding forces error paths into the generation plan.
 
-#### 5.3.3 Adversarial Self-Review
+#### 6.3.3 Adversarial Self-Review
 
 Ask the LLM to review its own output for embedded-specific issues.
 
@@ -1299,7 +1360,7 @@ Now review the code you just generated for:
 List every issue found, then output the corrected code.
 ```
 
-#### 5.3.4 Two-Pass Generation
+#### 6.3.4 Two-Pass Generation
 
 First pass: architecture/pseudocode. Second pass: implementation.
 
@@ -1319,7 +1380,7 @@ Use Zephyr APIs. Include all error handling from the pseudocode.
 **Why it works:** Separates "thinking" from "coding." The pseudocode pass
 catches architectural issues before they're baked into implementation details.
 
-#### 5.3.5 Specification-First Generation
+#### 6.3.5 Specification-First Generation
 
 Provide the acceptance criteria BEFORE asking for code. The LLM then generates
 code that targets specific test criteria rather than "whatever seems right."
@@ -1341,7 +1402,7 @@ it would otherwise miss. This is the most direct way to close the implicit→
 explicit gap. Especially effective for safety and timing requirements.
 
 
-#### 5.3.6 Context Budgeting & Placement
+#### 6.3.6 Context Budgeting & Placement
 
 LLMs attend most strongly to the **beginning and end** of the context window,
 and poorly to the middle ("Lost-in-the-Middle" effect — confirmed on 18
@@ -1369,9 +1430,9 @@ context **degrades** performance (arXiv:2510.05381).
 ## Test Criteria (what "correct" means)
 ```
 
-### 5.4 Iteration Techniques — How to Refine Output
+### 6.4 Iteration Techniques — How to Refine Output
 
-#### 5.4.1 Compile-Fix Loop
+#### 6.4.1 Compile-Fix Loop
 
 ```
 Generate → Cross-compile → Feed errors back → Fix → Repeat (max 3 rounds)
@@ -1389,7 +1450,7 @@ iterations will solve. Stop iterating and update the context package instead.
 > resolving the original error. Re-run static analysis after EVERY iteration,
 > not just the final one.
 
-#### 5.4.2 Checklist-Driven Review
+#### 6.4.2 Checklist-Driven Review
 
 After generation, ask the LLM to audit against a specific checklist:
 
@@ -1405,7 +1466,7 @@ Check this code against the following embedded safety checklist:
 Mark each as PASS or FAIL with line numbers.
 ```
 
-#### 5.4.3 Differential Review
+#### 6.4.3 Differential Review
 
 When modifying existing code, provide the full file and ask for minimal diff:
 
@@ -1418,7 +1479,7 @@ Show ONLY the changes needed. Do not rewrite unchanged code.
 Use the existing error handling patterns in the file.
 ```
 
-#### 5.4.4 Minimum Viable Context Discovery
+#### 6.4.4 Minimum Viable Context Discovery
 
 Start with minimal context. Generate. Check result. Add context ONLY where
 the LLM failed. This finds the **minimum context** needed per task type.
@@ -1442,7 +1503,7 @@ dilution — Chroma 2025) and reveals exactly which knowledge the LLM lacks
 per task type. Over time, you build a minimal context recipe for each module
 type. This is more efficient than always including the maximum context.
 
-### 5.5 Techniques to Explore (Future Work)
+### 6.5 Techniques to Explore (Future Work)
 
 The following techniques have theoretical or preliminary evidence but need
 systematic measurement against EmbedEval-style benchmarks.
@@ -1485,13 +1546,13 @@ this would automate it.
 
 ---
 
-## 6. Anti-Patterns — Common Mistakes
+## 7. Anti-Patterns — Common Mistakes
 
 | Anti-Pattern | Impact | Why It Fails | Do This Instead |
 |-------------|--------|-------------|-----------------|
 | "Write a complete firmware" | Fatal | Complexity cliff: <20% success on system-level tasks | Decompose into single-module tasks. Human designs architecture. |
 | Trusting ISR code without review | Fatal | #1 concurrency failure. LLMs put blocking calls in ISRs. | Always run ISR body scanner. Always manually verify. |
-| "It compiles, ship it" | Fatal | L1 pass 99.5%, L3 safety pass 89.5%. Compile proves nothing. | Compilation is necessary but not sufficient. Run all 6 test levels. |
+| "It compiles, ship it" | Fatal | L1 pass 100%, L3 safety pass 88% (Sonnet) / 70% (Haiku). Compile proves nothing. | Compilation is necessary but not sufficient. Run all 6 test levels. |
 | No error handling instructions | High | LLMs generate happy-path code 100% of the time | ALWAYS include: "Check return value. On error: cleanup + return." |
 | Trusting LLM stack size estimates | High | LLMs underestimate by 30-50% (miss deep call chains, RTOS overhead) | Add 256-512 bytes to LLM's estimate. Verify with CONFIG_THREAD_ANALYZER. |
 | Accepting LLM interrupt priorities | High | LLMs assign identical or wrong NVIC priorities; may break RTOS scheduler | Human decides priority scheme in Architecture doc. LLM follows it. |
@@ -1509,11 +1570,11 @@ this would automate it.
 | Relying on LLM for cross-platform migration | Med | 29.4% pass@1 for ESP-IDF migration (EmbedAgent). Almost guaranteed to fail. | Human maps APIs manually, LLM assists per-function only. |
 | "You are an expert embedded engineer" | Med | Persona prompting HURTS code accuracy by -3 to -5% (EMNLP 2025). Activates instruction-following at expense of factual recall. | Use specific constraints, SDK versions, and hardware details. Never generic role prompts. |
 | Not updating knowledge base | Low | Board profile gets stale, new errata missed | Update after every field issue. Schedule quarterly review. |
-| "The LLM said it's correct" | Low | 89.5% pass rate = 1 in 10 modules has a bug | Review EVERY module. Trust but verify. |
+| "The LLM said it's correct" | Low | 85% pass rate (Sonnet) = 1 in 7 modules has a bug. Haiku: 1 in 3. | Review EVERY module. Trust but verify. |
 
 ---
 
-## 7. Maturity Model — Growing Your LLM Practice
+## 8. Maturity Model — Growing Your LLM Practice
 
 ### Level 1: Manual (Starting Out)
 
