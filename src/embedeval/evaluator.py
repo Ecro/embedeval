@@ -9,6 +9,7 @@ import tempfile
 import time
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 from embedeval.models import (
     CaseCategory,
@@ -120,7 +121,10 @@ def evaluate(
         )
         layers.append(layer_result)
 
-        if not layer_result.passed:
+        if not layer_result.passed and layer_num < 4:
+            # L4 (mutation meta-verification) failures don't cascade or
+            # affect overall pass/fail — they test benchmark quality, not
+            # LLM quality.
             failed_at_layer = layer_num
             logger.info("Layer %d (%s) failed", layer_num, layer_name)
 
@@ -131,9 +135,9 @@ def evaluate(
     elapsed = time.monotonic() - start
     all_passed = failed_at_layer is None
 
-    scored_layers = [l for l in layers if l.details]  # layers with checks
+    scored_layers = [ly for ly in layers if ly.details and ly.layer != 4]
     total_score = (
-        sum(l.score for l in scored_layers) / len(scored_layers)
+        sum(ly.score for ly in scored_layers) / len(scored_layers)
         if scored_layers
         else 1.0
     )
@@ -584,9 +588,16 @@ def _run_behavioral(case_dir: Path, generated_code: str) -> LayerResult:
 
 
 def _run_mutant_checks(case_dir: Path, generated_code: str) -> LayerResult:
-    """Layer 4: Test quality proof via mutation testing (v1.1 placeholder - passes)."""
-    checks_module = _load_check_module(case_dir, "mutants")
-    if checks_module is None:
+    """Layer 4: Mutation meta-verification.
+
+    Loads negatives.py NEGATIVES data, applies each must_fail mutation to
+    the generated code, and verifies that L0/L3 checks detect the seeded bug.
+    This tests benchmark check quality, not LLM quality — L4 failures do not
+    affect the overall case pass/fail determination.
+    """
+    start = time.monotonic()
+    negatives = _load_negatives(case_dir)
+    if negatives is None:
         return LayerResult(
             layer=4,
             name="test_quality_proof",
@@ -596,9 +607,80 @@ def _run_mutant_checks(case_dir: Path, generated_code: str) -> LayerResult:
             duration_seconds=0.0,
         )
 
-    return _execute_check_module(
-        checks_module, generated_code, layer=4, name="test_quality_proof"
+    details: list[CheckDetail] = []
+    for neg in negatives:
+        if "must_fail" not in neg:
+            continue
+
+        name = neg.get("name", "unknown")
+        try:
+            mutated_code = neg["mutation"](generated_code)
+        except Exception as exc:
+            logger.debug("Mutation '%s' raised: %s", name, exc)
+            details.append(CheckDetail(
+                check_name=f"mutation_{name}",
+                passed=True,
+                expected="mutation applied",
+                actual=f"skipped (mutation error: {exc})",
+                check_type="mutation",
+            ))
+            continue
+
+        if mutated_code == generated_code:
+            details.append(CheckDetail(
+                check_name=f"mutation_{name}",
+                passed=True,
+                expected="mutation applied",
+                actual="skipped (code unchanged by mutation)",
+                check_type="mutation",
+            ))
+            continue
+
+        # Run L0 + L3 checks on the mutated code
+        all_check_details: list[CheckDetail] = []
+        static_result = _run_static_checks(case_dir, mutated_code)
+        all_check_details.extend(static_result.details)
+        behavior_result = _run_behavioral(case_dir, mutated_code)
+        all_check_details.extend(behavior_result.details)
+
+        # Verify that must_fail checks actually fail on mutated code
+        all_caught = True
+        missed: list[str] = []
+        for check_name in neg["must_fail"]:
+            matching = [d for d in all_check_details if d.check_name == check_name]
+            if not matching or any(d.passed for d in matching):
+                all_caught = False
+                missed.append(check_name)
+
+        details.append(CheckDetail(
+            check_name=f"mutation_{name}",
+            passed=all_caught,
+            expected=f"checks {neg['must_fail']} detect mutation",
+            actual="caught" if all_caught else f"missed: {missed}",
+            check_type="mutation",
+        ))
+
+    elapsed = time.monotonic() - start
+    all_passed = all(d.passed for d in details) if details else True
+    return LayerResult(
+        layer=4,
+        name="test_quality_proof",
+        passed=all_passed,
+        details=details,
+        error=None,
+        duration_seconds=elapsed,
     )
+
+
+def _load_negatives(case_dir: Path) -> list[dict[str, Any]] | None:
+    """Load NEGATIVES mutation data from checks/negatives.py."""
+    module = _load_check_module(case_dir, "negatives")
+    if module is None:
+        return None
+    negatives: list[dict[str, Any]] | None = getattr(module, "NEGATIVES", None)
+    if not negatives:
+        return None
+    return negatives
 
 
 def _load_check_module(case_dir: Path, module_name: str) -> ModuleType | None:

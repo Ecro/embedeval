@@ -49,9 +49,10 @@ NEGATIVES = [
     {
         "name": "feed_without_checking_all_threads",
         "mutation": lambda code: code.replace(
-            "thread0_healthy", "1 /* always healthy */"
-        ) if "thread0_healthy" in code else code,
+            "worker_alive = 1;",
+            "/* worker_alive = 1; — worker never signals health */"
+        ),
         "should_fail": ["wdt_feed_is_conditional"],
-        "bug_description": "One thread's health always reported as healthy — dead thread undetected",
+        "bug_description": "Worker never sets alive flag — monitor's health check is present but worker never signals, so WDT starves even when worker is running",
     },
 ]

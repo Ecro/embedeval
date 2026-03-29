@@ -42,11 +42,8 @@ NEGATIVES = [
     {
         "name": "device_ready_result_ignored",
         "mutation": lambda code: code.replace(
-            "if (!gpio_is_ready_dt(&led))",
-            "gpio_is_ready_dt(&led); if (0)"
-        ).replace(
-            "if (!gpio_is_ready_dt(&button))",
-            "gpio_is_ready_dt(&button); if (0)"
+            "if (!gpio_is_ready_dt(&led) || !gpio_is_ready_dt(&button)) {\n\t\treturn -1;\n\t}",
+            "gpio_is_ready_dt(&led); gpio_is_ready_dt(&button); /* result ignored */"
         ) if "gpio_is_ready_dt" in code else code.replace(
             "if (!device_is_ready(",
             "device_is_ready("

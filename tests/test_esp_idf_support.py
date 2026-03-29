@@ -223,7 +223,7 @@ class TestEspCaseChecks:
         "esp-gpio-001",
         "esp-spi-001",
         "esp-wifi-001",
-        "esp-nvs-001",
+        "esp-i2c-001",
         "esp-timer-001",
     ])
     def test_static_checks_pass_on_reference(self, case_name: str) -> None:
@@ -239,7 +239,7 @@ class TestEspCaseChecks:
         "esp-gpio-001",
         "esp-spi-001",
         "esp-wifi-001",
-        "esp-nvs-001",
+        "esp-i2c-001",
         "esp-timer-001",
     ])
     def test_behavior_checks_pass_on_reference(self, case_name: str) -> None:

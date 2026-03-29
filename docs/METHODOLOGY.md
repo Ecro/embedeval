@@ -348,9 +348,13 @@ All Zephyr compilation uses temporary directories (copied from case files + gene
 
 ### Layer 4: Mutation Testing
 
-**Purpose:** Meta-verification — ensures the benchmark's own checks catch known bugs.
+**Purpose:** Meta-verification — ensures the benchmark's own checks catch known bugs in the LLM-generated code's structure.
 
-**Implementation:** 9 cases have `checks/negatives.py` with 18 `must_fail` mutations. Each mutation seeds a known bug and verifies that at least one check detects it.
+**Implementation:** 9 cases have `checks/negatives.py` with 18 `must_fail` mutations. The evaluator loads the NEGATIVES data, applies each mutation to the generated code, runs L0+L3 checks on the mutated result, and verifies that the targeted checks detect the seeded bug.
+
+**Scoring:** L4 is meta-verification only — L4 failures do not affect the overall case pass/fail determination or pass@1 scores. They indicate gaps in the benchmark's check coverage rather than LLM quality issues.
+
+**Skip conditions:** If the mutation doesn't change the generated code (different structure from reference), that mutation is skipped. If no `negatives.py` file exists, L4 auto-passes with no details.
 
 ---
 

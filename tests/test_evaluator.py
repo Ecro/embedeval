@@ -7,10 +7,12 @@ import pytest
 
 from embedeval.evaluator import (
     _get_build_mode,
+    _load_negatives,
     _prepare_build_dir,
+    _run_mutant_checks,
     evaluate,
 )
-from embedeval.models import CheckDetail, TokenUsage
+from embedeval.models import TokenUsage
 
 
 @pytest.fixture()
@@ -437,3 +439,203 @@ class TestDockerCompileMode:
         result = evaluate(case_dir=case_dir, generated_code="int main() {}", timeout=300.0)
         assert result.layers[1].passed is False
         assert "timed out" in result.layers[1].error
+
+
+def _make_case_with_negatives(tmp_path: Path, negatives_code: str) -> Path:
+    """Create a case directory with static + behavior checks and negatives."""
+    case_dir = tmp_path / "case-neg"
+    checks_dir = case_dir / "checks"
+    checks_dir.mkdir(parents=True)
+
+    # Static check: requires "#include" to be present
+    (checks_dir / "static.py").write_text(
+        """\
+from embedeval.models import CheckDetail
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    has_include = "#include" in generated_code
+    return [
+        CheckDetail(
+            check_name="has_include",
+            passed=has_include,
+            expected="#include present",
+            actual="found" if has_include else "missing",
+            check_type="static",
+        )
+    ]
+""",
+        encoding="utf-8",
+    )
+
+    # Behavior check: requires "main" to be present
+    (checks_dir / "behavior.py").write_text(
+        """\
+from embedeval.models import CheckDetail
+
+def run_checks(generated_code: str) -> list[CheckDetail]:
+    has_main = "main" in generated_code
+    return [
+        CheckDetail(
+            check_name="has_main",
+            passed=has_main,
+            expected="main function",
+            actual="found" if has_main else "missing",
+            check_type="behavioral",
+        )
+    ]
+""",
+        encoding="utf-8",
+    )
+
+    (checks_dir / "negatives.py").write_text(negatives_code, encoding="utf-8")
+    return case_dir
+
+
+class TestMutantChecks:
+    """Tests for Layer 4: Mutation meta-verification."""
+
+    def test_no_negatives_file_auto_passes(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "case-empty"
+        case_dir.mkdir()
+        result = _run_mutant_checks(case_dir, "any code")
+        assert result.passed is True
+        assert result.details == []
+
+    def test_load_negatives_returns_list(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "case-neg"
+        checks_dir = case_dir / "checks"
+        checks_dir.mkdir(parents=True)
+        neg_code = (
+            "NEGATIVES = [{'name': 'test',"
+            " 'mutation': lambda c: c, 'must_fail': ['x']}]"
+        )
+        (checks_dir / "negatives.py").write_text(
+            neg_code, encoding="utf-8",
+        )
+        result = _load_negatives(case_dir)
+        assert result is not None
+        assert len(result) == 1
+
+    def test_load_negatives_missing_file(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "case-empty"
+        case_dir.mkdir()
+        assert _load_negatives(case_dir) is None
+
+    def test_mutation_caught_by_checks(self, tmp_path: Path) -> None:
+        """Mutation removes #include -> has_include check catches it."""
+        negatives_code = """\
+NEGATIVES = [
+    {
+        "name": "remove_include",
+        "mutation": lambda code: code.replace("#include", "// removed"),
+        "must_fail": ["has_include"],
+    },
+]
+"""
+        case_dir = _make_case_with_negatives(tmp_path, negatives_code)
+        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        result = _run_mutant_checks(case_dir, code)
+        assert result.passed is True
+        assert len(result.details) == 1
+        assert result.details[0].check_name == "mutation_remove_include"
+        assert result.details[0].passed is True
+        assert result.details[0].actual == "caught"
+
+    def test_mutation_missed_by_checks(self, tmp_path: Path) -> None:
+        """Mutation changes something, but targeted check still passes."""
+        negatives_code = """\
+NEGATIVES = [
+    {
+        "name": "sneaky_change",
+        "mutation": lambda code: code.replace("void", "int"),
+        "must_fail": ["has_include"],
+    },
+]
+"""
+        case_dir = _make_case_with_negatives(tmp_path, negatives_code)
+        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        result = _run_mutant_checks(case_dir, code)
+        assert result.passed is False
+        assert result.details[0].passed is False
+        assert "missed" in result.details[0].actual
+
+    def test_mutation_unchanged_code_skipped(self, tmp_path: Path) -> None:
+        """Mutation that doesn't change code is skipped (not failed)."""
+        negatives_code = """\
+NEGATIVES = [
+    {
+        "name": "noop_mutation",
+        "mutation": lambda code: code.replace("NONEXISTENT", "X"),
+        "must_fail": ["has_include"],
+    },
+]
+"""
+        case_dir = _make_case_with_negatives(tmp_path, negatives_code)
+        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        result = _run_mutant_checks(case_dir, code)
+        assert result.passed is True
+        assert "skipped" in result.details[0].actual
+
+    def test_should_fail_mutations_ignored(self, tmp_path: Path) -> None:
+        """Only must_fail mutations are processed, should_fail is skipped."""
+        negatives_code = """\
+NEGATIVES = [
+    {
+        "name": "subtle_only",
+        "mutation": lambda code: code.replace("#include", "// gone"),
+        "should_fail": ["has_include"],
+    },
+]
+"""
+        case_dir = _make_case_with_negatives(tmp_path, negatives_code)
+        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        result = _run_mutant_checks(case_dir, code)
+        assert result.passed is True
+        assert result.details == []
+
+    def test_mutation_error_skipped_gracefully(self, tmp_path: Path) -> None:
+        """If mutation function raises, the mutation is skipped."""
+        negatives_code = """\
+def _bad_mutation(code):
+    raise ValueError("broken mutation")
+
+NEGATIVES = [
+    {
+        "name": "broken",
+        "mutation": _bad_mutation,
+        "must_fail": ["has_include"],
+    },
+]
+"""
+        case_dir = _make_case_with_negatives(tmp_path, negatives_code)
+        result = _run_mutant_checks(case_dir, "any code")
+        assert result.passed is True
+        assert "skipped" in result.details[0].actual
+
+    @patch("embedeval.evaluator._build_env_available", return_value=False)
+    def test_l4_failure_does_not_affect_case_pass(
+        self, _mock: object, tmp_path: Path
+    ) -> None:
+        """L4 failure is meta-verification only — case should still pass."""
+        negatives_code = """\
+NEGATIVES = [
+    {
+        "name": "sneaky_change",
+        "mutation": lambda code: code.replace("void", "int"),
+        "must_fail": ["has_include"],
+    },
+]
+"""
+        case_dir = _make_case_with_negatives(tmp_path, negatives_code)
+        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        result = evaluate(case_dir=case_dir, generated_code=code)
+        # L0, L1(skip), L2(skip), L3 all pass
+        assert result.layers[0].passed is True
+        assert result.layers[3].passed is True
+        # L4 fails (mutation not caught)
+        assert result.layers[4].passed is False
+        # But overall case still passes
+        assert result.passed is True
+        assert result.failed_at_layer is None
+        # L4 failure must not reduce total_score
+        assert result.total_score == 1.0

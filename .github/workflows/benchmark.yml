@@ -11,7 +11,7 @@ on:
       enable_l1:
         description: "Enable L1 build verification (Docker)"
         type: boolean
-        default: false
+        default: true
 
 jobs:
   # Always run: L0 + L3 static heuristic checks
