@@ -64,6 +64,9 @@ Then STOP (don't run benchmark).
 # Parse model (first arg), category (second arg if not --), attempts (--attempts N)
 # Example: "sonnet kconfig --attempts 3" → model=sonnet, category=kconfig, attempts=3
 
+# Enable Docker-based compilation (L1/L2 layers)
+export EMBEDEVAL_ENABLE_BUILD=docker
+
 # Build the command
 CMD="uv run embedeval run --model claude-code://{model} --cases cases/"
 if category:
