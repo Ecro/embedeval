@@ -97,7 +97,16 @@ class TokenUsage(BaseModel):
 
 
 class CaseMetadata(BaseModel):
-    """Metadata for an evaluation case."""
+    """Metadata for an evaluation case.
+
+    Field semantics:
+    - platform: SDK/toolchain (e.g. native_sim = Zephyr, esp_idf = ESP-IDF)
+    - build_board: Board target for compilation (e.g. nrf52840dk/nrf52840)
+      These are independent: platform=native_sim + build_board=nrf52840dk
+      means "compile with Zephyr SDK for nrf52840dk hardware."
+    - l1_skip: Skip L1 compile (reference can't build for target board)
+    - l2_skip: Skip L2 runtime (peripheral unavailable on native_sim)
+    """
 
     id: str
     category: CaseCategory
@@ -112,6 +121,18 @@ class CaseMetadata(BaseModel):
     created_date: str | None = None  # ISO date, e.g. "2026-03-24"
     tier: CaseTier = CaseTier.CORE
     reasoning_types: list[ReasoningType] = Field(default_factory=list)
+    build_board: str | None = Field(
+        default=None,
+        description="Board target for west build (default: native_sim)",
+    )
+    l1_skip: bool = Field(
+        default=False,
+        description="Skip L1 compile layer (reference fails to build)",
+    )
+    l2_skip: bool = Field(
+        default=False,
+        description="Skip L2 runtime layer (peripheral unavailable)",
+    )
 
 
 class LLMResponse(BaseModel):
@@ -172,12 +193,20 @@ class ModelScore(BaseModel):
     model: str
     pass_at_1: float = Field(ge=0.0, le=1.0)
     pass_at_1_quality: float = Field(default=0.0, ge=0.0, le=1.0)
+    pass_at_1_comparable: float | None = Field(
+        default=None, ge=0.0, le=1.0,
+        description="pass@1 on common cases only (for fair cross-model comparison)",
+    )
     pass_at_3: float = Field(default=0.0, ge=0.0, le=1.0)
     pass_at_5: float = Field(ge=0.0, le=1.0)
     avg_score: float = Field(default=0.0, ge=0.0, le=1.0)
     total_cases: int = Field(ge=0)
     passed_cases: int = Field(ge=0)
     passed_cases_quality: int = Field(default=0, ge=0)
+    comparable_cases: int | None = Field(
+        default=None, ge=0,
+        description="Number of common cases used for comparable scoring",
+    )
     layer_pass_rates: dict[str, float]
     pass_at_1_ci: tuple[float, float] = (0.0, 0.0)
     n_samples: int = Field(default=1, ge=1)
@@ -217,6 +246,14 @@ class OverallScore(BaseModel):
     total_models: int
     best_model: str
     best_pass_at_1: float
+    common_cases: int | None = Field(
+        default=None, ge=0,
+        description="Number of cases common to all models (None if single model)",
+    )
+    case_set_warning: str | None = Field(
+        default=None,
+        description="Warning when models were tested on different case sets",
+    )
 
 
 class BenchmarkReport(BaseModel):

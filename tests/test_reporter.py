@@ -317,3 +317,62 @@ class TestGenerateLeaderboard:
         assert "## Layer Pass Rate Heatmap" in content
         assert "## Failure Distribution" in content
         assert "## Category Breakdown" in content
+
+
+class TestComparabilityWarning:
+    """Tests for leaderboard comparability warning when models have different case sets."""
+
+    def test_no_warning_when_same_cases(self, tmp_path: Path) -> None:
+        report = _make_report()
+        output = tmp_path / "LEADERBOARD.md"
+        generate_leaderboard([report], output)
+
+        content = output.read_text(encoding="utf-8")
+        assert "Warning" not in content
+        assert "comparable" not in content.lower().split("pass@1 (quality)")[0]
+
+    def test_warning_and_comparable_column_when_different_cases(self, tmp_path: Path) -> None:
+        report = BenchmarkReport(
+            version="0.1.0",
+            date="2026-03-31",
+            models=[
+                ModelScore(
+                    model="sonnet",
+                    pass_at_1=0.55,
+                    pass_at_1_comparable=0.60,
+                    pass_at_5=0.70,
+                    total_cases=227,
+                    passed_cases=125,
+                    comparable_cases=179,
+                    layer_pass_rates={"static_analysis": 0.9},
+                ),
+                ModelScore(
+                    model="haiku",
+                    pass_at_1=0.34,
+                    pass_at_1_comparable=0.34,
+                    pass_at_5=0.50,
+                    total_cases=179,
+                    passed_cases=61,
+                    comparable_cases=179,
+                    layer_pass_rates={"static_analysis": 0.8},
+                ),
+            ],
+            categories=[],
+            overall=OverallScore(
+                total_cases=227,
+                total_models=2,
+                best_model="sonnet",
+                best_pass_at_1=0.55,
+                common_cases=179,
+                case_set_warning="Models tested on different case sets: haiku=179, sonnet=227. Use comparable scores for fair comparison.",
+            ),
+        )
+        output = tmp_path / "LEADERBOARD.md"
+        generate_leaderboard([report], output)
+
+        content = output.read_text(encoding="utf-8")
+        assert "Warning" in content
+        assert "pass@1 (comparable)" in content
+        assert "Common" in content
+        assert "60.0%" in content
+        assert "179" in content

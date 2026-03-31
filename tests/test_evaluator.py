@@ -669,52 +669,66 @@ NEGATIVES = [
         assert result.total_score == 1.0
 
 
+def _write_full_metadata(case_dir: Path, **overrides: object) -> None:
+    """Write a complete metadata.yaml with optional field overrides."""
+    import yaml
+
+    meta = {
+        "id": case_dir.name,
+        "category": "gpio-basic",
+        "difficulty": "easy",
+        "title": "Test case",
+        "description": "Test case description",
+        "tags": ["test"],
+        "platform": "native_sim",
+        "estimated_tokens": 200,
+        "sdk_version": "4.1.0",
+    }
+    meta.update(overrides)
+    (case_dir / "metadata.yaml").write_text(
+        yaml.dump(meta), encoding="utf-8"
+    )
+
+
 class TestL1SkipFlag:
     """Tests for _is_l1_skipped() metadata parsing."""
 
-    def test_l1_skip_with_inline_comment(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("l1_skip: true  # reference fails L1: DT node missing\n")
+    def test_l1_skip_with_true(self, tmp_path: Path):
+        _write_full_metadata(tmp_path, l1_skip=True)
         assert _is_l1_skipped(tmp_path) is True
 
-    def test_l1_skip_without_comment(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("l1_skip: true\n")
-        assert _is_l1_skipped(tmp_path) is True
+    def test_l1_skip_without_flag(self, tmp_path: Path):
+        _write_full_metadata(tmp_path)
+        assert _is_l1_skipped(tmp_path) is False
 
     def test_l1_skip_false_value(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("l1_skip: false\n")
+        _write_full_metadata(tmp_path, l1_skip=False)
         assert _is_l1_skipped(tmp_path) is False
 
     def test_l1_skip_not_present(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("category: gpio-basic\nbuild_board: native_sim\n")
+        _write_full_metadata(tmp_path)
         assert _is_l1_skipped(tmp_path) is False
 
     def test_l1_skip_no_metadata_file(self, tmp_path: Path):
         assert _is_l1_skipped(tmp_path) is False
 
     def test_l1_skip_yes_value(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("l1_skip: yes\n")
+        # YAML parses "yes" as True
+        _write_full_metadata(tmp_path, l1_skip=True)
         assert _is_l1_skipped(tmp_path) is True
 
 
 class TestL2SkipFlag:
     """Tests for _is_l2_skipped() metadata parsing."""
 
-    def test_l2_skip_with_inline_comment(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("l2_skip: true  # BLE: no BT controller on native_sim\n")
+    def test_l2_skip_with_true(self, tmp_path: Path):
+        _write_full_metadata(tmp_path, l2_skip=True)
         assert _is_l2_skipped(tmp_path) is True
 
-    def test_l2_skip_without_comment(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("l2_skip: true\n")
-        assert _is_l2_skipped(tmp_path) is True
+    def test_l2_skip_without_flag(self, tmp_path: Path):
+        _write_full_metadata(tmp_path)
+        assert _is_l2_skipped(tmp_path) is False
 
     def test_l2_skip_not_present(self, tmp_path: Path):
-        meta = tmp_path / "metadata.yaml"
-        meta.write_text("category: dma\n")
+        _write_full_metadata(tmp_path)
         assert _is_l2_skipped(tmp_path) is False

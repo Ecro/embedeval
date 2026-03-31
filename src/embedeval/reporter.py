@@ -108,34 +108,99 @@ def _scenario_summary(reports: list[BenchmarkReport]) -> list[str]:
 
 def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
     """Generate model comparison table."""
-    lines: list[str] = [
+    # Check if any model has comparable scores (different case sets)
+    has_comparable = any(
+        ms.pass_at_1_comparable is not None
+        for r in reports
+        for ms in r.models
+    )
+
+    # Case set warnings (deduplicated across reports)
+    lines: list[str] = []
+    seen_warnings: set[str] = set()
+    for report in reports:
+        w = report.overall.case_set_warning
+        if w and w not in seen_warnings:
+            seen_warnings.add(w)
+            lines.extend([
+                "> **Warning:** " + w,
+                "",
+            ])
+
+    lines.extend([
         "## Model Comparison",
         "",
-        "| Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |",
-        "|-------|---------------|------------------|--------|--------|--------|---------|-------|---------|",
-    ]
+    ])
+
+    if has_comparable:
+        hdr = (
+            "| Model | pass@1 (full) | pass@1 (comparable)"
+            " | pass@1 (quality) | 95% CI"
+            " | pass@5 | Passed | Total | Common |"
+        )
+        sep = (
+            "|-------|---------------|--------------------"
+            "-|------------------|--------"
+            "|--------|--------|-------|--------|"
+        )
+        lines.extend([hdr, sep])
+    else:
+        lines.extend([
+            "| Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |",
+            "|-------|---------------|------------------|--------|--------|--------|---------|-------|---------|",
+        ])
 
     for report in reports:
         for model_score in report.models:
             lo, hi = model_score.pass_at_1_ci
             ci_str = f"[{lo:.1%}, {hi:.1%}]"
-            lines.append(
-                f"| {model_score.model} "
-                f"| {model_score.pass_at_1:.1%} "
-                f"| {model_score.pass_at_1_quality:.1%} "
-                f"| {ci_str} "
-                f"| {model_score.pass_at_5:.1%} "
-                f"| {model_score.passed_cases} "
-                f"| {model_score.passed_cases_quality} "
-                f"| {model_score.total_cases} "
-                f"| n={model_score.n_samples} |"
-            )
+            if has_comparable:
+                comp_str = (
+                    f"{model_score.pass_at_1_comparable:.1%}"
+                    if model_score.pass_at_1_comparable is not None
+                    else "-"
+                )
+                common_str = (
+                    str(model_score.comparable_cases)
+                    if model_score.comparable_cases is not None
+                    else str(model_score.total_cases)
+                )
+                lines.append(
+                    f"| {model_score.model} "
+                    f"| {model_score.pass_at_1:.1%} "
+                    f"| {comp_str} "
+                    f"| {model_score.pass_at_1_quality:.1%} "
+                    f"| {ci_str} "
+                    f"| {model_score.pass_at_5:.1%} "
+                    f"| {model_score.passed_cases} "
+                    f"| {model_score.total_cases} "
+                    f"| {common_str} |"
+                )
+            else:
+                lines.append(
+                    f"| {model_score.model} "
+                    f"| {model_score.pass_at_1:.1%} "
+                    f"| {model_score.pass_at_1_quality:.1%} "
+                    f"| {ci_str} "
+                    f"| {model_score.pass_at_5:.1%} "
+                    f"| {model_score.passed_cases} "
+                    f"| {model_score.passed_cases_quality} "
+                    f"| {model_score.total_cases} "
+                    f"| n={model_score.n_samples} |"
+                )
 
     lines.append("")
-    lines.append(
-        "*pass@1 (full) = all layers must pass. "
-        "pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*"
-    )
+    if has_comparable:
+        lines.append(
+            "*pass@1 (full) = all layers, all cases per model. "
+            "pass@1 (comparable) = common cases only (fair cross-model comparison). "
+            "pass@1 (quality) = L0+L3 only.*"
+        )
+    else:
+        lines.append(
+            "*pass@1 (full) = all layers must pass. "
+            "pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*"
+        )
 
     return lines
 

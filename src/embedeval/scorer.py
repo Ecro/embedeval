@@ -89,6 +89,15 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
     for r in results:
         by_model[r.model].append(r)
 
+    # Find common cases across all models for comparable scoring
+    all_model_case_ids = [
+        {r.case_id for r in model_results}
+        for model_results in by_model.values()
+    ]
+    common_case_ids: set[str] | None = None
+    if len(all_model_case_ids) > 1:
+        common_case_ids = set.intersection(*all_model_case_ids)
+
     scores: list[ModelScore] = []
     for model, model_results in sorted(by_model.items()):
         pass_at_1 = _calculate_pass_at_k(model_results, 1)
@@ -115,17 +124,35 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
             default=1,
         )
 
+        # Comparable pass@1: score on common cases only
+        pass_at_1_comparable: float | None = None
+        comparable_cases: int | None = None
+        if common_case_ids is not None and len(common_case_ids) > 0:
+            # Check if all models tested the exact same set of cases
+            all_same = all(
+                ids == common_case_ids for ids in all_model_case_ids
+            )
+            if not all_same:
+                common_results = [
+                    r for r in model_results if r.case_id in common_case_ids
+                ]
+                if common_results:
+                    pass_at_1_comparable = _calculate_pass_at_k(common_results, 1)
+                    comparable_cases = len(common_case_ids)
+
         scores.append(
             ModelScore(
                 model=model,
                 pass_at_1=pass_at_1,
                 pass_at_1_quality=pass_at_1_quality,
+                pass_at_1_comparable=pass_at_1_comparable,
                 pass_at_3=pass_at_3,
                 pass_at_5=pass_at_5,
                 avg_score=pass_at_1,
                 total_cases=n_cases,
                 passed_cases=passed_cases,
                 passed_cases_quality=passed_quality,
+                comparable_cases=comparable_cases,
                 layer_pass_rates=layer_pass_rates,
                 pass_at_1_ci=ci,
                 n_samples=samples_per_case,
@@ -186,11 +213,33 @@ def _calculate_overall(model_scores: list[ModelScore]) -> OverallScore:
     best = max(model_scores, key=lambda m: m.pass_at_1)
     total_cases = max(m.total_cases for m in model_scores)
 
+    # Detect case set mismatch using comparable_cases (already computed
+    # correctly via set intersection in _calculate_model_scores)
+    common_cases: int | None = None
+    case_set_warning: str | None = None
+    if len(model_scores) > 1:
+        any_comparable = any(
+            m.comparable_cases is not None for m in model_scores
+        )
+        if any_comparable:
+            case_counts = {m.model: m.total_cases for m in model_scores}
+            min_model = min(case_counts, key=case_counts.get)  # type: ignore[arg-type]
+            max_model = max(case_counts, key=case_counts.get)  # type: ignore[arg-type]
+            case_set_warning = (
+                f"Models tested on different case sets: "
+                f"{min_model}={case_counts[min_model]}, "
+                f"{max_model}={case_counts[max_model]}. "
+                f"Use comparable scores for fair comparison."
+            )
+            common_cases = model_scores[0].comparable_cases
+
     return OverallScore(
         total_cases=total_cases,
         total_models=len(model_scores),
         best_model=best.model,
         best_pass_at_1=best.pass_at_1,
+        common_cases=common_cases,
+        case_set_warning=case_set_warning,
     )
 
 

@@ -8,13 +8,13 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 
 | Metric | Value |
 |--------|-------|
-| **Total cases** | 179 |
+| **Total cases** | 227 |
 | **Categories** | 23 |
 | **Platforms** | 6 (docker_only, esp_idf, native_sim, qemu_arm, stm32_hal, yocto_build) |
-| **Difficulty** | 24 easy, 76 medium, 79 hard |
-| **Private held-out** | 0 cases (0%) for contamination prevention |
+| **Difficulty** | 29 easy, 98 medium, 100 hard |
+| **Private held-out** | 48 cases (21%) for contamination prevention |
 | **Evaluation scenarios** | 2 (generation, bugfix) |
-| **Negatives (mutation tests)** | 9 cases, 18 must_fail mutations |
+| **Negatives (mutation tests)** | 10 cases, 20 must_fail mutations |
 
 ### Platform Distribution
 
@@ -32,28 +32,28 @@ EmbedEval is a benchmark for evaluating LLM capability in embedded firmware code
 | Category | Easy | Medium | Hard | Total |
 |----------|------|--------|------|-------|
 | adc | 0 | 1 | 1 | 2 |
-| ble | 1 | 3 | 4 | 8 |
-| boot | 1 | 5 | 2 | 8 |
-| device-tree | 2 | 3 | 3 | 8 |
-| dma | 1 | 2 | 6 | 9 |
-| gpio-basic | 2 | 2 | 1 | 5 |
-| isr-concurrency | 0 | 2 | 7 | 9 |
-| kconfig | 2 | 3 | 3 | 8 |
-| linux-driver | 0 | 3 | 5 | 8 |
-| memory-opt | 1 | 4 | 5 | 10 |
-| networking | 1 | 6 | 3 | 10 |
-| ota | 1 | 3 | 4 | 8 |
-| power-mgmt | 1 | 4 | 3 | 8 |
+| ble | 1 | 4 | 6 | 11 |
+| boot | 2 | 5 | 3 | 10 |
+| device-tree | 2 | 4 | 4 | 10 |
+| dma | 1 | 3 | 7 | 11 |
+| gpio-basic | 2 | 2 | 2 | 6 |
+| isr-concurrency | 0 | 3 | 9 | 12 |
+| kconfig | 2 | 4 | 4 | 10 |
+| linux-driver | 0 | 4 | 6 | 10 |
+| memory-opt | 1 | 5 | 6 | 12 |
+| networking | 1 | 7 | 4 | 12 |
+| ota | 1 | 4 | 6 | 11 |
+| power-mgmt | 2 | 6 | 4 | 12 |
 | pwm | 1 | 0 | 0 | 1 |
-| security | 0 | 3 | 5 | 8 |
-| sensor-driver | 1 | 4 | 3 | 8 |
-| spi-i2c | 1 | 8 | 3 | 12 |
-| storage | 1 | 4 | 4 | 9 |
-| threading | 1 | 4 | 7 | 12 |
-| timer | 2 | 4 | 3 | 9 |
-| uart | 1 | 1 | 0 | 2 |
-| watchdog | 2 | 3 | 4 | 9 |
-| yocto | 1 | 4 | 3 | 8 |
+| security | 0 | 4 | 6 | 10 |
+| sensor-driver | 1 | 6 | 5 | 12 |
+| spi-i2c | 1 | 9 | 4 | 14 |
+| storage | 3 | 5 | 4 | 12 |
+| threading | 1 | 5 | 8 | 14 |
+| timer | 3 | 6 | 3 | 12 |
+| uart | 1 | 2 | 0 | 3 |
+| watchdog | 2 | 4 | 4 | 10 |
+| yocto | 1 | 5 | 4 | 10 |
 
 ---
 
@@ -331,6 +331,51 @@ All Zephyr compilation uses temporary directories (copied from case files + gene
 **Board target selection:** Each case declares `build_board` in metadata.yaml (default: `native_sim`). The board is NOT disclosed to the LLM in the prompt — this tests implicit domain knowledge (knowing what hardware capabilities a given RTOS target provides). Cases where the reference solution itself cannot compile for the declared board are marked `l1_skip: true` and auto-pass L1/L2; these cases are evaluated on L0+L3 only until DT overlays or build fixes are provided.
 
 **l1_skip cases:** 50 of 129 compilable cases have `l1_skip: true` because the reference solution uses device tree nodes, headers, or APIs not available on the target board without additional DT overlays or Kconfig modules. These are tracked for incremental fix-up; see `scripts/verify_references_build.py`.
+
+#### Metadata Field Semantics: `platform` vs `build_board`
+
+Two metadata fields control compilation and runtime behavior:
+
+| Field | Semantics | Example Values | Used By |
+|-------|-----------|----------------|---------|
+| `platform` | **SDK/toolchain** — which build system and framework | `native_sim` (Zephyr), `esp_idf`, `stm32_hal`, `docker_only`, `yocto_build` | Evaluator: routes to correct compiler backend |
+| `build_board` | **Board target** — which hardware target to cross-compile for | `native_sim` (default), `nrf52840dk/nrf52840` | Evaluator: passed to `west build -b <board>` |
+
+These fields are **independent**: a case may use Zephyr SDK (`platform: native_sim`) while targeting nrf52840dk hardware (`build_board: nrf52840dk/nrf52840`). This is not a contradiction — it means "compile with Zephyr for the nrf52840dk board." The `platform` name `native_sim` is a historical artifact from Zephyr's naming convention, not a declaration that the code runs on the simulator.
+
+**Runtime implication:** Only cases with `build_board: native_sim` (or no `build_board`) can execute L2 runtime tests. Cases targeting hardware boards (nrf52840dk) auto-skip L2 with a pass.
+
+#### Per-Category L1/L2 Layer Applicability
+
+The following table shows which evaluation layers apply to each category, based on current metadata (`l1_skip`, `l2_skip` flags) and board targets.
+
+| Category | Cases | L1 Compile | L2 Runtime | Board Target | Notes |
+|----------|-------|------------|------------|--------------|-------|
+| adc | 2 | Skip (2/2) | N/A | nrf52840dk | DT overlay needed |
+| ble | 8 | Partial (4/8 skip) | Skip (4/8) | native_sim | No BT controller on native_sim |
+| boot | 8 | Yes | Yes | native_sim | Config fragments, not C code |
+| device-tree | 8 | Yes | Yes | native_sim | DTS fragments via qemu_arm |
+| dma | 9 | Partial (2/9 skip) | Yes | native_sim | |
+| gpio-basic | 5 | Yes | Mixed | mixed | Multi-platform (Zephyr, ESP, STM32) |
+| isr-concurrency | 9 | Partial (1/9 skip) | Yes | native_sim | |
+| kconfig | 8 | Yes | Yes | native_sim | Config fragments, not C code |
+| linux-driver | 8 | Yes | N/A | native_sim | docker_only platform |
+| memory-opt | 10 | Partial (5/10 skip) | Yes | native_sim | |
+| networking | 10 | Partial (4/10 skip) | Skip (4/10) | native_sim | No network on native_sim |
+| ota | 8 | Skip (6/8) | N/A | nrf52840dk | HW-specific OTA |
+| power-mgmt | 8 | Partial (3/8 skip) | N/A | nrf52840dk | HW power management |
+| pwm | 1 | Skip (1/1) | N/A | nrf52840dk | HW PWM |
+| security | 8 | Partial (2/8 skip) | Yes | native_sim | |
+| sensor-driver | 8 | Skip (7/8) | N/A | nrf52840dk | DT overlay needed |
+| spi-i2c | 12 | Partial (3/12 skip) | Mixed | mixed | Multi-platform |
+| storage | 9 | Partial (3/9 skip) | Yes | native_sim | |
+| threading | 12 | Yes | Yes | native_sim | Multi-platform (Zephyr, STM32) |
+| timer | 9 | Partial (3/9 skip) | Yes | native_sim | Multi-platform |
+| uart | 2 | Skip (2/2) | N/A | nrf52840dk | HW UART |
+| watchdog | 9 | Partial (2/9 skip) | Mixed | mixed | |
+| yocto | 8 | Yes | N/A | native_sim | yocto_build platform |
+
+**Legend:** "Skip" = all cases skip that layer. "Partial" = some cases skip. "N/A" = layer not applicable (hardware board or non-Zephyr platform). "Mixed" = multiple board targets within category.
 
 ### Layer 2: Runtime Execution
 

@@ -13,6 +13,7 @@ from typing import Any
 
 from embedeval.models import (
     CaseCategory,
+    CaseMetadata,
     CheckDetail,
     EvalResult,
     LayerResult,
@@ -928,6 +929,17 @@ def _execute_check_module(
         )
 
 
+def _load_case_meta(case_dir: Path) -> CaseMetadata | None:
+    """Load and cache CaseMetadata for a case directory.
+
+    Uses the canonical Pydantic model from runner.load_case_metadata()
+    so metadata parsing is consistent across all components.
+    """
+    from embedeval.runner import load_case_metadata
+
+    return load_case_metadata(case_dir)
+
+
 def _is_l1_skipped(case_dir: Path) -> bool:
     """Check if case has l1_skip flag (reference doesn't compile for target board).
 
@@ -935,14 +947,8 @@ def _is_l1_skipped(case_dir: Path) -> bool:
     cannot compile for their declared build_board. L1/L2 are skipped (auto-pass)
     so only L0 and L3 checks are evaluated.
     """
-    metadata_path = case_dir / "metadata.yaml"
-    if metadata_path.is_file():
-        for line in metadata_path.read_text(encoding="utf-8").splitlines():
-            if line.strip().startswith("l1_skip:"):
-                val = line.split(":", 1)[1].strip().lower()
-                val = val.split("#")[0].strip()  # strip inline comments
-                return val in ("true", "yes", "1")
-    return False
+    meta = _load_case_meta(case_dir)
+    return meta.l1_skip if meta is not None else False
 
 
 def _is_l2_skipped(case_dir: Path) -> bool:
@@ -952,15 +958,8 @@ def _is_l2_skipped(case_dir: Path) -> bool:
     cannot function on native_sim at runtime (e.g., BLE controller, network
     sockets). L2 is skipped (auto-pass) so only L0, L1, and L3 are evaluated.
     """
-    metadata_path = case_dir / "metadata.yaml"
-    if metadata_path.is_file():
-        for line in metadata_path.read_text(encoding="utf-8").splitlines():
-            if line.strip().startswith("l2_skip:"):
-                val = line.split(":", 1)[1].strip().lower()
-                # Strip inline comment
-                val = val.split("#")[0].strip()
-                return val in ("true", "yes", "1")
-    return False
+    meta = _load_case_meta(case_dir)
+    return meta.l2_skip if meta is not None else False
 
 
 def _get_build_mode() -> str:
@@ -991,13 +990,9 @@ def _get_docker_image() -> str:
 
 def _get_build_board(case_dir: Path) -> str:
     """Read build_board from metadata.yaml, default to native_sim."""
-    metadata_path = case_dir / "metadata.yaml"
-    if metadata_path.is_file():
-        for line in metadata_path.read_text(encoding="utf-8").splitlines():
-            if line.startswith("build_board:"):
-                board = line.split(":", 1)[1].strip()
-                if board:
-                    return board
+    meta = _load_case_meta(case_dir)
+    if meta is not None and meta.build_board:
+        return meta.build_board
     return "native_sim"
 
 
@@ -1010,16 +1005,14 @@ def _is_esp_idf_case(case_dir: Path) -> bool:
     """Return True if this case targets ESP-IDF rather than Zephyr.
 
     Detection strategy (first match wins):
-    1. metadata.yaml contains ``platform: esp_idf``
+    1. metadata.yaml ``platform: esp_idf``
     2. case directory contains an ``sdkconfig.defaults`` file
     """
-    # Check metadata.yaml for explicit platform declaration
-    metadata_path = case_dir / "metadata.yaml"
-    if metadata_path.is_file():
-        content = metadata_path.read_text(encoding="utf-8")
-        if "platform: esp_idf" in content:
-            return True
+    from embedeval.models import EvalPlatform
 
+    meta = _load_case_meta(case_dir)
+    if meta is not None and meta.platform == EvalPlatform.ESP_IDF:
+        return True
     # Fall back to presence of sdkconfig.defaults (ESP-IDF project marker)
     return (case_dir / "sdkconfig.defaults").is_file()
 
@@ -1089,12 +1082,10 @@ def _run_compile_esp_idf(
 
 def _is_stm32_case(case_dir: Path) -> bool:
     """Return True if this case targets STM32 HAL."""
-    metadata_path = case_dir / "metadata.yaml"
-    if metadata_path.is_file():
-        content = metadata_path.read_text(encoding="utf-8")
-        if "platform: stm32_hal" in content:
-            return True
-    return False
+    from embedeval.models import EvalPlatform
+
+    meta = _load_case_meta(case_dir)
+    return meta is not None and meta.platform == EvalPlatform.STM32_HAL
 
 
 def _stm32_env_available() -> bool:

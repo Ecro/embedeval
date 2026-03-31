@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import yaml
 
 from embedeval.evaluator import (
     _esp_idf_env_available,
@@ -11,6 +12,44 @@ from embedeval.evaluator import (
     evaluate,
 )
 from embedeval.models import CheckDetail
+
+
+def _write_esp_metadata(case_dir: Path, **overrides: object) -> None:
+    """Write a complete metadata.yaml for an ESP-IDF case."""
+    meta = {
+        "id": case_dir.name,
+        "category": "gpio-basic",
+        "difficulty": "easy",
+        "title": "ESP test",
+        "description": "ESP-IDF test case",
+        "tags": ["esp-idf"],
+        "platform": "esp_idf",
+        "estimated_tokens": 200,
+        "sdk_version": "5.3",
+    }
+    meta.update(overrides)
+    (case_dir / "metadata.yaml").write_text(
+        yaml.dump(meta), encoding="utf-8"
+    )
+
+
+def _write_zephyr_metadata(case_dir: Path, **overrides: object) -> None:
+    """Write a complete metadata.yaml for a Zephyr case."""
+    meta = {
+        "id": case_dir.name,
+        "category": "kconfig",
+        "difficulty": "easy",
+        "title": "Zephyr test",
+        "description": "Zephyr test case",
+        "tags": ["zephyr"],
+        "platform": "native_sim",
+        "estimated_tokens": 200,
+        "sdk_version": "4.1.0",
+    }
+    meta.update(overrides)
+    (case_dir / "metadata.yaml").write_text(
+        yaml.dump(meta), encoding="utf-8"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -24,9 +63,7 @@ class TestIsEspIdfCase:
         """Case with platform: esp_idf in metadata.yaml is detected."""
         case_dir = tmp_path / "esp-gpio-001"
         case_dir.mkdir()
-        (case_dir / "metadata.yaml").write_text(
-            "id: esp-gpio-001\nplatform: esp_idf\n", encoding="utf-8"
-        )
+        _write_esp_metadata(case_dir)
         assert _is_esp_idf_case(case_dir) is True
 
     def test_sdkconfig_defaults_marker(self, tmp_path: Path) -> None:
@@ -40,9 +77,7 @@ class TestIsEspIdfCase:
         """Zephyr case with native_sim platform is not detected as ESP-IDF."""
         case_dir = tmp_path / "kconfig-001"
         case_dir.mkdir()
-        (case_dir / "metadata.yaml").write_text(
-            "id: kconfig-001\nplatform: native_sim\n", encoding="utf-8"
-        )
+        _write_zephyr_metadata(case_dir)
         assert _is_esp_idf_case(case_dir) is False
 
     def test_empty_case_dir_not_esp_idf(self, tmp_path: Path) -> None:
@@ -97,9 +132,7 @@ class TestEspIdfCompileGate:
         """Create a minimal ESP-IDF case directory."""
         case_dir = tmp_path / "esp-test-001"
         case_dir.mkdir()
-        (case_dir / "metadata.yaml").write_text(
-            "id: esp-test-001\nplatform: esp_idf\n", encoding="utf-8"
-        )
+        _write_esp_metadata(case_dir)
         return case_dir
 
     @patch("embedeval.evaluator._esp_idf_env_available", return_value=False)
@@ -188,9 +221,7 @@ class TestEspIdfCompileGate:
         """Zephyr case is not routed through the ESP-IDF compile path."""
         case_dir = tmp_path / "kconfig-001"
         case_dir.mkdir()
-        (case_dir / "metadata.yaml").write_text(
-            "id: kconfig-001\nplatform: native_sim\n", encoding="utf-8"
-        )
+        _write_zephyr_metadata(case_dir)
         # Should attempt west build, not idf.py. We don't mock subprocess here
         # so we just verify it doesn't crash trying to call idf.py detection.
         assert _is_esp_idf_case(case_dir) is False

@@ -343,6 +343,126 @@ class TestBenchmarkReportMetadata:
         assert report.n_runs == 1
 
 
+class TestComparableScoring:
+    """Tests for common-case comparable scoring across models."""
+
+    def test_same_cases_no_comparable(self) -> None:
+        """When all models test identical cases, comparable scores are None."""
+        results = [
+            _make_result(case_id="case-001", model="model-a", passed=True),
+            _make_result(case_id="case-002", model="model-a", passed=True),
+            _make_result(case_id="case-001", model="model-b", passed=False, failed_at_layer=0),
+            _make_result(case_id="case-002", model="model-b", passed=True),
+        ]
+        report = score(results)
+        for ms in report.models:
+            assert ms.pass_at_1_comparable is None
+            assert ms.comparable_cases is None
+        assert report.overall.case_set_warning is None
+
+    def test_different_cases_produces_comparable(self) -> None:
+        """When models test different case sets, comparable scores are computed."""
+        results = [
+            # model-a: 3 cases (001, 002, 003)
+            _make_result(case_id="case-001", model="model-a", passed=True),
+            _make_result(case_id="case-002", model="model-a", passed=True),
+            _make_result(case_id="case-003", model="model-a", passed=False, failed_at_layer=0),
+            # model-b: 2 cases (001, 002) — missing case-003
+            _make_result(case_id="case-001", model="model-b", passed=False, failed_at_layer=0),
+            _make_result(case_id="case-002", model="model-b", passed=True),
+        ]
+        report = score(results)
+        assert len(report.models) == 2
+
+        model_a = next(m for m in report.models if m.model == "model-a")
+        model_b = next(m for m in report.models if m.model == "model-b")
+
+        # model-a has extra cases, so comparable should be computed
+        assert model_a.pass_at_1_comparable is not None
+        assert model_a.comparable_cases == 2  # common: case-001, case-002
+        # model-a on common cases: 2/2 pass = 1.0
+        assert model_a.pass_at_1_comparable == 1.0
+        # model-a full: 2/3 pass
+        assert abs(model_a.pass_at_1 - 2 / 3) < 0.01
+
+        # model-b has same cases as common set, so comparable should also be set
+        assert model_b.pass_at_1_comparable is not None
+        assert model_b.comparable_cases == 2
+        # model-b on common cases: 1/2 pass = 0.5
+        assert model_b.pass_at_1_comparable == 0.5
+
+    def test_case_set_warning_generated(self) -> None:
+        """Warning is generated when models have different case counts."""
+        results = [
+            _make_result(case_id="case-001", model="model-a", passed=True),
+            _make_result(case_id="case-002", model="model-a", passed=True),
+            _make_result(case_id="case-001", model="model-b", passed=True),
+        ]
+        report = score(results)
+        assert report.overall.case_set_warning is not None
+        assert "different case sets" in report.overall.case_set_warning
+
+    def test_single_model_no_comparable(self) -> None:
+        """Single model should have no comparable scores."""
+        results = [
+            _make_result(case_id="case-001", passed=True),
+            _make_result(case_id="case-002", passed=True),
+        ]
+        report = score(results)
+        assert report.models[0].pass_at_1_comparable is None
+        assert report.overall.case_set_warning is None
+
+    def test_no_common_cases(self) -> None:
+        """When models share zero cases, comparable should still be set (empty)."""
+        results = [
+            _make_result(case_id="case-001", model="model-a", passed=True),
+            _make_result(case_id="case-002", model="model-b", passed=True),
+        ]
+        report = score(results)
+        # No common cases, so comparable should be None (no common results)
+        model_a = next(m for m in report.models if m.model == "model-a")
+        # common_case_ids is empty set, common_results would be empty
+        # so pass_at_1_comparable stays None
+        assert model_a.comparable_cases is None
+
+    def test_same_count_different_cases_produces_comparable(self) -> None:
+        """Two models with same case count but different cases should trigger comparable."""
+        results = [
+            # model-a: case-001, case-002, case-003
+            _make_result(case_id="case-001", model="model-a", passed=True),
+            _make_result(case_id="case-002", model="model-a", passed=True),
+            _make_result(case_id="case-003", model="model-a", passed=True),
+            # model-b: case-001, case-002, case-004 (same count=3, different set)
+            _make_result(case_id="case-001", model="model-b", passed=True),
+            _make_result(case_id="case-002", model="model-b", passed=True),
+            _make_result(
+                case_id="case-004", model="model-b", passed=False, failed_at_layer=0
+            ),
+        ]
+        report = score(results)
+        # common = {case-001, case-002} — both have 3 cases but only 2 overlap
+        for ms in report.models:
+            assert ms.pass_at_1_comparable is not None
+            assert ms.comparable_cases == 2
+        assert report.overall.case_set_warning is not None
+
+    def test_three_models_comparable(self) -> None:
+        """Three models with different case sets: common = intersection of all."""
+        results = [
+            _make_result(case_id="case-001", model="a", passed=True),
+            _make_result(case_id="case-002", model="a", passed=True),
+            _make_result(case_id="case-003", model="a", passed=True),
+            _make_result(case_id="case-001", model="b", passed=True),
+            _make_result(case_id="case-002", model="b", passed=False, failed_at_layer=0),
+            _make_result(case_id="case-001", model="c", passed=False, failed_at_layer=0),
+        ]
+        report = score(results)
+        # common = {case-001} only
+        for ms in report.models:
+            assert ms.pass_at_1_comparable is not None
+            assert ms.comparable_cases == 1
+
+
 class TestQualityScoring:
     """Tests for _count_quality_passes() — L0+L3 only scoring."""
 

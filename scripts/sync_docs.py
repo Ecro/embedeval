@@ -15,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 CASES_DIR = ROOT / "cases"
+PRIVATE_CASES_DIR = ROOT.parent / "embedeval-private" / "cases"
 SRC_DIR = ROOT / "src" / "embedeval"
 TESTS_DIR = ROOT / "tests"
 METHODOLOGY = ROOT / "docs" / "METHODOLOGY.md"
@@ -22,7 +23,11 @@ README = ROOT / "README.md"
 
 
 def count_cases() -> dict:
-    """Gather all benchmark case statistics."""
+    """Gather all benchmark case statistics.
+
+    Scans public cases/ and (if present) the private held-out repo
+    at ../embedeval-private/cases/ for accurate total counts.
+    """
     stats: dict = {
         "total": 0,
         "categories": Counter(),
@@ -34,41 +39,51 @@ def count_cases() -> dict:
         "category_difficulty": {},  # cat -> {easy: N, medium: N, hard: N}
     }
 
-    for case_dir in sorted(CASES_DIR.iterdir()):
-        meta_file = case_dir / "metadata.yaml"
-        if not case_dir.is_dir() or not meta_file.is_file():
-            continue
+    # Scan public + private case directories
+    case_dirs_to_scan = [CASES_DIR]
+    if PRIVATE_CASES_DIR.is_dir():
+        case_dirs_to_scan.append(PRIVATE_CASES_DIR)
 
-        stats["total"] += 1
-        content = meta_file.read_text(encoding="utf-8")
+    for cases_root in case_dirs_to_scan:
+        is_private_dir = cases_root == PRIVATE_CASES_DIR
+        for case_dir in sorted(cases_root.iterdir()):
+            meta_file = case_dir / "metadata.yaml"
+            if not case_dir.is_dir() or not meta_file.is_file():
+                continue
 
-        # Parse YAML fields (simple line-based, no dependency needed)
-        cat = _yaml_value(content, "category")
-        diff = _yaml_value(content, "difficulty")
-        plat = _yaml_value(content, "platform")
-        vis = _yaml_value(content, "visibility") or "public"
+            stats["total"] += 1
+            content = meta_file.read_text(encoding="utf-8")
 
-        if cat:
-            stats["categories"][cat] += 1
-        if diff:
-            stats["difficulties"][diff] += 1
-        if plat:
-            stats["platforms"][plat] += 1
+            # Parse YAML fields (simple line-based, no dependency needed)
+            cat = _yaml_value(content, "category")
+            diff = _yaml_value(content, "difficulty")
+            plat = _yaml_value(content, "platform")
+            vis = _yaml_value(content, "visibility") or "public"
+            # Cases in private repo are always private regardless of field
+            if is_private_dir:
+                vis = "private"
 
-        stats["visibility"][vis] += 1
+            if cat:
+                stats["categories"][cat] += 1
+            if diff:
+                stats["difficulties"][diff] += 1
+            if plat:
+                stats["platforms"][plat] += 1
 
-        # Category × difficulty matrix
-        if cat and diff:
-            if cat not in stats["category_difficulty"]:
-                stats["category_difficulty"][cat] = Counter()
-            stats["category_difficulty"][cat][diff] += 1
+            stats["visibility"][vis] += 1
 
-        # Negatives
-        neg_file = case_dir / "checks" / "negatives.py"
-        if neg_file.is_file():
-            stats["negatives"] += 1
-            neg_content = neg_file.read_text(encoding="utf-8")
-            stats["must_fail_mutations"] += neg_content.count('"must_fail"')
+            # Category × difficulty matrix
+            if cat and diff:
+                if cat not in stats["category_difficulty"]:
+                    stats["category_difficulty"][cat] = Counter()
+                stats["category_difficulty"][cat][diff] += 1
+
+            # Negatives
+            neg_file = case_dir / "checks" / "negatives.py"
+            if neg_file.is_file():
+                stats["negatives"] += 1
+                neg_content = neg_file.read_text(encoding="utf-8")
+                stats["must_fail_mutations"] += neg_content.count('"must_fail"')
 
     return stats
 

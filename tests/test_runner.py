@@ -315,3 +315,86 @@ class TestPrivateHeldOutSet:
             cases_dir=tmp_path, model="mock", include_private=True
         )
         assert len(results) == 2  # both cases
+
+
+class TestMetadataNewFields:
+    """Tests for build_board, l1_skip, l2_skip metadata fields."""
+
+    def test_build_board_loaded(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "adc-001"
+        case_dir.mkdir()
+        metadata = {
+            "id": "adc-001",
+            "category": "adc",
+            "difficulty": "medium",
+            "title": "ADC test",
+            "description": "ADC test case",
+            "tags": ["zephyr", "adc"],
+            "platform": "native_sim",
+            "estimated_tokens": 400,
+            "sdk_version": "4.1.0",
+            "build_board": "nrf52840dk/nrf52840",
+        }
+        (case_dir / "metadata.yaml").write_text(
+            yaml.dump(metadata), encoding="utf-8"
+        )
+        (case_dir / "prompt.md").write_text("test", encoding="utf-8")
+        meta = load_case_metadata(case_dir)
+        assert meta is not None
+        assert meta.build_board == "nrf52840dk/nrf52840"
+
+    def test_l1_skip_loaded(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "adc-002"
+        case_dir.mkdir()
+        metadata = {
+            "id": "adc-002",
+            "category": "adc",
+            "difficulty": "hard",
+            "title": "ADC skip test",
+            "description": "L1 skip test case",
+            "tags": ["zephyr"],
+            "platform": "native_sim",
+            "estimated_tokens": 400,
+            "sdk_version": "4.1.0",
+            "l1_skip": True,
+        }
+        (case_dir / "metadata.yaml").write_text(
+            yaml.dump(metadata), encoding="utf-8"
+        )
+        (case_dir / "prompt.md").write_text("test", encoding="utf-8")
+        meta = load_case_metadata(case_dir)
+        assert meta is not None
+        assert meta.l1_skip is True
+        assert meta.l2_skip is False
+
+    def test_l2_skip_loaded(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "ble-001"
+        case_dir.mkdir()
+        metadata = {
+            "id": "ble-001",
+            "category": "ble",
+            "difficulty": "hard",
+            "title": "BLE skip test",
+            "description": "L2 skip test case",
+            "tags": ["zephyr", "ble"],
+            "platform": "native_sim",
+            "estimated_tokens": 600,
+            "sdk_version": "4.1.0",
+            "l2_skip": True,
+        }
+        (case_dir / "metadata.yaml").write_text(
+            yaml.dump(metadata), encoding="utf-8"
+        )
+        (case_dir / "prompt.md").write_text("test", encoding="utf-8")
+        meta = load_case_metadata(case_dir)
+        assert meta is not None
+        assert meta.l2_skip is True
+        assert meta.l1_skip is False
+
+    def test_defaults_when_fields_absent(self, tmp_path: Path) -> None:
+        case_dir = _create_case(tmp_path, "kconfig-001")
+        meta = load_case_metadata(case_dir)
+        assert meta is not None
+        assert meta.build_board is None
+        assert meta.l1_skip is False
+        assert meta.l2_skip is False
