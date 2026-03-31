@@ -111,8 +111,8 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
     lines: list[str] = [
         "## Model Comparison",
         "",
-        "| Model | pass@1 | 95% CI | pass@5 | Cases Passed | Total Cases | Samples |",
-        "|-------|--------|--------|--------|-------------|-------------|---------|",
+        "| Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |",
+        "|-------|---------------|------------------|--------|--------|--------|---------|-------|---------|",
     ]
 
     for report in reports:
@@ -122,12 +122,20 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
             lines.append(
                 f"| {model_score.model} "
                 f"| {model_score.pass_at_1:.1%} "
+                f"| {model_score.pass_at_1_quality:.1%} "
                 f"| {ci_str} "
                 f"| {model_score.pass_at_5:.1%} "
                 f"| {model_score.passed_cases} "
+                f"| {model_score.passed_cases_quality} "
                 f"| {model_score.total_cases} "
                 f"| n={model_score.n_samples} |"
             )
+
+    lines.append("")
+    lines.append(
+        "*pass@1 (full) = all layers must pass. "
+        "pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*"
+    )
 
     return lines
 
@@ -186,8 +194,7 @@ def _reasoning_breakdown(reports: list[BenchmarkReport]) -> list[str]:
             else:
                 reliability = "Expert review required"
             lines.append(
-                f"| {label} | {rs.pass_at_1:.1%} "
-                f"| {rs.total_cases} | {reliability} |"
+                f"| {label} | {rs.pass_at_1:.1%} | {rs.total_cases} | {reliability} |"
             )
     return lines
 
@@ -350,8 +357,8 @@ def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
     lines: list[str] = [
         "## Cross-Benchmark Comparison",
         "",
-        "| Model | HumanEval | SWE-bench | EmbedEval | Embed Gap |",
-        "|-------|-----------|-----------|-----------|-----------|",
+        "| Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |",
+        "|-------|-----------|-----------|------------------|---------------------|-----------|",
     ]
 
     has_data = False
@@ -363,13 +370,15 @@ def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
             has_data = True
             humaneval = ext.get("humaneval", 0)
             swe_bench = ext.get("swe_bench", 0)
-            embed_pct = model_score.pass_at_1 * 100
-            gap = embed_pct - humaneval
+            embed_full = model_score.pass_at_1 * 100
+            embed_quality = model_score.pass_at_1_quality * 100
+            gap = embed_full - humaneval
             lines.append(
                 f"| {model_score.model} "
                 f"| {humaneval:.1f}% "
                 f"| {swe_bench:.1f}% "
-                f"| {embed_pct:.1f}% "
+                f"| {embed_full:.1f}% "
+                f"| {embed_quality:.1f}% "
                 f"| {gap:+.1f}%p |"
             )
 
@@ -602,10 +611,10 @@ def generate_safe_guide(
 
     # Classify categories into risk tiers based on worst-model performance
     risk_tiers: dict[str, list[tuple[str, dict[str, float]]]] = {
-        "critical": [],   # <50% on any model — DO NOT trust
-        "caution": [],    # 50-79% — always review
-        "moderate": [],   # 80-89% — spot check
-        "reliable": [],   # 90%+ on all models — generally safe
+        "critical": [],  # <50% on any model — DO NOT trust
+        "caution": [],  # 50-79% — always review
+        "moderate": [],  # 80-89% — spot check
+        "reliable": [],  # 90%+ on all models — generally safe
     }
 
     for cat in all_cats:
@@ -654,8 +663,10 @@ def generate_safe_guide(
     lines: list[str] = []
     lines.append("# EmbedEval Safe Guide for Embedded Engineers")
     lines.append("")
-    lines.append("*Auto-generated from benchmark results. "
-                 "Use this to decide when LLM-generated code needs human review.*")
+    lines.append(
+        "*Auto-generated from benchmark results. "
+        "Use this to decide when LLM-generated code needs human review.*"
+    )
     lines.append("")
     timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines.append(f"**Last updated:** {timestamp}")
@@ -677,14 +688,24 @@ def generate_safe_guide(
 
     # Risk tiers
     _tier_header = {
-        "critical": ("CRITICAL — Do Not Trust", "LLM fails >50% of the time. "
-                     "Always write this code manually or review every line."),
-        "caution": ("CAUTION — Always Review", "LLM fails 20-50%. "
-                    "Use as starting point only. Expert review mandatory."),
-        "moderate": ("MODERATE — Spot Check", "LLM is mostly correct (80-89%). "
-                     "Review safety-critical patterns (volatile, ISR, error paths)."),
-        "reliable": ("RELIABLE — Generally Safe", "LLM passes 90%+. "
-                     "Standard code review is sufficient."),
+        "critical": (
+            "CRITICAL — Do Not Trust",
+            "LLM fails >50% of the time. "
+            "Always write this code manually or review every line.",
+        ),
+        "caution": (
+            "CAUTION — Always Review",
+            "LLM fails 20-50%. Use as starting point only. Expert review mandatory.",
+        ),
+        "moderate": (
+            "MODERATE — Spot Check",
+            "LLM is mostly correct (80-89%). "
+            "Review safety-critical patterns (volatile, ISR, error paths).",
+        ),
+        "reliable": (
+            "RELIABLE — Generally Safe",
+            "LLM passes 90%+. Standard code review is sufficient.",
+        ),
     }
 
     for tier_key in ["critical", "caution", "moderate", "reliable"]:
@@ -722,8 +743,10 @@ def generate_safe_guide(
     if top_failures:
         lines.append("## Most Common Failure Patterns")
         lines.append("")
-        lines.append("*These checks fail most often across all models and runs. "
-                     "Pay special attention to these patterns in LLM-generated code.*")
+        lines.append(
+            "*These checks fail most often across all models and runs. "
+            "Pay special attention to these patterns in LLM-generated code.*"
+        )
         lines.append("")
         lines.append("| Pattern | Failures | What to Check |")
         lines.append("|---------|----------|---------------|")
@@ -737,16 +760,24 @@ def generate_safe_guide(
     lines.append("")
     lines.append("### When using LLM for embedded code:")
     lines.append("")
-    lines.append("1. **Always review** volatile qualifiers, memory barriers, "
-                 "and ISR-safe patterns")
-    lines.append("2. **Never trust** DMA configuration, memory domain setup, "
-                 "or lock ordering without verification")
-    lines.append("3. **Verify** error handling paths — LLMs often generate "
-                 "happy-path-only code")
-    lines.append("4. **Check** that Kconfig/prj.conf options match the APIs used "
-                 "in the code")
-    lines.append("5. **Test** on actual hardware or QEMU — static checks alone "
-                 "miss runtime issues")
+    lines.append(
+        "1. **Always review** volatile qualifiers, memory barriers, "
+        "and ISR-safe patterns"
+    )
+    lines.append(
+        "2. **Never trust** DMA configuration, memory domain setup, "
+        "or lock ordering without verification"
+    )
+    lines.append(
+        "3. **Verify** error handling paths — LLMs often generate happy-path-only code"
+    )
+    lines.append(
+        "4. **Check** that Kconfig/prj.conf options match the APIs used in the code"
+    )
+    lines.append(
+        "5. **Test** on actual hardware or QEMU — static checks alone "
+        "miss runtime issues"
+    )
     lines.append("")
 
     # Write

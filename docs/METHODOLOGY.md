@@ -328,6 +328,10 @@ EmbedEval evaluates LLM-generated code through five progressively deeper verific
 
 All Zephyr compilation uses temporary directories (copied from case files + generated `src/main.c`) to avoid mutating case files. The build directory is shared between L1 and L2.
 
+**Board target selection:** Each case declares `build_board` in metadata.yaml (default: `native_sim`). The board is NOT disclosed to the LLM in the prompt — this tests implicit domain knowledge (knowing what hardware capabilities a given RTOS target provides). Cases where the reference solution itself cannot compile for the declared board are marked `l1_skip: true` and auto-pass L1/L2; these cases are evaluated on L0+L3 only until DT overlays or build fixes are provided.
+
+**l1_skip cases:** 50 of 129 compilable cases have `l1_skip: true` because the reference solution uses device tree nodes, headers, or APIs not available on the target board without additional DT overlays or Kconfig modules. These are tracked for incremental fix-up; see `scripts/verify_references_build.py`.
+
 ### Layer 2: Runtime Execution
 
 **Purpose:** Execute compiled firmware and detect runtime failures (segfaults, deadlocks, hangs).

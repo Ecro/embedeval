@@ -46,11 +46,19 @@ def _extract_build_errors(stdout: str, stderr: str) -> str:
     lines = combined.splitlines()
 
     error_lines = [
-        line for line in lines
-        if any(marker in line.lower() for marker in (
-            "error:", "fatal error:", "undefined reference", "no such file",
-            "undeclared", "linker command failed",
-        ))
+        line
+        for line in lines
+        if any(
+            marker in line.lower()
+            for marker in (
+                "error:",
+                "fatal error:",
+                "undefined reference",
+                "no such file",
+                "undeclared",
+                "linker command failed",
+            )
+        )
     ]
 
     if error_lines:
@@ -97,64 +105,68 @@ def evaluate(
     # Shared build directory: created once, used by L1 (compile) and L2 (runtime),
     # cleaned up after all layers complete.
     build_dir: Path | None = None
-    if _get_build_mode() != "skip" and (case_dir / "CMakeLists.txt").is_file():
+    if (
+        _get_build_mode() != "skip"
+        and (case_dir / "CMakeLists.txt").is_file()
+        and not _is_l1_skipped(case_dir)
+    ):
         build_dir = _prepare_build_dir(case_dir, generated_code)
 
     try:
-      for layer_num in range(5):
-        layer_name = LAYER_NAMES[layer_num]
+        for layer_num in range(5):
+            layer_name = LAYER_NAMES[layer_num]
 
-        if failed_at_layer is not None:
-            logger.info(
-                "Skipping layer %d (%s) due to failure at layer %d",
-                layer_num,
-                layer_name,
-                failed_at_layer,
-            )
-            layers.append(
-                LayerResult(
-                    layer=layer_num,
-                    name=layer_name,
-                    passed=False,
-                    details=[],
-                    error=f"Skipped: layer {failed_at_layer} failed",
-                    duration_seconds=0.0,
+            if failed_at_layer is not None:
+                logger.info(
+                    "Skipping layer %d (%s) due to failure at layer %d",
+                    layer_num,
+                    layer_name,
+                    failed_at_layer,
                 )
+                layers.append(
+                    LayerResult(
+                        layer=layer_num,
+                        name=layer_name,
+                        passed=False,
+                        details=[],
+                        error=f"Skipped: layer {failed_at_layer} failed",
+                        duration_seconds=0.0,
+                    )
+                )
+                continue
+
+            layer_start = time.monotonic()
+            layer_result = _run_layer(
+                layer_num=layer_num,
+                layer_name=layer_name,
+                case_dir=case_dir,
+                generated_code=generated_code,
+                timeout=timeout,
+                build_dir=build_dir,
             )
-            continue
+            # Calculate weighted score for the layer
+            details = layer_result.details
+            total_weight = sum(d.weight for d in details)
+            earned_weight = sum(d.weight for d in details if d.passed)
+            layer_score = earned_weight / total_weight if total_weight > 0 else 1.0
 
-        layer_start = time.monotonic()
-        layer_result = _run_layer(
-            layer_num=layer_num,
-            layer_name=layer_name,
-            case_dir=case_dir,
-            generated_code=generated_code,
-            timeout=timeout,
-            build_dir=build_dir,
-        )
-        # Calculate weighted score for the layer
-        details = layer_result.details
-        total_weight = sum(d.weight for d in details)
-        earned_weight = sum(d.weight for d in details if d.passed)
-        layer_score = earned_weight / total_weight if total_weight > 0 else 1.0
+            layer_result = LayerResult(
+                layer=layer_num,
+                name=layer_name,
+                passed=layer_result.passed,
+                details=details,
+                error=layer_result.error,
+                duration_seconds=time.monotonic() - layer_start,
+                score=layer_score,
+            )
+            layers.append(layer_result)
 
-        layer_result = LayerResult(
-            layer=layer_num,
-            name=layer_name,
-            passed=layer_result.passed,
-            details=details,
-            error=layer_result.error,
-            duration_seconds=time.monotonic() - layer_start,
-            score=layer_score,
-        )
-        layers.append(layer_result)
-
-        if not layer_result.passed and layer_num < 4:
-            # L4 (mutation meta-verification) failures don't cascade or
-            # affect overall pass/fail — they test benchmark quality, not
-            # LLM quality.
-            failed_at_layer = layer_num
-            logger.info("Layer %d (%s) failed", layer_num, layer_name)
+            if not layer_result.passed and layer_num < 4:
+                # L4 (mutation meta-verification) failures don't cascade or
+                # affect overall pass/fail — they test benchmark quality, not
+                # LLM quality.
+                failed_at_layer = layer_num
+                logger.info("Layer %d (%s) failed", layer_num, layer_name)
 
     finally:
         if build_dir is not None:
@@ -255,7 +267,9 @@ def _run_static_checks(case_dir: Path, generated_code: str) -> LayerResult:
 
 
 def _run_compile_gate(
-    case_dir: Path, generated_code: str, timeout: float,
+    case_dir: Path,
+    generated_code: str,
+    timeout: float,
     build_dir: Path | None = None,
 ) -> LayerResult:
     """Layer 1: Compile gate — dispatches to ESP-IDF, STM32, or Zephyr path."""
@@ -266,6 +280,29 @@ def _run_compile_gate(
         return _run_compile_stm32(case_dir, generated_code, timeout)
 
     build_mode = _get_build_mode()
+
+    # Cases with l1_skip: reference solution doesn't compile for target board
+    if _is_l1_skipped(case_dir):
+        logger.info(
+            "l1_skip set in %s, skipping compile gate (pass)",
+            case_dir.name,
+        )
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="build_env",
+                    passed=True,
+                    expected="l1_skip not set",
+                    actual="skipped (l1_skip: reference does not compile for target board)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
 
     # Cases without CMakeLists.txt are not compilable (kconfig, device-tree, etc.)
     if not (case_dir / "CMakeLists.txt").is_file():
@@ -348,7 +385,9 @@ def _prepare_build_dir(case_dir: Path, generated_code: str) -> Path:
 
 
 def _run_compile_docker(
-    case_dir: Path, generated_code: str, timeout: float,
+    case_dir: Path,
+    generated_code: str,
+    timeout: float,
     build_dir: Path | None = None,
 ) -> LayerResult:
     """Run west build inside Docker container.
@@ -364,12 +403,21 @@ def _run_compile_docker(
     try:
         start = time.monotonic()
         cmd = [
-            "docker", "run", "--rm",
-            "--entrypoint", "",
-            "-v", f"{build_dir}:/workspace",
-            "-w", "/workspace",
+            "docker",
+            "run",
+            "--rm",
+            "--entrypoint",
+            "",
+            "-v",
+            f"{build_dir}:/workspace",
+            "-w",
+            "/workspace",
             _get_docker_image(),
-            "west", "build", "-b", board, "/workspace",
+            "west",
+            "build",
+            "-b",
+            board,
+            "/workspace",
         ]
         result = subprocess.run(
             cmd,
@@ -417,7 +465,9 @@ def _run_compile_docker(
 
 
 def _run_compile_local(
-    case_dir: Path, generated_code: str, timeout: float,
+    case_dir: Path,
+    generated_code: str,
+    timeout: float,
     build_dir: Path | None = None,
 ) -> LayerResult:
     """Run west build locally (requires ZEPHYR_BASE)."""
@@ -451,9 +501,7 @@ def _run_compile_local(
                 )
             ],
             error=(
-                _extract_build_errors(
-                    result.stdout or "", result.stderr or ""
-                )[:4000]
+                _extract_build_errors(result.stdout or "", result.stderr or "")[:4000]
                 if not passed
                 else None
             ),
@@ -474,7 +522,9 @@ def _run_compile_local(
 
 
 def _run_runtime(
-    case_dir: Path, generated_code: str, timeout: float,
+    case_dir: Path,
+    generated_code: str,
+    timeout: float,
     build_dir: Path | None = None,
 ) -> LayerResult:
     """Layer 2: Runtime execution.
@@ -498,6 +548,44 @@ def _run_runtime(
                     passed=True,
                     expected="CMakeLists.txt present",
                     actual="skipped (not a compilable case)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
+    if _is_l1_skipped(case_dir):
+        logger.info("l1_skip set, skipping runtime execution (pass)")
+        return LayerResult(
+            layer=2,
+            name="runtime_execution",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="build_env",
+                    passed=True,
+                    expected="l1_skip not set",
+                    actual="skipped (l1_skip: reference does not compile)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
+    if _is_l2_skipped(case_dir):
+        logger.info("l2_skip set, skipping runtime execution (pass)")
+        return LayerResult(
+            layer=2,
+            name="runtime_execution",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="runtime_skip",
+                    passed=True,
+                    expected="l2_skip not set",
+                    actual="skipped (l2_skip: peripheral unavailable on native_sim)",
                     check_type="environment",
                 )
             ],
@@ -567,12 +655,20 @@ def _run_runtime(
 
     if build_mode == "docker":
         cmd = [
-            "docker", "run", "--rm",
-            "--entrypoint", "",
-            "-v", f"{build_dir}:/workspace",
-            "-w", "/workspace",
+            "docker",
+            "run",
+            "--rm",
+            "--entrypoint",
+            "",
+            "-v",
+            f"{build_dir}:/workspace",
+            "-w",
+            "/workspace",
             _get_docker_image(),
-            "west", "build", "-t", "run",
+            "west",
+            "build",
+            "-t",
+            "run",
         ]
         cwd = None
     else:
@@ -599,8 +695,9 @@ def _run_runtime(
     except subprocess.TimeoutExpired as exc:
         # Expected: firmware runs forever, we killed it after rt_timeout
         elapsed = time.monotonic() - start
-        stdout = (exc.stdout or b"").decode(errors="replace") + \
-                 (exc.stderr or b"").decode(errors="replace")
+        stdout = (exc.stdout or b"").decode(errors="replace") + (
+            exc.stderr or b""
+        ).decode(errors="replace")
         exited_ok = True  # timeout is normal for embedded firmware
 
     details: list[CheckDetail] = [
@@ -695,23 +792,27 @@ def _run_mutant_checks(case_dir: Path, generated_code: str) -> LayerResult:
             mutated_code = neg["mutation"](generated_code)
         except Exception as exc:
             logger.debug("Mutation '%s' raised: %s", name, exc)
-            details.append(CheckDetail(
-                check_name=f"mutation_{name}",
-                passed=True,
-                expected="mutation applied",
-                actual=f"skipped (mutation error: {exc})",
-                check_type="mutation",
-            ))
+            details.append(
+                CheckDetail(
+                    check_name=f"mutation_{name}",
+                    passed=True,
+                    expected="mutation applied",
+                    actual=f"skipped (mutation error: {exc})",
+                    check_type="mutation",
+                )
+            )
             continue
 
         if mutated_code == generated_code:
-            details.append(CheckDetail(
-                check_name=f"mutation_{name}",
-                passed=True,
-                expected="mutation applied",
-                actual="skipped (code unchanged by mutation)",
-                check_type="mutation",
-            ))
+            details.append(
+                CheckDetail(
+                    check_name=f"mutation_{name}",
+                    passed=True,
+                    expected="mutation applied",
+                    actual="skipped (code unchanged by mutation)",
+                    check_type="mutation",
+                )
+            )
             continue
 
         # Run L0 + L3 checks on the mutated code
@@ -730,13 +831,15 @@ def _run_mutant_checks(case_dir: Path, generated_code: str) -> LayerResult:
                 all_caught = False
                 missed.append(check_name)
 
-        details.append(CheckDetail(
-            check_name=f"mutation_{name}",
-            passed=all_caught,
-            expected=f"checks {neg['must_fail']} detect mutation",
-            actual="caught" if all_caught else f"missed: {missed}",
-            check_type="mutation",
-        ))
+        details.append(
+            CheckDetail(
+                check_name=f"mutation_{name}",
+                passed=all_caught,
+                expected=f"checks {neg['must_fail']} detect mutation",
+                actual="caught" if all_caught else f"missed: {missed}",
+                check_type="mutation",
+            )
+        )
 
     elapsed = time.monotonic() - start
     all_passed = all(d.passed for d in details) if details else True
@@ -825,6 +928,41 @@ def _execute_check_module(
         )
 
 
+def _is_l1_skipped(case_dir: Path) -> bool:
+    """Check if case has l1_skip flag (reference doesn't compile for target board).
+
+    Cases marked l1_skip: true in metadata.yaml have reference solutions that
+    cannot compile for their declared build_board. L1/L2 are skipped (auto-pass)
+    so only L0 and L3 checks are evaluated.
+    """
+    metadata_path = case_dir / "metadata.yaml"
+    if metadata_path.is_file():
+        for line in metadata_path.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("l1_skip:"):
+                val = line.split(":", 1)[1].strip().lower()
+                val = val.split("#")[0].strip()  # strip inline comments
+                return val in ("true", "yes", "1")
+    return False
+
+
+def _is_l2_skipped(case_dir: Path) -> bool:
+    """Check if case has l2_skip flag (peripheral unavailable on native_sim).
+
+    Cases marked l2_skip: true in metadata.yaml target peripherals that
+    cannot function on native_sim at runtime (e.g., BLE controller, network
+    sockets). L2 is skipped (auto-pass) so only L0, L1, and L3 are evaluated.
+    """
+    metadata_path = case_dir / "metadata.yaml"
+    if metadata_path.is_file():
+        for line in metadata_path.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("l2_skip:"):
+                val = line.split(":", 1)[1].strip().lower()
+                # Strip inline comment
+                val = val.split("#")[0].strip()
+                return val in ("true", "yes", "1")
+    return False
+
+
 def _get_build_mode() -> str:
     """Return the build mode: 'docker', 'local', or 'skip'.
 
@@ -865,10 +1003,7 @@ def _get_build_board(case_dir: Path) -> str:
 
 def _esp_idf_env_available() -> bool:
     """Check if ESP-IDF build environment is available."""
-    return (
-        os.environ.get("IDF_PATH") is not None
-        and _get_build_mode() != "skip"
-    )
+    return os.environ.get("IDF_PATH") is not None and _get_build_mode() != "skip"
 
 
 def _is_esp_idf_case(case_dir: Path) -> bool:
@@ -964,10 +1099,7 @@ def _is_stm32_case(case_dir: Path) -> bool:
 
 def _stm32_env_available() -> bool:
     """Check if STM32 build environment is available."""
-    return (
-        os.environ.get("STM32_HAL_PATH") is not None
-        and _get_build_mode() != "skip"
-    )
+    return os.environ.get("STM32_HAL_PATH") is not None and _get_build_mode() != "skip"
 
 
 def _run_compile_stm32(
@@ -1010,7 +1142,8 @@ def _run_compile_stm32(
             f"-I{hal_path}/CMSIS/Device/ST/STM32F4xx/Include",
             f"-I{hal_path}/HAL_Driver/Inc",
             "-Wall",
-            "-o", "/dev/null",
+            "-o",
+            "/dev/null",
             str(src_file),
         ]
 

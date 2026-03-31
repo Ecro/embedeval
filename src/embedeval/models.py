@@ -56,18 +56,18 @@ class Visibility(str, Enum):
 class CaseTier(str, Enum):
     """Evaluation tier for benchmark scoring."""
 
-    SANITY = "sanity"        # Basic functionality — score not counted
-    CORE = "core"            # Primary evaluation metric
+    SANITY = "sanity"  # Basic functionality — score not counted
+    CORE = "core"  # Primary evaluation metric
     CHALLENGE = "challenge"  # Model differentiation
 
 
 class ReasoningType(str, Enum):
     """Type of reasoning required to solve a test case."""
 
-    API_RECALL = "api_recall"                # L1: Single API call pattern
-    RULE_APPLICATION = "rule_application"    # L2: Known rule enforcement
-    CROSS_DOMAIN = "cross_domain"            # L3: C + RTOS + HW combined
-    SYSTEM_REASONING = "system_reasoning"    # L4: Backward/whole-system reasoning
+    API_RECALL = "api_recall"  # L1: Single API call pattern
+    RULE_APPLICATION = "rule_application"  # L2: Known rule enforcement
+    CROSS_DOMAIN = "cross_domain"  # L3: C + RTOS + HW combined
+    SYSTEM_REASONING = "system_reasoning"  # L4: Backward/whole-system reasoning
 
 
 class EvalPlatform(str, Enum):
@@ -171,11 +171,13 @@ class ModelScore(BaseModel):
 
     model: str
     pass_at_1: float = Field(ge=0.0, le=1.0)
+    pass_at_1_quality: float = Field(default=0.0, ge=0.0, le=1.0)
     pass_at_3: float = Field(default=0.0, ge=0.0, le=1.0)
     pass_at_5: float = Field(ge=0.0, le=1.0)
     avg_score: float = Field(default=0.0, ge=0.0, le=1.0)
     total_cases: int = Field(ge=0)
     passed_cases: int = Field(ge=0)
+    passed_cases_quality: int = Field(default=0, ge=0)
     layer_pass_rates: dict[str, float]
     pass_at_1_ci: tuple[float, float] = (0.0, 0.0)
     n_samples: int = Field(default=1, ge=1)

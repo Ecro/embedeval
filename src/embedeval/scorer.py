@@ -19,9 +19,7 @@ from embedeval.models import (
 logger = logging.getLogger(__name__)
 
 
-def wilson_ci(
-    pass_rate: float, n: int, z: float = 1.96
-) -> tuple[float, float]:
+def wilson_ci(pass_rate: float, n: int, z: float = 1.96) -> tuple[float, float]:
     """Wilson score 95% confidence interval for a pass rate.
 
     Args:
@@ -36,9 +34,7 @@ def wilson_ci(
         return (0.0, 0.0)
     denom = 1 + z**2 / n
     center = (pass_rate + z**2 / (2 * n)) / denom
-    spread = (
-        z * ((pass_rate * (1 - pass_rate) / n + z**2 / (4 * n**2)) ** 0.5) / denom
-    )
+    spread = z * ((pass_rate * (1 - pass_rate) / n + z**2 / (4 * n**2)) ** 0.5) / denom
     return (max(0.0, center - spread), min(1.0, center + spread))
 
 
@@ -107,6 +103,10 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
         layer_pass_rates = _calculate_layer_pass_rates(model_results)
 
         n_cases = len(case_ids)
+
+        # Quality score: L0+L3 only (ignoring L1 compile and L2 runtime)
+        passed_quality = _count_quality_passes(model_results, case_ids)
+        pass_at_1_quality = passed_quality / n_cases if n_cases > 0 else 0.0
         ci = wilson_ci(pass_at_1, n_cases)
 
         # n_samples = max attempts per case
@@ -119,11 +119,13 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
             ModelScore(
                 model=model,
                 pass_at_1=pass_at_1,
+                pass_at_1_quality=pass_at_1_quality,
                 pass_at_3=pass_at_3,
                 pass_at_5=pass_at_5,
                 avg_score=pass_at_1,
                 total_cases=n_cases,
                 passed_cases=passed_cases,
+                passed_cases_quality=passed_quality,
                 layer_pass_rates=layer_pass_rates,
                 pass_at_1_ci=ci,
                 n_samples=samples_per_case,
@@ -221,6 +223,41 @@ def _calculate_pass_at_k(results: list[EvalResult], k: int) -> float:
     return sum(scores) / len(scores)
 
 
+def _count_quality_passes(
+    results: list[EvalResult],
+    case_ids: set[str],
+) -> int:
+    """Count cases that pass L0+L3 quality checks (ignoring L1 compile and L2 runtime).
+
+    A case passes quality if:
+    - L0 (static_analysis) passed (if present)
+    - L3 (static_heuristic/behavior) passed (if present)
+    - L1 and L2 results are ignored
+    """
+    passed = 0
+    for cid in case_ids:
+        case_results = [r for r in results if r.case_id == cid]
+        # Check if any attempt passes quality
+        any_pass = False
+        for r in case_results:
+            l0_ok = True
+            l3_ok = True
+            for layer in r.layers:
+                if layer.layer == 0 and not layer.passed:
+                    l0_ok = False
+                if layer.layer == 3:
+                    # Skip if L3 was skipped due to earlier failure
+                    if layer.error and "Skipped" in layer.error:
+                        continue
+                    if not layer.passed:
+                        l3_ok = False
+            if l0_ok and l3_ok:
+                any_pass = True
+                break
+        if any_pass:
+            passed += 1
+    return passed
+
 
 def _calculate_layer_pass_rates(
     results: list[EvalResult],
@@ -289,7 +326,12 @@ def _calculate_reasoning_scores(results: list[EvalResult]) -> list[ReasoningScor
             by_type[rt_name][r.case_id].append(r)
 
     scores: list[ReasoningScore] = []
-    for rt_name in ["api_recall", "rule_application", "cross_domain", "system_reasoning"]:
+    for rt_name in [
+        "api_recall",
+        "rule_application",
+        "cross_domain",
+        "system_reasoning",
+    ]:
         if rt_name not in by_type:
             continue
         cases = by_type[rt_name]

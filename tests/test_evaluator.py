@@ -7,6 +7,8 @@ import pytest
 
 from embedeval.evaluator import (
     _get_build_mode,
+    _is_l1_skipped,
+    _is_l2_skipped,
     _load_negatives,
     _prepare_build_dir,
     _run_mutant_checks,
@@ -338,11 +340,14 @@ class TestPrepareBuildDir:
         build_dir = _prepare_build_dir(case_dir, "int main() { return 0; }")
         try:
             assert (build_dir / "src" / "main.c").is_file()
-            assert (build_dir / "src" / "main.c").read_text() == "int main() { return 0; }"
+            assert (
+                build_dir / "src" / "main.c"
+            ).read_text() == "int main() { return 0; }"
             assert (build_dir / "CMakeLists.txt").is_file()
             assert (build_dir / "prj.conf").is_file()
         finally:
             import shutil
+
             shutil.rmtree(build_dir)
 
     def test_does_not_mutate_case_dir(self, tmp_path: Path) -> None:
@@ -360,6 +365,7 @@ class TestPrepareBuildDir:
             assert (build_dir / "src" / "main.c").read_text() == "// generated code"
         finally:
             import shutil
+
             shutil.rmtree(build_dir)
 
     def test_copies_overlay_files(self, tmp_path: Path) -> None:
@@ -373,6 +379,7 @@ class TestPrepareBuildDir:
             assert (build_dir / "app.overlay").is_file()
         finally:
             import shutil
+
             shutil.rmtree(build_dir)
 
     def test_handles_missing_cmake(self, tmp_path: Path) -> None:
@@ -385,6 +392,7 @@ class TestPrepareBuildDir:
             assert not (build_dir / "CMakeLists.txt").exists()
         finally:
             import shutil
+
             shutil.rmtree(build_dir)
 
 
@@ -453,7 +461,9 @@ class TestDockerCompileMode:
         case_dir.mkdir()
         (case_dir / "CMakeLists.txt").write_text("cmake")
 
-        result = evaluate(case_dir=case_dir, generated_code="int main() {}", timeout=300.0)
+        result = evaluate(
+            case_dir=case_dir, generated_code="int main() {}", timeout=300.0
+        )
         assert result.layers[1].passed is False
         assert "timed out" in result.layers[1].error
 
@@ -527,7 +537,8 @@ class TestMutantChecks:
             " 'mutation': lambda c: c, 'must_fail': ['x']}]"
         )
         (checks_dir / "negatives.py").write_text(
-            neg_code, encoding="utf-8",
+            neg_code,
+            encoding="utf-8",
         )
         result = _load_negatives(case_dir)
         assert result is not None
@@ -550,7 +561,7 @@ NEGATIVES = [
 ]
 """
         case_dir = _make_case_with_negatives(tmp_path, negatives_code)
-        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        code = "#include <zephyr/kernel.h>\nvoid main(void) {}"
         result = _run_mutant_checks(case_dir, code)
         assert result.passed is True
         assert len(result.details) == 1
@@ -570,7 +581,7 @@ NEGATIVES = [
 ]
 """
         case_dir = _make_case_with_negatives(tmp_path, negatives_code)
-        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        code = "#include <zephyr/kernel.h>\nvoid main(void) {}"
         result = _run_mutant_checks(case_dir, code)
         assert result.passed is False
         assert result.details[0].passed is False
@@ -588,7 +599,7 @@ NEGATIVES = [
 ]
 """
         case_dir = _make_case_with_negatives(tmp_path, negatives_code)
-        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        code = "#include <zephyr/kernel.h>\nvoid main(void) {}"
         result = _run_mutant_checks(case_dir, code)
         assert result.passed is True
         assert "skipped" in result.details[0].actual
@@ -605,7 +616,7 @@ NEGATIVES = [
 ]
 """
         case_dir = _make_case_with_negatives(tmp_path, negatives_code)
-        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        code = "#include <zephyr/kernel.h>\nvoid main(void) {}"
         result = _run_mutant_checks(case_dir, code)
         assert result.passed is True
         assert result.details == []
@@ -644,7 +655,7 @@ NEGATIVES = [
 ]
 """
         case_dir = _make_case_with_negatives(tmp_path, negatives_code)
-        code = '#include <zephyr/kernel.h>\nvoid main(void) {}'
+        code = "#include <zephyr/kernel.h>\nvoid main(void) {}"
         result = evaluate(case_dir=case_dir, generated_code=code)
         # L0, L1(skip), L2(skip), L3 all pass
         assert result.layers[0].passed is True
@@ -656,3 +667,54 @@ NEGATIVES = [
         assert result.failed_at_layer is None
         # L4 failure must not reduce total_score
         assert result.total_score == 1.0
+
+
+class TestL1SkipFlag:
+    """Tests for _is_l1_skipped() metadata parsing."""
+
+    def test_l1_skip_with_inline_comment(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("l1_skip: true  # reference fails L1: DT node missing\n")
+        assert _is_l1_skipped(tmp_path) is True
+
+    def test_l1_skip_without_comment(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("l1_skip: true\n")
+        assert _is_l1_skipped(tmp_path) is True
+
+    def test_l1_skip_false_value(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("l1_skip: false\n")
+        assert _is_l1_skipped(tmp_path) is False
+
+    def test_l1_skip_not_present(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("category: gpio-basic\nbuild_board: native_sim\n")
+        assert _is_l1_skipped(tmp_path) is False
+
+    def test_l1_skip_no_metadata_file(self, tmp_path: Path):
+        assert _is_l1_skipped(tmp_path) is False
+
+    def test_l1_skip_yes_value(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("l1_skip: yes\n")
+        assert _is_l1_skipped(tmp_path) is True
+
+
+class TestL2SkipFlag:
+    """Tests for _is_l2_skipped() metadata parsing."""
+
+    def test_l2_skip_with_inline_comment(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("l2_skip: true  # BLE: no BT controller on native_sim\n")
+        assert _is_l2_skipped(tmp_path) is True
+
+    def test_l2_skip_without_comment(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("l2_skip: true\n")
+        assert _is_l2_skipped(tmp_path) is True
+
+    def test_l2_skip_not_present(self, tmp_path: Path):
+        meta = tmp_path / "metadata.yaml"
+        meta.write_text("category: dma\n")
+        assert _is_l2_skipped(tmp_path) is False

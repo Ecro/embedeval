@@ -7,7 +7,12 @@ from embedeval.models import (
     LayerResult,
     TokenUsage,
 )
-from embedeval.scorer import _calculate_pass_at_k, score, wilson_ci
+from embedeval.scorer import (
+    _calculate_pass_at_k,
+    _count_quality_passes,
+    score,
+    wilson_ci,
+)
 
 
 def _make_result(
@@ -210,7 +215,12 @@ class TestUnbiasedPassAtK:
     def test_exact_formula_n10_c1_k1(self) -> None:
         """pass@1 with n=10, c=1: should be c/n = 0.1."""
         results = [
-            _make_result(case_id="case-001", attempt=i, passed=(i == 5), failed_at_layer=0 if i != 5 else None)
+            _make_result(
+                case_id="case-001",
+                attempt=i,
+                passed=(i == 5),
+                failed_at_layer=0 if i != 5 else None,
+            )
             for i in range(1, 11)
         ]
         pass_at_1 = _calculate_pass_at_k(results, 1)
@@ -236,9 +246,13 @@ class TestUnbiasedPassAtK:
     def test_k_greater_than_n_fallback(self) -> None:
         """n=3, k=5: falls back to empirical (any correct → 1.0)."""
         results = [
-            _make_result(case_id="case-001", attempt=1, passed=False, failed_at_layer=0),
+            _make_result(
+                case_id="case-001", attempt=1, passed=False, failed_at_layer=0
+            ),
             _make_result(case_id="case-001", attempt=2, passed=True),
-            _make_result(case_id="case-001", attempt=3, passed=False, failed_at_layer=0),
+            _make_result(
+                case_id="case-001", attempt=3, passed=False, failed_at_layer=0
+            ),
         ]
         assert _calculate_pass_at_k(results, 5) == 1.0
 
@@ -254,7 +268,9 @@ class TestUnbiasedPassAtK:
         """Two cases: one always passes, one always fails → 0.5."""
         results = [
             _make_result(case_id="case-001", attempt=1, passed=True),
-            _make_result(case_id="case-002", attempt=1, passed=False, failed_at_layer=0),
+            _make_result(
+                case_id="case-002", attempt=1, passed=False, failed_at_layer=0
+            ),
         ]
         assert _calculate_pass_at_k(results, 1) == 0.5
 
@@ -325,3 +341,94 @@ class TestBenchmarkReportMetadata:
         assert report.temperature == 0.0
         assert report.n_samples_per_case == 1
         assert report.n_runs == 1
+
+
+class TestQualityScoring:
+    """Tests for _count_quality_passes() — L0+L3 only scoring."""
+
+    def _make_layered_result(
+        self,
+        case_id: str,
+        l0_pass: bool = True,
+        l1_pass: bool = True,
+        l2_pass: bool = True,
+        l3_pass: bool = True,
+        l3_skipped: bool = False,
+    ) -> EvalResult:
+        """Create a result with specific layer outcomes."""
+        layers = []
+        for i, (passed, name) in enumerate(
+            [
+                (l0_pass, "static_analysis"),
+                (l1_pass, "compile_gate"),
+                (l2_pass, "runtime_execution"),
+                (l3_pass if not l3_skipped else False, "static_heuristic"),
+                (True, "test_quality_proof"),
+            ]
+        ):
+            error = None
+            if not passed:
+                error = "Skipped: layer 1 failed" if l3_skipped and i == 3 else "failed"
+            layers.append(
+                LayerResult(
+                    layer=i,
+                    name=name,
+                    passed=passed,
+                    details=[],
+                    error=error,
+                    duration_seconds=0.1,
+                )
+            )
+
+        failed_at = None
+        overall_pass = l0_pass and l1_pass and l2_pass and (l3_pass or l3_skipped)
+        if not overall_pass:
+            for i, p in enumerate([l0_pass, l1_pass, l2_pass, l3_pass]):
+                if not p:
+                    failed_at = i
+                    break
+
+        return EvalResult(
+            case_id=case_id,
+            model="test",
+            attempt=1,
+            generated_code="int main() {}",
+            layers=layers,
+            failed_at_layer=failed_at,
+            passed=overall_pass,
+            duration_seconds=0.5,
+            token_usage=TokenUsage(
+                input_tokens=100, output_tokens=50, total_tokens=150
+            ),
+            cost_usd=0.001,
+        )
+
+    def test_all_pass_counts_as_quality_pass(self):
+        r = self._make_layered_result("c1")
+        assert _count_quality_passes([r], {"c1"}) == 1
+
+    def test_l1_fail_still_quality_pass(self):
+        """L1 compile failure should not affect quality score (L0+L3 only)."""
+        r = self._make_layered_result("c1", l1_pass=False, l3_skipped=True)
+        assert _count_quality_passes([r], {"c1"}) == 1
+
+    def test_l2_fail_still_quality_pass(self):
+        """L2 runtime failure should not affect quality score."""
+        r = self._make_layered_result("c1", l2_pass=False, l3_skipped=True)
+        assert _count_quality_passes([r], {"c1"}) == 1
+
+    def test_l0_fail_no_quality_pass(self):
+        """L0 static failure means quality fail."""
+        r = self._make_layered_result("c1", l0_pass=False)
+        assert _count_quality_passes([r], {"c1"}) == 0
+
+    def test_l3_fail_no_quality_pass(self):
+        """L3 heuristic failure means quality fail."""
+        r = self._make_layered_result("c1", l3_pass=False)
+        assert _count_quality_passes([r], {"c1"}) == 0
+
+    def test_quality_score_in_report(self):
+        """Verify pass_at_1_quality is populated in the scored report."""
+        results = [_make_result(passed=True)]
+        report = score(results)
+        assert report.models[0].pass_at_1_quality >= 0.0

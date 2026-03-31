@@ -4,7 +4,8 @@
 Post-benchmark verification step that detects false results:
 1. Re-runs check scripts on generated code → compares with stored results
 2. Runs check scripts on reference solutions → failures = check script bugs
-3. Reports discrepancies and false negatives with code context
+3. Reports l1_skip cases (reference can't compile for target board)
+4. Reports discrepancies and false negatives with code context
 
 Usage:
     uv run python scripts/verify_results.py results/runs/DATE_MODEL/
@@ -49,16 +50,26 @@ def run_checks(case_dir: Path, code: str, module_name: str) -> list[dict] | None
         return None
     try:
         details = run_fn(code)
-        return [{"check_name": d.check_name, "passed": d.passed,
-                 "expected": d.expected, "actual": d.actual} for d in details]
+        return [
+            {
+                "check_name": d.check_name,
+                "passed": d.passed,
+                "expected": d.expected,
+                "actual": d.actual,
+            }
+            for d in details
+        ]
     except Exception as exc:
-        print(f"  WARNING: Check raised exception for {case_dir.name}/{module_name}: {exc}",
-              file=sys.stderr)
+        print(
+            f"  WARNING: Check raised exception for {case_dir.name}/{module_name}: {exc}",
+            file=sys.stderr,
+        )
         return None
 
 
-def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
-               verbose: bool = False) -> dict:
+def verify_run(
+    run_dir: Path, cases_dir: Path, category: str | None = None, verbose: bool = False
+) -> dict:
     """Verify all results in a benchmark run directory.
 
     Returns summary dict with counts and issue lists.
@@ -70,11 +81,12 @@ def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
 
     issues = {
         "reference_failures": [],  # Check script bugs (reference solution fails)
-        "discrepancies": [],       # Stored vs re-run mismatch
-        "false_negatives": [],     # LLM code failed but might be correct
-        "false_positives": [],     # LLM code passed but reference also fails
+        "discrepancies": [],  # Stored vs re-run mismatch
+        "false_negatives": [],  # LLM code failed but might be correct
+        "false_positives": [],  # LLM code passed but reference also fails
+        "l1_skip_cases": [],  # Cases where reference can't compile
     }
-    stats = {"total": 0, "verified_ok": 0, "issues_found": 0}
+    stats = {"total": 0, "verified_ok": 0, "issues_found": 0, "l1_skipped": 0}
 
     json_files = sorted(details_dir.glob("*.json"))
     for json_file in json_files:
@@ -92,6 +104,26 @@ def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
         data = json.loads(json_file.read_text(encoding="utf-8"))
         generated_code = data.get("generated_code", "")
         stored_layers = data.get("layers", [])
+
+        # Check l1_skip status
+        meta_path = case_dir / "metadata.yaml"
+        if meta_path.is_file():
+            meta_content = meta_path.read_text(encoding="utf-8")
+            if "l1_skip: true" in meta_content:
+                stats["l1_skipped"] += 1
+                # Extract reason from comment
+                for line in meta_content.splitlines():
+                    if line.strip().startswith("l1_skip:"):
+                        reason = (
+                            line.split("#", 1)[1].strip() if "#" in line else "unknown"
+                        )
+                        issues["l1_skip_cases"].append(
+                            {
+                                "case_id": case_id,
+                                "reason": reason,
+                            }
+                        )
+                        break
 
         # Load reference solution
         ref_file = case_dir / "reference" / "main.c"
@@ -143,8 +175,10 @@ def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
                     }
                     issues["discrepancies"].append(issue)
                     case_has_issue = True
-                    print(f"  DISCREPANCY {case_id} L{layer_idx}/{check_name}: "
-                          f"stored={stored_pass} vs rerun={rerun_pass}")
+                    print(
+                        f"  DISCREPANCY {case_id} L{layer_idx}/{check_name}: "
+                        f"stored={stored_pass} vs rerun={rerun_pass}"
+                    )
 
             # Run reference solution through same checks
             if ref_code is not None:
@@ -162,8 +196,10 @@ def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
                             }
                             issues["reference_failures"].append(issue)
                             case_has_issue = True
-                            print(f"  FALSE NEGATIVE {case_id} L{layer_idx}/{rd['check_name']}: "
-                                  f"reference solution FAILS — check script bug!")
+                            print(
+                                f"  FALSE NEGATIVE {case_id} L{layer_idx}/{rd['check_name']}: "
+                                f"reference solution FAILS — check script bug!"
+                            )
                             if verbose:
                                 print(f"    expected: {rd['expected']}")
                                 print(f"    actual:   {rd['actual']}")
@@ -171,10 +207,12 @@ def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
             # For failed LLM checks — check if LLM code actually has the pattern
             # (helps detect overly strict checks)
             if verbose:
-                for rd in (rerun or []):
+                for rd in rerun or []:
                     if not rd["passed"]:
-                        print(f"  FAIL {case_id} L{layer_idx}/{rd['check_name']}: "
-                              f"expected={rd['expected']} actual={rd['actual']}")
+                        print(
+                            f"  FAIL {case_id} L{layer_idx}/{rd['check_name']}: "
+                            f"expected={rd['expected']} actual={rd['actual']}"
+                        )
 
         if case_has_issue:
             stats["issues_found"] += 1
@@ -189,12 +227,22 @@ def verify_run(run_dir: Path, cases_dir: Path, category: str | None = None,
 def main():
     parser = argparse.ArgumentParser(description="Verify benchmark results")
     parser.add_argument("run_dir", type=Path, help="Path to run directory")
-    parser.add_argument("--cases", type=Path, default=Path("cases"),
-                        help="Path to cases directory")
-    parser.add_argument("--category", "-c", type=str, default=None,
-                        help="Filter by category prefix (e.g., 'dma')")
-    parser.add_argument("--verbose", "-v", action="store_true",
-                        help="Show all check results, not just issues")
+    parser.add_argument(
+        "--cases", type=Path, default=Path("cases"), help="Path to cases directory"
+    )
+    parser.add_argument(
+        "--category",
+        "-c",
+        type=str,
+        default=None,
+        help="Filter by category prefix (e.g., 'dma')",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Show all check results, not just issues",
+    )
     args = parser.parse_args()
 
     print(f"Verifying results in: {args.run_dir}")
@@ -218,7 +266,9 @@ def main():
     print()
 
     if issues["reference_failures"]:
-        print(f"FALSE NEGATIVES (check script bugs): {len(issues['reference_failures'])}")
+        print(
+            f"FALSE NEGATIVES (check script bugs): {len(issues['reference_failures'])}"
+        )
         for i in issues["reference_failures"]:
             print(f"  - {i['case_id']} L{i['layer']}/{i['check_name']}")
             print(f"    expected: {i['expected']}")
@@ -228,11 +278,26 @@ def main():
     if issues["discrepancies"]:
         print(f"DISCREPANCIES (stored vs re-run): {len(issues['discrepancies'])}")
         for i in issues["discrepancies"]:
-            print(f"  - {i['case_id']} L{i['layer']}/{i['check_name']}: "
-                  f"stored={i['stored']} rerun={i['rerun']}")
+            print(
+                f"  - {i['case_id']} L{i['layer']}/{i['check_name']}: "
+                f"stored={i['stored']} rerun={i['rerun']}"
+            )
         print()
 
-    if not any(issues.values()):
+    if issues["l1_skip_cases"]:
+        print(
+            f"L1_SKIP CASES (reference can't compile): {len(issues['l1_skip_cases'])}"
+        )
+        for i in issues["l1_skip_cases"]:
+            print(f"  - {i['case_id']}: {i['reason']}")
+        print()
+        print(
+            f"L1/L2 evaluation coverage: {stats['total'] - stats['l1_skipped']}/{stats['total']} "
+            f"({(stats['total'] - stats['l1_skipped']) / max(stats['total'], 1) * 100:.0f}%)"
+        )
+        print()
+
+    if not issues["reference_failures"] and not issues["discrepancies"]:
         print("All results verified — no false results detected.")
 
     return 1 if issues["reference_failures"] or issues["discrepancies"] else 0
