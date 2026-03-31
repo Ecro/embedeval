@@ -145,6 +145,15 @@ def _collect_context_files(case_dir: Path) -> list[str]:
     return [str(f) for f in sorted(context_dir.iterdir()) if f.is_file()]
 
 
+def _inject_board_target(prompt: str, meta: CaseMetadata) -> str:
+    """Inject build target board information into the prompt.
+
+    Adds a target board line so the LLM knows which board to write code for.
+    """
+    board = meta.build_board or "native_sim"
+    return prompt.rstrip() + "\n\nTarget board: " + board + "\n"
+
+
 def run_benchmark(
     cases_dir: Path,
     model: str,
@@ -199,6 +208,7 @@ def run_benchmark(
 
         for case_dir, meta in selected:
             prompt = _load_prompt(case_dir)
+            prompt = _inject_board_target(prompt, meta)
             context_files = _collect_context_files(case_dir)
 
             for attempt in range(1, attempts + 1):
