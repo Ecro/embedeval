@@ -328,9 +328,9 @@ EmbedEval evaluates LLM-generated code through five progressively deeper verific
 
 All Zephyr compilation uses temporary directories (copied from case files + generated `src/main.c`) to avoid mutating case files. The build directory is shared between L1 and L2.
 
-**Board target selection:** Each case declares `build_board` in metadata.yaml (default: `native_sim`). The board is NOT disclosed to the LLM in the prompt — this tests implicit domain knowledge (knowing what hardware capabilities a given RTOS target provides). Cases where the reference solution itself cannot compile for the declared board are marked `l1_skip: true` and auto-pass L1/L2; these cases are evaluated on L0+L3 only until DT overlays or build fixes are provided.
+**Board target selection:** Each case declares `build_board` in metadata.yaml (default: `native_sim`). The board target is included in the LLM prompt (`Target board: {board}`). L1 compile and L2 runtime layers are **restricted to native_sim cases only**. Cases targeting hardware boards (nrf52840dk) are evaluated on L0+L3 only — this avoids DT overlay mismatches where the LLM's valid code fails L1 due to missing device tree nodes that aren't communicated in the prompt. See `scripts/verify_references_build.py` for reference solution build validation.
 
-**l1_skip cases:** 50 of 129 compilable cases have `l1_skip: true` because the reference solution uses device tree nodes, headers, or APIs not available on the target board without additional DT overlays or Kconfig modules. These are tracked for incremental fix-up; see `scripts/verify_references_build.py`.
+**L1/L2 scope:** Of 179 public cases, L1 compile is exercised on native_sim cases only. All 48 nrf52840dk cases have `l1_skip: true` and `l2_skip: true`. An additional 25 native_sim cases also have `l1_skip: true` due to reference code issues (API changes, missing subsystems). Net: ~106 cases have full L0-L4 evaluation, 73 are L0+L3 only.
 
 #### Metadata Field Semantics: `platform` vs `build_board`
 

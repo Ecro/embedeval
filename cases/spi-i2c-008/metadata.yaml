@@ -11,3 +11,5 @@ build_board: nrf52840dk/nrf52840
 created_date: "2026-03-24"
 tier: challenge
 reasoning_types: [system_reasoning, rule_application, api_recall]
+l1_skip: true  # nrf52840dk: L0+L3 only (no overlay-dependent L1/L2)
+l2_skip: true  # nrf52840dk: requires physical hardware
