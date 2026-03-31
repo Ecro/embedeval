@@ -8,7 +8,7 @@ platform: native_sim
 estimated_tokens: 600
 sdk_version: "4.1.0"
 build_board: nrf52840dk/nrf52840
+l1_skip: true  # custom driver needs DTS binding YAML + DT_DRV_COMPAT define
 created_date: "2026-03-24"
 tier: challenge
 reasoning_types: [api_recall]
-l1_skip: true  # reference fails L1: DT node/alias missing

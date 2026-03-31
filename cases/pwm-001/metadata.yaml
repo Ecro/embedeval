@@ -11,4 +11,3 @@ build_board: nrf52840dk/nrf52840
 created_date: "2026-03-24"
 tier: core
 reasoning_types: [rule_application, api_recall]
-l1_skip: true  # reference fails L1: linker error

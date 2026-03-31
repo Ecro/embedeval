@@ -1,7 +1,18 @@
+/ {
+	aliases {
+		accel0 = &accel_dev;
+		gyro0  = &gyro_dev;
+	};
+};
+
 &i2c0 {
 	status = "okay";
-	temp_sensor: bme280@76 {
-		compatible = "bosch,bme280";
-		reg = <0x76>;
+	accel_dev: adxl345@53 {
+		compatible = "adi,adxl345";
+		reg = <0x53>;
+	};
+	gyro_dev: fxas21002@20 {
+		compatible = "nxp,fxas21002";
+		reg = <0x20>;
 	};
 };

@@ -1,0 +1,3 @@
+my_dev: &uart1 {
+	status = "okay";
+};
