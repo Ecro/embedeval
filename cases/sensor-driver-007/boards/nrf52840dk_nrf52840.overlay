@@ -1,13 +1,7 @@
-/ {
-	aliases {
-		sensor0 = &accel0;
-	};
-};
-
 &i2c0 {
 	status = "okay";
-	accel0: adxl345@53 {
-		compatible = "adi,adxl345";
-		reg = <0x53>;
+	temp_sensor: bme280@76 {
+		compatible = "bosch,bme280";
+		reg = <0x76>;
 	};
 };

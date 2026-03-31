@@ -1,7 +1,7 @@
 &i2c0 {
 	status = "okay";
-	my_sensor: adxl345@53 {
-		compatible = "adi,adxl345";
-		reg = <0x53>;
+	temp_sensor: bme280@76 {
+		compatible = "bosch,bme280";
+		reg = <0x76>;
 	};
 };
