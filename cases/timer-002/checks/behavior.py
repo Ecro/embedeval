@@ -87,7 +87,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Main sleeps after starting timer (not busy-wait)
-    has_sleep_after_start = "k_sleep" in generated_code and "k_timer_start" in generated_code
+    # Accept k_msleep as equivalent to k_sleep
+    has_sleep_after_start = (
+        ("k_sleep" in generated_code or "k_msleep" in generated_code)
+        and "k_timer_start" in generated_code
+    )
     details.append(
         CheckDetail(
             check_name="main_sleeps_after_start",

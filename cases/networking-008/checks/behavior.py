@@ -1,7 +1,7 @@
 """Behavioral checks for MQTT with Last Will and Testament."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -9,8 +9,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: LWT configured BEFORE mqtt_connect (critical ordering)
-    will_topic_pos = generated_code.find("will_topic")
-    connect_pos = generated_code.find("mqtt_connect")
+    # Use comment-stripped code to avoid matching "mqtt_connect" in comments
+    stripped = strip_comments(generated_code)
+    will_topic_pos = stripped.find("will_topic")
+    connect_pos = stripped.find("mqtt_connect")
     will_before_connect = (
         will_topic_pos != -1
         and connect_pos != -1
