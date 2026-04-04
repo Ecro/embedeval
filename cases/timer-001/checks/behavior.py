@@ -3,15 +3,22 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis, check_qualifier_on_variable
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    check_qualifier_on_variable,
+    has_sleep_call,
+    strip_comments,
+)
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate timer behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
 
+    stripped = strip_comments(generated_code)
+
     # Check 1: Expiry function increments counter
-    has_increment = "++" in generated_code or "+= 1" in generated_code
+    has_increment = "++" in stripped or "+= 1" in stripped
     details.append(
         CheckDetail(
             check_name="expiry_increments_counter",
@@ -49,8 +56,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: Main loop with sleep (not busy-wait)
-    has_sleep = "k_sleep" in generated_code
-    has_loop = "while" in generated_code or "for" in generated_code
+    has_sleep = has_sleep_call(generated_code)
+    has_loop = "while" in stripped or "for" in stripped
     details.append(
         CheckDetail(
             check_name="main_loop_with_sleep",

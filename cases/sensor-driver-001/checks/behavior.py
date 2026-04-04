@@ -3,7 +3,12 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    has_error_check,
+    has_sleep_call,
+    strip_comments,
+)
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -49,7 +54,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: Error handling for fetch and get
-    has_err = "< 0" in generated_code
+    has_err = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="sensor_error_handling",
@@ -61,8 +66,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Periodic read in loop (not one-shot)
-    has_loop = "while" in generated_code or "for" in generated_code
-    has_sleep = "k_sleep" in generated_code
+    stripped = strip_comments(generated_code)
+    has_loop = "while" in stripped or "for" in stripped
+    has_sleep = has_sleep_call(generated_code)
     details.append(
         CheckDetail(
             check_name="periodic_read_loop",

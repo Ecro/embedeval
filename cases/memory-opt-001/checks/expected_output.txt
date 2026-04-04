@@ -1,3 +1,3 @@
-Freed block, used:
-Used blocks:
 Allocated block at
+lock
+free

@@ -1,16 +1,21 @@
 """Behavioral checks for memory slab allocation."""
 
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
+    has_error_check,
+    strip_comments,
+)
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate memory slab behavioral properties."""
     details: list[CheckDetail] = []
+    stripped = strip_comments(generated_code)
 
     # Check 1: alloc before free (correct lifecycle)
-    alloc_pos = generated_code.find("k_mem_slab_alloc")
-    free_pos = generated_code.find("k_mem_slab_free")
+    alloc_pos = stripped.find("k_mem_slab_alloc")
+    free_pos = stripped.find("k_mem_slab_free")
     order_ok = alloc_pos != -1 and free_pos != -1 and alloc_pos < free_pos
     details.append(
         CheckDetail(
@@ -37,8 +42,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Free called for every alloc path
     # (LLM failure: memory leak on error paths)
-    alloc_count = generated_code.count("k_mem_slab_alloc")
-    free_count = generated_code.count("k_mem_slab_free")
+    alloc_count = stripped.count("k_mem_slab_alloc")
+    free_count = stripped.count("k_mem_slab_free")
     balanced = free_count >= alloc_count and alloc_count > 0
     details.append(
         CheckDetail(
@@ -52,7 +57,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: No heap usage (reinforced behavioral check)
     heap_funcs = ["malloc(", "calloc(", "k_malloc(", "realloc("]
-    has_heap = any(f in generated_code for f in heap_funcs)
+    has_heap = any(f in stripped for f in heap_funcs)
     details.append(
         CheckDetail(
             check_name="no_heap_behavioral",
@@ -64,7 +69,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Block size and count are positive constants
-    has_block_size = "BLOCK_SIZE" in generated_code or "block_size" in generated_code
+    has_block_size = "BLOCK_SIZE" in stripped or "block_size" in stripped
     details.append(
         CheckDetail(
             check_name="block_size_defined",

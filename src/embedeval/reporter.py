@@ -580,6 +580,50 @@ def generate_failure_report(
             if r.passed:
                 by_diff["all"]["passed"] += 1
 
+    # Failure classification: separate prose/format failures from genuine code errors
+    if failed_results:
+        prose_cases = []
+        genuine_cases = []
+        for r in failed_results:
+            code = r.generated_code
+            is_prose = (
+                not code
+                or code.startswith(("I ", "Here", "Based", "This", "The ", "Let"))
+                or (len(code) > 50 and "#include" not in code and "CONFIG_" not in code
+                    and not code.strip().startswith(("&", "/", "/*")))
+            )
+            if is_prose:
+                prose_cases.append(r.case_id)
+            else:
+                genuine_cases.append(r.case_id)
+
+        if prose_cases:
+            lines.append("\n## Failure Classification\n")
+            genuine_str = ", ".join(genuine_cases[:5])
+            if len(genuine_cases) > 5:
+                genuine_str += f" (+{len(genuine_cases) - 5} more)"
+            prose_str = ", ".join(prose_cases)
+            lines.append("| Type | Count | Cases |")
+            lines.append("|------|-------|-------|")
+            lines.append(
+                f"| Genuine code error | {len(genuine_cases)}"
+                f" | {genuine_str} |"
+            )
+            lines.append(
+                f"| LLM format failure (prose) | {len(prose_cases)}"
+                f" | {prose_str} |"
+            )
+            lines.append("")
+            adjusted_total = len(results) - len(prose_cases)
+            adjusted_passed = sum(1 for r in results if r.passed)
+            if adjusted_total > 0:
+                adj_rate = adjusted_passed / adjusted_total
+                lines.append(
+                    f"*Adjusted pass@1 (excluding format failures):"
+                    f" {adj_rate:.1%}"
+                    f" ({adjusted_passed}/{adjusted_total})*\n"
+                )
+
     # TC improvement suggestions
     lines.append(f"\n## TC Improvement Suggestions\n")
     always_pass = [r.case_id for r in results if r.passed]

@@ -1,16 +1,17 @@
 """Behavioral checks for GPIO interrupt debounce with timer application."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate debounce behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
+    stripped = strip_comments(generated_code)
 
     # Check 1: ISR starts timer, does NOT read GPIO directly inside (debounce pattern)
     # The ISR should call k_timer_start; gpio_pin_get should only be in timer callback
-    has_timer_start = "k_timer_start" in generated_code
+    has_timer_start = "k_timer_start" in stripped
     details.append(
         CheckDetail(
             check_name="isr_starts_timer",
@@ -22,7 +23,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Timer uses 50ms (or similar short debounce window)
-    has_50ms = "K_MSEC(50)" in generated_code or "50" in generated_code
+    has_50ms = "K_MSEC(50)" in stripped or "50" in stripped
     details.append(
         CheckDetail(
             check_name="debounce_50ms_window",
@@ -34,7 +35,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: gpio_pin_get_dt used in timer callback to read stable state
-    has_pin_get = "gpio_pin_get_dt" in generated_code or "gpio_pin_get" in generated_code
+    has_pin_get = "gpio_pin_get_dt" in stripped or "gpio_pin_get" in stripped
     details.append(
         CheckDetail(
             check_name="stable_state_read_in_callback",
@@ -46,8 +47,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: gpio_callback registered before k_sleep
-    add_cb_pos = generated_code.find("gpio_add_callback")
-    sleep_pos = generated_code.find("k_sleep")
+    add_cb_pos = stripped.find("gpio_add_callback")
+    sleep_pos = stripped.find("k_sleep")
     order_ok = add_cb_pos != -1 and sleep_pos != -1 and add_cb_pos < sleep_pos
     details.append(
         CheckDetail(
@@ -61,7 +62,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 5: Device ready checks present
     has_ready = any(
-        p in generated_code for p in ["gpio_is_ready_dt", "device_is_ready"]
+        p in stripped for p in ["gpio_is_ready_dt", "device_is_ready"]
     )
     details.append(
         CheckDetail(
@@ -75,7 +76,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 6: Cross-platform — no FreeRTOS timer APIs
     has_freertos = any(
-        p in generated_code for p in ["xTimerCreate", "vTimerSetTimerID", "xTimerStart"]
+        p in stripped for p in ["xTimerCreate", "vTimerSetTimerID", "xTimerStart"]
     )
     details.append(
         CheckDetail(

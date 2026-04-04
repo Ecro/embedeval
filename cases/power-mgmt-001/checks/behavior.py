@@ -1,17 +1,18 @@
 """Behavioral checks for PM device action handler."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate PM behavioral properties."""
     details: list[CheckDetail] = []
+    stripped = strip_comments(generated_code)
 
     # Check 1: Both SUSPEND and RESUME handled
     # (LLM failure: only handling one direction)
-    has_suspend = "PM_DEVICE_ACTION_SUSPEND" in generated_code
-    has_resume = "PM_DEVICE_ACTION_RESUME" in generated_code
+    has_suspend = "PM_DEVICE_ACTION_SUSPEND" in stripped
+    has_resume = "PM_DEVICE_ACTION_RESUME" in stripped
     details.append(
         CheckDetail(
             check_name="both_transitions_handled",
@@ -24,7 +25,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Default/unsupported action returns error
     # (LLM failure: no default case, silently succeeds for unknown actions)
-    has_enotsup = "ENOTSUP" in generated_code
+    has_enotsup = "ENOTSUP" in stripped
     has_default = "default" in generated_code or "else" in generated_code
     details.append(
         CheckDetail(
@@ -37,7 +38,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: Callback returns int (success = 0)
-    has_return_0 = "return 0" in generated_code
+    has_return_0 = "return 0" in stripped
     details.append(
         CheckDetail(
             check_name="callback_returns_zero_on_success",
@@ -49,7 +50,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: pm_device_action_run called (not just callback defined)
-    has_run = "pm_device_action_run" in generated_code
+    has_run = "pm_device_action_run" in stripped
     details.append(
         CheckDetail(
             check_name="pm_action_run_called",
@@ -78,8 +79,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # exact PM_DEVICE_ACTION_* constant names are referenced, not just any
     # suspend/resume keyword.
     # (LLM failure: using PM_DEVICE_ACTION_TURN_OFF instead of SUSPEND)
-    has_suspend = "PM_DEVICE_ACTION_SUSPEND" in generated_code
-    has_resume = "PM_DEVICE_ACTION_RESUME" in generated_code
+    has_suspend = "PM_DEVICE_ACTION_SUSPEND" in stripped
+    has_resume = "PM_DEVICE_ACTION_RESUME" in stripped
     details.append(CheckDetail(
         check_name="suspend_resume_both_handled",
         passed=has_suspend and has_resume,

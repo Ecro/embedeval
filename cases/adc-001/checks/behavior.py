@@ -1,7 +1,7 @@
 """Behavioral checks for ADC single channel read application."""
 
+from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -81,10 +81,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 6: adc_read or adc_read_dt return value checked for errors
-    has_read_check = any(
-        p in generated_code
-        for p in ["if (err", "if (ret", "if (rc", "< 0"]
-    )
+    # has_error_check catches: < 0, != 0, if(ret..), if(err..), if(rc..), if(status..)
+    has_read_check = has_error_check(generated_code)
     details.append(
         CheckDetail(
             check_name="read_return_value_checked",

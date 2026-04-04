@@ -8,8 +8,18 @@ import yaml
 from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from embedeval.evaluator import evaluate
-from embedeval.llm_client import _extract_code, call_model
-from embedeval.models import CaseCategory, CaseMetadata, CaseTier, DifficultyTier, EvalResult, Visibility
+from embedeval.llm_client import call_model
+from embedeval.models import (
+    CaseCategory,
+    CaseMetadata,
+    CaseTier,
+    CheckDetail,
+    DifficultyTier,
+    EvalResult,
+    LayerResult,
+    TokenUsage,
+    Visibility,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -217,11 +227,55 @@ def run_benchmark(
                     description=f"[{meta.id}] attempt {attempt}/{attempts}",
                 )
 
-                llm_response = call_model(
-                    model=model,
-                    prompt=prompt,
-                    context_files=context_files,
-                )
+                try:
+                    llm_response = call_model(
+                        model=model,
+                        prompt=prompt,
+                        context_files=context_files,
+                    )
+                except RuntimeError as exc:
+                    logger.warning(
+                        "Case %s attempt %d: LLM call failed: %s",
+                        meta.id, attempt, exc,
+                    )
+                    result = EvalResult(
+                        case_id=meta.id,
+                        category=meta.category,
+                        model=model,
+                        attempt=attempt,
+                        generated_code="",
+                        layers=[LayerResult(
+                            layer=0,
+                            name="static_analysis",
+                            passed=False,
+                            details=[CheckDetail(
+                                check_name="llm_call",
+                                passed=False,
+                                expected="LLM response",
+                                actual=str(exc),
+                                check_type="llm_error",
+                            )],
+                            error=str(exc),
+                            duration_seconds=0.0,
+                        )],
+                        failed_at_layer=0,
+                        passed=False,
+                        total_score=0.0,
+                        duration_seconds=0.0,
+                        token_usage=TokenUsage(
+                            input_tokens=0, output_tokens=0, total_tokens=0,
+                        ),
+                        cost_usd=0.0,
+                    )
+                    result.tier = meta.tier
+                    result.reasoning_types = meta.reasoning_types
+                    results.append(result)
+                    progress.advance(task)
+                    logger.info(
+                        "Case %s attempt %d: FAIL@L0 (LLM error)",
+                        meta.id, attempt,
+                    )
+                    continue
 
                 result = evaluate(
                     case_dir=case_dir,

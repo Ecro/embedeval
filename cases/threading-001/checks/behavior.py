@@ -3,12 +3,13 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate threading behavioral properties."""
     details: list[CheckDetail] = []
+    stripped = strip_comments(generated_code)
 
     # Check 1: Producer and consumer have different priorities
     # (LLM failure: same priority for both threads)
@@ -41,12 +42,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Producer sleeps between sends (not busy-loop)
     # (LLM failure: tight loop without sleep burns CPU)
-    has_put = "k_msgq_put" in generated_code
+    has_put = "k_msgq_put" in stripped
     has_sleep_near_put = False
     if has_put:
-        put_pos = generated_code.find("k_msgq_put")
+        put_pos = stripped.find("k_msgq_put")
         # Look for k_sleep within 300 chars after put
-        nearby = generated_code[put_pos : put_pos + 300]
+        nearby = stripped[put_pos : put_pos + 300]
         has_sleep_near_put = "k_sleep" in nearby or "k_msleep" in nearby
     details.append(
         CheckDetail(
@@ -60,9 +61,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Consumer uses blocking get (K_FOREVER or timeout)
     has_blocking_get = (
-        "K_FOREVER" in generated_code and "k_msgq_get" in generated_code
+        "K_FOREVER" in stripped and "k_msgq_get" in stripped
     ) or (
-        "K_MSEC" in generated_code and "k_msgq_get" in generated_code
+        "K_MSEC" in stripped and "k_msgq_get" in stripped
     )
     details.append(
         CheckDetail(

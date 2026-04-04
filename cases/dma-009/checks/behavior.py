@@ -3,15 +3,16 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate DMA abort/recovery behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
+    stripped = strip_comments(generated_code)
 
     # Check 1: dma_stop called (the key abort API — LLM must know this)
-    has_dma_stop = "dma_stop" in generated_code
+    has_dma_stop = "dma_stop" in stripped
     details.append(
         CheckDetail(
             check_name="dma_stop_called",
@@ -23,11 +24,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: dma_config called after dma_stop (reconfigure before retry)
-    stop_pos = generated_code.find("dma_stop")
+    stop_pos = stripped.find("dma_stop")
     # Find dma_config that appears AFTER dma_stop
     config_after_stop = False
     if stop_pos != -1:
-        remaining = generated_code[stop_pos:]
+        remaining = stripped[stop_pos:]
         config_after_stop = "dma_config" in remaining
     details.append(
         CheckDetail(

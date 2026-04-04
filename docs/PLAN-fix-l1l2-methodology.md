@@ -3,7 +3,7 @@
 **Project:** embedeval
 **Created:** 2026-03-31
 **Priority:** Critical
-**Status:** planning
+**Status:** in-progress
 
 ---
 

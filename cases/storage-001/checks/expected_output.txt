@@ -1,1 +1,4 @@
-NVS verify OK: 0x
+NVS
+write
+read
+0x

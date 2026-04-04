@@ -1,15 +1,16 @@
 """Behavioral checks for GPIO button interrupt application."""
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate GPIO behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
+    stripped = strip_comments(generated_code)
 
     # Check 1: LED configured as output
-    has_output = "GPIO_OUTPUT" in generated_code
+    has_output = "GPIO_OUTPUT" in stripped
     details.append(
         CheckDetail(
             check_name="led_configured_output",
@@ -21,7 +22,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Button configured as input
-    has_input = "GPIO_INPUT" in generated_code
+    has_input = "GPIO_INPUT" in stripped
     details.append(
         CheckDetail(
             check_name="button_configured_input",
@@ -34,7 +35,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Interrupt configured (edge-triggered)
     has_int_edge = any(
-        p in generated_code
+        p in stripped
         for p in [
             "GPIO_INT_EDGE",
             "GPIO_INT_EDGE_TO_ACTIVE",
@@ -53,8 +54,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: Callback registered before sleeping (gpio_add_callback before k_sleep)
-    add_cb_pos = generated_code.find("gpio_add_callback")
-    sleep_pos = generated_code.find("k_sleep")
+    add_cb_pos = stripped.find("gpio_add_callback")
+    sleep_pos = stripped.find("k_sleep")
     order_ok = add_cb_pos != -1 and sleep_pos != -1 and add_cb_pos < sleep_pos
     details.append(
         CheckDetail(
@@ -67,7 +68,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: LED toggle in callback (not in main loop)
-    has_toggle = "gpio_pin_toggle" in generated_code
+    has_toggle = "gpio_pin_toggle" in stripped
     details.append(
         CheckDetail(
             check_name="led_toggle_in_callback",
@@ -80,7 +81,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 6: Device ready check before use
     has_ready_check = any(
-        p in generated_code
+        p in stripped
         for p in ["gpio_is_ready_dt", "device_is_ready", "gpio_is_ready"]
     )
     details.append(
