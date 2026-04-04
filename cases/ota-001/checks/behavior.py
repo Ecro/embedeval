@@ -66,9 +66,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Error handling for boot_write_img_confirmed return value
     # (LLM failure: ignoring return value — silent confirm failure)
+    # Accept < 0, != 0, or == 0 only when paired with else (error branch)
+    has_err_pattern = "< 0" in generated_code or "!= 0" in generated_code
+    has_success_with_else = "== 0" in generated_code and "else" in generated_code
     write_ret_handled = (
         "boot_write_img_confirmed" in generated_code
-        and ("< 0" in generated_code or "!= 0" in generated_code)
+        and (has_err_pattern or has_success_with_else)
     )
     details.append(
         CheckDetail(

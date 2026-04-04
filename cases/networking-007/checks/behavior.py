@@ -23,8 +23,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         re.search(pat, generated_code) for pat in _timeout_sensitive_apis
     )
     # Also flag if K_FOREVER is the ONLY timeout macro used (no finite timeout at all)
+    # Accept both literal digits and macro identifiers as finite timeout values
     has_any_finite_timeout = bool(re.search(
-        r"K_MSEC\(\s*[1-9]|K_SECONDS\(\s*[1-9]|K_MINUTES\(\s*[1-9]", generated_code
+        r"K_MSEC\(\s*[1-9A-Z_]|K_SECONDS\(\s*[1-9A-Z_]|K_MINUTES\(\s*[1-9A-Z_]",
+        generated_code
     ))
     has_k_forever = "K_FOREVER" in generated_code
     has_zero_timeout = "K_MSEC(0)" in generated_code or "K_SECONDS(0)" in generated_code

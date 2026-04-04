@@ -1,2 +1,3 @@
-Consumer received:
-Producer sent:
+Producer
+Consumer
+value

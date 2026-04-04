@@ -25,12 +25,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    has_mcuboot = any("CONFIG_BOOTLOADER_MCUBOOT=y" in l for l in lines)
+    has_mcuboot = any(
+        "CONFIG_BOOTLOADER_MCUBOOT=y" in l or "CONFIG_MCUBOOT=y" in l
+        for l in lines
+    )
     details.append(
         CheckDetail(
             check_name="mcuboot_enabled",
             passed=has_mcuboot,
-            expected="CONFIG_BOOTLOADER_MCUBOOT=y",
+            expected="CONFIG_BOOTLOADER_MCUBOOT=y or CONFIG_MCUBOOT=y",
             actual="present" if has_mcuboot else "missing",
             check_type="exact_match",
         )

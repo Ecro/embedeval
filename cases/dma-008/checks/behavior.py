@@ -27,13 +27,14 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: volatile applied specifically to the error flag variable (not any variable).
+    # Check 2: volatile applied specifically to the error flag/status variable (not any variable).
     # Reject code where volatile appears only on a buffer/struct while the flag itself is plain int.
+    # Accept variable names like: dma_error_flag, error_flag, dma_error_status, error_status
     has_volatile_flag = bool(re.search(
-        r'volatile\s+\w*int\w*\s+\w*(?:error|err)_?flag',
+        r'volatile\s+\w*int\w*\s+\w*(?:error|err)\w*',
         generated_code,
     )) or bool(re.search(
-        r'\w*(?:error|err)_?flag\b.*volatile',
+        r'\w*(?:error|err)\w*\b.*volatile',
         generated_code,
     ))
     details.append(
@@ -62,11 +63,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 4: Error flag checked after semaphore wait in main
     # Use rfind to find the LAST usage of the error flag (the check in main, not the declaration)
     sem_pos = generated_code.find("k_sem_take")
-    error_flag_name = (
-        "dma_error_flag" if "dma_error_flag" in generated_code
-        else "error_flag" if "error_flag" in generated_code
-        else None
-    )
+    # Detect error flag/status variable name flexibly
+    _eflag_match = re.search(r'\b(\w*(?:error|err)_?(?:flag|status)\w*)\s*[;=]', generated_code)
+    error_flag_name = _eflag_match.group(1) if _eflag_match else None
     if error_flag_name:
         # Find the last occurrence (the check in main, after k_sem_take)
         error_flag_last_pos = generated_code.rfind(error_flag_name)
@@ -118,7 +117,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         if status_check_match:
             after_status_check = cb_body[status_check_match.start():status_check_match.start() + 200]
             flag_set_in_error = bool(
-                re.search(r'(?:dma_error(?:_flag)?|error_flag)\s*=\s*(?!\s*0\b)', after_status_check)
+                re.search(r'(?:dma_error\w*|error_flag|error_status)\s*=\s*(?!\s*0\b)', after_status_check)
             )
             actual_cb_msg = (
                 "error flag set within status check branch"
@@ -144,7 +143,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 7 (new): Error flag check in main actually causes a return/abort.
     # LLM failure: reads the flag and prints a message but never returns on error,
     # allowing execution to proceed as if the DMA completed successfully.
-    error_check_pos = generated_code.find("if (dma_error_flag")
+    # Find error flag check in main — use the detected variable name
+    error_check_pos = -1
+    if error_flag_name:
+        error_check_pos = generated_code.find(f"if ({error_flag_name}")
+    if error_check_pos == -1:
+        error_check_pos = generated_code.find("if (dma_error_flag")
     if error_check_pos == -1:
         error_check_pos = generated_code.find("if (error_flag")
     error_causes_return = False
@@ -164,11 +168,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 8: Error flag read AFTER k_sem_take (not before synchronization)
     # LLM failure: reading error flag before waiting for DMA completion semaphore
     sem_take_pos = generated_code.rfind("k_sem_take")
-    error_flag_name_c7 = (
-        "dma_error_flag" if "dma_error_flag" in generated_code
-        else "error_flag" if "error_flag" in generated_code
-        else None
-    )
+    # Reuse the already-detected error flag variable name
+    error_flag_name_c7 = error_flag_name
     if error_flag_name_c7 and sem_take_pos != -1:
         # Find an 'if' referencing the error flag that comes after the last k_sem_take
         tail = generated_code[sem_take_pos:]

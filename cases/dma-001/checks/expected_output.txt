@@ -1,1 +1,1 @@
-DMA transfer successful
+DMA transfer

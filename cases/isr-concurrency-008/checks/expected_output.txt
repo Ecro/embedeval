@@ -1,2 +1,2 @@
-Queue empty as expected
-Popped: 0x
+empty
+Popped

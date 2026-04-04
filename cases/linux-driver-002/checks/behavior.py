@@ -52,8 +52,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: sentinel entry in of_device_id table
-    code_stripped = generated_code.replace(" ", "").replace("\t", "")
-    has_sentinel = "{}" in code_stripped or "{}," in code_stripped
+    # Accept: {}, { }, {/* comment */}, { .compatible = NULL }, {0}
+    has_sentinel = bool(re.search(
+        r'\{\s*(?:/\*[^*]*\*/\s*)?\}'         # {} or {/* sentinel */}
+        r'|\{\s*\.compatible\s*=\s*NULL\s*\}'  # { .compatible = NULL }
+        r'|\{\s*0\s*\}',                      # {0}
+        generated_code
+    ))
     details.append(
         CheckDetail(
             check_name="of_match_table_sentinel",

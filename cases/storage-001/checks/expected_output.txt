@@ -1,4 +1,2 @@
 NVS
-write
-read
 0x

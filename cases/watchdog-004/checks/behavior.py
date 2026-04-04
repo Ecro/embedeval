@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, resolve_define
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -26,7 +26,15 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Two different timeout windows (distinct .max values)
     # AI failure: using same timeout for both channels
-    max_values = set(int(m.group(1)) for m in re.finditer(r"\.max\s*=\s*(\d+)", generated_code))
+    # Accept both literal digits and macro identifiers (resolve via #define)
+    max_values: set[int | str] = set()
+    for m in re.finditer(r"\.max\s*=\s*(\w+)", generated_code):
+        val = m.group(1)
+        if val.isdigit():
+            max_values.add(int(val))
+        else:
+            resolved = resolve_define(generated_code, val)
+            max_values.add(resolved if resolved is not None else val)
     has_distinct_timeouts = len(max_values) >= 2
     details.append(
         CheckDetail(

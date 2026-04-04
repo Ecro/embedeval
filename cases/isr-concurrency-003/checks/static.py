@@ -89,7 +89,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 6: Shared variable declared globally or statically
     has_shared_var = bool(re.search(
-        r'\b(static|volatile)?\s*uint\d+_t\s+\w+(counter|shared|data)\w*\s*[;=]',
+        r'\b(?:static\s+)?(?:volatile\s+)?(?:u?int\d+_t|uint32_t|int)\s+\w*(?:counter|shared|data|count)\w*\s*[;=]',
         generated_code, re.IGNORECASE
     ))
     details.append(

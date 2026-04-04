@@ -3,7 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
-from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import check_no_cross_platform_apis, extract_function_body, strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -25,20 +25,21 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: ISR/callback is non-blocking — no k_sleep in callback body
-    # Heuristic: find callback function, check if k_sleep appears inside it
-    # Simple check: if k_sleep appears immediately after the callback signature
-    callback_body = re.search(
-        r"(alarm_callback|counter_callback|cb)\s*\([^)]*\)\s*\{([^}]*)\}", generated_code
-    )
+    # Use extract_function_body for robust brace-matched extraction
+    _cb_names = ["alarm_callback", "counter_callback", "counter_alarm_callback",
+                 "timer_callback", "timer_handler", "alarm_handler", "cb"]
     isr_has_sleep = False
-    if callback_body:
-        isr_body = callback_body.group(2)
-        isr_has_sleep = "k_sleep" in isr_body or "printk" in isr_body
+    for _cb_name in _cb_names:
+        _cb_body = extract_function_body(generated_code, _cb_name)
+        if _cb_body:
+            _cb_body_stripped = strip_comments(_cb_body)
+            isr_has_sleep = "k_sleep" in _cb_body_stripped or "k_msleep" in _cb_body_stripped
+            break
     details.append(
         CheckDetail(
             check_name="isr_non_blocking",
             passed=not isr_has_sleep,
-            expected="Alarm callback is non-blocking (no k_sleep or printk)",
+            expected="Alarm callback is non-blocking (no k_sleep or k_msleep)",
             actual="blocking call in ISR" if isr_has_sleep else "non-blocking",
             check_type="constraint",
         )

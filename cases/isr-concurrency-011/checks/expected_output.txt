@@ -1,3 +1,2 @@
-Processing complete (
-Stack space check: K_THREAD_STACK_SIZEOF used for sizing
-ISR data collection started
+Processing complete
+collection

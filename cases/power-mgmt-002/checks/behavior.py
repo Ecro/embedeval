@@ -26,9 +26,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: k_sleep called with K_MSEC (correct time macro)
     # (LLM failure: using raw integer or K_SECONDS instead of K_MSEC)
+    # Accept k_msleep() as equivalent to k_sleep(K_MSEC())
     has_sleep_with_kmsec = (
-        "k_sleep" in generated_code
-        and "K_MSEC" in generated_code
+        ("k_sleep" in generated_code and "K_MSEC" in generated_code)
+        or "k_msleep" in generated_code
     )
     details.append(
         CheckDetail(
