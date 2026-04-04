@@ -63,7 +63,9 @@ def call_model(
     return _call_litellm(model, full_prompt, timeout, max_retries, rate_limit_delay)
 
 
-def _call_claude_code(model: str, prompt: str, timeout: float) -> LLMResponse:
+def _call_claude_code(
+    model: str, prompt: str, timeout: float, max_retries: int = 2,
+) -> LLMResponse:
     """Call Claude via `claude -p` CLI (uses subscription, no API key)."""
     claude_model = model.removeprefix(CLAUDE_CODE_PREFIX)
 
@@ -71,19 +73,26 @@ def _call_claude_code(model: str, prompt: str, timeout: float) -> LLMResponse:
     if claude_model:
         cmd.extend(["--model", claude_model])
 
-    logger.info("Claude Code call: model=%s", claude_model or "default")
-    start = time.monotonic()
+    last_error: Exception | None = None
+    for attempt in range(1, max_retries + 1):
+        logger.info("Claude Code call: model=%s (attempt %d/%d)", claude_model or "default", attempt, max_retries)
+        start = time.monotonic()
 
-    try:
-        result = subprocess.run(
-            cmd,
-            input=prompt,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
-    except subprocess.TimeoutExpired as exc:
-        raise RuntimeError(f"claude -p timed out after {timeout}s") from exc
+        try:
+            result = subprocess.run(
+                cmd,
+                input=prompt,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+            break  # success — exit retry loop
+        except subprocess.TimeoutExpired as exc:
+            last_error = exc
+            if attempt < max_retries:
+                logger.warning("claude -p timed out (attempt %d), retrying...", attempt)
+                continue
+            raise RuntimeError(f"claude -p timed out after {timeout}s ({max_retries} attempts)") from exc
 
     elapsed = time.monotonic() - start
 
