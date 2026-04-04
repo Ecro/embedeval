@@ -1,1 +1,2 @@
-Flash verify OK: 0x
+Flash
+0x

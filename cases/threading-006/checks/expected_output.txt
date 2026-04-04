@@ -1,3 +1,2 @@
-Deadlock-free multi-mutex demo
-Thread one working
-Thread two working
+mutex
+Thread

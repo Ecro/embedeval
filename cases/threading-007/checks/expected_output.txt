@@ -1,3 +1,2 @@
-Singleton demo started
-Resource initialized
-Thread one: value=0x
+singleton
+Thread
