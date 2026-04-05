@@ -1,0 +1,647 @@
+{
+  "total": 80,
+  "passed": 56,
+  "failed": 24,
+  "results": [
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.4,
+      "error": null,
+      "case_id": "ble-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 15.4,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ble-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 16.0,
+      "error": null,
+      "case_id": "ble-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.3,
+      "error": null,
+      "case_id": "ble-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 15.2,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ble-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 15.2,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ble-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.3,
+      "error": null,
+      "case_id": "ble-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 15.2,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ble-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "dma-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "dma-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.3,
+      "error": "/workspace/src/main.c:56:18: error: ‘struct dma_block_config’ has no member named ‘cyclic’\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "dma-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "dma-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "dma-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "dma-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "dma-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "dma-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: ‘__device_dts_ord_DT_N_NODELABEL_dma0_ORD’ undeclared (first use in this function)\n/opt/zephyrproject/zephyr/include/zephyr/toolchain/gcc.h:87:36: error: static assertion failed: \"at least one of dma_channel_mask or dma_channels must be provided\"\n/workspace/build/zephyr/include/generated/zephyr/devicetree_generated.h:978:37: error: ‘DT_N_S_dma_P_dma_channels’ undeclared here (not in a function); did you mean ‘DT_N_S_adc_P_nchannels’?\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "dma-009",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "isr-concurrency-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.2,
+      "error": null,
+      "case_id": "isr-concurrency-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.8,
+      "error": "/workspace/src/main.c:8:8: error: type defaults to ‘int’ in declaration of ‘K_SPINLOCK_DEFINE’ [-Werror=implicit-int]\n/workspace/src/main.c:17:28: error: ‘counter_lock’ undeclared (first use in this function)\n/workspace/src/main.c:33:36: error: ‘counter_lock’ undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "isr-concurrency-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "isr-concurrency-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.2,
+      "error": null,
+      "case_id": "isr-concurrency-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "isr-concurrency-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "isr-concurrency-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.0,
+      "error": null,
+      "case_id": "isr-concurrency-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "isr-concurrency-011",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "memory-opt-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.1,
+      "error": "/workspace/src/main.c:1:3: error: invalid preprocessing directive #Minimal\n/workspace/src/main.c:2:3: error: invalid preprocessing directive #Suitable\n/workspace/src/main.c:4:3: error: invalid preprocessing directive #Reduce\n/workspace/build/zephyr/include/generated/zephyr/autoconf.h:5:32: error: expected identifier or ‘(’ before numeric constant\n/workspace/src/main.c:7:3: error: invalid preprocessing directive #Reduce\n/workspace/src/main.c:10:3: error: invalid preprocessing directive #Use\n/workspace/src/main.c:13:3: error: invalid preprocessing directive #Disable\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "memory-opt-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "memory-opt-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.2,
+      "error": "/workspace/src/main.c:41:9: error: too few arguments to function ‘thread_analyzer_print’\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "memory-opt-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.7,
+      "error": "/workspace/src/main.c:30:50: error: ‘app_partition’ undeclared (first use in this function); did you mean ‘k_mem_partition’?\n/workspace/src/main.c:6:28: error: storage size of ‘app_domain’ isn’t known\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "memory-opt-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.4,
+      "error": "/workspace/src/main.c:1:1: error: type defaults to ‘int’ in declaration of ‘CONFIG_THREAD_STACK_INFO’ [-Werror=implicit-int]\n/workspace/src/main.c:1:26: error: ‘y’ undeclared here (not in a function)\n/workspace/src/main.c:2:1: error: expected ‘,’ or ‘;’ before ‘CONFIG_STACK_SENTINEL’\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "memory-opt-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.9,
+      "error": null,
+      "case_id": "memory-opt-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.7,
+      "error": "/workspace/src/main.c:1:1: error: type defaults to ‘int’ in declaration of ‘CONFIG_FPU’ [-Werror=implicit-int]\n/workspace/src/main.c:1:12: error: ‘n’ undeclared here (not in a function)\n/workspace/src/main.c:2:1: error: expected ‘,’ or ‘;’ before ‘CONFIG_DYNAMIC_THREAD’\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "memory-opt-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "memory-opt-011",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "memory-opt-012",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 16.3,
+      "error": null,
+      "case_id": "networking-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.4,
+      "error": null,
+      "case_id": "networking-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.9,
+      "error": null,
+      "case_id": "networking-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 14.8,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "networking-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 14.9,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "networking-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.5,
+      "error": null,
+      "case_id": "networking-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.0,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/sys_clock.h:125:28: error: incompatible type for argument 7 of ‘dns_resolve_name’\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "networking-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.5,
+      "error": "/workspace/src/main.c:57:26: error: ‘client.will_topic’ is a pointer; did you mean to use ‘->’?\n/workspace/src/main.c:58:26: error: ‘client.will_topic’ is a pointer; did you mean to use ‘->’?\n/workspace/src/main.c:59:28: error: ‘client.will_message’ is a pointer; did you mean to use ‘->’?\n/workspace/src/main.c:60:28: error: ‘client.will_message’ is a pointer; did you mean to use ‘->’?\n/workspace/src/main.c:61:28: error: ‘client.will_message’ is a pointer; did you mean to use ‘->’?\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "networking-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.9,
+      "error": null,
+      "case_id": "security-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.0,
+      "error": null,
+      "case_id": "security-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.1,
+      "error": null,
+      "case_id": "security-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.9,
+      "error": null,
+      "case_id": "security-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.6,
+      "error": "/workspace/src/main.c:3:10: fatal error: psa/protected_storage.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "security-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.0,
+      "error": null,
+      "case_id": "security-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 13.6,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "security-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.7,
+      "error": null,
+      "case_id": "security-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.8,
+      "error": null,
+      "case_id": "storage-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.8,
+      "error": null,
+      "case_id": "storage-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/fs/littlefs.h:14:10: fatal error: lfs.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "storage-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.0,
+      "error": null,
+      "case_id": "storage-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.1,
+      "error": null,
+      "case_id": "storage-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.0,
+      "error": null,
+      "case_id": "storage-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.6,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/fs/littlefs.h:14:10: fatal error: lfs.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "storage-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 13.1,
+      "error": null,
+      "case_id": "storage-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.7,
+      "error": "/workspace/src/main.c:33:29: error: storage size of ‘info’ isn’t known\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "storage-012",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "threading-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "threading-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.5,
+      "error": null,
+      "case_id": "threading-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.2,
+      "error": null,
+      "case_id": "threading-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.2,
+      "error": null,
+      "case_id": "threading-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "threading-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.1,
+      "error": null,
+      "case_id": "threading-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "threading-008",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.2,
+      "error": null,
+      "case_id": "threading-011",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.5,
+      "error": null,
+      "case_id": "threading-012",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "threading-013",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "timer-001",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "timer-002",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.8,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: ‘__device_dts_ord_DT_N_ALIAS_counter0_ORD’ undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "timer-003",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "timer-004",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.3,
+      "error": null,
+      "case_id": "timer-005",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.5,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: ‘__device_dts_ord_DT_N_ALIAS_counter0_ORD’ undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "timer-006",
+      "board": "native_sim"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: ‘__device_dts_ord_DT_N_ALIAS_watchdog0_ORD’ undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "timer-007",
+      "board": "native_sim"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 12.4,
+      "error": null,
+      "case_id": "timer-008",
+      "board": "native_sim"
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+{
+  "total": 49,
+  "passed": 23,
+  "failed": 26,
+  "results": [
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 17.0,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_S_zephyr_user_P_io_channels_IDX_0_PH_ORD' undeclared here (not in a function)\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:88:17: error: 'DT_N_S_zephyr_user_P_io_channels_IDX_0_VAL_input' undeclared here (not in a function)\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_EXISTS\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_P_\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_P_\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_P_\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_REG_IDX_\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_P_\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_P_\" does not give a valid preprocessing token\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:3172:62: error: pasting \")\" and \"_P_\" does not give a valid preprocessing token",
+      "case_id": "adc-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.3,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_ALIAS_adc0_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "adc-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.7,
+      "error": null,
+      "case_id": "gpio-basic-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.8,
+      "error": null,
+      "case_id": "gpio-basic-005",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.7,
+      "error": null,
+      "case_id": "gpio-basic-006",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.6,
+      "error": null,
+      "case_id": "ota-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.9,
+      "error": null,
+      "case_id": "ota-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.4,
+      "error": "/workspace/src/main.c:3:10: fatal error: zephyr/dfu/dfu_target.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ota-003",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.1,
+      "error": "/workspace/src/main.c:40:69: error: 'struct mcuboot_img_header' has no member named 'h1'; did you mean 'h'?\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ota-004",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.8,
+      "error": "/workspace/src/main.c:3:10: fatal error: zephyr/dfu/dfu_target.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ota-005",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.8,
+      "error": "/workspace/src/main.c:3:10: fatal error: zephyr/dfu/dfu_target.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ota-006",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.2,
+      "error": "/workspace/src/main.c:2:10: fatal error: zephyr/dfu/dfu_target.h: No such file or directory\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ota-007",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 15.1,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "ota-008",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.5,
+      "error": null,
+      "case_id": "power-mgmt-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.6,
+      "error": null,
+      "case_id": "power-mgmt-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.4,
+      "error": null,
+      "case_id": "power-mgmt-003",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.2,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_my_dev_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "power-mgmt-004",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 12.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_dev_a_ORD' undeclared here (not in a function)\n/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_dev_b_ORD' undeclared here (not in a function)\n/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_dev_c_ORD' undeclared here (not in a function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "power-mgmt-005",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.5,
+      "error": null,
+      "case_id": "power-mgmt-006",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.6,
+      "error": null,
+      "case_id": "power-mgmt-007",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 13.9,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "power-mgmt-008",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 13.7,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "pwm-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.6,
+      "error": null,
+      "case_id": "sensor-driver-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.8,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_my_sensor_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_accel_sensor_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-003",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_NODELABEL_my_sensor_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-004",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.0,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:349:40: error: 'DT_N_INST_0_DT_DRV_COMPAT_FULL_NAME' undeclared here (not in a function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-005",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 13.4,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_INST_0_DT_DRV_COMPAT_BUS_ORD' undeclared here (not in a function)\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:349:40: error: 'DT_N_INST_0_DT_DRV_COMPAT_REG_IDX_0_VAL_ADDRESSU' undeclared here (not in a function); did you mean 'DT_N_S_cpus_S_cpu_0_REG_IDX_0_VAL_ADDRESS'?\n/opt/zephyrproject/zephyr/include/zephyr/devicetree.h:349:40: error: 'DT_N_INST_0_DT_DRV_COMPAT_FULL_NAME' undeclared here (not in a function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-006",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.7,
+      "error": "/workspace/src/main.c:19:31: error: 'SENSOR_ATTR_FIFO_WATERMARK' undeclared (first use in this function); did you mean 'SENSOR_TRIG_FIFO_WATERMARK'?\n/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_ALIAS_sensor0_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-007",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 12.5,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_ALIAS_accel0_ORD' undeclared (first use in this function)\n/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_ALIAS_gyro0_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "sensor-driver-008",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.3,
+      "error": null,
+      "case_id": "spi-i2c-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 9.8,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_102' undeclared (first use in this function); did you mean '__device_dts_ord_12'?\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "spi-i2c-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.7,
+      "error": null,
+      "case_id": "spi-i2c-003",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.1,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_102' undeclared (first use in this function); did you mean '__device_dts_ord_12'?\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "spi-i2c-004",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.4,
+      "error": null,
+      "case_id": "spi-i2c-005",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.3,
+      "error": null,
+      "case_id": "spi-i2c-006",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.2,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_102' undeclared (first use in this function); did you mean '__device_dts_ord_12'?\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "spi-i2c-007",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 15.3,
+      "error": null,
+      "case_id": "spi-i2c-008",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.6,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_ALIAS_uart0_ORD' undeclared here (not in a function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "uart-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.6,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: '__device_dts_ord_DT_N_ALIAS_uart0_ORD' undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "uart-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.3,
+      "error": null,
+      "case_id": "watchdog-001",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 15.5,
+      "error": "collect2: error: ld returned 1 exit status\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "watchdog-002",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.8,
+      "error": null,
+      "case_id": "watchdog-003",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.7,
+      "error": null,
+      "case_id": "watchdog-004",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.5,
+      "error": null,
+      "case_id": "watchdog-005",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.6,
+      "error": null,
+      "case_id": "watchdog-006",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.3,
+      "error": null,
+      "case_id": "watchdog-007",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": true,
+      "exit_code": 0,
+      "duration": 14.6,
+      "error": null,
+      "case_id": "watchdog-008",
+      "board": "nrf52840dk/nrf52840"
+    },
+    {
+      "passed": false,
+      "exit_code": 1,
+      "duration": 10.7,
+      "error": "/opt/zephyrproject/zephyr/include/zephyr/device.h:96:41: error: ‘__device_dts_ord_DT_N_ALIAS_watchdog0_ORD’ undeclared (first use in this function)\nFATAL ERROR: command exited with status 1: /usr/bin/cmake --build /workspace/build",
+      "case_id": "watchdog-010",
+      "board": "native_sim"
+    }
+  ]
+}

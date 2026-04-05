@@ -1,0 +1,138 @@
+[
+  {
+    "timestamp": "2026-03-24",
+    "model": "claude-code://sonnet",
+    "total": 200,
+    "passed": 179,
+    "failed": 21,
+    "pass_at_1": 0.895
+  },
+  {
+    "timestamp": "2026-03-25",
+    "model": "claude-code://sonnet",
+    "total": 210,
+    "passed": 188,
+    "failed": 22,
+    "pass_at_1": 0.8952380952380953
+  },
+  {
+    "timestamp": "2026-03-25",
+    "model": "claude-code://haiku",
+    "total": 210,
+    "passed": 164,
+    "failed": 46,
+    "pass_at_1": 0.780952380952381
+  },
+  {
+    "timestamp": "2026-03-28",
+    "model": "claude-code://haiku",
+    "total": 179,
+    "passed": 113,
+    "failed": 66,
+    "pass_at_1": 0.6312849162011173
+  },
+  {
+    "timestamp": "2026-03-28",
+    "model": "claude-code://haiku",
+    "total": 179,
+    "passed": 126,
+    "failed": 53,
+    "pass_at_1": 0.7039106145251397
+  },
+  {
+    "timestamp": "2026-03-29",
+    "model": "claude-code://sonnet",
+    "total": 179,
+    "passed": 152,
+    "failed": 27,
+    "pass_at_1": 0.8491620111731844
+  },
+  {
+    "timestamp": "2026-03-29",
+    "model": "claude-code://haiku",
+    "total": 2,
+    "passed": 0,
+    "failed": 2,
+    "pass_at_1": 0.0
+  },
+  {
+    "timestamp": "2026-03-29",
+    "model": "mock",
+    "total": 8,
+    "passed": 0,
+    "failed": 8,
+    "pass_at_1": 0.0
+  },
+  {
+    "timestamp": "2026-03-29",
+    "model": "claude-code://haiku",
+    "total": 179,
+    "passed": 61,
+    "failed": 118,
+    "pass_at_1": 0.3407821229050279
+  },
+  {
+    "timestamp": "2026-03-30",
+    "model": "claude-code://sonnet",
+    "total": 120,
+    "passed": 27,
+    "failed": 93,
+    "pass_at_1": 0.225
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://haiku",
+    "total": 45,
+    "passed": 25,
+    "failed": 20,
+    "pass_at_1": 0.5555555555555556
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://haiku",
+    "total": 45,
+    "passed": 24,
+    "failed": 21,
+    "pass_at_1": 0.5333333333333333
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://haiku",
+    "total": 107,
+    "passed": 67,
+    "failed": 40,
+    "pass_at_1": 0.6261682242990654
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://haiku",
+    "total": 16,
+    "passed": 5,
+    "failed": 11,
+    "pass_at_1": 0.3125
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://haiku",
+    "total": 21,
+    "passed": 11,
+    "failed": 10,
+    "pass_at_1": 0.5238095238095238
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://haiku",
+    "total": 6,
+    "passed": 4,
+    "failed": 2,
+    "pass_at_1": 0.6666666666666666
+  },
+  {
+    "timestamp": "2026-04-04",
+    "model": "claude-code://sonnet",
+    "total": 109,
+    "passed": 89,
+    "failed": 20,
+    "pass_at_1": 0.8165137614678899
+  }
+]

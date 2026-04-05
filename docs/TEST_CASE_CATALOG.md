@@ -6,9 +6,9 @@
 
 | Difficulty | LLM pass@1 | Criteria |
 |-----------|-----------|----------|
-| Easy | >70% | 학습 데이터에 풍부한 패턴, 단일 API, 순서 무관 |
-| Medium | 30-70% | API 순서/의존성/에러핸들링 필요, 덜 흔한 API |
-| Hard | <30% | 동시성, 보안, 리소스 수명, 환각 유도, 크로스플랫폼 함정 |
+| Easy | >70% | Abundant patterns in training data, single API, order-independent |
+| Medium | 30-70% | API ordering/dependencies/error handling needed, less common APIs |
+| Hard | <30% | Concurrency, security, resource lifecycle, hallucination traps, cross-platform pitfalls |
 
 ## Summary Statistics
 

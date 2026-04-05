@@ -41,50 +41,48 @@
 
 ## General SW vs Embedded-Specific Failures
 
-LLM 실패 패턴을 **일반 소프트웨어에서도 발생하는 문제**와 **임베디드 특성에 의한 문제**로
-구분하면 다음과 같다.
+LLM failure patterns can be divided into **problems that also occur in general software** and **problems caused by embedded-specific characteristics**, as follows.
 
-### General SW Failures (어떤 도메인에서도 발생)
+### General SW Failures (occur in any domain)
 
-이 패턴들은 웹, 서버, 데스크톱 등 어떤 SW 개발에서도 LLM이 동일하게 실패할 수 있다.
+These patterns can cause LLM failures equally in any SW development — web, server, desktop, etc.
 
 | Pattern | Cases | Description |
 |---------|-------|-------------|
-| **Error path cleanup** | linux-driver-001/004/006 | 리소스 할당 후 실패 시 역순 해제 누락. DB connection pool, file handle, socket 등에서도 동일하게 발생 |
-| **Return value ignored** | networking-001/008, ota-003 | API 호출 후 반환값 무시. HTTP client, DB query 등에서도 동일 패턴 |
-| **Alloc/free mismatch** | memory-opt-003 | malloc/free 쌍 불일치. 모든 C/C++ 코드에서 발생 가능한 메모리 누수 |
-| **Flag vs early return** | security-007 | 실패 시 즉시 중단 대신 플래그 누적. 보안 코드 전반에 해당 |
-| **Ordering violation** | storage-002 | init -> register -> use 순서 오류. 모든 lifecycle 관리에 해당 |
-| **Magic numbers** | memory-opt-001 | 상수를 이름 없이 반복 사용. 모든 언어에서 발생하는 유지보수 문제 |
-| **Demo mindset** | power-mgmt-009 | 기능 시연만 하고 운영 루프 미구현. 어떤 서비스 코드에서도 발생 |
-| **Complexity hiding basics** | ota-005 | 복잡한 구조 속에서 기본 안전장치 누락. 모든 도메인의 상태 머신에 해당 |
+| **Error path cleanup** | linux-driver-001/004/006 | Missing reverse-order release of resources after allocation failure. Occurs identically with DB connection pools, file handles, sockets, etc. |
+| **Return value ignored** | networking-001/008, ota-003 | Return value ignored after API call. Same pattern with HTTP clients, DB queries, etc. |
+| **Alloc/free mismatch** | memory-opt-003 | Mismatched malloc/free pairs. Memory leak possible in any C/C++ code. |
+| **Flag vs early return** | security-007 | Flag accumulation instead of immediate abort on failure. Applies to security code in general. |
+| **Ordering violation** | storage-002 | Wrong init -> register -> use order. Applies to all lifecycle management. |
+| **Magic numbers** | memory-opt-001 | Constants used repeatedly without names. Maintainability problem in all languages. |
+| **Demo mindset** | power-mgmt-009 | Feature demonstration only, operational loop not implemented. Occurs in any service code. |
+| **Complexity hiding basics** | ota-005 | Basic safety mechanism omitted within complex structure. Applies to state machines in all domains. |
 
-**공통 근본 원인:**
-- 학습 데이터가 "동작하는 예제 코드" 위주 (에러 처리 생략된 튜토리얼)
-- LLM의 순방향 토큰 생성 구조가 역순 의존성 추적에 불리
-- "기능 완성"에 최적화, "안전한 운영"에 비최적화
+**Common root causes:**
+- Training data is dominated by "working example code" (tutorials that omit error handling)
+- LLM's forward token generation structure is poorly suited for reverse dependency tracking
+- Optimized for "feature completion", not optimized for "safe operation"
 
-### Embedded-Specific Failures (임베디드에서만 발생)
+### Embedded-Specific Failures (occur in embedded only)
 
-이 패턴들은 **하드웨어 의존성, 실시간 제약, 리소스 제한** 등 임베디드 고유 특성에서
-비롯된다. 웹이나 서버 개발에서는 동일한 실패가 발생하지 않는다.
+These patterns originate from **hardware dependencies, real-time constraints, resource limitations**, and other embedded-specific characteristics. The same failures do not occur in web or server development.
 
 | Pattern | Cases | Description | Why Embedded-Only |
 |---------|-------|-------------|-------------------|
-| **HW cyclic vs SW reload** | dma-003 | DMA 하드웨어 cyclic 모드 대신 소프트웨어 콜백 reload 사용 | DMA 컨트롤러의 하드웨어 모드는 임베디드에서만 존재하는 개념. 서버에는 DMA가 없음 |
-| **device_is_ready 누락** | gpio-basic-001, watchdog-007 | 하드웨어 디바이스 준비 여부 확인 없이 사용 | 서버의 DB connection은 연결 시점에 확인하지만, 임베디드 HW 디바이스는 부팅 순서에 따라 준비 안 될 수 있음 |
-| **Timing margin 무시** | timer-007 | WDT 타임아웃과 동일한 주기로 feed — 마진 없음 | 서버에서 timeout == interval이면 보통 괜찮지만, 실시간 시스템에서는 인터럽트 지연, 스케줄링 지터 때문에 반드시 마진이 필요 |
-| **Stack size 부족** | threading-005* | 워크 큐 스택 512/1024 사용 (2048 필요) | 서버에서는 OS가 자동 스택 확장. 임베디드 RTOS에서는 스택이 고정 크기이므로 overflow = 하드 폴트 |
-| **ISR context 제약** | sensor-driver-003 | ISR에서 blocking API 사용 불가라는 제약 미인식 | 서버에서 signal handler 내 제약과 유사하지만, 임베디드에서는 훨씬 더 엄격하고 위반 시 시스템 hang |
-| **Power state transition** | power-mgmt-001 | PM action return 미확인 — suspend/resume 실패 무시 | 서버 sleep/wake는 OS가 관리. 임베디드에서 PM 실패 무시는 배터리 고갈 또는 wake 불가 |
-| **OTA rollback 미구현** | ota-005 | DFU 다운로드 실패 시 abort 경로 없음 | 서버 배포 실패는 롤백이 쉬움. 임베디드 OTA 실패 시 디바이스가 bricked 될 수 있음 |
-| **Flash boundary 미검증** | storage-009* | 플래시 영역 범위 초과 쓰기 미방지 | 서버의 디스크는 OS가 보호. 임베디드 raw flash 접근은 boundary 넘으면 부트로더나 다른 파티션을 파괴 |
+| **HW cyclic vs SW reload** | dma-003 | Software callback reload used instead of DMA hardware cyclic mode | Hardware modes of DMA controllers are concepts that exist only in embedded systems. Servers have no DMA. |
+| **device_is_ready missing** | gpio-basic-001, watchdog-007 | Hardware device used without checking readiness | Server DB connections are verified at connect time, but embedded HW devices may not be ready depending on boot order. |
+| **Timing margin ignored** | timer-007 | WDT feed period equals timeout — no margin | On servers, timeout == interval is usually fine, but in real-time systems interrupt latency and scheduling jitter require mandatory margin. |
+| **Stack size insufficient** | threading-005* | Work queue stack uses 512/1024 (2048 required) | On servers, the OS auto-expands the stack. In embedded RTOS, stack is fixed size — overflow = hard fault. |
+| **ISR context restriction** | sensor-driver-003 | Unaware that blocking APIs cannot be used in ISR context | Similar to signal handler restrictions on servers, but far stricter in embedded — violations cause system hang. |
+| **Power state transition** | power-mgmt-001 | PM action return not checked — suspend/resume failures ignored | Server sleep/wake is managed by the OS. In embedded, ignoring PM failure leads to battery drain or inability to wake. |
+| **OTA rollback not implemented** | ota-005 | No abort path on DFU download failure | Server deployment failures are easy to roll back. Embedded OTA failure can brick the device. |
+| **Flash boundary not validated** | storage-009* | No guard against writes beyond flash region boundaries | Server disks are protected by the OS. Embedded raw flash access beyond boundaries destroys the bootloader or other partitions. |
 
-**임베디드 고유 근본 원인:**
-- LLM의 학습 데이터에서 임베디드 코드 비율이 낮음 (웹/서버 >> 임베디드)
-- 하드웨어 데이터시트의 타이밍 제약은 코드에 명시적으로 드러나지 않음
-- "컴파일 → 실행" 사이클에서 하드웨어 의존 버그는 발견이 어려움
-- 임베디드의 "안전"은 기능 동작 + 리소스 제한 + 타이밍 보장의 3가지를 동시에 만족해야 함
+**Embedded-specific root causes:**
+- Low proportion of embedded code in LLM training data (web/server >> embedded)
+- Hardware datasheet timing constraints are not explicitly visible in code
+- Hardware-dependent bugs are hard to detect in the "compile → execute" cycle
+- Embedded "safety" requires simultaneously satisfying all three: correct functionality + resource limits + timing guarantees
 
 ### Summary Matrix
 
@@ -112,9 +110,7 @@ Operational:       2 cases       1 case
 TC false negative: -             3 cases (fixed)
 ```
 
-**핵심:** 전체 18건의 실제 LLM 실패 중 ~10건(56%)은 **일반 SW에서도 발생하는 패턴**이고,
-~8건(44%)은 **임베디드 고유 특성**에서 비롯된다. 즉, LLM의 임베디드 코드 품질을 개선하려면
-일반적인 에러 처리 능력 향상이 먼저이고, 그 다음이 HW 의미론 이해이다.
+**Key insight:** Of the 18 actual LLM failures in total, ~10 (56%) are **patterns that also occur in general SW**, and ~8 (44%) originate from **embedded-specific characteristics**. In other words, to improve LLM embedded code quality, improving general error handling capability comes first, followed by understanding of HW semantics.
 
 ## Failure Pattern Classification
 

@@ -1,0 +1,180 @@
+{
+  "version": "0.1.0",
+  "date": "2026-03-30",
+  "models": [
+    {
+      "model": "claude-code://sonnet",
+      "pass_at_1": 0.225,
+      "pass_at_3": 0.225,
+      "pass_at_5": 0.225,
+      "avg_score": 0.225,
+      "total_cases": 120,
+      "passed_cases": 27,
+      "layer_pass_rates": {
+        "compile_gate": 0.5603448275862069,
+        "runtime_execution": 0.49230769230769234,
+        "static_analysis": 0.9666666666666667,
+        "static_heuristic": 0.84375,
+        "test_quality_proof": 1.0
+      },
+      "pass_at_1_ci": [
+        0.1594905146581338,
+        0.3075706344226275
+      ],
+      "n_samples": 1
+    }
+  ],
+  "categories": [
+    {
+      "category": "adc",
+      "pass_at_1": 0.0,
+      "total_cases": 2,
+      "passed_cases": 0
+    },
+    {
+      "category": "ble",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "category": "dma",
+      "pass_at_1": 0.2222222222222222,
+      "total_cases": 9,
+      "passed_cases": 2
+    },
+    {
+      "category": "gpio-basic",
+      "pass_at_1": 0.5,
+      "total_cases": 2,
+      "passed_cases": 1
+    },
+    {
+      "category": "isr-concurrency",
+      "pass_at_1": 0.0,
+      "total_cases": 7,
+      "passed_cases": 0
+    },
+    {
+      "category": "memory-opt",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "category": "networking",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "category": "ota",
+      "pass_at_1": 0.25,
+      "total_cases": 8,
+      "passed_cases": 2
+    },
+    {
+      "category": "power-mgmt",
+      "pass_at_1": 0.75,
+      "total_cases": 8,
+      "passed_cases": 6
+    },
+    {
+      "category": "security",
+      "pass_at_1": 0.125,
+      "total_cases": 8,
+      "passed_cases": 1
+    },
+    {
+      "category": "sensor-driver",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "category": "spi-i2c",
+      "pass_at_1": 0.5714285714285714,
+      "total_cases": 7,
+      "passed_cases": 4
+    },
+    {
+      "category": "storage",
+      "pass_at_1": 0.1111111111111111,
+      "total_cases": 9,
+      "passed_cases": 1
+    },
+    {
+      "category": "threading",
+      "pass_at_1": 0.2727272727272727,
+      "total_cases": 11,
+      "passed_cases": 3
+    },
+    {
+      "category": "timer",
+      "pass_at_1": 0.375,
+      "total_cases": 8,
+      "passed_cases": 3
+    },
+    {
+      "category": "watchdog",
+      "pass_at_1": 0.4444444444444444,
+      "total_cases": 9,
+      "passed_cases": 4
+    }
+  ],
+  "tier_scores": [
+    {
+      "tier": "core",
+      "pass_at_1": 0.22950819672131148,
+      "total_cases": 61,
+      "passed_cases": 14
+    },
+    {
+      "tier": "challenge",
+      "pass_at_1": 0.22033898305084745,
+      "total_cases": 59,
+      "passed_cases": 13
+    }
+  ],
+  "reasoning_scores": [
+    {
+      "reasoning_type": "api_recall",
+      "pass_at_1": 0.24770642201834864,
+      "total_cases": 109,
+      "passed_cases": 27
+    },
+    {
+      "reasoning_type": "rule_application",
+      "pass_at_1": 0.2222222222222222,
+      "total_cases": 54,
+      "passed_cases": 12
+    },
+    {
+      "reasoning_type": "cross_domain",
+      "pass_at_1": 0.23076923076923078,
+      "total_cases": 26,
+      "passed_cases": 6
+    },
+    {
+      "reasoning_type": "system_reasoning",
+      "pass_at_1": 0.19696969696969696,
+      "total_cases": 66,
+      "passed_cases": 13
+    }
+  ],
+  "overall": {
+    "total_cases": 120,
+    "total_models": 1,
+    "best_model": "claude-code://sonnet",
+    "best_pass_at_1": 0.225
+  },
+  "scenario": "generation",
+  "temperature": 0.0,
+  "n_samples_per_case": 1,
+  "n_runs": 1,
+  "run_timestamp": "2026-03-30",
+  "model": "claude-code://sonnet",
+  "total_results": 120,
+  "passed": 27,
+  "failed": 93
+}

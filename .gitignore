@@ -36,9 +36,8 @@ docker-compose.override.yml
 build/
 twister-out*/
 
-# Results (keep .gitkeep)
-results/*
-!results/.gitkeep
+# Results — track summaries, ignore per-TC detail JSONs
+results/runs/*/details/
 
 # Environment
 .env

@@ -1,0 +1,155 @@
+{
+  "version": "0.1.0",
+  "date": "2026-03-25",
+  "models": [
+    {
+      "model": "claude-code://sonnet",
+      "pass_at_1": 0.8952380952380953,
+      "pass_at_3": 0.8952380952380953,
+      "pass_at_5": 0.8952380952380953,
+      "avg_score": 0.8952380952380953,
+      "total_cases": 210,
+      "passed_cases": 188,
+      "layer_pass_rates": {
+        "compile_gate": 1.0,
+        "runtime_execution": 1.0,
+        "static_analysis": 0.9952380952380953,
+        "static_heuristic": 0.8995215311004785,
+        "test_quality_proof": 1.0
+      }
+    }
+  ],
+  "categories": [
+    {
+      "category": "ble",
+      "pass_at_1": 1.0,
+      "total_cases": 11,
+      "passed_cases": 11
+    },
+    {
+      "category": "boot",
+      "pass_at_1": 1.0,
+      "total_cases": 10,
+      "passed_cases": 10
+    },
+    {
+      "category": "device-tree",
+      "pass_at_1": 0.9,
+      "total_cases": 10,
+      "passed_cases": 9
+    },
+    {
+      "category": "dma",
+      "pass_at_1": 0.9,
+      "total_cases": 10,
+      "passed_cases": 9
+    },
+    {
+      "category": "gpio-basic",
+      "pass_at_1": 0.9090909090909091,
+      "total_cases": 11,
+      "passed_cases": 10
+    },
+    {
+      "category": "isr-concurrency",
+      "pass_at_1": 0.8,
+      "total_cases": 10,
+      "passed_cases": 8
+    },
+    {
+      "category": "kconfig",
+      "pass_at_1": 1.0,
+      "total_cases": 10,
+      "passed_cases": 10
+    },
+    {
+      "category": "linux-driver",
+      "pass_at_1": 0.8,
+      "total_cases": 10,
+      "passed_cases": 8
+    },
+    {
+      "category": "memory-opt",
+      "pass_at_1": 0.9,
+      "total_cases": 10,
+      "passed_cases": 9
+    },
+    {
+      "category": "networking",
+      "pass_at_1": 0.8181818181818182,
+      "total_cases": 11,
+      "passed_cases": 9
+    },
+    {
+      "category": "ota",
+      "pass_at_1": 0.9090909090909091,
+      "total_cases": 11,
+      "passed_cases": 10
+    },
+    {
+      "category": "power-mgmt",
+      "pass_at_1": 0.8181818181818182,
+      "total_cases": 11,
+      "passed_cases": 9
+    },
+    {
+      "category": "security",
+      "pass_at_1": 1.0,
+      "total_cases": 10,
+      "passed_cases": 10
+    },
+    {
+      "category": "sensor-driver",
+      "pass_at_1": 0.8181818181818182,
+      "total_cases": 11,
+      "passed_cases": 9
+    },
+    {
+      "category": "spi-i2c",
+      "pass_at_1": 0.9166666666666666,
+      "total_cases": 12,
+      "passed_cases": 11
+    },
+    {
+      "category": "storage",
+      "pass_at_1": 0.8181818181818182,
+      "total_cases": 11,
+      "passed_cases": 9
+    },
+    {
+      "category": "threading",
+      "pass_at_1": 0.9,
+      "total_cases": 10,
+      "passed_cases": 9
+    },
+    {
+      "category": "timer",
+      "pass_at_1": 0.9090909090909091,
+      "total_cases": 11,
+      "passed_cases": 10
+    },
+    {
+      "category": "watchdog",
+      "pass_at_1": 0.8,
+      "total_cases": 10,
+      "passed_cases": 8
+    },
+    {
+      "category": "yocto",
+      "pass_at_1": 1.0,
+      "total_cases": 10,
+      "passed_cases": 10
+    }
+  ],
+  "overall": {
+    "total_cases": 210,
+    "total_models": 1,
+    "best_model": "claude-code://sonnet",
+    "best_pass_at_1": 0.8952380952380953
+  },
+  "run_timestamp": "2026-03-25",
+  "model": "claude-code://sonnet",
+  "total_results": 210,
+  "passed": 188,
+  "failed": 22
+}

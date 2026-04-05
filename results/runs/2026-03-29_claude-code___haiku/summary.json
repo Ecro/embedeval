@@ -1,0 +1,228 @@
+{
+  "version": "0.1.0",
+  "date": "2026-03-29",
+  "models": [
+    {
+      "model": "claude-code://haiku",
+      "pass_at_1": 0.3407821229050279,
+      "pass_at_3": 0.3407821229050279,
+      "pass_at_5": 0.3407821229050279,
+      "avg_score": 0.3407821229050279,
+      "total_cases": 179,
+      "passed_cases": 61,
+      "layer_pass_rates": {
+        "compile_gate": 0.6064516129032258,
+        "runtime_execution": 0.7553191489361702,
+        "static_analysis": 0.8659217877094972,
+        "static_heuristic": 0.8591549295774648,
+        "test_quality_proof": 0.9836065573770492
+      },
+      "pass_at_1_ci": [
+        0.2753436522985847,
+        0.4129110993553058
+      ],
+      "n_samples": 1
+    }
+  ],
+  "categories": [
+    {
+      "category": "adc",
+      "pass_at_1": 0.0,
+      "total_cases": 2,
+      "passed_cases": 0
+    },
+    {
+      "category": "ble",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "category": "boot",
+      "pass_at_1": 1.0,
+      "total_cases": 8,
+      "passed_cases": 8
+    },
+    {
+      "category": "device-tree",
+      "pass_at_1": 0.875,
+      "total_cases": 8,
+      "passed_cases": 7
+    },
+    {
+      "category": "dma",
+      "pass_at_1": 0.0,
+      "total_cases": 9,
+      "passed_cases": 0
+    },
+    {
+      "category": "gpio-basic",
+      "pass_at_1": 1.0,
+      "total_cases": 5,
+      "passed_cases": 5
+    },
+    {
+      "category": "isr-concurrency",
+      "pass_at_1": 0.0,
+      "total_cases": 9,
+      "passed_cases": 0
+    },
+    {
+      "category": "kconfig",
+      "pass_at_1": 0.875,
+      "total_cases": 8,
+      "passed_cases": 7
+    },
+    {
+      "category": "linux-driver",
+      "pass_at_1": 0.75,
+      "total_cases": 8,
+      "passed_cases": 6
+    },
+    {
+      "category": "memory-opt",
+      "pass_at_1": 0.0,
+      "total_cases": 10,
+      "passed_cases": 0
+    },
+    {
+      "category": "networking",
+      "pass_at_1": 0.1,
+      "total_cases": 10,
+      "passed_cases": 1
+    },
+    {
+      "category": "ota",
+      "pass_at_1": 0.25,
+      "total_cases": 8,
+      "passed_cases": 2
+    },
+    {
+      "category": "power-mgmt",
+      "pass_at_1": 0.375,
+      "total_cases": 8,
+      "passed_cases": 3
+    },
+    {
+      "category": "pwm",
+      "pass_at_1": 0.0,
+      "total_cases": 1,
+      "passed_cases": 0
+    },
+    {
+      "category": "security",
+      "pass_at_1": 0.125,
+      "total_cases": 8,
+      "passed_cases": 1
+    },
+    {
+      "category": "sensor-driver",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "category": "spi-i2c",
+      "pass_at_1": 0.5,
+      "total_cases": 12,
+      "passed_cases": 6
+    },
+    {
+      "category": "storage",
+      "pass_at_1": 0.0,
+      "total_cases": 9,
+      "passed_cases": 0
+    },
+    {
+      "category": "threading",
+      "pass_at_1": 0.16666666666666666,
+      "total_cases": 12,
+      "passed_cases": 2
+    },
+    {
+      "category": "timer",
+      "pass_at_1": 0.3333333333333333,
+      "total_cases": 9,
+      "passed_cases": 3
+    },
+    {
+      "category": "uart",
+      "pass_at_1": 0.0,
+      "total_cases": 2,
+      "passed_cases": 0
+    },
+    {
+      "category": "watchdog",
+      "pass_at_1": 0.3333333333333333,
+      "total_cases": 9,
+      "passed_cases": 3
+    },
+    {
+      "category": "yocto",
+      "pass_at_1": 0.875,
+      "total_cases": 8,
+      "passed_cases": 7
+    }
+  ],
+  "tier_scores": [
+    {
+      "tier": "sanity",
+      "pass_at_1": 0.6666666666666666,
+      "total_cases": 3,
+      "passed_cases": 2
+    },
+    {
+      "tier": "core",
+      "pass_at_1": 0.38144329896907214,
+      "total_cases": 97,
+      "passed_cases": 37
+    },
+    {
+      "tier": "challenge",
+      "pass_at_1": 0.27848101265822783,
+      "total_cases": 79,
+      "passed_cases": 22
+    }
+  ],
+  "reasoning_scores": [
+    {
+      "reasoning_type": "api_recall",
+      "pass_at_1": 0.3630952380952381,
+      "total_cases": 168,
+      "passed_cases": 61
+    },
+    {
+      "reasoning_type": "rule_application",
+      "pass_at_1": 0.44761904761904764,
+      "total_cases": 105,
+      "passed_cases": 47
+    },
+    {
+      "reasoning_type": "cross_domain",
+      "pass_at_1": 0.16666666666666666,
+      "total_cases": 30,
+      "passed_cases": 5
+    },
+    {
+      "reasoning_type": "system_reasoning",
+      "pass_at_1": 0.3181818181818182,
+      "total_cases": 88,
+      "passed_cases": 28
+    }
+  ],
+  "overall": {
+    "total_cases": 179,
+    "total_models": 1,
+    "best_model": "claude-code://haiku",
+    "best_pass_at_1": 0.3407821229050279
+  },
+  "scenario": "generation",
+  "temperature": 0.0,
+  "n_samples_per_case": 1,
+  "n_runs": 1,
+  "run_timestamp": "2026-03-29",
+  "model": "claude-code://haiku",
+  "total_results": 179,
+  "passed": 61,
+  "failed": 118
+}

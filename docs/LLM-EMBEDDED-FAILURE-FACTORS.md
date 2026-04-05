@@ -50,7 +50,7 @@ random resets under jitter.
 LLMs cannot distinguish "code that compiles" from "code that operates safely"
 because the failure mode is invisible in the code itself.
 
-*Source: EmbedEval Insight #5, IEEE QRS 2024*
+*Source: EmbedEval benchmark data, IEEE QRS 2024*
 
 ### M3. Explicit vs. Implicit Knowledge Gap
 
@@ -60,7 +60,7 @@ domain knowledge ("ISR shares a variable with main" → volatile needed), pass
 rate drops to ~60%. This **35 percentage-point gap** means benchmarks that spell
 out requirements overestimate LLM capability.
 
-*Source: EmbedEval Insight #1, 16-case controlled experiment. arXiv:2507.06980
+*Source: EmbedEval benchmark data, 16-case controlled experiment. arXiv:2507.06980
 catalogues "incomprehension of implicit requirements" as an internal LLM
 factor but does not quantify the gap. The 35%p measurement appears to be
 novel in the embedded LLM literature.*

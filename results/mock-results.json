@@ -1,0 +1,81 @@
+{
+  "version": "0.1.0",
+  "date": "2026-03-29",
+  "models": [
+    {
+      "model": "mock",
+      "pass_at_1": 0.0,
+      "pass_at_3": 0.0,
+      "pass_at_5": 0.0,
+      "avg_score": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0,
+      "layer_pass_rates": {
+        "static_analysis": 0.0
+      },
+      "pass_at_1_ci": [
+        0.0,
+        0.3244156195108769
+      ],
+      "n_samples": 1
+    }
+  ],
+  "categories": [
+    {
+      "category": "boot",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    }
+  ],
+  "tier_scores": [
+    {
+      "tier": "sanity",
+      "pass_at_1": 0.0,
+      "total_cases": 1,
+      "passed_cases": 0
+    },
+    {
+      "tier": "core",
+      "pass_at_1": 0.0,
+      "total_cases": 5,
+      "passed_cases": 0
+    },
+    {
+      "tier": "challenge",
+      "pass_at_1": 0.0,
+      "total_cases": 2,
+      "passed_cases": 0
+    }
+  ],
+  "reasoning_scores": [
+    {
+      "reasoning_type": "api_recall",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    },
+    {
+      "reasoning_type": "rule_application",
+      "pass_at_1": 0.0,
+      "total_cases": 4,
+      "passed_cases": 0
+    },
+    {
+      "reasoning_type": "system_reasoning",
+      "pass_at_1": 0.0,
+      "total_cases": 8,
+      "passed_cases": 0
+    }
+  ],
+  "overall": {
+    "total_cases": 8,
+    "total_models": 1,
+    "best_model": "mock",
+    "best_pass_at_1": 0.0
+  },
+  "scenario": "generation",
+  "temperature": 0.0,
+  "n_samples_per_case": 1,
+  "n_runs": 1
+}

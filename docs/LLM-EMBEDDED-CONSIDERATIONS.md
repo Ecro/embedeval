@@ -11,16 +11,16 @@
 
 ### 1.1 Six Meta-Properties: Why Embedded Is Fundamentally Different
 
-These aren't weaknesses in specific models — they're structural properties of the LLM architecture + embedded domain combination.
+These aren't weaknesses in specific models — they're structural properties of the LLM architecture + embedded domain combination. For detailed descriptions with source citations, see [LLM-EMBEDDED-FAILURE-FACTORS.md](./LLM-EMBEDDED-FAILURE-FACTORS.md) §"Why Embedded Is Fundamentally Different for LLMs."
 
-| # | Meta-Property | Description | Evidence from Benchmark |
-|---|--------------|-------------|------------------------|
-| **M1** | **Training Data Sparsity** | Embedded C is a tiny fraction of LLM training corpora. The Stack v2 (775B tokens) is dominated by Python/JS/Java. Zephyr DMA APIs are orders of magnitude rarer than React hooks. | Haiku: 0% DMA, 0% on ESP-IDF/STM32 platform-specific cases. Sonnet: 44% DMA. Rare APIs = worse performance. |
-| **M2** | **Silent Failure** | In web/server code, bugs crash visibly. In embedded, a missing `volatile` compiles, runs in QEMU, passes CI — then corrupts data under load on real hardware months later. | 4 security cases pass L0+L1 but fail L2 in both models. Code "looks right" but doesn't work. |
-| **M3** | **Implicit Knowledge Gap** | When told "use volatile", LLM complies (~95%). When it must infer volatile is needed from "ISR shares variable with main" — ~60%. **35%p gap.** | Haiku fails `volatile` check; Sonnet passes. Both fail memory barriers. |
-| **M4** | **Complexity Cliff** | LLM performance drops sharply: simple peripheral 70-85% → multi-peripheral 40-60% → system integration 11-20%. | Tier 1 categories ~90%. Tier 3 (DMA, ISR, threading) ~30%. Same model, 60%p gap. |
-| **M5** | **Familiarity Bias** | LLMs perform well on common patterns, collapse on rarer equivalents. OBFUSEVAL showed 62.5% pass rate drop on renamed APIs. | DMA scatter-gather (rare): 0% both. Basic GPIO (common): 67-100%. Same difficulty, vastly different pass rates. |
-| **M6** | **RLHF Alignment Bias** | RLHF optimizes for "clean, readable" output — systematically suppresses embedded safety patterns: `volatile` looks "unnecessary", `goto cleanup` is "bad practice", error handling is "noise". | Both models omit `volatile`, skip `goto err_cleanup`, generate tutorial-style code. Backslash Security: 10% secure code naively vs 100% when explicitly prompted. |
+| # | Meta-Property | Benchmark Evidence |
+|---|--------------|-------------------|
+| **M1** | **Training Data Sparsity** | Haiku: 0% DMA, 0% on ESP-IDF/STM32 platform-specific cases. Sonnet: 44% DMA. Rare APIs = worse performance. |
+| **M2** | **Silent Failure** | 4 security cases pass L0+L1 but fail L2 in both models. Code "looks right" but doesn't work. |
+| **M3** | **Implicit Knowledge Gap** | Haiku fails `volatile` check; Sonnet passes. Both fail memory barriers. 35%p explicit-vs-implicit gap. |
+| **M4** | **Complexity Cliff** | Tier 1 categories ~90%. Tier 3 (DMA, ISR, threading) ~30%. Same model, 60%p gap. |
+| **M5** | **Familiarity Bias** | DMA scatter-gather (rare): 0% both. Basic GPIO (common): 67-100%. Same difficulty, vastly different pass rates. |
+| **M6** | **RLHF Alignment Bias** | Both models omit `volatile`, skip `goto err_cleanup`, generate tutorial-style code. 10% secure code naively vs 100% when explicitly prompted. |
 
 ### 1.2 What LLMs Structurally Cannot Access
 
@@ -39,7 +39,7 @@ The deepest insight isn't about specific API failures — it's about **entire ca
 
 ### 1.3 The Four Levels of Implicit Knowledge
 
-From [INSIGHTS.md #4](./INSIGHTS.md), confirmed by both Haiku and Sonnet data:
+Confirmed by both Haiku and Sonnet benchmark data:
 
 ```
 Level 1: C Language Knowledge        ← Sonnet ~95%, Haiku ~80%
@@ -540,6 +540,86 @@ Implicit requirement (LLM derives from context)     → ~60% pass
 **The gap is not model quality. It's knowledge that doesn't exist in training data, context that can't fit in a prompt, and field experience that lives in engineers' heads — not public repos.**
 
 AI is great for boilerplate. But embedded code that runs unattended for 10 years needs the paranoia that only comes from debugging at 3AM because 10,000 devices went silent simultaneously.
+
+---
+
+## 4. Meta-Evaluation: Benchmark Limitations and Self-Critique
+
+### 4.1 Critical Self-Analysis
+
+An honest assessment of EmbedEval's limitations, evaluated from both embedded expert and LLM benchmark expert perspectives.
+
+**Show-stoppers:**
+- **S1. No compilation.** L1/L2 are disabled. Calling regex pattern matching "behavioral check" is overclaiming. True behavioral evaluation requires QEMU execution + ThreadSanitizer + timing measurement.
+- **S2. Non-reproducible single trial.** pass@1 from a single run. LLMs are stochastic — 1 case change in a 10-case category = 10%p swing. A confidence interval is required for statistical significance.
+
+**Major limitations:**
+- **M1. Construct validity:** "Embedded capability" ≠ "API recall." When explicit prompts yield 95% and implicit 60%, we're measuring prompt-following, not domain knowledge.
+- **M2. Platform bias:** Zephyr dominates (>90%). Calling this an "Embedded benchmark" is generous — "Zephyr RTOS benchmark" is more accurate.
+- **M3. No human baseline:** Is 80% good or bad? Without a junior engineer comparison, absolute scores are uninterpretable.
+- **M4. Prompt sensitivity:** Rephrasing prompts changes scores — a robust benchmark should tolerate reasonable variation.
+- **M5. Toy complexity:** Single-file, ~50-line problems. Real projects are multi-module, multi-thousand-line systems.
+
+**Moderate limitations:**
+- **D1. Binary scoring:** 9/10 checks passed = FAIL. No partial credit.
+- **D2. Check precision unvalidated:** Intentional wrong answers were not systematically tested (negative testing).
+- **D3. Contamination risk:** Public repo with reference solutions.
+- **D4. Single evaluator bias:** All TCs/checks from one perspective.
+
+**Honest positioning:**
+
+| Overclaim | Honest Alternative |
+|-----------|-------------------|
+| "Embedded Last Exam" | "Zephyr RTOS Code Generation Benchmark" |
+| "Behavioral evaluation" | "Static pattern heuristics" |
+| "pass@1 = 91%" | "pass@1 = 91% (single run, n=10/cat)" |
+| "LLM embedded capability" | "API recall + safety pattern awareness" |
+
+### 4.2 Check Precision: 40% on Subtle Mutations
+
+Static heuristic checks catch trivial mutations (code removal: 100%) but miss subtle, bypass-style bugs:
+
+```
+Trivial mutations (code removal):     20/20 caught (100%)
+Subtle mutations (check bypass):       6/15 caught  (40%)
+Blind spots:                           9/15          (60%)
+```
+
+**Categories of blind spots:**
+| Type | Example | Risk | Root Cause |
+|------|---------|------|------------|
+| **Location-agnostic keyword** | `volatile` on wrong variable → PASS | High | `"volatile" in code` matches anywhere |
+| **Substring bypass** | `__copy_to_user` passes `copy_to_user` check | Critical | Substring matching |
+| **Behavior unchecked** | Error detected but no return → continues | High | Presence check, not action check |
+| **Missing deny-list entry** | `irq_lock` used — not in mutex deny list | High | Deny lists are always incomplete |
+| **Partial satisfaction** | 2/3 cleanup steps done → PASS | High | OR logic instead of AND |
+
+**Structural limitation:** Presence checks (does `volatile` exist?) are fundamentally different from semantic checks (is `volatile` on the correct variable?). Behavioral verification requires execution.
+
+### 4.3 Competitive Positioning
+
+| | HumanEval | SWE-bench | LiveCodeBench | EmbedBench (ICSE'26) | **EmbedEval** |
+|---|---|---|---|---|---|
+| Evaluation | assert exec | pytest exec | exec+predict | Wokwi simulator | **regex patterns** |
+| Code execution | Yes | Yes | Yes | Yes | **No** |
+| Contamination prevention | None | Large-scale | Temporal cutoff | HW combinations | **48 private TCs** |
+| TC count | 164 | 2,294 | 1,055 | 126 | **227** |
+| Top pass@1 | ~97% | ~75% | ~65% | 55.6% | 80.2% |
+
+**EmbedEval's unique contributions:**
+1. **Implicit Knowledge Gap (35%p)** — no other benchmark measures this
+2. **Embed Gap metric** — cross-benchmark comparison vs HumanEval
+3. **Check precision self-evaluation (40%)** — quantified benchmark limitations
+4. **4-Level Implicit Knowledge Model** (C → RTOS → HW → Safety)
+5. **Cross-platform hallucination detection** — systematic API confusion tracking
+
+**Where EmbedEval trails:**
+1. No code execution (all competitors execute)
+2. Inflated pass@1 due to no execution (80% vs EmbedBench 55.6%)
+3. Weaker contamination prevention than LiveCodeBench temporal cutoff
+4. Single-shot only — no compiler feedback or agent iteration
+
+**Honest framing:** EmbedEval is a "LLM Embedded Domain Knowledge Probe" — it measures whether LLMs possess embedded domain knowledge, not whether code actually works. This is meaningful because domain knowledge probing does not require execution.
 
 ---
 

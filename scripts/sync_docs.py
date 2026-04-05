@@ -9,7 +9,6 @@ Called automatically by /wrapup workflow.
 
 import re
 import subprocess
-import sys
 from collections import Counter
 from pathlib import Path
 
@@ -116,14 +115,6 @@ def count_modules() -> int:
     return len(list(SRC_DIR.glob("*.py"))) - 1  # exclude __init__.py if present
 
 
-def count_insights() -> int:
-    """Count insight entries in INSIGHTS.md."""
-    insights_file = ROOT / "docs" / "INSIGHTS.md"
-    if not insights_file.is_file():
-        return 0
-    content = insights_file.read_text(encoding="utf-8")
-    return len(re.findall(r"^## #\d+\.", content, re.MULTILINE))
-
 
 def update_methodology(stats: dict) -> bool:
     """Update the overview statistics table in METHODOLOGY.md."""
@@ -135,7 +126,6 @@ def update_methodology(stats: dict) -> bool:
     original = content
 
     # Update overview statistics table
-    n_tests = count_tests()
     n_cats = len(stats["categories"])
     n_plats = len(stats["platforms"])
     easy = stats["difficulties"].get("easy", 0)
@@ -201,7 +191,6 @@ def update_readme(stats: dict) -> bool:
 
     n_tests = count_tests()
     n_modules = count_modules()
-    n_insights = count_insights()
     priv = stats["visibility"]["private"]
     pub = stats["total"] - priv
 
@@ -223,13 +212,6 @@ def update_readme(stats: dict) -> bool:
     content = re.sub(
         r"├── src/embedeval/\s+# Core library \(\d+ modules\)",
         f"├── src/embedeval/           # Core library ({n_modules} modules)",
-        content,
-    )
-
-    # Update insights count
-    content = re.sub(
-        r"└── INSIGHTS\.md\s+# \d+ accumulated insights",
-        f"└── INSIGHTS.md          # {n_insights} accumulated insights",
         content,
     )
 
@@ -263,7 +245,6 @@ def main() -> None:
     print(f"  Negatives: {stats['negatives']} TCs, {stats['must_fail_mutations']} mutations")
     print(f"  Tests: {n_tests}")
     print(f"  Modules: {count_modules()}")
-    print(f"  Insights: {count_insights()}")
     print()
 
     changed = False

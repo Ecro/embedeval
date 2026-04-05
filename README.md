@@ -310,7 +310,7 @@ embedeval/
 ├── docs/
 │   ├── METHODOLOGY.md       # Full benchmark methodology + architecture diagrams
 │   ├── CONTRIBUTING.md      # How to add new test cases
-│   └── INSIGHTS.md          # 13 accumulated research insights
+│   └── LLM-EMBEDDED-CONSIDERATIONS.md  # Research insights + practical guidance
 ├── external_benchmarks.yaml # HumanEval/SWE-bench reference scores
 ├── Dockerfile               # Zephyr SDK build environment
 ├── Dockerfile.esp           # ESP-IDF build environment
@@ -334,7 +334,7 @@ uv run embedeval validate --cases cases/  # Validate reference solutions
 
 ## Key Research Findings
 
-Documented in [INSIGHTS.md](docs/INSIGHTS.md):
+Documented in [LLM-EMBEDDED-CONSIDERATIONS.md](docs/LLM-EMBEDDED-CONSIDERATIONS.md):
 
 1. **Implicit vs Explicit Gap** — 35%p pass rate drop when removing safety hints from prompts
 2. **4-Level Implicit Knowledge Model** — C language → RTOS patterns → Hardware constraints → System safety

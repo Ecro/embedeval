@@ -1,0 +1,229 @@
+{
+  "version": "0.1.0",
+  "date": "2026-04-04",
+  "models": [
+    {
+      "model": "claude-code://sonnet",
+      "pass_at_1": 0.8165137614678899,
+      "pass_at_1_quality": 0.8715596330275229,
+      "pass_at_1_comparable": null,
+      "pass_at_3": 0.8165137614678899,
+      "pass_at_5": 0.8165137614678899,
+      "avg_score": 0.8165137614678899,
+      "total_cases": 109,
+      "passed_cases": 89,
+      "passed_cases_quality": 95,
+      "comparable_cases": null,
+      "layer_pass_rates": {
+        "compile_gate": 0.9805825242718447,
+        "runtime_execution": 0.9603960396039604,
+        "static_analysis": 0.944954128440367,
+        "static_heuristic": 0.9175257731958762,
+        "test_quality_proof": 0.9887640449438202
+      },
+      "pass_at_1_ci": [
+        0.7335124341548579,
+        0.8779641843971654
+      ],
+      "n_samples": 1
+    }
+  ],
+  "categories": [
+    {
+      "category": "adc",
+      "pass_at_1": 1.0,
+      "total_cases": 2,
+      "passed_cases": 2
+    },
+    {
+      "category": "ble",
+      "pass_at_1": 1.0,
+      "total_cases": 8,
+      "passed_cases": 8
+    },
+    {
+      "category": "boot",
+      "pass_at_1": 0.0,
+      "total_cases": 1,
+      "passed_cases": 0
+    },
+    {
+      "category": "device-tree",
+      "pass_at_1": 1.0,
+      "total_cases": 1,
+      "passed_cases": 1
+    },
+    {
+      "category": "dma",
+      "pass_at_1": 0.5,
+      "total_cases": 4,
+      "passed_cases": 2
+    },
+    {
+      "category": "gpio-basic",
+      "pass_at_1": 0.75,
+      "total_cases": 4,
+      "passed_cases": 3
+    },
+    {
+      "category": "isr-concurrency",
+      "pass_at_1": 0.5,
+      "total_cases": 4,
+      "passed_cases": 2
+    },
+    {
+      "category": "kconfig",
+      "pass_at_1": 0.0,
+      "total_cases": 1,
+      "passed_cases": 0
+    },
+    {
+      "category": "linux-driver",
+      "pass_at_1": 1.0,
+      "total_cases": 2,
+      "passed_cases": 2
+    },
+    {
+      "category": "memory-opt",
+      "pass_at_1": 0.5555555555555556,
+      "total_cases": 9,
+      "passed_cases": 5
+    },
+    {
+      "category": "networking",
+      "pass_at_1": 1.0,
+      "total_cases": 8,
+      "passed_cases": 8
+    },
+    {
+      "category": "ota",
+      "pass_at_1": 0.875,
+      "total_cases": 8,
+      "passed_cases": 7
+    },
+    {
+      "category": "power-mgmt",
+      "pass_at_1": 1.0,
+      "total_cases": 8,
+      "passed_cases": 8
+    },
+    {
+      "category": "pwm",
+      "pass_at_1": 1.0,
+      "total_cases": 1,
+      "passed_cases": 1
+    },
+    {
+      "category": "security",
+      "pass_at_1": 0.3333333333333333,
+      "total_cases": 3,
+      "passed_cases": 1
+    },
+    {
+      "category": "sensor-driver",
+      "pass_at_1": 1.0,
+      "total_cases": 8,
+      "passed_cases": 8
+    },
+    {
+      "category": "spi-i2c",
+      "pass_at_1": 0.875,
+      "total_cases": 8,
+      "passed_cases": 7
+    },
+    {
+      "category": "storage",
+      "pass_at_1": 0.8,
+      "total_cases": 5,
+      "passed_cases": 4
+    },
+    {
+      "category": "threading",
+      "pass_at_1": 0.4,
+      "total_cases": 5,
+      "passed_cases": 2
+    },
+    {
+      "category": "timer",
+      "pass_at_1": 1.0,
+      "total_cases": 6,
+      "passed_cases": 6
+    },
+    {
+      "category": "uart",
+      "pass_at_1": 1.0,
+      "total_cases": 2,
+      "passed_cases": 2
+    },
+    {
+      "category": "watchdog",
+      "pass_at_1": 0.8888888888888888,
+      "total_cases": 9,
+      "passed_cases": 8
+    },
+    {
+      "category": "yocto",
+      "pass_at_1": 1.0,
+      "total_cases": 2,
+      "passed_cases": 2
+    }
+  ],
+  "tier_scores": [
+    {
+      "tier": "sanity",
+      "pass_at_1": 0.0,
+      "total_cases": 1,
+      "passed_cases": 0
+    },
+    {
+      "tier": "core",
+      "pass_at_1": 0.8852459016393442,
+      "total_cases": 61,
+      "passed_cases": 54
+    },
+    {
+      "tier": "challenge",
+      "pass_at_1": 0.7446808510638298,
+      "total_cases": 47,
+      "passed_cases": 35
+    }
+  ],
+  "reasoning_scores": [
+    {
+      "reasoning_type": "api_recall",
+      "pass_at_1": 0.8514851485148515,
+      "total_cases": 101,
+      "passed_cases": 86
+    },
+    {
+      "reasoning_type": "rule_application",
+      "pass_at_1": 0.8035714285714286,
+      "total_cases": 56,
+      "passed_cases": 45
+    },
+    {
+      "reasoning_type": "cross_domain",
+      "pass_at_1": 0.6190476190476191,
+      "total_cases": 21,
+      "passed_cases": 13
+    },
+    {
+      "reasoning_type": "system_reasoning",
+      "pass_at_1": 0.8166666666666667,
+      "total_cases": 60,
+      "passed_cases": 49
+    }
+  ],
+  "overall": {
+    "total_cases": 109,
+    "total_models": 1,
+    "best_model": "claude-code://sonnet",
+    "best_pass_at_1": 0.8165137614678899,
+    "common_cases": null,
+    "case_set_warning": null
+  },
+  "scenario": "generation",
+  "temperature": 0.0,
+  "n_samples_per_case": 1,
+  "n_runs": 1
+}
