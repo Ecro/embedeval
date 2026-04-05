@@ -3,8 +3,9 @@
 A complete system for using LLMs to develop embedded firmware — from
 requirements through deployment — without shipping demos as products.
 
-**Companion document:** [LLM-EMBEDDED-FAILURE-FACTORS.md](LLM-EMBEDDED-FAILURE-FACTORS.md)
-(42 code factors + 19 non-code factors describing WHERE LLMs fail)
+**Companion documents:**
+- [LLM-EMBEDDED-FAILURE-FACTORS.md](LLM-EMBEDDED-FAILURE-FACTORS.md) — 42 code factors + 19 non-code factors describing WHERE LLMs fail
+- [LLM-EMBEDDED-CONSIDERATIONS.md](LLM-EMBEDDED-CONSIDERATIONS.md) — 14 production-scale failure patterns and practical guidance for teams
 
 ---
 
@@ -39,7 +40,7 @@ requirements through deployment — without shipping demos as products.
 5. [Model Selection](#5-model-selection-for-embedded-tasks) — Benchmark-based guidance
 6. [Prompt Engineering](#6-prompt-engineering-for-embedded--how-to-ask)
    - [Structural](#61-structural-techniques) · [Knowledge Injection](#62-knowledge-injection-techniques) · [Reasoning](#63-reasoning-techniques) · [Iteration](#64-iteration-techniques) · [Future Work](#65-techniques-to-explore-future-work)
-7. [Anti-Patterns](#7-anti-patterns--common-mistakes) — 21 mistakes ranked by impact
+7. [Anti-Patterns](#7-anti-patterns--common-mistakes) — 28 mistakes ranked by impact
 8. [Maturity Model](#8-maturity-model--growing-your-llm-practice) — 4 levels
 
 ---
@@ -497,10 +498,24 @@ done
 echo "alloc: $(grep -c 'k_mem_slab_alloc\|k_heap_alloc\|k_malloc' src/*.c)"
 echo "free:  $(grep -c 'k_mem_slab_free\|k_heap_free\|k_free' src/*.c)"
 # Counts should be roughly equal — investigate if not
+
+# 7. Strict aliasing violations (type punning via pointer cast)
+grep -rn '(\(struct\|uint32_t\|uint16_t\|int32_t\|int16_t\) \*)' src/*.c
+# Any output = potential strict aliasing violation → use memcpy instead
+
+# 8. Runtime malloc (heap fragmentation risk in long-running systems)
+grep -rn 'malloc\|k_malloc\|k_heap_alloc\|pvPortMalloc' src/*.c | \
+  grep -v 'init\|setup\|start\|main'
+# malloc outside init = fragmentation risk over weeks/months
+
+# 9. Missing endianness conversion at protocol boundaries
+grep -rn 'i2c_read\|i2c_burst_read\|spi_transceive\|net_buf_pull' src/*.c | \
+  grep -v 'ntohs\|ntohl\|htons\|htonl\|bswap\|__builtin_bswap'
+# Sensor/network reads without byte-order conversion → investigate
 ```
 
-**Manual review checklist** (see [Failure Factors](LLM-EMBEDDED-FAILURE-FACTORS.md)):
-- [ ] Error paths: every init/alloc has cleanup on failure?
+**Manual review checklist** (see [Failure Factors](LLM-EMBEDDED-FAILURE-FACTORS.md) and [Considerations](LLM-EMBEDDED-CONSIDERATIONS.md)):
+- [ ] Error paths: every init/alloc has cleanup on failure (reverse order)?
 - [ ] Shared variables: all have volatile or atomic?
 - [ ] Init ordering: matches datasheet sequence?
 - [ ] Timing margins: all timeouts < relevant deadline?
@@ -508,6 +523,12 @@ echo "free:  $(grep -c 'k_mem_slab_free\|k_heap_free\|k_free' src/*.c)"
 - [ ] DMA buffers: cache-line aligned? flush/invalidate present?
 - [ ] Resource lifecycle: every alloc has matching free?
 - [ ] Rollback paths: OTA/flash operations have abort path?
+- [ ] Endianness: byte-order conversion at every protocol boundary (sensor registers, network)?
+- [ ] Float safety: NaN/Inf checks before safety-critical comparisons?
+- [ ] Type punning: `memcpy()` used instead of `*(struct*)buf` pointer casts?
+- [ ] Counter overflow: 32-bit ms counters wrap at 49.7 days — use 64-bit or wrap-safe arithmetic?
+- [ ] Heap usage: no `malloc()`/`free()` in runtime loops (fragmentation over weeks)?
+- [ ] Secure OTA: signature verification, anti-rollback, A/B partitioning?
 
 ### Phase 5: Testing (6 Levels)
 
@@ -517,7 +538,7 @@ echo "free:  $(grep -c 'k_mem_slab_free\|k_heap_free\|k_free' src/*.c)"
 | **L1 Compile** | Cross-compile + link | CI + Docker | Wrong APIs, missing symbols, section overflow, size budget | Yes |
 | **L2 Emulation** | Run on QEMU / native_sim | CI | Logic errors, state machine bugs, IPC correctness | Yes |
 | **L3 Hardware** | Run on target board | Lab bench | Peripheral behavior, DMA correctness, real timing, power modes | Manual |
-| **L4 Stress** | Extended run (24hr+) | Test rack | Memory leaks, counter overflow, flash wear, timing drift | Semi-auto |
+| **L4 Stress** | Extended run (24hr+, target 50 days for counter overflow) | Test rack | Memory leaks, heap fragmentation, counter overflow (49.7d), flash wear, radio state corruption, timing drift | Semi-auto |
 | **L5 Formal & Safety** | MC/DC coverage, fault injection, model checking | CI + review | Structural coverage, safety case, spec2code verification (arXiv:2411.13269) | Semi-auto |
 | **L6 Regulatory** | EMC pre-scan, RF compliance, environmental testing | Certified lab | FCC/CE/UL compliance — hardware activity, not software testing | Manual |
 
@@ -766,6 +787,14 @@ board-specific values, and combine with Universal Context (3.1).
 - Handle power loss at ANY point: download, flash write, reboot, validation
 - Never erase active slot before new image is fully validated
 - Return value of EVERY DFU API call must be checked
+
+## Secure Boot Chain (CRITICAL)
+- Firmware image MUST be signed (RSA/ECDSA) — private key in HSM, NEVER on device
+- Device verifies signature with public key from secure element before flashing
+- Anti-rollback: version counter prevents downgrade attacks
+- A/B partitioning: atomic update with automatic revert on boot failure
+- Download over TLS — no plaintext firmware transfer
+- MCUs have no ASLR/DEP — buffer overflow in OTA = arbitrary code execution
 
 ## State Machine
 Download → Validate → Reboot → Self-test → Confirm
@@ -1090,17 +1119,19 @@ gpio_set_level, esp_log_write, analogRead, digitalWrite, delay().
 ## 5. Model Selection for Embedded Tasks
 
 Not all LLMs perform equally on embedded code. EmbedEval benchmark data
-(2026-03-29, 179 test cases across 23 categories) shows significant
-performance gaps between model tiers.
+(2026-04-05, 179 test cases across 23 categories, post-check-fix) shows
+significant performance gaps between model tiers.
 
 ### 5.1 Overall Performance
 
 | Model | pass@1 | 95% CI | Failed | Strongest | Weakest |
 |-------|--------|--------|--------|-----------|---------|
-| Sonnet 4 | 84.9% | [78.9%, 89.4%] | 27/179 | 10 categories at 100% | threading (42%), isr-concurrency (44%) |
-| Haiku 3.5 | 70.4% | - | 53/179 | 5 categories at 100% | dma (11%), threading (25%) |
+| Sonnet 4.6 | 76.5% | [69.8%, 82.3%] | 42/179 | ble, device-tree, networking, timer (100%) | security (25%), isr-concurrency (33%), dma (44%) |
+| Haiku 4.5 | 64.8% | [57.5%, 71.5%] | 63/179 | adc, sensor-driver (100%) | dma (0%), isr-concurrency (22%), threading (27%) |
 
-**Gap: 14.5 percentage points overall, up to 67pp on hardware-specific tasks.**
+**Gap: 11.7 percentage points overall, up to 44pp on DMA.**
+
+See [BENCHMARK-COMPARISON-2026-04-05.md](BENCHMARK-COMPARISON-2026-04-05.md) for detailed per-case analysis.
 
 ### 5.2 Category Risk Tiers
 
@@ -1108,9 +1139,9 @@ Based on benchmark failure rates, embedded tasks fall into three risk tiers:
 
 | Risk Tier | Categories | Sonnet | Haiku | Recommendation |
 |-----------|-----------|--------|-------|----------------|
-| **Safe** (>95% both) | boot, security, uart, pwm, adc | 100% | 100% | Either model works. Haiku sufficient for cost savings. |
-| **Moderate** (>80% Sonnet) | ble, device-tree, kconfig, networking, ota, storage, sensor-driver, power-mgmt, yocto, spi-i2c, timer, gpio-basic | 88-100% | 63-100% | Sonnet recommended. Haiku acceptable with extra review. |
-| **Dangerous** (<80% Sonnet) | threading, isr-concurrency, dma, linux-driver, memory-opt, watchdog | 42-80% | 11-50% | Sonnet minimum. Always manual expert review. Haiku not recommended. |
+| **Safe** (>85% Sonnet) | ble, device-tree, networking, timer, power-mgmt, sensor-driver, kconfig, ota, spi-i2c, watchdog, yocto | 88-100% | 62-100% | Sonnet recommended. Haiku acceptable with extra review. |
+| **Moderate** (50-85% Sonnet) | boot, gpio-basic, linux-driver, storage, uart, memory-opt | 50-88% | 30-100% | Sonnet minimum. Mandatory review for error paths and HW interaction. |
+| **Dangerous** (<50% Sonnet) | threading, isr-concurrency, dma, security | 25-45% | 0-38% | Sonnet minimum. Always manual expert review. Haiku not recommended. |
 
 ### 5.3 When to Use Which Model
 
@@ -1133,16 +1164,21 @@ Even the best models fail on these patterns — always verify manually:
 
 | Pattern | Sonnet Fail Rate | Why LLMs Struggle |
 |---------|-----------------|-------------------|
-| `volatile` on shared flags | ~60% miss | Implicit knowledge: compiler optimization is invisible |
 | Memory barriers (ISR↔thread) | ~80% miss | Requires CPU architecture + compiler model reasoning |
+| DMA cache coherence | ~60% miss | Requires understanding CPU cache vs DMA engine interaction |
+| Strict aliasing / type punning | ~90% miss | LLM training data is full of `*(struct*)buf` patterns |
 | Error path cleanup (goto unwinding) | ~50% miss | Requires tracking all allocated resources across branches |
+| `volatile` on shared flags | ~40% miss | Implicit knowledge: compiler optimization is invisible |
 | ISR-safe signaling (k_sem_give, not mutex) | ~40% miss | Requires knowing which APIs are ISR-safe |
-| Thread priority differentiation | ~50% miss | Requires understanding scheduling implications |
-| Named constants (no magic numbers) | ~30% miss | Style discipline, not domain knowledge |
+| Endianness conversion at boundaries | ~80% miss | Requires knowing sensor register byte order vs MCU |
+| NaN guard on safety comparisons | ~95% miss | Almost never in training data — NaN comparison is invisible |
+| Counter overflow handling (49.7 day) | ~95% miss | Requires thinking about multi-week continuous operation |
+| Secure OTA (signature, anti-rollback) | ~90% miss | Generates functional OTA, not secure OTA |
 
 These are the patterns where the **implicit/explicit gap** (Section 6.3.5)
 is largest. Even with the best model, include these requirements explicitly
-in your prompt or context template.
+in your prompt or context template. See [LLM-EMBEDDED-CONSIDERATIONS.md](LLM-EMBEDDED-CONSIDERATIONS.md)
+Section 2 for detailed analysis with real-world incidents.
 
 ---
 
@@ -1569,8 +1605,15 @@ this would automate it.
 | Re-iterating without changing context | Med | Same prompt × 5 rounds = same mistake. LLM won't self-correct systematic weakness. | After 3 rounds, stop. Update context package with missing information. |
 | Relying on LLM for cross-platform migration | Med | 29.4% pass@1 for ESP-IDF migration (EmbedAgent). Almost guaranteed to fail. | Human maps APIs manually, LLM assists per-function only. |
 | "You are an expert embedded engineer" | Med | Persona prompting HURTS code accuracy by -3 to -5% (EMNLP 2025). Activates instruction-following at expense of factual recall. | Use specific constraints, SDK versions, and hardware details. Never generic role prompts. |
+| Casting pointers to parse buffers | High | `*(struct*)buf` violates strict aliasing — works at -O0, breaks at -O2. Cortex-M0 hard-faults on unaligned access. | Use `memcpy()` for type punning. Compiler optimizes it to register move. |
+| Ignoring byte order at boundaries | High | Sensor registers (big-endian) read directly into little-endian MCU = garbage data. | Explicit `ntohs()`/`ntohl()` or manual MSB-first conversion at every protocol boundary. |
+| No NaN guard on safety comparisons | High | `if (speed > MAX)` silently passes when speed is NaN (div by zero). Safety limit bypassed. | Add `isnan()`/`isinf()` check before every safety-critical float comparison. Or use fixed-point. |
+| malloc/free in runtime loops | High | Heap fragmentation over weeks. Total free RAM unchanged but largest block shrinks until allocation fails. | Fixed-size pools (`k_mem_slab`), or heap-at-startup-only pattern. No runtime malloc. |
+| OTA without signature verification | High | Unsigned firmware accepted = arbitrary code execution. No chain of trust. | Sign with ECDSA, verify on device, implement anti-rollback, use A/B partitioning. |
+| Testing only in debug builds | Med | printf hides race conditions. Optimizer at -O2 removes "unnecessary" volatile reads. Different stack layout. | Always test on optimized builds. Use runtime log levels, not `#ifdef DEBUG`. |
+| 32-bit ms counter without wrap handling | Med | System hangs at exactly 49.7 days of uptime. | Use 64-bit counters, or unsigned wrap-safe arithmetic. Test at the 49.7-day boundary. |
 | Not updating knowledge base | Low | Board profile gets stale, new errata missed | Update after every field issue. Schedule quarterly review. |
-| "The LLM said it's correct" | Low | 85% pass rate (Sonnet) = 1 in 7 modules has a bug. Haiku: 1 in 3. | Review EVERY module. Trust but verify. |
+| "The LLM said it's correct" | Low | 76.5% pass rate (Sonnet) = 1 in 4 modules has a bug. Haiku: 1 in 3. | Review EVERY module. Trust but verify. |
 
 ---
 
