@@ -5,7 +5,6 @@ analysis of why LLMs fail at embedded firmware tasks.
 """
 
 import logging
-import re
 from collections import Counter
 from enum import Enum
 
@@ -60,7 +59,6 @@ CHECK_PATTERN_MAP: dict[str, FailurePattern] = {
     "error_path_returns": FailurePattern.HAPPY_PATH_BIAS,
     "dma_error_handling": FailurePattern.HAPPY_PATH_BIAS,
     "cleanup_on_error": FailurePattern.HAPPY_PATH_BIAS,
-
     # Semantic mismatch (compiles but wrong HW semantics)
     "cyclic_enabled": FailurePattern.SEMANTIC_MISMATCH,
     "reload_in_callback": FailurePattern.SEMANTIC_MISMATCH,
@@ -68,25 +66,20 @@ CHECK_PATTERN_MAP: dict[str, FailurePattern] = {
     "volatile_shared": FailurePattern.SEMANTIC_MISMATCH,
     "device_ready_check": FailurePattern.SEMANTIC_MISMATCH,
     "spinlock_used_in_both_contexts": FailurePattern.SEMANTIC_MISMATCH,
-
     # Resource imbalance (alloc without free)
     "register_unregister_balanced": FailurePattern.RESOURCE_IMBALANCE,
     "spinlock_balanced": FailurePattern.RESOURCE_IMBALANCE,
     "dma_stop_called": FailurePattern.RESOURCE_IMBALANCE,
-
     # Order violation
     "callback_before_sleep": FailurePattern.ORDER_VIOLATION,
     "key_passed_to_unlock": FailurePattern.ORDER_VIOLATION,
-
     # Cross-platform confusion
     "no_cross_platform_apis": FailurePattern.CROSS_PLATFORM_CONFUSION,
     "no_zephyr_apis_in_linux_driver": FailurePattern.CROSS_PLATFORM_CONFUSION,
     "no_freertos_apis": FailurePattern.CROSS_PLATFORM_CONFUSION,
-
     # API hallucination
     "no_hallucinated_apis": FailurePattern.API_HALLUCINATION,
     "no_deprecated_gpio_request": FailurePattern.API_HALLUCINATION,
-
     # Safety patterns missing
     "no_forbidden_apis_in_isr": FailurePattern.MISSING_SAFETY_PATTERN,
     "no_mutex_in_isr": FailurePattern.MISSING_SAFETY_PATTERN,

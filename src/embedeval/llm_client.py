@@ -64,7 +64,10 @@ def call_model(
 
 
 def _call_claude_code(
-    model: str, prompt: str, timeout: float, max_retries: int = 2,
+    model: str,
+    prompt: str,
+    timeout: float,
+    max_retries: int = 2,
 ) -> LLMResponse:
     """Call Claude via `claude -p` CLI (uses subscription, no API key)."""
     claude_model = model.removeprefix(CLAUDE_CODE_PREFIX)
@@ -73,9 +76,13 @@ def _call_claude_code(
     if claude_model:
         cmd.extend(["--model", claude_model])
 
-    last_error: Exception | None = None
     for attempt in range(1, max_retries + 1):
-        logger.info("Claude Code call: model=%s (attempt %d/%d)", claude_model or "default", attempt, max_retries)
+        logger.info(
+            "Claude Code call: model=%s (attempt %d/%d)",
+            claude_model or "default",
+            attempt,
+            max_retries,
+        )
         start = time.monotonic()
 
         try:
@@ -88,16 +95,19 @@ def _call_claude_code(
             )
             break  # success — exit retry loop
         except subprocess.TimeoutExpired as exc:
-            last_error = exc
             if attempt < max_retries:
                 logger.warning("claude -p timed out (attempt %d), retrying...", attempt)
                 continue
-            raise RuntimeError(f"claude -p timed out after {timeout}s ({max_retries} attempts)") from exc
+            raise RuntimeError(
+                f"claude -p timed out after {timeout}s ({max_retries} attempts)"
+            ) from exc
 
     elapsed = time.monotonic() - start
 
     if result.returncode != 0:
-        raise RuntimeError(f"claude -p failed (exit {result.returncode}): {result.stderr}")
+        raise RuntimeError(
+            f"claude -p failed (exit {result.returncode}): {result.stderr}"
+        )
 
     # Parse JSON output — find the result entry
     text_content = ""
@@ -197,9 +207,7 @@ def _call_litellm(
                 time.sleep(rate_limit_delay)
         except Exception as exc:
             logger.error("LLM call failed (non-retryable): %s", exc)
-            raise RuntimeError(
-                f"Non-retryable error for model {model}: {exc}"
-            ) from exc
+            raise RuntimeError(f"Non-retryable error for model {model}: {exc}") from exc
 
     msg = f"All {max_retries} retries exhausted for model {model}"
     raise RuntimeError(msg) from last_error

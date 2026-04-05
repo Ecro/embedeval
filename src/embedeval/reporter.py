@@ -4,6 +4,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -110,9 +111,7 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
     """Generate model comparison table."""
     # Check if any model has comparable scores (different case sets)
     has_comparable = any(
-        ms.pass_at_1_comparable is not None
-        for r in reports
-        for ms in r.models
+        ms.pass_at_1_comparable is not None for r in reports for ms in r.models
     )
 
     # Case set warnings (deduplicated across reports)
@@ -122,15 +121,19 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
         w = report.overall.case_set_warning
         if w and w not in seen_warnings:
             seen_warnings.add(w)
-            lines.extend([
-                "> **Warning:** " + w,
-                "",
-            ])
+            lines.extend(
+                [
+                    "> **Warning:** " + w,
+                    "",
+                ]
+            )
 
-    lines.extend([
-        "## Model Comparison",
-        "",
-    ])
+    lines.extend(
+        [
+            "## Model Comparison",
+            "",
+        ]
+    )
 
     if has_comparable:
         hdr = (
@@ -145,10 +148,14 @@ def _model_comparison_table(reports: list[BenchmarkReport]) -> list[str]:
         )
         lines.extend([hdr, sep])
     else:
-        lines.extend([
-            "| Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |",
-            "|-------|---------------|------------------|--------|--------|--------|---------|-------|---------|",
-        ])
+        lines.extend(
+            [
+                "| Model | pass@1 (full) | pass@1 (quality) | 95% CI"
+                " | pass@5 | Passed | Quality | Total | Samples |",
+                "|-------|---------------|------------------|--------|"
+                "--------|--------|---------|-------|---------|",
+            ]
+        )
 
     for report in reports:
         for model_score in report.models:
@@ -398,13 +405,15 @@ def _load_external_benchmarks() -> dict[str, dict[str, float | str]]:
         return {}
 
 
-def _match_external(model_name: str, externals: dict) -> dict | None:
+def _match_external(
+    model_name: str, externals: dict[str, Any]
+) -> dict[str, Any] | None:
     """Find matching external benchmark entry.
 
     Uses longest-match to avoid ambiguity (e.g., "gpt-4o" vs "gpt-4o-mini").
     """
     model_lower = model_name.lower()
-    best_match: tuple[int, dict] | None = None
+    best_match: tuple[int, dict[str, Any]] | None = None
     for key, scores in externals.items():
         key_lower = key.lower()
         if key_lower in model_lower:
@@ -422,8 +431,10 @@ def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
     lines: list[str] = [
         "## Cross-Benchmark Comparison",
         "",
-        "| Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |",
-        "|-------|-----------|-----------|------------------|---------------------|-----------|",
+        "| Model | HumanEval | SWE-bench | EmbedEval (full)"
+        " | EmbedEval (quality) | Embed Gap |",
+        "|-------|-----------|-----------|------------------"
+        "|---------------------|-----------|",
     ]
 
     has_data = False
@@ -521,7 +532,7 @@ def generate_failure_report(
 
     lines.append(f"# Benchmark Report: {model}")
     lines.append(f"\n**Date:** {timestamp}")
-    lines.append(f"\n## Summary\n")
+    lines.append("\n## Summary\n")
     lines.append("| Metric | Value |")
     lines.append("|--------|-------|")
     lines.append(f"| Model | {model} |")
@@ -558,7 +569,7 @@ def generate_failure_report(
                     pattern_counts.setdefault(d.check_name, []).append(r.case_id)
 
     if pattern_counts:
-        lines.append(f"\n## Failure Patterns\n")
+        lines.append("\n## Failure Patterns\n")
         lines.append("| Check Name | Failures | Cases |")
         lines.append("|-----------|----------|-------|")
         for check, cases in sorted(pattern_counts.items(), key=lambda x: -len(x[1])):
@@ -589,8 +600,12 @@ def generate_failure_report(
             is_prose = (
                 not code
                 or code.startswith(("I ", "Here", "Based", "This", "The ", "Let"))
-                or (len(code) > 50 and "#include" not in code and "CONFIG_" not in code
-                    and not code.strip().startswith(("&", "/", "/*")))
+                or (
+                    len(code) > 50
+                    and "#include" not in code
+                    and "CONFIG_" not in code
+                    and not code.strip().startswith(("&", "/", "/*"))
+                )
             )
             if is_prose:
                 prose_cases.append(r.case_id)
@@ -606,12 +621,10 @@ def generate_failure_report(
             lines.append("| Type | Count | Cases |")
             lines.append("|------|-------|-------|")
             lines.append(
-                f"| Genuine code error | {len(genuine_cases)}"
-                f" | {genuine_str} |"
+                f"| Genuine code error | {len(genuine_cases)} | {genuine_str} |"
             )
             lines.append(
-                f"| LLM format failure (prose) | {len(prose_cases)}"
-                f" | {prose_str} |"
+                f"| LLM format failure (prose) | {len(prose_cases)} | {prose_str} |"
             )
             lines.append("")
             adjusted_total = len(results) - len(prose_cases)
@@ -625,7 +638,7 @@ def generate_failure_report(
                 )
 
     # TC improvement suggestions
-    lines.append(f"\n## TC Improvement Suggestions\n")
+    lines.append("\n## TC Improvement Suggestions\n")
     always_pass = [r.case_id for r in results if r.passed]
     if len(always_pass) == total:
         lines.append("All cases passed — consider adding harder test cases.\n")
@@ -683,7 +696,8 @@ def generate_safe_guide(
         return None
 
     # Collect per-model, per-category results from summary.json files
-    model_data: dict[str, dict[str, dict]] = {}  # model -> {cat -> {passed, total}}
+    # model -> {cat -> {passed, total}}
+    model_data: dict[str, dict[str, dict[str, Any]]] = {}
 
     for run_dir in sorted(runs_dir.iterdir()):
         summary_file = run_dir / "summary.json"
@@ -700,7 +714,7 @@ def generate_safe_guide(
             continue
 
         # Keep latest run per model (dirs are sorted by date)
-        cat_map: dict[str, dict] = {}
+        cat_map: dict[str, dict[str, Any]] = {}
         for cat in categories:
             cat_name = cat.get("category", "")
             if cat_name:

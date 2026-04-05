@@ -234,7 +234,7 @@ class TestEspIdfCompileGate:
 class TestEspCaseChecks:
     """Verify each ESP-IDF case's static/behavior checks pass on reference code."""
 
-    CASES_DIR = Path("/home/noel/embedeval/cases")
+    CASES_DIR = Path(__file__).resolve().parent.parent / "cases"
 
     def _load_reference(self, case_name: str) -> str:
         ref = self.CASES_DIR / case_name / "reference" / "main.c"

@@ -1,9 +1,15 @@
 """Tests for TC restructure: tier classification, reasoning types, and scoring."""
 
+import re
 from pathlib import Path
 
 import yaml
 from typer.testing import CliRunner
+
+
+def strip_ansi(text: str) -> str:
+    """Remove ANSI escape codes from text (e.g. color codes added by rich/typer in CI)."""
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
 
 from embedeval.cli import app
 from embedeval.models import (
@@ -182,9 +188,9 @@ class TestCLITierFilter:
     def test_run_help_shows_tier(self) -> None:
         result = cli_runner.invoke(app, ["run", "--help"])
         assert result.exit_code == 0
-        assert "--tier" in result.output
+        assert "--tier" in strip_ansi(result.output)
 
     def test_guide_help(self) -> None:
         result = cli_runner.invoke(app, ["guide", "--help"])
         assert result.exit_code == 0
-        assert "--results" in result.output
+        assert "--results" in strip_ansi(result.output)

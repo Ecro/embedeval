@@ -56,7 +56,8 @@ def evaluate_agent(
                 f"{prompt}\n\n"
                 f"Previous attempts and errors:\n"
                 + "\n".join(context)
-                + "\n\nPlease fix all issues and output ONLY the complete C source file."
+                + "\n\nPlease fix all issues and output ONLY"
+                " the complete C source file."
             )
         else:
             full_prompt = prompt

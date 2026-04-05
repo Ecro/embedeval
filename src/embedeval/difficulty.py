@@ -77,9 +77,7 @@ def calibrate_difficulty(
             # Use the first result's metadata if available
             case_difficulty[r.case_id] = _infer_difficulty(r)
 
-    models = sorted(
-        {r.model for r in results}
-    )
+    models = sorted({r.model for r in results})
 
     items: list[IRTParams] = []
     floor_cases: list[str] = []

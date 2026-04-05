@@ -297,7 +297,9 @@ def _run_compile_gate(
                     check_name="build_env",
                     passed=True,
                     expected="l1_skip not set",
-                    actual="skipped (l1_skip: reference does not compile for target board)",
+                    actual=(
+                        "skipped (l1_skip: reference does not compile for target board)"
+                    ),
                     check_type="environment",
                 )
             ],
@@ -462,6 +464,7 @@ def _run_compile_docker(
         )
     finally:
         if own_build_dir:
+            assert build_dir is not None
             shutil.rmtree(build_dir, ignore_errors=True)
 
 
@@ -519,6 +522,7 @@ def _run_compile_local(
         )
     finally:
         if own_build_dir:
+            assert build_dir is not None
             shutil.rmtree(build_dir, ignore_errors=True)
 
 

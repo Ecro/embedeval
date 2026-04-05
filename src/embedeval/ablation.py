@@ -5,7 +5,6 @@ how much each layer contributes to the benchmark's discriminative power.
 """
 
 import logging
-from collections import defaultdict
 
 from pydantic import BaseModel, Field
 

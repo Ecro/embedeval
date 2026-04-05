@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 
 from embedeval.evaluator import evaluate
 from embedeval.llm_client import call_model
-from embedeval.models import CaseCategory, EvalResult
+from embedeval.models import CaseCategory
 from embedeval.runner import Filters, discover_cases, filter_cases
 
 logger = logging.getLogger(__name__)
@@ -184,9 +184,7 @@ def run_sensitivity_analysis(
 
     sorted_by_robustness = sorted(results, key=lambda c: c.robustness)
     most_sensitive = [c.case_id for c in sorted_by_robustness[:5] if c.robustness < 1.0]
-    most_robust = [
-        c.case_id for c in sorted_by_robustness[-5:] if c.robustness == 1.0
-    ]
+    most_robust = [c.case_id for c in sorted_by_robustness[-5:] if c.robustness == 1.0]
 
     return SensitivityReport(
         model=model,
@@ -208,9 +206,7 @@ def _find_bullet_groups(lines: list[str]) -> list[tuple[int, int]]:
     start = None
     for i, line in enumerate(lines):
         stripped = line.strip()
-        is_bullet = bool(
-            re.match(r"^(\d+[\.\)]\s|[-*]\s|•\s)", stripped)
-        )
+        is_bullet = bool(re.match(r"^(\d+[\.\)]\s|[-*]\s|•\s)", stripped))
         if is_bullet:
             if start is None:
                 start = i
@@ -223,9 +219,7 @@ def _find_bullet_groups(lines: list[str]) -> list[tuple[int, int]]:
     return groups
 
 
-def _reorder_bullets(
-    lines: list[str], groups: list[tuple[int, int]]
-) -> list[str]:
+def _reorder_bullets(lines: list[str], groups: list[tuple[int, int]]) -> list[str]:
     """Reverse the order of bullets in the first group."""
     if not groups:
         return lines

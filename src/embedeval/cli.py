@@ -60,7 +60,10 @@ def run(
     ] = 1,
     tier: Annotated[
         Optional[str],
-        typer.Option("--tier", help="Filter by tier: sanity, core, challenge (comma-separated)"),
+        typer.Option(
+            "--tier",
+            help="Filter by tier: sanity, core, challenge (comma-separated)",
+        ),
     ] = None,
     visibility: Annotated[
         str | None,
@@ -127,10 +130,9 @@ def run(
         typer.echo(f"Unknown scenario: {scenario}. Use 'generation' or 'bugfix'.")
         raise typer.Exit(code=1)
 
+    from embedeval.models import CaseTier
     from embedeval.runner import Filters, run_benchmark
     from embedeval.scorer import score as score_results
-
-    from embedeval.models import CaseTier
 
     filters = Filters()
     if category:
@@ -146,7 +148,6 @@ def run(
 
     # Retest-only filtering
     if retest_only:
-        from embedeval.runner import Visibility as _Vis
         from embedeval.runner import discover_cases as _discover
         from embedeval.runner import filter_cases as _filter
         from embedeval.test_tracker import (
@@ -167,14 +168,17 @@ def run(
             tags=filters.tags,
             visibility=filters.visibility
             if filters.visibility is not None
-            else (None if include_private else _Vis.PUBLIC),
+            else (None if include_private else Visibility.PUBLIC),
             after_date=filters.after_date,
         )
         selected = _filter(all_cases, retest_filters)
         all_case_ids = [meta.id for _, meta in selected]
         case_dir_map = {meta.id: cd for cd, meta in selected}
         needs_retest = find_cases_needing_retest(
-            tracker, model, cases_dir, all_case_ids,
+            tracker,
+            model,
+            cases_dir,
+            all_case_ids,
             case_dir_map=case_dir_map,
         )
         if not needs_retest:
@@ -249,9 +253,7 @@ def run(
     tracker = load_tracker(output_dir)
     tracker = update_tracker(tracker, results, cases_dir, model)
     save_tracker(tracker, output_dir)
-    generate_results_doc(
-        tracker, output_dir / "TEST_RESULTS.md", cases_dir
-    )
+    generate_results_doc(tracker, output_dir / "TEST_RESULTS.md", cases_dir)
 
     # Generate safe guide from all available runs
     guide_path = generate_safe_guide(output_dir)
@@ -389,10 +391,7 @@ def validate_metadata(
         f"  {'Category':<20s} {'Total':>5s}  "
         f"{'L1 Skip':>7s} {'L2 Skip':>7s} {'HW Board':>8s}"
     )
-    typer.echo(
-        f"  {'─' * 20} {'─' * 5}  "
-        f"{'─' * 7} {'─' * 7} {'─' * 8}"
-    )
+    typer.echo(f"  {'─' * 20} {'─' * 5}  {'─' * 7} {'─' * 7} {'─' * 8}")
     for cat in sorted(by_cat):
         c = by_cat[cat]
         typer.echo(
@@ -652,7 +651,7 @@ def sensitivity(
     typer.echo(f"Cases analyzed: {report.total_cases}")
 
     if report.most_sensitive:
-        typer.echo(f"\nMost sensitive cases:")
+        typer.echo("\nMost sensitive cases:")
         for cid in report.most_sensitive:
             case = next(c for c in report.cases if c.case_id == cid)
             typer.echo(f"  {cid}: robustness={case.robustness:.0%}")
@@ -671,9 +670,7 @@ def refresh_tracker(
     ] = Path("cases"),
     results_dir: Annotated[
         Path,
-        typer.Option(
-            "--results", help="Results directory with tracker"
-        ),
+        typer.Option("--results", help="Results directory with tracker"),
     ] = Path("results"),
 ) -> None:
     """Refresh test tracker after TC changes (used by /wrapup)."""
@@ -694,18 +691,11 @@ def refresh_tracker(
     if not changed:
         typer.echo("No cases changed in last commit.")
     else:
-        n = mark_cases_changed(
-            tracker, changed, cases_dir
-        )
+        n = mark_cases_changed(tracker, changed, cases_dir)
         save_tracker(tracker, results_dir)
-        typer.echo(
-            f"Marked {n} case/model pairs for retest: "
-            f"{', '.join(changed)}"
-        )
+        typer.echo(f"Marked {n} case/model pairs for retest: {', '.join(changed)}")
 
-    generate_results_doc(
-        tracker, results_dir / "TEST_RESULTS.md", cases_dir
-    )
+    generate_results_doc(tracker, results_dir / "TEST_RESULTS.md", cases_dir)
     typer.echo("TEST_RESULTS.md refreshed.")
 
 

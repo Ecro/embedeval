@@ -194,7 +194,9 @@ class ModelScore(BaseModel):
     pass_at_1: float = Field(ge=0.0, le=1.0)
     pass_at_1_quality: float = Field(default=0.0, ge=0.0, le=1.0)
     pass_at_1_comparable: float | None = Field(
-        default=None, ge=0.0, le=1.0,
+        default=None,
+        ge=0.0,
+        le=1.0,
         description="pass@1 on common cases only (for fair cross-model comparison)",
     )
     pass_at_3: float = Field(default=0.0, ge=0.0, le=1.0)
@@ -204,7 +206,8 @@ class ModelScore(BaseModel):
     passed_cases: int = Field(ge=0)
     passed_cases_quality: int = Field(default=0, ge=0)
     comparable_cases: int | None = Field(
-        default=None, ge=0,
+        default=None,
+        ge=0,
         description="Number of common cases used for comparable scoring",
     )
     layer_pass_rates: dict[str, float]
@@ -247,7 +250,8 @@ class OverallScore(BaseModel):
     best_model: str
     best_pass_at_1: float
     common_cases: int | None = Field(
-        default=None, ge=0,
+        default=None,
+        ge=0,
         description="Number of cases common to all models (None if single model)",
     )
     case_set_warning: str | None = Field(

@@ -33,7 +33,8 @@ class Filters:
     tiers: list[CaseTier] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
     visibility: Visibility | None = None
-    after_date: str | None = None  # ISO date string; only include cases created after this date
+    # ISO date string; only include cases created after this date
+    after_date: str | None = None
     case_ids: list[str] | None = None  # explicit case ID whitelist (for retest-only)
 
 
@@ -117,6 +118,7 @@ def filter_cases(
         if filters.after_date and meta.created_date:
             try:
                 from datetime import date as _date
+
                 _date.fromisoformat(filters.after_date)
                 _date.fromisoformat(meta.created_date)
             except ValueError:
@@ -236,7 +238,9 @@ def run_benchmark(
                 except RuntimeError as exc:
                     logger.warning(
                         "Case %s attempt %d: LLM call failed: %s",
-                        meta.id, attempt, exc,
+                        meta.id,
+                        attempt,
+                        exc,
                     )
                     result = EvalResult(
                         case_id=meta.id,
@@ -244,26 +248,32 @@ def run_benchmark(
                         model=model,
                         attempt=attempt,
                         generated_code="",
-                        layers=[LayerResult(
-                            layer=0,
-                            name="static_analysis",
-                            passed=False,
-                            details=[CheckDetail(
-                                check_name="llm_call",
+                        layers=[
+                            LayerResult(
+                                layer=0,
+                                name="static_analysis",
                                 passed=False,
-                                expected="LLM response",
-                                actual=str(exc),
-                                check_type="llm_error",
-                            )],
-                            error=str(exc),
-                            duration_seconds=0.0,
-                        )],
+                                details=[
+                                    CheckDetail(
+                                        check_name="llm_call",
+                                        passed=False,
+                                        expected="LLM response",
+                                        actual=str(exc),
+                                        check_type="llm_error",
+                                    )
+                                ],
+                                error=str(exc),
+                                duration_seconds=0.0,
+                            )
+                        ],
                         failed_at_layer=0,
                         passed=False,
                         total_score=0.0,
                         duration_seconds=0.0,
                         token_usage=TokenUsage(
-                            input_tokens=0, output_tokens=0, total_tokens=0,
+                            input_tokens=0,
+                            output_tokens=0,
+                            total_tokens=0,
                         ),
                         cost_usd=0.0,
                     )
@@ -273,7 +283,8 @@ def run_benchmark(
                     progress.advance(task)
                     logger.info(
                         "Case %s attempt %d: FAIL@L0 (LLM error)",
-                        meta.id, attempt,
+                        meta.id,
+                        attempt,
                     )
                     continue
 
@@ -289,7 +300,8 @@ def run_benchmark(
                 result.tier = meta.tier
                 result.reasoning_types = meta.reasoning_types
 
-                # Compiler feedback loop: retry with error context on early layer failures
+                # Compiler feedback loop: retry with error context on early
+                # layer failures
                 if (
                     feedback_rounds > 0
                     and not result.passed
@@ -300,19 +312,23 @@ def run_benchmark(
                         failed_layer = result.layers[result.failed_at_layer]
                         error_msg = failed_layer.error or ""
                         failed_details = "\n".join(
-                            f"- {d.check_name}: expected={d.expected}, actual={d.actual}"
-                            for d in failed_layer.details if not d.passed
+                            f"- {d.check_name}: expected={d.expected},"
+                            f" actual={d.actual}"
+                            for d in failed_layer.details
+                            if not d.passed
                         )
-                        error_info = "\n".join(filter(None, [error_msg, failed_details])) or "Check failed"
+                        error_info = (
+                            "\n".join(filter(None, [error_msg, failed_details]))
+                            or "Check failed"
+                        )
                         feedback_prompt = (
                             f"Your previous code had the following error:\n"
                             f"```\n{error_info[:800]}\n```\n\n"
                             f"Original task:\n{prompt}\n\n"
-                            f"Please fix the code and output ONLY the complete corrected C source file."
+                            f"Please fix the code and output ONLY the complete"
+                            f" corrected C source file."
                         )
-                        fb_response = call_model(
-                            model=model, prompt=feedback_prompt
-                        )
+                        fb_response = call_model(model=model, prompt=feedback_prompt)
                         generated_code = fb_response.generated_code
                         result = evaluate(
                             case_dir=case_dir,
@@ -328,7 +344,9 @@ def run_benchmark(
                             feedback_round + 1,
                             feedback_rounds,
                             meta.id,
-                            "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}",
+                            "PASS"
+                            if result.passed
+                            else f"FAIL@L{result.failed_at_layer}",
                         )
                         if result.passed:
                             break

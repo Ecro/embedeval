@@ -1,11 +1,18 @@
 """Tests for EmbedEval CLI."""
 
+import re
+
 from typer.testing import CliRunner
 
 from embedeval import __version__
 from embedeval.cli import app
 
 runner = CliRunner()
+
+
+def strip_ansi(text: str) -> str:
+    """Remove ANSI escape codes from text (e.g. color codes added by rich/typer in CI)."""
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
 
 
 def test_version() -> None:
@@ -32,12 +39,13 @@ class TestRunCommand:
     def test_run_help(self) -> None:
         result = runner.invoke(app, ["run", "--help"])
         assert result.exit_code == 0
-        assert "--model" in result.output
-        assert "--cases" in result.output
-        assert "--category" in result.output
-        assert "--difficulty" in result.output
-        assert "--output-dir" in result.output
-        assert "--verbose" in result.output
+        output = strip_ansi(result.output)
+        assert "--model" in output
+        assert "--cases" in output
+        assert "--category" in output
+        assert "--difficulty" in output
+        assert "--output-dir" in output
+        assert "--verbose" in output
 
 
 class TestValidateCommand:
@@ -46,8 +54,9 @@ class TestValidateCommand:
     def test_validate_help(self) -> None:
         result = runner.invoke(app, ["validate", "--help"])
         assert result.exit_code == 0
-        assert "--cases" in result.output
-        assert "--category" in result.output
+        output = strip_ansi(result.output)
+        assert "--cases" in output
+        assert "--category" in output
 
 
 class TestReportCommand:
@@ -56,8 +65,9 @@ class TestReportCommand:
     def test_report_help(self) -> None:
         result = runner.invoke(app, ["report", "--help"])
         assert result.exit_code == 0
-        assert "--results" in result.output
-        assert "--output" in result.output
+        output = strip_ansi(result.output)
+        assert "--results" in output
+        assert "--output" in output
 
 
 class TestListCommand:
@@ -66,6 +76,7 @@ class TestListCommand:
     def test_list_help(self) -> None:
         result = runner.invoke(app, ["list", "--help"])
         assert result.exit_code == 0
-        assert "--cases" in result.output
-        assert "--category" in result.output
-        assert "--difficulty" in result.output
+        output = strip_ansi(result.output)
+        assert "--cases" in output
+        assert "--category" in output
+        assert "--difficulty" in output

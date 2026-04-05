@@ -191,9 +191,7 @@ def extract_error_blocks(code: str) -> list[str]:
     Matches patterns like: if (ret < 0) { ... }
     """
     blocks: list[str] = []
-    for match in re.finditer(
-        r"if\s*\(\s*\w+\s*[<!=]+\s*0\s*\)\s*\{", code
-    ):
+    for match in re.finditer(r"if\s*\(\s*\w+\s*[<!=]+\s*0\s*\)\s*\{", code):
         start = match.end()
         depth = 1
         for i in range(start, len(code)):
@@ -212,7 +210,7 @@ def has_word(code: str, word: str) -> bool:
 
     Prevents substring aliasing (e.g., __copy_to_user matching copy_to_user).
     """
-    return bool(re.search(rf'\b{re.escape(word)}\b', code))
+    return bool(re.search(rf"\b{re.escape(word)}\b", code))
 
 
 def has_api_call(code: str, api: str) -> bool:
@@ -222,7 +220,7 @@ def has_api_call(code: str, api: str) -> bool:
     APIs with parens (e.g., 'delay(') by using word boundary on the base name.
     """
     base = api.rstrip("(")
-    return bool(re.search(rf'\b{re.escape(base)}\s*\(', code))
+    return bool(re.search(rf"\b{re.escape(base)}\s*\(", code))
 
 
 def check_qualifier_on_variable(
@@ -240,10 +238,12 @@ def check_qualifier_on_variable(
     Returns True if the qualifier appears on a declaration line with the variable.
     """
     stripped = strip_comments(code)
-    return bool(re.search(
-        rf'\b{re.escape(qualifier)}\b[^;]*\b({var_pattern})\b\s*[;=\[]',
-        stripped,
-    ))
+    return bool(
+        re.search(
+            rf"\b{re.escape(qualifier)}\b[^;]*\b({var_pattern})\b\s*[;=\[]",
+            stripped,
+        )
+    )
 
 
 def check_return_after_error(code: str, api_call: str | None = None) -> bool:
@@ -345,26 +345,24 @@ def has_error_check(code: str) -> bool:
 def has_sleep_call(code: str) -> bool:
     """Check for any Zephyr sleep variant."""
     stripped = strip_comments(code)
-    return bool(re.search(
-        r'\b(?:k_sleep|k_msleep|k_usleep)\s*\(', stripped
-    ))
+    return bool(re.search(r"\b(?:k_sleep|k_msleep|k_usleep)\s*\(", stripped))
 
 
 def has_output_call(code: str) -> bool:
     """Check for any output/logging function."""
     stripped = strip_comments(code)
-    return bool(re.search(
-        r'\b(?:printk|printf|LOG_INF|LOG_ERR|LOG_WRN|LOG_DBG'
-        r'|pr_info|pr_err|pr_warn|pr_debug)\s*\(',
-        stripped,
-    ))
+    return bool(
+        re.search(
+            r"\b(?:printk|printf|LOG_INF|LOG_ERR|LOG_WRN|LOG_DBG"
+            r"|pr_info|pr_err|pr_warn|pr_debug)\s*\(",
+            stripped,
+        )
+    )
 
 
 def resolve_define(code: str, name: str) -> int | None:
     """Resolve a #define macro to its integer value."""
-    match = re.search(
-        rf"#define\s+{re.escape(name)}\s+(\d+)", code
-    )
+    match = re.search(rf"#define\s+{re.escape(name)}\s+(\d+)", code)
     if match:
         return int(match.group(1))
     return None

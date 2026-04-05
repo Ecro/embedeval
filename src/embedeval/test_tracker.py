@@ -5,8 +5,12 @@ import logging
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from embedeval.models import EvalResult
 
 logger = logging.getLogger(__name__)
 
@@ -67,12 +71,8 @@ def _case_content_hash(case_dir: Path) -> str:
         for f in sorted(case_dir.rglob("*")):
             if f.is_file() and not f.name.startswith("."):
                 try:
-                    fhash = hashlib.sha256(
-                        f.read_bytes()
-                    ).hexdigest()[:8]
-                    content += (
-                        f"\n{f.relative_to(case_dir)}:{fhash}"
-                    )
+                    fhash = hashlib.sha256(f.read_bytes()).hexdigest()[:8]
+                    content += f"\n{f.relative_to(case_dir)}:{fhash}"
                 except Exception:
                     pass
 
@@ -109,7 +109,7 @@ def save_tracker(tracker: TrackerData, results_dir: Path) -> None:
 
 def update_tracker(
     tracker: TrackerData,
-    results: list,  # list[EvalResult]
+    results: list["EvalResult"],
     cases_dir: Path,
     model: str,
 ) -> TrackerData:
@@ -226,8 +226,7 @@ def detect_changed_cases_from_git(cases_dir: Path) -> list[str]:
     """
     try:
         result = subprocess.run(
-            ["git", "diff", "--name-only", "HEAD~1", "--",
-             str(cases_dir)],
+            ["git", "diff", "--name-only", "HEAD~1", "--", str(cases_dir)],
             capture_output=True,
             text=True,
             cwd=cases_dir.parent,
@@ -309,10 +308,7 @@ def generate_results_doc(
         passed = sum(1 for c in cases.values() if c.passed)
         failed = total - passed
         rate = passed / total if total > 0 else 0.0
-        row = (
-            f"| {model} | {total} | {passed} "
-            f"| {failed} | {rate:.1%} |"
-        )
+        row = f"| {model} | {total} | {passed} | {failed} | {rate:.1%} |"
         if cases_dir:
             n = len(needs_retest.get(model, set()))
             row += f" {n} |" if n > 0 else " - |"
@@ -328,17 +324,14 @@ def generate_results_doc(
 
         # Show retest-needed cases prominently
         if model_stale:
-            lines.append(
-                f"### Needs Retest ({len(model_stale)})"
-            )
+            lines.append(f"### Needs Retest ({len(model_stale)})")
             lines.append("")
             for cid in sorted(model_stale):
                 prev = cases.get(cid)
                 if prev:
                     status = "PASS" if prev.passed else "FAIL"
                     lines.append(
-                        f"- **{cid}** "
-                        f"(was {status}, tested {prev.tested_at[:10]})"
+                        f"- **{cid}** (was {status}, tested {prev.tested_at[:10]})"
                     )
                 else:
                     lines.append(f"- **{cid}** (never tested)")
@@ -348,21 +341,11 @@ def generate_results_doc(
         by_category: dict[str, list[CaseResult]] = {}
         for cr in sorted(cases.values(), key=lambda x: x.case_id):
             parts = cr.case_id.rsplit("-", 1)
-            cat = (
-                parts[0]
-                if len(parts) == 2 and parts[1].isdigit()
-                else cr.case_id
-            )
+            cat = parts[0] if len(parts) == 2 and parts[1].isdigit() else cr.case_id
             by_category.setdefault(cat, []).append(cr)
 
-        lines.append(
-            "| Category | Cases | Passed | pass@1 "
-            "| Failed Checks |"
-        )
-        lines.append(
-            "|----------|-------|--------|--------"
-            "|---------------|"
-        )
+        lines.append("| Category | Cases | Passed | pass@1 | Failed Checks |")
+        lines.append("|----------|-------|--------|--------|---------------|")
 
         for cat, cat_cases in sorted(by_category.items()):
             total = len(cat_cases)
@@ -372,15 +355,10 @@ def generate_results_doc(
             for c in cat_cases:
                 if not c.passed:
                     all_failed.extend(c.failed_checks[:3])
-            failed_str = (
-                ", ".join(all_failed[:5]) if all_failed else "-"
-            )
+            failed_str = ", ".join(all_failed[:5]) if all_failed else "-"
             if len(all_failed) > 5:
                 failed_str += f" (+{len(all_failed) - 5})"
-            lines.append(
-                f"| {cat} | {total} | {passed} "
-                f"| {rate:.0%} | {failed_str} |"
-            )
+            lines.append(f"| {cat} | {total} | {passed} | {rate:.0%} | {failed_str} |")
 
         lines.append("")
 
@@ -398,20 +376,13 @@ def generate_results_doc(
             lines.append(sep)
             for c in sorted(failed_cases, key=lambda x: x.case_id):
                 layer_str = (
-                    f"L{c.failed_at_layer}"
-                    if c.failed_at_layer is not None
-                    else "?"
+                    f"L{c.failed_at_layer}" if c.failed_at_layer is not None else "?"
                 )
                 checks = ", ".join(c.failed_checks[:4])
                 if len(c.failed_checks) > 4:
-                    checks += (
-                        f" (+{len(c.failed_checks) - 4})"
-                    )
+                    checks += f" (+{len(c.failed_checks) - 4})"
                 tested = c.tested_at[:10] if c.tested_at else "?"
-                row = (
-                    f"| {c.case_id} | {layer_str} "
-                    f"| {checks} | {tested} |"
-                )
+                row = f"| {c.case_id} | {layer_str} | {checks} | {tested} |"
                 if model_stale:
                     if c.case_id in model_stale:
                         row += " RETEST |"

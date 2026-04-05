@@ -91,8 +91,7 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
 
     # Find common cases across all models for comparable scoring
     all_model_case_ids = [
-        {r.case_id for r in model_results}
-        for model_results in by_model.values()
+        {r.case_id for r in model_results} for model_results in by_model.values()
     ]
     common_case_ids: set[str] | None = None
     if len(all_model_case_ids) > 1:
@@ -129,9 +128,7 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
         comparable_cases: int | None = None
         if common_case_ids is not None and len(common_case_ids) > 0:
             # Check if all models tested the exact same set of cases
-            all_same = all(
-                ids == common_case_ids for ids in all_model_case_ids
-            )
+            all_same = all(ids == common_case_ids for ids in all_model_case_ids)
             if not all_same:
                 common_results = [
                     r for r in model_results if r.case_id in common_case_ids
@@ -218,9 +215,7 @@ def _calculate_overall(model_scores: list[ModelScore]) -> OverallScore:
     common_cases: int | None = None
     case_set_warning: str | None = None
     if len(model_scores) > 1:
-        any_comparable = any(
-            m.comparable_cases is not None for m in model_scores
-        )
+        any_comparable = any(m.comparable_cases is not None for m in model_scores)
         if any_comparable:
             case_counts = {m.model: m.total_cases for m in model_scores}
             min_model = min(case_counts, key=case_counts.get)  # type: ignore[arg-type]
