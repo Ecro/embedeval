@@ -42,6 +42,8 @@ requirements through deployment — without shipping demos as products.
    - [Structural](#61-structural-techniques) · [Knowledge Injection](#62-knowledge-injection-techniques) · [Reasoning](#63-reasoning-techniques) · [Iteration](#64-iteration-techniques) · [Future Work](#65-techniques-to-explore-future-work)
 7. [Anti-Patterns](#7-anti-patterns--common-mistakes) — 28 mistakes ranked by impact
 8. [Maturity Model](#8-maturity-model--growing-your-llm-practice) — 4 levels
+9. [Project Safety Checklist](#9-project-safety-checklist--copy-and-fill-per-project)
+   - [How It Works](#91-how-this-checklist-works) · [Project Context](#92-project-context-documents) · [Per-Module Checklist](#93-per-module-safety-checklist) · [Traceability Matrix](#94-requirements-traceability-matrix)
 
 ---
 
@@ -1649,6 +1651,474 @@ this would automate it.
 - Continuous benchmark: run EmbedEval-style checks on every PR
 - Knowledge base auto-updated from field issues
 - **Suitable for:** Platform team, multiple products on same MCU family
+
+---
+
+## 9. Project Safety Checklist — Copy and Fill Per Project
+
+This is a **complete checklist template** designed for LLM-assisted embedded projects.
+Copy this section into your project repository (e.g., `docs/SAFETY_CHECKLIST.md`),
+fill in the project-specific values, and use it throughout development.
+
+**How the LLM uses this checklist:**
+1. **At project start:** LLM reads the checklist and requests missing documents
+2. **During code generation:** LLM verifies its output against filled-in constraints
+3. **During review:** LLM runs self-check against all applicable checklist items
+4. **At milestone:** Human and LLM jointly verify all boxes are checked
+
+### 9.1 How This Checklist Works
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  PROJECT START                                                       │
+│                                                                      │
+│  1. Copy this checklist template to your project                     │
+│  2. Fill Part A (Project Context) — architect provides documents     │
+│  3. For each module, fill Part B (Per-Module Checklist)              │
+│  4. Feed filled checklist to LLM in CLAUDE.md or as context         │
+│                                                                      │
+│  LLM READS CHECKLIST AND:                                            │
+│  ┌────────────────────────────────────────────────────────────────┐  │
+│  │  "I see Board Profile is missing. Please provide:             │  │
+│  │   - MCU part number and memory map                            │  │
+│  │   - Pin assignments for peripherals this module uses          │  │
+│  │   - DMA channel-to-peripheral mapping                        │  │
+│  │   - Known silicon errata for this revision"                   │  │
+│  └────────────────────────────────────────────────────────────────┘  │
+│                                                                      │
+│  DURING DEVELOPMENT                                                  │
+│                                                                      │
+│  5. Before generating code: LLM checks Part B constraints            │
+│  6. After generating code: LLM self-checks against Part B items      │
+│  7. Human reviews LLM self-check results                             │
+│                                                                      │
+│  AT REVIEW / MILESTONE                                               │
+│                                                                      │
+│  8. Fill Part C (Traceability) — link requirements to test results   │
+│  9. Verify all checkboxes in Parts A-C are completed                 │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+**Requirements ↔ Test Case Linkage:**
+
+Each requirement (REQ-xxx) maps to specific checklist items in Part B,
+which map to specific test levels in Part C. This creates bidirectional
+traceability required by IEC 61508, DO-178C, and ISO 26262:
+
+```
+REQ-SENSOR-001 ("Read accelerometer at 100Hz")
+    │
+    ├──► Part B Checklist Items:
+    │    ├── [x] device_is_ready() before first use
+    │    ├── [x] sensor_fetch() return value checked
+    │    ├── [x] Periodic loop with k_sleep(K_MSEC(10))
+    │    └── [x] No malloc in loop (fragmentation risk)
+    │
+    └──► Part C Test Levels:
+         ├── L0: static check — sensor_fetch error handling present
+         ├── L2: QEMU — 100 batches produced in log output
+         ├── L3: Hardware — I2C timing 10ms ± 0.5ms (logic analyzer)
+         └── L4: Stress — 24hr soak, no memory growth
+```
+
+---
+
+### 9.2 Project Context Documents
+
+> **Instructions:** Check each box when the document exists and is verified.
+> For each unchecked box, the LLM should request the information from the architect.
+
+#### A. Hardware Context
+
+| # | Document | Status | Provided By | LLM Needs This For |
+|---|----------|--------|-------------|-------------------|
+| A1 | **Board Profile** | [ ] | HW Engineer | MCU selection, memory constraints, power domains, oscillator specs |
+| | - MCU part number + revision | [ ] | | Errata lookup, correct peripheral set |
+| | - Flash / RAM / CCM sizes | [ ] | | Memory budget, linker script |
+| | - FPU: yes/no, single/double | [ ] | | Float code generation, `-mfpu` flags |
+| | - Power domains + sleep modes | [ ] | | Power management code |
+| | - Oscillator specs (HSE/LSE freq, ppm) | [ ] | | Clock tree, RTC accuracy |
+| | - Debug interface (SWD/JTAG pins) | [ ] | | Avoiding pin conflicts |
+| | - Known silicon errata | [ ] | | Workaround code generation |
+| A2 | **Pin Map** | [ ] | HW Engineer | GPIO init, peripheral config, DT overlays |
+| | - Pin ↔ Function ↔ AF assignments | [ ] | | Correct gpio_pin_configure / pinctrl |
+| | - Pull-up/down resistor configuration | [ ] | | Input pin configuration |
+| | - Peripheral ↔ DMA ↔ IRQ mapping | [ ] | | DMA channel assignment, IRQ priority |
+| | - Interrupt priority plan | [ ] | | NVIC priority, RTOS scheduler interaction |
+| A3 | **Schematic (relevant sections)** | [ ] | HW Engineer | Level shifters, external pull-ups, voltage domains |
+| | - Power supply topology | [ ] | | Brown-out thresholds, battery sag analysis |
+| | - Sensor connections (I2C addr, SPI CS) | [ ] | | Driver configuration |
+| | - RF section (antenna, matching) | [ ] | | BLE/WiFi power configuration |
+
+#### B. Software Context
+
+| # | Document | Status | Provided By | LLM Needs This For |
+|---|----------|--------|-------------|-------------------|
+| B1 | **SDK Profile** | [ ] | SW Lead | Correct API usage, forbidden API list |
+| | - SDK name + exact version | [ ] | | Version-specific API calls |
+| | - Build system commands | [ ] | | CMake, west, idf.py configuration |
+| | - ISR-safe vs unsafe API table | [ ] | | ISR body generation |
+| | - Forbidden API list (cross-platform) | [ ] | | Preventing API hallucination |
+| | - Required Kconfig for each feature | [ ] | | prj.conf generation |
+| B2 | **Coding Standard** | [ ] | SW Lead | Code style, safety patterns |
+| | - MISRA C subset (if applicable) | [ ] | | Compliance-aware generation |
+| | - Error handling policy | [ ] | | goto cleanup vs early return |
+| | - Naming conventions | [ ] | | Consistent identifiers |
+| | - Logging policy (printk vs LOG_*) | [ ] | | Appropriate log calls |
+| | - Dynamic allocation policy | [ ] | | malloc prohibition, pool usage |
+| B3 | **Architecture Document** | [ ] | Architect | Task decomposition, IPC, memory budget |
+| | - Task list with priorities + stack sizes | [ ] | | Thread creation, stack allocation |
+| | - IPC topology (queue/sem/shared mem) | [ ] | | Inter-task communication |
+| | - Memory budget per module | [ ] | | Buffer sizing, allocation |
+| | - Error/recovery strategy | [ ] | | Fault handling patterns |
+| | - Power state machine | [ ] | | Sleep/wake transitions |
+
+#### C. Requirements & Safety
+
+| # | Document | Status | Provided By | LLM Needs This For |
+|---|----------|--------|-------------|-------------------|
+| C1 | **Functional Requirements** | [ ] | Product Owner | What to implement |
+| | - Structured format (REQ-xxx) | [ ] | | Traceability |
+| | - Acceptance criteria per requirement | [ ] | | Test case generation |
+| | - Timing constraints (numeric) | [ ] | | Deadline/period code |
+| | - Resource constraints (stack, RAM) | [ ] | | Memory-aware generation |
+| C2 | **Safety Requirements** | [ ] | Safety Engineer | What must NOT go wrong |
+| | - Safety integrity level (SIL/ASIL) | [ ] | | MISRA strictness, coverage level |
+| | - Fail-safe states per subsystem | [ ] | | Error handler targets |
+| | - Plausibility check ranges | [ ] | | Sensor validation code |
+| | - Watchdog strategy | [ ] | | WDT configuration |
+| C3 | **Security Requirements** | [ ] | Security Engineer | Hardening code |
+| | - Secure boot requirement (yes/no) | [ ] | | Boot chain verification |
+| | - OTA signing method (RSA/ECDSA) | [ ] | | Update verification code |
+| | - Key storage (secure element/flash) | [ ] | | Key access patterns |
+| | - Communication encryption (TLS/DTLS) | [ ] | | Network stack config |
+
+#### D. Test Infrastructure
+
+| # | Document | Status | Provided By | LLM Needs This For |
+|---|----------|--------|-------------|-------------------|
+| D1 | **Test Environment** | [ ] | Test Engineer | Test code generation |
+| | - QEMU/native_sim target available | [ ] | | L2 emulation tests |
+| | - Hardware test board available | [ ] | | L3/L4 test planning |
+| | - CI pipeline (build + test) | [ ] | | Automated verification |
+| | - Static analysis tools configured | [ ] | | MISRA/lint integration |
+| D2 | **Test Plan Template** | [ ] | Test Engineer | Requirements traceability |
+| | - Test levels mapped to requirements | [ ] | | Coverage analysis |
+| | - Pass/fail criteria per test | [ ] | | Automated verdict |
+
+**Completeness Gate:**
+```
+Documents A1-A3, B1-B3, C1 minimum → ready for code generation
+Documents C2-C3 → required for safety/security-critical modules
+Documents D1-D2 → required before testing phase
+```
+
+---
+
+### 9.3 Per-Module Safety Checklist
+
+> **Instructions:** For each module you implement, copy the applicable category
+> checklist below. Fill in project-specific values in `{braces}`. Check each
+> box during review. Feed to LLM as part of context for self-checking.
+
+#### 9.3.1 Universal Checks (Apply to ALL Modules)
+
+```markdown
+## Safety Checklist: {MODULE_NAME}
+## Date: {YYYY-MM-DD}
+## Reviewer: {name}
+## LLM Model: {model + version}
+
+### Code Quality
+- [ ] Every API return value is checked (no ignored returns)
+- [ ] Error paths clean up ALL resources in reverse allocation order
+- [ ] No magic numbers — all constants use #define with descriptive names
+- [ ] No dynamic allocation (malloc/free) at runtime — static or pool only
+- [ ] No stdio.h / printf — use platform logging (printk / LOG_* / ESP_LOG*)
+- [ ] No cross-platform API contamination (only {SDK_NAME} APIs used)
+
+### Concurrency Safety
+- [ ] All ISR-thread shared variables are volatile or atomic_t
+- [ ] No blocking calls in ISR bodies (no mutex, sleep, malloc, printf)
+- [ ] Correct sync primitive: spinlock for ISR↔thread, mutex for thread↔thread
+- [ ] Spinlock used in BOTH ISR and thread (not just one side)
+- [ ] Memory barriers present where ISR updates data read by thread
+
+### Type Safety
+- [ ] No pointer-cast type punning (*(struct*)buf) — use memcpy()
+- [ ] Endianness conversion at every protocol boundary (sensor, network)
+- [ ] Float comparisons include NaN/Inf guard for safety-critical paths
+- [ ] No unaligned memory access (Cortex-M0 will hard-fault)
+
+### Temporal Safety
+- [ ] All timers use 64-bit or wrap-safe 32-bit arithmetic
+- [ ] Polling loops have explicit iteration bounds or timeouts
+- [ ] Sleep/delay durations have named constants, not magic numbers
+- [ ] Timer periods < watchdog timeout (with ≥30% margin)
+
+### Build Safety
+- [ ] Code compiles at -O2 without warnings (-Wall -Werror)
+- [ ] Behavior verified on optimized build (not just debug -O0)
+- [ ] No #ifdef DEBUG code paths that change runtime behavior
+- [ ] Kconfig: all CONFIG_* used in code are set in prj.conf
+```
+
+#### 9.3.2 DMA Module Checklist
+
+```markdown
+### DMA-Specific ({PERIPHERAL} on DMA{N} Stream {M})
+- [ ] Buffer alignment: __aligned({CACHE_LINE_SIZE}) — typically 32 or 64
+- [ ] Cache flush before TX: sys_cache_data_flush_range(buf, size)
+- [ ] Cache invalidate after RX: sys_cache_data_invd_range(buf, size)
+- [ ] DMA mode correct: CIRCULAR for continuous / NORMAL for one-shot
+- [ ] For circular: dma_reload() in DMA callback, or .cyclic=1
+- [ ] dma_config() called BEFORE dma_start() (strict ordering)
+- [ ] dma_stop() called on error or transfer complete
+- [ ] DMA buffer NOT in CCM/DTCM (DMA-inaccessible on some MCUs)
+- [ ] Completion flag is volatile (written in DMA callback)
+- [ ] Channel priority matches system interrupt priority plan
+```
+
+#### 9.3.3 ISR / Concurrency Module Checklist
+
+```markdown
+### ISR-Specific ({IRQ_NAME}, priority {PRIORITY})
+- [ ] ISR function has correct attribute (e.g., IRAM_ATTR for ESP32)
+- [ ] ISR body contains ONLY: k_sem_give / k_msgq_put(K_NO_WAIT) / k_work_submit / atomic_*
+- [ ] No printk/printf in ISR body (causes jitter, may block)
+- [ ] Shared data struct declared with volatile qualifier
+- [ ] k_spin_lock used with key capture: key = k_spin_lock(&lock)
+- [ ] Initialization complete BEFORE interrupt is enabled
+- [ ] ISR-to-thread data path: verify ordering (data written → flag set → barrier → thread reads)
+- [ ] Thread priority matches architecture document: {EXPECTED_PRIORITY}
+- [ ] Lock ordering: if multiple locks, always acquire in same order (A→B, never B→A)
+```
+
+#### 9.3.4 Sensor / Peripheral Module Checklist
+
+```markdown
+### Sensor-Specific ({SENSOR_PART} on {INTERFACE} @ {ADDRESS})
+- [ ] device_is_ready() called before first access
+- [ ] WHO_AM_I / device ID verified against expected value: {EXPECTED_ID}
+- [ ] Register byte order: sensor is {BIG/LITTLE}-endian, MCU is {BIG/LITTLE}-endian
+- [ ] Byte-order conversion applied: {YES: how / NO: same endianness}
+- [ ] Sampling in periodic loop (not one-shot): k_sleep(K_MSEC({PERIOD_MS}))
+- [ ] sensor_fetch() / i2c_read() return value checked on every call
+- [ ] Plausibility checks on raw values:
+  - [ ] Range: {MIN_PLAUSIBLE} to {MAX_PLAUSIBLE}
+  - [ ] Rate-of-change: max {MAX_DELTA} per {SAMPLE_PERIOD}
+  - [ ] Stuck-at detection: {STUCK_LIMIT} identical consecutive readings
+  - [ ] Freshness timeout: {FRESHNESS_MS} ms
+- [ ] Settling time after power-on respected: {SETTLING_MS} ms
+```
+
+#### 9.3.5 Power Management Module Checklist
+
+```markdown
+### Power-Specific (target: {TARGET_BATTERY_LIFE})
+- [ ] GPIO pins reconfigured before sleep (prevent leakage: {EXPECTED_SLEEP_UA} uA)
+- [ ] Peripherals powered down before sleep entry
+- [ ] Wake source configured: {WAKE_SOURCES}
+- [ ] Wake-up latency accounted for: {WAKE_LATENCY_US} us
+- [ ] pm_device_action_run() return value checked for BOTH suspend AND resume
+- [ ] Battery voltage checked before flash write (brownout risk)
+- [ ] Tickless mode enabled (CONFIG_TICKLESS_KERNEL=y) to avoid unnecessary wakes
+- [ ] Energy budget calculated:
+  - [ ] Active current: {ACTIVE_MA} mA × {ACTIVE_DUTY_PCT}%
+  - [ ] Sleep current: {SLEEP_UA} uA × {SLEEP_DUTY_PCT}%
+  - [ ] Average: {AVG_UA} uA → battery life: {CALCULATED_DAYS} days
+  - [ ] 20% margin applied for retransmissions
+```
+
+#### 9.3.6 OTA / Firmware Update Module Checklist
+
+```markdown
+### OTA-Specific (transport: {TRANSPORT})
+- [ ] Firmware image signed: {ALGORITHM} (key in {KEY_STORAGE})
+- [ ] Signature verified on device before flashing
+- [ ] Anti-rollback: version counter checked (current: {CURRENT_VER})
+- [ ] A/B partitioning: inactive slot used for download
+- [ ] Download over TLS — no plaintext firmware transfer
+- [ ] Per-chunk error checking during download
+- [ ] Abort path: dfu_target_done(false) on any download error
+- [ ] Self-test on first boot from new image
+- [ ] Auto-revert to previous image if self-test fails
+- [ ] Power-loss safe at every step (download, flash, reboot, validate)
+- [ ] Flash write: voltage checked, double-buffered, CRC verified
+```
+
+#### 9.3.7 Storage / Flash Module Checklist
+
+```markdown
+### Storage-Specific (media: {FLASH_TYPE}, filesystem: {FS_TYPE})
+- [ ] Flash endurance calculated:
+  - [ ] P/E cycles: {ENDURANCE} (SLC/MLC/TLC)
+  - [ ] Daily writes: {DAILY_WRITE_MB} MB/day
+  - [ ] WAF estimated: {WAF}x
+  - [ ] TBW: {TBW_TB} TB → lifetime: {CALCULATED_YEARS} years
+- [ ] Write-aware filesystem used (LittleFS/UBIFS, NOT raw FAT)
+- [ ] Logging to tmpfs/RAM, flushed to flash periodically (not every event)
+- [ ] eMMC health register monitored (DEVICE_LIFE_TIME_EST)
+- [ ] Flash write rate limited: max {MAX_WRITES_PER_HOUR} writes/hour
+- [ ] Power-fail-safe write: double-buffer or journaling
+- [ ] CRC verified after critical writes (boot vector, FS metadata)
+```
+
+#### 9.3.8 BLE / Radio Module Checklist
+
+```markdown
+### Radio-Specific ({PROTOCOL} on {CHIP})
+- [ ] Services registered BEFORE advertising starts
+- [ ] bt_enable() / esp_bt_controller_init() return value checked
+- [ ] Disconnect handler: stop notifications, restart advertising
+- [ ] Connection table garbage collection (stale handles cleaned after {TIMEOUT_S} s)
+- [ ] Radio stack health check: periodic "can I still advertise?" test
+- [ ] Radio watchdog: full stack re-init after {SILENCE_MINUTES} min no communication
+- [ ] Connection parameter negotiation after connection established
+- [ ] MTU exchange if payload > 20 bytes
+- [ ] Crystal drift within BLE spec: ±{PPM} ppm at operating temp range
+```
+
+#### 9.3.9 Watchdog Module Checklist
+
+```markdown
+### Watchdog-Specific (timeout: {WDT_TIMEOUT_MS} ms)
+- [ ] wdt_install_timeout() BEFORE wdt_setup() (strict ordering)
+- [ ] Feed interval: {FEED_INTERVAL_MS} ms (< {WDT_TIMEOUT_MS} ms with ≥30% margin)
+- [ ] WDT_FLAG_RESET_SOC on all channels
+- [ ] Conditional feed: WDT fed ONLY when ALL monitored tasks report healthy
+- [ ] NOT fed from timer ISR (defeats the purpose)
+- [ ] Escalation: 1st timeout → soft recovery, 2nd → hard reset, 3rd → factory default
+- [ ] Reset reason logged: read MCU reset registers on boot, store to persistent memory
+- [ ] Warm boot detection: application detects and handles repeated resets
+```
+
+#### 9.3.10 Linux Kernel Module Checklist
+
+```markdown
+### Kernel Module-Specific ({MODULE_NAME}.ko)
+- [ ] __init: resources allocated in order, ALL cleaned up on ANY failure
+- [ ] __exit: resources released in REVERSE order of init
+- [ ] goto-based error unwinding (not early return without cleanup)
+- [ ] copy_to_user / copy_from_user for ALL user-space data (never raw deref)
+- [ ] IS_ERR() checked on every pointer-returning function
+- [ ] kfree() for every kmalloc() on error paths
+- [ ] dev_err/dev_info used (not printk with manual prefix)
+- [ ] MODULE_LICENSE("GPL") present
+- [ ] of_match_table has null sentinel entry
+```
+
+---
+
+### 9.4 Requirements Traceability Matrix
+
+> **Instructions:** For each requirement, list the checklist items it maps to
+> and the test level that verifies it. Fill the Result column during testing.
+
+```markdown
+## Requirements Traceability: {PROJECT_NAME}
+
+| REQ-ID | Description | Checklist Items | Test Level | Result |
+|--------|-------------|-----------------|------------|--------|
+| REQ-{xxx}-001 | {requirement text} | 9.3.1: {items}, 9.3.{N}: {items} | L0: {check}, L3: {test} | [ ] PASS |
+| REQ-{xxx}-002 | {requirement text} | 9.3.1: {items}, 9.3.{N}: {items} | L0: {check}, L2: {test} | [ ] PASS |
+| ... | ... | ... | ... | ... |
+```
+
+**Example (filled):**
+
+| REQ-ID | Description | Checklist Items | Test Level | Result |
+|--------|-------------|-----------------|------------|--------|
+| REQ-SENSOR-001 | Read accel at 100Hz, batch 10 samples | 9.3.1: return-value-check, no-malloc. 9.3.4: device_is_ready, periodic-loop, plausibility | L0: sensor_fetch error handled. L2: 100 batches in log. L3: I2C 10ms±0.5ms. L4: 24hr soak | [ ] PASS |
+| REQ-DMA-001 | SPI DMA transfer to flash | 9.3.1: volatile-shared, no-ISR-blocking. 9.3.2: aligned-buf, cache-flush, config-before-start | L0: alignment check. L1: compiles. L3: DMA transfer on HW. L4: 1hr continuous | [ ] PASS |
+| REQ-OTA-001 | Secure firmware update via BLE | 9.3.1: error-paths. 9.3.6: signature-verify, anti-rollback, A/B, power-loss-safe | L0: dfu_target_done on error. L2: simulate update. L3: real OTA on target. L4: power-cut during update | [ ] PASS |
+| REQ-SAFETY-001 | Sensor fault detection | 9.3.4: plausibility-range, rate-of-change, stuck-at, freshness | L0: range check exists. L2: inject -40°C → fault reported. L3: disconnect sensor → fault. L4: 24hr fault-free | [ ] PASS |
+| REQ-POWER-001 | 1 year battery on CR2032 | 9.3.5: GPIO-leakage, tickless, wake-latency, energy-budget | L3: current measurement. L4: 48hr power profile. Manual: PPK2 measurement | [ ] PASS |
+
+---
+
+### 9.5 LLM Self-Check Protocol
+
+When the LLM generates code, it should run this self-check before presenting
+the result. Include this instruction in your CLAUDE.md or prompt:
+
+```markdown
+## LLM Self-Check (run after generating code)
+
+Before presenting the generated code, verify against the project
+safety checklist (docs/SAFETY_CHECKLIST.md):
+
+1. Read the applicable per-module checklist (Section 9.3.x)
+2. For each checklist item, verify the generated code satisfies it
+3. Report results as:
+
+### Self-Check Results
+| Checklist Item | Status | Evidence |
+|---------------|--------|----------|
+| Return values checked | PASS | Lines 45, 62, 78 — all API calls checked |
+| No malloc at runtime | PASS | Static allocation only |
+| Volatile on shared vars | FAIL | Line 23: `int flag` should be `volatile int flag` |
+| Endianness conversion | N/A | No protocol boundary in this module |
+
+**Issues Found:** 1
+**Action:** Fixed `flag` to `volatile int flag` on line 23.
+
+4. If any item is FAIL: fix before presenting code
+5. If any item is UNKNOWN: flag for human review
+```
+
+**How to integrate with CLAUDE.md:**
+
+```markdown
+# CLAUDE.md — {Project Name}
+
+## Before Generating Code
+Read docs/SAFETY_CHECKLIST.md and verify:
+1. All Part A documents are available for this module
+2. The applicable Part B (per-module) checklist is loaded
+
+## After Generating Code
+Run the LLM Self-Check Protocol (Section 9.5 of Development Guide).
+Report results in the self-check table format.
+Fix all FAIL items before presenting code.
+
+## Safety Checklist Reference
+- Universal checks: always apply
+- Module-specific: select based on module type
+- Traceability: update after testing
+```
+
+---
+
+### 9.6 Document Request Template
+
+When starting a new project, the LLM can use this template to request
+missing information from the architect/engineer:
+
+```markdown
+## Missing Context for {MODULE_NAME}
+
+I need the following information to generate safe embedded code.
+Please provide or point me to the relevant documents.
+
+### Required (cannot generate without these):
+- [ ] {A1} Board Profile: MCU part number, RAM/Flash sizes, FPU capability
+- [ ] {A2} Pin Map: pins used by this module, DMA/IRQ assignments
+- [ ] {B1} SDK Profile: exact SDK version, ISR-safe API list, forbidden APIs
+- [ ] {C1} Requirements: acceptance criteria for this module
+
+### Recommended (code will be less safe without these):
+- [ ] {A1} Silicon errata for this MCU revision
+- [ ] {A3} Schematic section showing this peripheral's connections
+- [ ] {B3} Architecture: task priorities, IPC mechanism, memory budget
+- [ ] {C2} Safety requirements: fail-safe states, plausibility ranges
+
+### Optional (improves code quality):
+- [ ] {B2} Coding standard: MISRA rules, naming conventions
+- [ ] {D1} Test infrastructure: QEMU target, CI pipeline
+- [ ] Reference implementation of a similar module in this project
+```
 
 ---
 
