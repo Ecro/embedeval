@@ -22,8 +22,8 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v5
         with: { enable-cache: true }
       - run: uv sync
 
@@ -31,7 +31,7 @@ jobs:
         run: uv run embedeval run --model ${{ inputs.model }} --cases cases/ -v
 
       - name: Upload results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: benchmark-results-${{ github.run_id }}
           path: results/
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.enable_l1 == true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build Zephyr Docker image
         run: docker build -t embedeval-zephyr .

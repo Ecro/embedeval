@@ -46,6 +46,3 @@ results/runs/*/details/
 # OS
 .DS_Store
 Thumbs.db
-
-# uv
-uv.lock
