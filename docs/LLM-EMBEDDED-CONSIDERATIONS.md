@@ -104,9 +104,9 @@ Level 4: System Safety Knowledge     ← Sonnet ~50%, Haiku ~30%
 
 ---
 
-## 2. The "3AM Paranoia" Layer: Field Knowledge LLMs Cannot Learn
+## 2. Production-Scale Failure Patterns: Implicit Knowledge Beyond Training Data
 
-Beyond the 42 code-observable factors, there's knowledge that only exists in engineers who have debugged production failures at scale. These patterns come from 10,000 devices going silent simultaneously — not from reading documentation. **LLMs cannot learn them because they live in incident reports and postmortems, not public code repos.**
+Beyond the 42 code-observable factors ([LLM-EMBEDDED-FAILURE-FACTORS.md](./LLM-EMBEDDED-FAILURE-FACTORS.md)), there are failure patterns that only surface in mass-deployed products running for months or years. These patterns are learned from field incidents — not from documentation or tutorials. **LLMs cannot learn them because they live in internal postmortems, vendor errata, and engineers' hard-won experience, not in public code repositories.**
 
 ### 2.1 Long-Running Timer & Counter Overflows
 
@@ -246,27 +246,191 @@ if (now - last_read_time > FRESHNESS_TIMEOUT_MS) {
 **What LLM generates:** `flash_write(addr, data, len);` — no voltage check, no double-buffer, no post-write CRC.
 **What engineer writes:** Check Vdd before write. Double-buffered write (backup first, then swap). CRC verify after write. BOR fires during write → mark sector suspect on next boot.
 
+### 2.9 Heap Fragmentation Over Long Runtime
+
+**The knowledge:** Not a memory leak — free heap stays constant, but the [largest contiguous block shrinks over weeks](https://hubble.com/community/guides/esp32-memory-fragmentation-why-your-device-crashes-after-running-for-days/). "The free memory is there. It's just been shredded into pieces too small to use." Allocation eventually fails even with plenty of total free RAM.
+
+**What LLM generates:** `malloc()`/`free()` in event loops — textbook correct, but variable-size allocations create [Swiss cheese memory over weeks of continuous operation](https://patternsinthemachine.net/2024/11/the-perils-of-dynamic-memory-in-embedded-systems/).
+
+**What engineer does:**
+- Fixed-size memory pools (`k_mem_slab`) — any free block fits any request
+- Heap-at-startup-only pattern: allocate during init, never `malloc` at runtime
+- Boot-order discipline: permanent allocations first, transient last
+- [Stack painting](https://barrgroup.com/blog/top-5-causes-nasty-embedded-software-bugs): fill stack with known pattern at boot, periodically check high-water mark
+
+**Why this is different from "memory optimization":** Memory-opt (Section 3.1, Risk Zone 4) tests static allocation APIs. This pattern is about runtime behavior over weeks — a temporal dimension LLMs cannot simulate.
+
+### 2.10 Endianness Bugs at Protocol Boundaries
+
+**The knowledge:** Most MCUs (ARM Cortex-M, RISC-V) are little-endian. Network protocols (TCP/IP, Modbus) are big-endian. Sensor registers (I2C/SPI) are often big-endian MSB-first. [Casting pointers across endianness boundaries is "almost always a ticking timebomb."](https://www.embedded.com/introduction-to-endianness/)
+
+**What LLM generates:**
+```c
+// Read 16-bit temperature from I2C sensor register
+uint8_t buf[2];
+i2c_read(dev, buf, 2);
+int16_t temp = *(int16_t*)buf;  // WRONG on little-endian MCU
+                                 // Bytes are swapped, value is garbage
+```
+
+**What engineer writes:**
+```c
+int16_t temp = (buf[0] << 8) | buf[1];  // Explicit MSB-first conversion
+// Or: int16_t temp = ntohs(*(uint16_t*)buf);
+```
+
+**Where this bites:**
+- Sensor registers: I2C/SPI devices transmit MSB-first, MCU stores LSB-first
+- Network payloads: `htonl()`/`ntohl()` missing at every serialization boundary
+- Modbus TCP: field devices in big-endian, host in little-endian
+- Multi-byte struct fields sent over the wire without explicit byte-order conversion
+- Cross-platform data sharing: file written on ARM, read on PowerPC
+
+### 2.11 Floating-Point NaN Silently Bypassing Safety Checks
+
+**The knowledge:** [Any comparison involving NaN fails](https://betterembsw.blogspot.com/2012/02/floating-point-comparison-problems.html). If a speed calculation produces NaN (division by zero, numeric underflow), a safety check like `if (speed > MAX_SPEED)` silently passes — the speed limit doesn't trigger. The vehicle keeps accelerating.
+
+**What LLM generates:**
+```c
+float speed = distance / elapsed_time;  // elapsed_time could be 0.0 → NaN
+if (speed > MAX_SPEED) {
+    emergency_stop();  // NEVER TRIGGERS when speed is NaN
+}
+```
+
+**What engineer writes:**
+```c
+float speed = distance / elapsed_time;
+if (isnan(speed) || isinf(speed)) {
+    emergency_stop();  // NaN/Inf = fault condition
+    report_fault(FAULT_INVALID_COMPUTATION);
+    return;
+}
+if (speed > MAX_SPEED) {
+    emergency_stop();
+}
+```
+
+**Additional considerations:**
+- Cortex-M4 FPU has [flush-to-zero and default-NaN modes](https://deepbluembedded.com/stm32-fpu-floating-point-unit-enable-disable/) that change behavior silently
+- FPU must be [initialized via CPACR register](https://embeddedprep.com/fpu-warning-fix-fpu-errors/) before any float operation — missing init = UsageFault
+- Single-precision FPU silently promotes float→double in expressions without `f` suffix — 100x slower
+- Fixed-point arithmetic eliminates NaN entirely — preferred for safety-critical paths
+
+### 2.12 Debug vs Release Build Divergence
+
+**The knowledge:** Code that works in debug (`-O0`) breaks in release (`-O2`). [Memfault calls separate debug/release builds "considered harmful."](https://interrupt.memfault.com/blog/debug-vs-release-builds)
+
+**How this manifests:**
+- **printf changes timing:** Serial output at 9600 baud takes thousands of cycles — enough to hide race conditions. Remove printf → race appears. Classic [Heisenbug](https://hubble.com/community/guides/why-debug-and-release-firmware-behave-differently/).
+- **Optimizer removes "unnecessary" reads:** Without `volatile`, compiler may cache a value that ISR updates. Works at `-O0` (no optimization), breaks at `-O2`.
+- **Different memory layout:** Debug builds have larger stack frames (saved registers, canary gaps). Stack overflow that happens in release never appears in debug.
+- **Dead code elimination:** Error handling paths that are "unreachable" in compiler analysis get removed at `-O2`, even if they're reachable via hardware fault.
+
+**What LLM doesn't consider:**
+- All testing should be on optimized builds — debug-only testing gives false confidence
+- Use runtime log levels, not `#ifdef DEBUG` — keep the same binary
+- Compiler sanitizers (`-fsanitize=undefined,address`) catch UB that only surfaces under optimization
+
+### 2.13 C Undefined Behavior: Strict Aliasing and Type Punning
+
+**The knowledge:** LLMs generate `*(struct_t*)byte_buffer` to parse network or sensor data — a [strict aliasing violation](https://blog.regehr.org/archives/959). At `-O0` it works. At `-O2`, TBAA (Type-Based Alias Analysis) lets the compiler assume `float*` and `int*` never point to the same memory, and it [optimizes away the load entirely](https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8).
+
+**What LLM generates:**
+```c
+void parse_sensor_data(uint8_t *buf) {
+    struct sensor_reading *reading = (struct sensor_reading *)buf;
+    // STRICT ALIASING VIOLATION — UB at -O2
+    process(reading->temperature, reading->humidity);
+}
+```
+
+**What engineer writes:**
+```c
+void parse_sensor_data(uint8_t *buf) {
+    struct sensor_reading reading;
+    memcpy(&reading, buf, sizeof(reading));  // Safe — compiler optimizes to register move
+    process(reading.temperature, reading.humidity);
+}
+```
+
+**Why this is critical for embedded:**
+- ARM Cortex-M0 hard-faults on unaligned access from type punning — not just UB, but crash
+- [Safety-critical domains (DO-178C, IEC 62304) cannot certify code with UB](https://accu.org/journals/overload/28/160/anonymous/) — provable correctness requires defined semantics
+- Code "works for years" then a compiler update enables a new optimization and it breaks
+- MISRA C Rule 11.3 forbids pointer type casts between incompatible types for exactly this reason
+- Detection: `-Wstrict-aliasing=2` (GCC), `-fsanitize=undefined` (runtime)
+
+### 2.14 Secure Boot Chain and OTA Integrity
+
+**The knowledge:** LLMs generate OTA update code that downloads and flashes firmware — without the entire [chain of trust](https://promwad.com/news/secure-ota-boot-chains-firmware-verification) that prevents unauthorized or corrupted code from running. Each boot stage must cryptographically verify the next: ROM → bootloader → kernel → application.
+
+**What LLM generates:**
+```c
+// Download firmware update
+http_get(url, firmware_buf, firmware_size);
+flash_write(SLOT_1_ADDR, firmware_buf, firmware_size);
+sys_reboot();  // Boot into unverified code
+```
+
+**What engineer implements:**
+```c
+// Download with TLS
+http_get_tls(url, firmware_buf, firmware_size);
+
+// Verify signature (public key from secure element, not flash)
+if (!ecdsa_verify(firmware_buf, firmware_size, public_key, signature)) {
+    log_security_event(EVENT_INVALID_SIGNATURE);
+    return -EAUTH;
+}
+// Check version (anti-rollback)
+if (get_fw_version(firmware_buf) <= get_current_version()) {
+    return -EROLLBACK;
+}
+// Write to inactive slot (A/B partitioning)
+flash_write(inactive_slot, firmware_buf, firmware_size);
+// Mark pending, reboot, verify on first boot
+mark_pending(inactive_slot);
+sys_reboot();
+// If first boot fails → automatic revert to active slot
+```
+
+**What's missing from LLM output:**
+- [Firmware signing](https://promwad.com/news/building-secure-ota-update-pipelines-firmware-integrity-factory-to-field) with RSA/ECDSA (private key in HSM, never on device)
+- Anti-rollback version counter (prevents downgrade attacks)
+- A/B partitioning with automatic revert on boot failure
+- [Hardware root of trust](https://www.analog.com/en/resources/technical-articles/the-fundamentals-of-secure-boot-and-secure-download.html) (secure element for key storage, not flash)
+- MCUs have [no ASLR, no DEP](https://runsafesecurity.com/blog/6-risks-ai-code-embedded-systems/) — a buffer overflow = direct code execution with zero mitigation
+
 ---
 
-### Summary: The "3AM Knowledge" Taxonomy
+### Summary: Production-Scale Failure Pattern Taxonomy
 
-| Category | Example | Time to Manifest | LLM Chance |
-|----------|---------|-------------------|------------|
-| **Counter overflow** | 49.7-day timer wrap | Days to months | ~0% |
-| **Storage wear** | eMMC death from logging | Months to years | ~0% |
-| **Sensor plausibility** | -40°C in Mexico City as real data | Immediate but rare | ~5% |
-| **Power at scale** | 50ms wake overhead x 500K devices | Cumulative | ~0% |
-| **Radio state corruption** | BLE lockup after 87 days | Weeks to months | ~0% |
-| **Watchdog theater** | WDT fed from ISR, main dead | Random | ~10% |
-| **Crystal aging** | Protocol desync after 2yr in cold | Years | ~0% |
-| **Brownout + flash** | Bricked from write during Tx | Random | ~0% |
+| # | Category | Example | Time to Manifest | LLM Chance |
+|---|----------|---------|-------------------|------------|
+| 1 | **Counter overflow** | 49.7-day timer wrap | Days to months | ~0% |
+| 2 | **Storage wear** | eMMC death from logging | Months to years | ~0% |
+| 3 | **Sensor plausibility** | -40°C in Mexico City as real data | Immediate but rare | ~5% |
+| 4 | **Power at scale** | 50ms wake overhead x 500K devices | Cumulative | ~0% |
+| 5 | **Radio state corruption** | BLE lockup after 87 days | Weeks to months | ~0% |
+| 6 | **Watchdog theater** | WDT fed from ISR, main dead | Random | ~10% |
+| 7 | **Crystal aging** | Protocol desync after 2yr in cold | Years | ~0% |
+| 8 | **Brownout + flash** | Bricked from write during Tx | Random | ~0% |
+| 9 | **Heap fragmentation** | ESP32 crash after weeks of malloc/free | Weeks to months | ~0% |
+| 10 | **Endianness** | Sensor data inverted across byte-order boundary | Immediate but subtle | ~5% |
+| 11 | **Float NaN bypass** | Safety check silently passes on NaN | Immediate but rare | ~0% |
+| 12 | **Debug/Release divergence** | Race condition hidden by printf timing | After optimization | ~5% |
+| 13 | **C undefined behavior** | Strict aliasing violation breaks at -O2 | After compiler update | ~0% |
+| 14 | **Secure boot / OTA integrity** | Unsigned firmware accepted and executed | Immediate (security) | ~5% |
 
-**These are not edge cases. They are the primary failure modes of mass-deployed embedded products.** Every experienced embedded engineer has war stories for each. LLMs have ~0% chance of handling them because:
+**These are not edge cases. They are the primary failure modes of mass-deployed embedded products.** Every experienced embedded engineer has war stories for each. LLMs have approximately zero chance of handling them because:
 
-1. **Training data gap:** Patterns live in internal postmortems, not public repos
-2. **No physical context:** LLMs can't know your battery chemistry, crystal spec, or flash endurance
+1. **Training data gap:** These patterns live in internal postmortems, not public repositories
+2. **No physical context:** LLMs can't know your battery chemistry, crystal spec, flash endurance, or byte order
 3. **Time horizon:** LLMs optimize for "demo works today," not "production works for 10 years"
-4. **Scale blindness:** 50ms timing bug invisible on 1 device, catastrophic on 500,000
+4. **Scale blindness:** A 50ms timing bug is invisible on 1 device but catastrophic on 500,000
+5. **Compiler blindness:** LLMs generate code for `-O0` behavior; production runs at `-O2` where UB manifests
+6. **Security blindness:** LLMs generate functional code, not hardened code — no chain of trust, no input validation at boundaries
 
 ---
 
@@ -381,25 +545,63 @@ AI is great for boilerplate. But embedded code that runs unattended for 10 years
 
 ## Sources
 
+### Field Incidents & Production Failures
 - [Zephyr OpenThread 49-day overflow](https://github.com/zephyrproject-rtos/zephyr/issues/41509)
 - [ESPHome 49-day sensor freeze](https://github.com/esphome/issues/issues/826)
 - [LoRaWAN timer overflow](https://github.com/Lora-net/LoRaMac-node/issues/1016)
 - [STM32 HAL uwTick overflow](https://community.st.com/t5/stm32-mcus-embedded-software/what-happens-when-the-32bit-hal-uwtick-timer-variable-overflows/td-p/120367)
 - [Tesla eMMC wear failure](https://www.cnx-software.com/2019/08/16/wear-estimation-emmc-flash-memory/)
-- [Kingston eMMC lifecycle](https://www.kingston.com/en/blog/embedded-and-industrial/emmc-lifecycle)
 - [TI CC2642R BLE stack crash](https://e2e.ti.com/support/wireless-connectivity/bluetooth-group/bluetooth/f/bluetooth-forum/771568/)
 - [Nordic nRF52840 SPI-BLE interference](https://devzone.nordicsemi.com/f/nordic-q-a/106208/)
 - [STM32WB55 BLE connection blocking](https://community.st.com/t5/stm32-mcus-wireless/ble-central-connection-timeout-with-sleeping-peer-device-is-not/td-p/702755)
+- [ESP32 heap fragmentation crash](https://hubble.com/community/guides/esp32-memory-fragmentation-why-your-device-crashes-after-running-for-days/)
+
+### Best Practices & Engineering References
 - [Jack Ganssle — Watchdog Timers](https://www.ganssle.com/watchdogs.htm)
 - [Memfault — Watchdog Best Practices](https://interrupt.memfault.com/blog/firmware-watchdog-best-practices)
+- [Memfault — Debug vs Release Builds Considered Harmful](https://interrupt.memfault.com/blog/debug-vs-release-builds)
+- [Memfault — Defensive Programming](https://interrupt.memfault.com/blog/defensive-and-offensive-programming)
 - [Watchdog Anti-Patterns](https://www.embeddedrelated.com/showarticle/1276.php)
+- [Barr Group — Top 5 Nasty Embedded Bugs](https://barrgroup.com/blog/top-5-causes-nasty-embedded-software-bugs)
+- [Perils of Dynamic Memory in Embedded Systems](https://patternsinthemachine.net/2024/11/the-perils-of-dynamic-memory-in-embedded-systems/)
+- [Why Not Use Dynamic Memory in Embedded](https://electrical.codidact.com/posts/286121)
+- [LittleFS — Flash-safe filesystem](https://github.com/littlefs-project/littlefs)
+- [Kingston eMMC lifecycle](https://www.kingston.com/en/blog/embedded-and-industrial/emmc-lifecycle)
+
+### Hardware-Specific Knowledge
 - [Crystal Oscillator Aging](https://www.fujicrystal.com/news_details/crystal-oscillator-aging.html)
 - [Crystal Temperature Drift](https://blog.mbedded.ninja/electronics/components/crystals-and-oscillators/)
 - [Brownout Reset Analysis](https://www.embedded.com/brown-out-reset/)
-- [IEC 61508 Fault Detection](https://risknowlogy.com/articles/detail/17305/)
+- [Endianness Introduction](https://www.embedded.com/introduction-to-endianness/)
+- [Float Comparison Problems](https://betterembsw.blogspot.com/2012/02/floating-point-comparison-problems.html)
+- [STM32 FPU Enable/Disable](https://deepbluembedded.com/stm32-fpu-floating-point-unit-enable-disable/)
+- [FPU Warning Fix Guide](https://embeddedprep.com/fpu-warning-fix-fpu-errors/)
 - [GPIO Leakage & Power Optimization](https://dojofive.com/blog/power-optimization-techniques-for-firmware/)
 - [Battery Power Efficiency](https://www.analog.com/en/resources/technical-articles/greatly-improve-battery-power-efficiency-for-iot-devices.html)
 - [Low-Power RTOS Techniques](https://www.embeddedrelated.com/showarticle/1667.php)
-- [Memfault — Defensive Programming](https://interrupt.memfault.com/blog/defensive-and-offensive-programming)
-- [LittleFS — Flash-safe filesystem](https://github.com/littlefs-project/littlefs)
-- [LLM-EMBEDDED-FAILURE-FACTORS.md](./LLM-EMBEDDED-FAILURE-FACTORS.md) (42-factor taxonomy)
+
+### C Language & Compiler Behavior
+- [John Regehr — Type Punning, Strict Aliasing, and Optimization](https://blog.regehr.org/archives/959)
+- [ACCU — Strict Aliasing Rule](https://accu.org/journals/overload/28/160/anonymous/)
+- [Strict Aliasing Reference (GitHub)](https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8)
+- [Debug vs Release Build Divergence](https://hubble.com/community/guides/why-debug-and-release-firmware-behave-differently/)
+
+### Security & OTA
+- [Secure OTA Update Pipelines](https://promwad.com/news/building-secure-ota-update-pipelines-firmware-integrity-factory-to-field)
+- [Secure Boot Chain & Firmware Verification](https://promwad.com/news/secure-ota-boot-chains-firmware-verification)
+- [Secure Boot Fundamentals (Analog Devices)](https://www.analog.com/en/resources/technical-articles/the-fundamentals-of-secure-boot-and-secure-download.html)
+- [6 Risks of AI Code in Embedded Systems (RunSafe)](https://runsafesecurity.com/blog/6-risks-ai-code-embedded-systems/)
+
+### Safety Standards
+- [IEC 61508 Fault Detection](https://risknowlogy.com/articles/detail/17305/)
+- [ISO 26262 Software Architectural Design](http://embeddedinembedded.blogspot.com/)
+
+### Academic Papers
+- [arXiv:2509.09970 — Securing LLM-Generated Embedded Firmware](https://arxiv.org/abs/2509.09970) (92.4% vulnerability remediation)
+- [arXiv:2601.13864 — HardSecBench: Security Awareness of LLMs for HW Code](https://arxiv.org/abs/2601.13864)
+- [arXiv:2603.19583 — IoT-SkillsBench: Skilled AI Agents for Embedded/IoT](https://arxiv.org/abs/2603.19583)
+- [arXiv:2503.15554 — Rethinking Evaluation of Secure Code Generation (ICSE'26)](https://arxiv.org/abs/2503.15554)
+
+### EmbedEval Project
+- [LLM-EMBEDDED-FAILURE-FACTORS.md](./LLM-EMBEDDED-FAILURE-FACTORS.md) (42-factor taxonomy + 19 non-code factors)
+- [BENCHMARK-COMPARISON-2026-04-05.md](./BENCHMARK-COMPARISON-2026-04-05.md) (test data)
