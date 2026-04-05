@@ -1,6 +1,6 @@
 # EmbedEval
 
-Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS, FreeRTOS, Yocto/Embedded Linux).
+Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS, FreeRTOS, ESP-IDF, STM32 HAL, Linux kernel drivers, Yocto/Embedded Linux).
 
 ## Project Context
 
@@ -20,7 +20,7 @@ Professional-grade LLM benchmark for embedded firmware development (Zephyr RTOS,
 | CLI | typer | latest |
 | Models | pydantic | v2 |
 | Container | Docker | latest |
-| Target SDKs | Zephyr RTOS, FreeRTOS, Yocto | various |
+| Target SDKs | Zephyr RTOS, FreeRTOS, ESP-IDF, STM32 HAL, Linux kernel, Yocto | various |
 | CI | GitHub Actions | - |
 
 ## Project Structure

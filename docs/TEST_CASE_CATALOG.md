@@ -1,6 +1,6 @@
 # EmbedEval Test Case Catalog
 
-23 categories × ~10 cases = **200+ test cases** targeting LLM failure patterns in embedded firmware development.
+23 categories × ~10 cases = **227 test cases** (179 public + 48 private) targeting LLM failure patterns in embedded firmware development.
 
 ## Difficulty Legend
 
@@ -14,12 +14,12 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Cases | 200 |
+| Total Cases | 227 |
 | Categories | 23 |
-| Easy | 28 |
-| Medium | 88 |
-| Hard | 84 |
-| Total Checks | 2247 |
+| Platforms | 6 (Zephyr, ESP-IDF, STM32 HAL, FreeRTOS, Linux kernel, Yocto) |
+| Easy | 29 |
+| Medium | 98 |
+| Hard | 100 |
 
 ---
 

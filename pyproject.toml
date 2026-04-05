@@ -1,7 +1,7 @@
 [project]
 name = "embedeval"
 version = "0.1.0"
-description = "Embedded firmware LLM code generation benchmark"
+description = "LLM benchmark for embedded firmware across Zephyr RTOS, ESP-IDF, STM32, FreeRTOS, Linux drivers, and Yocto"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
