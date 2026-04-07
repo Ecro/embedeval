@@ -3,7 +3,8 @@
 **Date:** 2026-04-05
 **Based on:** EmbedEval benchmark data (Haiku 4.5 vs Sonnet 4.6, 179 public + 48 private cases)
 **Test Results:** See companion document [`BENCHMARK-COMPARISON-2026-04-05.md`](BENCHMARK-COMPARISON-2026-04-05.md)
-**Full Factor Taxonomy:** [`docs/LLM-EMBEDDED-FAILURE-FACTORS.md`](./LLM-EMBEDDED-FAILURE-FACTORS.md) (42 code factors + 19 non-code factors)
+**Full Factor Taxonomy:** [`LLM-EMBEDDED-FAILURE-FACTORS.md`](./LLM-EMBEDDED-FAILURE-FACTORS.md) (42 code factors + 19 non-code factors)
+**Token Scaling Economics:** [`LLM-EMBEDDED-TOKEN-SCALING.md`](./LLM-EMBEDDED-TOKEN-SCALING.md) — why infinite tokens aren't enough for embedded
 
 ---
 

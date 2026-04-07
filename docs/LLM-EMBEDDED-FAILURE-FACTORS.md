@@ -6,7 +6,10 @@ and where the gaps are largest.
 **Version:** 1.1 (2026-03-29)
 **Factors:** 42 code-observable factors across 6 categories
 **Evidence:** EmbedEval benchmark (210 TCs, 97 unique failed checks, 109 failure instances), 12+ research papers (2024-2026)
-**Companion:** [LLM-EMBEDDED-DEVELOPMENT-GUIDE.md](LLM-EMBEDDED-DEVELOPMENT-GUIDE.md) — end-to-end workflow, context templates, environment setup
+**Companion documents:**
+- [LLM-EMBEDDED-DEVELOPMENT-GUIDE.md](LLM-EMBEDDED-DEVELOPMENT-GUIDE.md) — end-to-end workflow, context templates, environment setup
+- [LLM-EMBEDDED-CONSIDERATIONS.md](LLM-EMBEDDED-CONSIDERATIONS.md) — production-scale failure patterns and practical guidance
+- [LLM-EMBEDDED-TOKEN-SCALING.md](LLM-EMBEDDED-TOKEN-SCALING.md) — token scaling economics: why infinite tokens aren't enough for embedded
 
 ---
 

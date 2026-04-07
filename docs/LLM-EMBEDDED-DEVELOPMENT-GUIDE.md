@@ -6,6 +6,7 @@ requirements through deployment — without shipping demos as products.
 **Companion documents:**
 - [LLM-EMBEDDED-FAILURE-FACTORS.md](LLM-EMBEDDED-FAILURE-FACTORS.md) — 42 code factors + 19 non-code factors describing WHERE LLMs fail
 - [LLM-EMBEDDED-CONSIDERATIONS.md](LLM-EMBEDDED-CONSIDERATIONS.md) — 14 production-scale failure patterns and practical guidance for teams
+- [LLM-EMBEDDED-TOKEN-SCALING.md](LLM-EMBEDDED-TOKEN-SCALING.md) — token scaling economics: why infinite tokens aren't enough for embedded
 
 ---
 
