@@ -146,9 +146,21 @@ def run(
     if after_date:
         filters.after_date = after_date
 
+    # Build case_dir_map covering all discoverable cases (public + private).
+    # Needed so update_tracker and generate_results_doc can hash private
+    # cases correctly — without it they'd resolve to non-existent paths
+    # under cases_dir and record the empty-content hash.
+    from embedeval.runner import discover_cases as _discover
+
+    case_dir_map: dict[str, Path] = {
+        meta.id: cd for cd, meta in _discover(cases_dir)
+    }
+    if private_cases:
+        for cd, meta in _discover(private_cases):
+            case_dir_map[meta.id] = cd
+
     # Retest-only filtering
     if retest_only:
-        from embedeval.runner import discover_cases as _discover
         from embedeval.runner import filter_cases as _filter
         from embedeval.test_tracker import (
             find_cases_needing_retest,
@@ -173,7 +185,6 @@ def run(
         )
         selected = _filter(all_cases, retest_filters)
         all_case_ids = [meta.id for _, meta in selected]
-        case_dir_map = {meta.id: cd for cd, meta in selected}
         needs_retest = find_cases_needing_retest(
             tracker,
             model,
@@ -242,7 +253,7 @@ def run(
     run_dir = generate_run_archive(results, report, output_dir, model)
     generate_failure_report(results, run_dir / "report.md", model)
 
-    # Update test tracker with results
+    # Update test tracker with results (reuses case_dir_map built above)
     from embedeval.test_tracker import (
         generate_results_doc,
         load_tracker,
@@ -251,9 +262,16 @@ def run(
     )
 
     tracker = load_tracker(output_dir)
-    tracker = update_tracker(tracker, results, cases_dir, model)
+    tracker = update_tracker(
+        tracker, results, cases_dir, model, case_dir_map=case_dir_map
+    )
     save_tracker(tracker, output_dir)
-    generate_results_doc(tracker, output_dir / "TEST_RESULTS.md", cases_dir)
+    generate_results_doc(
+        tracker,
+        output_dir / "TEST_RESULTS.md",
+        cases_dir,
+        case_dir_map=case_dir_map,
+    )
 
     # Generate safe guide from all available runs
     guide_path = generate_safe_guide(output_dir)

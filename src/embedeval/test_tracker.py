@@ -112,16 +112,36 @@ def update_tracker(
     results: list["EvalResult"],
     cases_dir: Path,
     model: str,
+    case_dir_map: dict[str, Path] | None = None,
 ) -> TrackerData:
-    """Update tracker with new benchmark results."""
+    """Update tracker with new benchmark results.
+
+    Args:
+        case_dir_map: Optional mapping of case_id -> case_dir Path, required
+            when cases live in multiple roots (e.g., public + private). Without
+            this, private cases resolve to non-existent paths under cases_dir
+            and get recorded with the empty-content hash.
+    """
     if model not in tracker.results:
         tracker.results[model] = {}
 
     now = datetime.now(tz=timezone.utc).isoformat()
 
     for r in results:
-        case_dir = cases_dir / r.case_id
-        content_hash = _case_content_hash(case_dir)
+        if case_dir_map and r.case_id in case_dir_map:
+            case_dir = case_dir_map[r.case_id]
+        else:
+            case_dir = cases_dir / r.case_id
+
+        if not case_dir.is_dir():
+            logger.warning(
+                "update_tracker: case dir missing for %s (%s) — hash unknown",
+                r.case_id,
+                case_dir,
+            )
+            content_hash = "unknown"
+        else:
+            content_hash = _case_content_hash(case_dir)
 
         failed_checks: list[str] = []
         for layer in r.layers:
@@ -249,11 +269,16 @@ def generate_results_doc(
     tracker: TrackerData,
     output: Path,
     cases_dir: Path | None = None,
+    case_dir_map: dict[str, Path] | None = None,
 ) -> None:
     """Generate a Markdown test results document from tracker data.
 
     If cases_dir is provided, checks content hashes to show
     which cases need retesting (TC changed since last test).
+
+    case_dir_map: Optional per-case_id path override for cases living
+        outside cases_dir (e.g., private cases). When provided, takes
+        precedence over cases_dir / case_id.
     """
     lines: list[str] = [
         "# EmbedEval Test Results",
@@ -275,7 +300,10 @@ def generate_results_doc(
         for model, cases in tracker.results.items():
             stale = set()
             for case_id, cr in cases.items():
-                case_path = cases_dir / case_id
+                if case_dir_map and case_id in case_dir_map:
+                    case_path = case_dir_map[case_id]
+                else:
+                    case_path = cases_dir / case_id
                 if not case_path.is_dir():
                     continue
                 current = _case_content_hash(case_path)
