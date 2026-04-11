@@ -2542,13 +2542,11 @@
       "isr-concurrency-007": {
         "case_id": "isr-concurrency-007",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 1,
-        "failed_checks": [
-          "west_build_docker"
-        ],
-        "case_git_hash": "760132a7686e109b",
-        "tested_at": "2026-04-11T11:38:41.475043+00:00",
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
+        "case_git_hash": "10e0544dc806386f",
+        "tested_at": "2026-04-11T12:16:05.917092+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-012": {
@@ -5071,13 +5069,11 @@
       "isr-concurrency-007": {
         "case_id": "isr-concurrency-007",
         "model": "claude-code://sonnet",
-        "passed": false,
-        "failed_at_layer": 1,
-        "failed_checks": [
-          "west_build_docker"
-        ],
-        "case_git_hash": "760132a7686e109b",
-        "tested_at": "2026-04-11T11:42:43.629897+00:00",
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
+        "case_git_hash": "10e0544dc806386f",
+        "tested_at": "2026-04-11T12:17:07.329621+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-012": {

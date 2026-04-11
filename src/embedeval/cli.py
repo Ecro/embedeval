@@ -372,8 +372,23 @@ def run(
     json_path = output_dir / f"{model}-results.json"
     generate_json(report, json_path)
 
+    # Leaderboard needs every known model, not just the one that just ran,
+    # otherwise a Sonnet-only invocation wipes Haiku off the page.
+    leaderboard_reports = [report]
+    for other_model in sorted(prior_tracker.results.keys()):
+        if other_model == model or other_model == "mock":
+            continue
+        other_merged = _build_comprehensive_results(
+            [], prior_tracker, other_model, all_cases_meta
+        )
+        if not other_merged:
+            continue
+        other_report = score_results(other_merged)
+        other_report.scenario = scenario
+        leaderboard_reports.append(other_report)
+
     leaderboard_path = output_dir / "LEADERBOARD.md"
-    generate_leaderboard([report], leaderboard_path)
+    generate_leaderboard(leaderboard_reports, leaderboard_path)
 
     run_dir = generate_run_archive(
         comprehensive_results, report, output_dir, model

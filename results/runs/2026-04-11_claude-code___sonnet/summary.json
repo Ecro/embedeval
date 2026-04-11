@@ -4,209 +4,221 @@
   "models": [
     {
       "model": "claude-code://sonnet",
-      "pass_at_1": 0.5409836065573771,
-      "pass_at_1_quality": 0.7868852459016393,
+      "pass_at_1": 0.7339055793991416,
+      "pass_at_1_quality": 0.8583690987124464,
       "pass_at_1_comparable": null,
-      "pass_at_3": 0.5409836065573771,
-      "pass_at_5": 0.5409836065573771,
-      "avg_score": 0.5409836065573771,
-      "total_cases": 61,
-      "passed_cases": 33,
-      "passed_cases_quality": 48,
+      "pass_at_3": 0.7339055793991416,
+      "pass_at_5": 0.7339055793991416,
+      "avg_score": 0.7339055793991416,
+      "total_cases": 233,
+      "passed_cases": 171,
+      "passed_cases_quality": 200,
       "comparable_cases": null,
       "layer_pass_rates": {
-        "compile_gate": 0.7692307692307693,
-        "runtime_execution": 0.925,
-        "static_analysis": 0.8524590163934426,
-        "static_heuristic": 0.8918918918918919,
+        "compile_gate": 0.9262672811059908,
+        "runtime_execution": 0.9353233830845771,
+        "static_analysis": 0.9313304721030042,
+        "static_heuristic": 0.9095744680851063,
         "test_quality_proof": 1.0
       },
       "pass_at_1_ci": [
-        0.4172382993581416,
-        0.6598726911171089
+        0.6737024479779193,
+        0.7865207560538047
       ],
       "n_samples": 1
     }
   ],
   "categories": [
     {
+      "category": "adc",
+      "pass_at_1": 1.0,
+      "total_cases": 2,
+      "passed_cases": 2
+    },
+    {
       "category": "ble",
-      "pass_at_1": 0.3333333333333333,
-      "total_cases": 3,
-      "passed_cases": 1
+      "pass_at_1": 0.8181818181818182,
+      "total_cases": 11,
+      "passed_cases": 9
     },
     {
       "category": "boot",
       "pass_at_1": 1.0,
-      "total_cases": 3,
-      "passed_cases": 3
+      "total_cases": 10,
+      "passed_cases": 10
     },
     {
       "category": "device-tree",
       "pass_at_1": 1.0,
-      "total_cases": 2,
-      "passed_cases": 2
+      "total_cases": 10,
+      "passed_cases": 10
     },
     {
       "category": "dma",
-      "pass_at_1": 0.5,
-      "total_cases": 4,
-      "passed_cases": 2
+      "pass_at_1": 0.46153846153846156,
+      "total_cases": 13,
+      "passed_cases": 6
     },
     {
       "category": "gpio-basic",
-      "pass_at_1": 0.0,
-      "total_cases": 1,
-      "passed_cases": 0
-    },
-    {
-      "category": "isr-concurrency",
-      "pass_at_1": 0.4,
-      "total_cases": 5,
-      "passed_cases": 2
-    },
-    {
-      "category": "kconfig",
-      "pass_at_1": 0.5,
-      "total_cases": 2,
-      "passed_cases": 1
-    },
-    {
-      "category": "linux-driver",
-      "pass_at_1": 0.5,
-      "total_cases": 2,
-      "passed_cases": 1
-    },
-    {
-      "category": "memory-opt",
-      "pass_at_1": 1.0,
-      "total_cases": 2,
-      "passed_cases": 2
-    },
-    {
-      "category": "networking",
-      "pass_at_1": 0.5,
-      "total_cases": 2,
-      "passed_cases": 1
-    },
-    {
-      "category": "ota",
-      "pass_at_1": 0.5,
-      "total_cases": 4,
-      "passed_cases": 2
-    },
-    {
-      "category": "power-mgmt",
-      "pass_at_1": 0.75,
-      "total_cases": 4,
-      "passed_cases": 3
-    },
-    {
-      "category": "security",
       "pass_at_1": 0.6666666666666666,
       "total_cases": 6,
       "passed_cases": 4
     },
     {
-      "category": "sensor-driver",
-      "pass_at_1": 0.25,
-      "total_cases": 4,
+      "category": "isr-concurrency",
+      "pass_at_1": 0.46153846153846156,
+      "total_cases": 13,
+      "passed_cases": 6
+    },
+    {
+      "category": "kconfig",
+      "pass_at_1": 0.8,
+      "total_cases": 10,
+      "passed_cases": 8
+    },
+    {
+      "category": "linux-driver",
+      "pass_at_1": 0.7,
+      "total_cases": 10,
+      "passed_cases": 7
+    },
+    {
+      "category": "memory-opt",
+      "pass_at_1": 0.5833333333333334,
+      "total_cases": 12,
+      "passed_cases": 7
+    },
+    {
+      "category": "networking",
+      "pass_at_1": 0.9166666666666666,
+      "total_cases": 12,
+      "passed_cases": 11
+    },
+    {
+      "category": "ota",
+      "pass_at_1": 0.75,
+      "total_cases": 12,
+      "passed_cases": 9
+    },
+    {
+      "category": "power-mgmt",
+      "pass_at_1": 0.9166666666666666,
+      "total_cases": 12,
+      "passed_cases": 11
+    },
+    {
+      "category": "pwm",
+      "pass_at_1": 1.0,
+      "total_cases": 1,
       "passed_cases": 1
+    },
+    {
+      "category": "security",
+      "pass_at_1": 0.6,
+      "total_cases": 10,
+      "passed_cases": 6
+    },
+    {
+      "category": "sensor-driver",
+      "pass_at_1": 0.75,
+      "total_cases": 12,
+      "passed_cases": 9
     },
     {
       "category": "spi-i2c",
-      "pass_at_1": 0.5,
-      "total_cases": 2,
-      "passed_cases": 1
+      "pass_at_1": 0.7857142857142857,
+      "total_cases": 14,
+      "passed_cases": 11
     },
     {
       "category": "storage",
-      "pass_at_1": 0.5,
-      "total_cases": 4,
-      "passed_cases": 2
+      "pass_at_1": 0.5384615384615384,
+      "total_cases": 13,
+      "passed_cases": 7
     },
     {
       "category": "threading",
-      "pass_at_1": 0.25,
-      "total_cases": 4,
-      "passed_cases": 1
+      "pass_at_1": 0.4,
+      "total_cases": 15,
+      "passed_cases": 6
     },
     {
       "category": "timer",
+      "pass_at_1": 0.9166666666666666,
+      "total_cases": 12,
+      "passed_cases": 11
+    },
+    {
+      "category": "uart",
       "pass_at_1": 0.6666666666666666,
       "total_cases": 3,
       "passed_cases": 2
     },
     {
-      "category": "uart",
-      "pass_at_1": 0.0,
-      "total_cases": 1,
-      "passed_cases": 0
-    },
-    {
       "category": "watchdog",
-      "pass_at_1": 0.0,
-      "total_cases": 1,
-      "passed_cases": 0
+      "pass_at_1": 0.8,
+      "total_cases": 10,
+      "passed_cases": 8
     },
     {
       "category": "yocto",
       "pass_at_1": 1.0,
-      "total_cases": 2,
-      "passed_cases": 2
+      "total_cases": 10,
+      "passed_cases": 10
     }
   ],
   "tier_scores": [
     {
       "tier": "sanity",
-      "pass_at_1": 1.0,
-      "total_cases": 1,
-      "passed_cases": 1
+      "pass_at_1": 0.75,
+      "total_cases": 4,
+      "passed_cases": 3
     },
     {
       "tier": "core",
-      "pass_at_1": 0.5806451612903226,
-      "total_cases": 31,
-      "passed_cases": 18
+      "pass_at_1": 0.8048780487804879,
+      "total_cases": 123,
+      "passed_cases": 99
     },
     {
       "tier": "challenge",
-      "pass_at_1": 0.4827586206896552,
-      "total_cases": 29,
-      "passed_cases": 14
+      "pass_at_1": 0.6509433962264151,
+      "total_cases": 106,
+      "passed_cases": 69
     }
   ],
   "reasoning_scores": [
     {
       "reasoning_type": "api_recall",
-      "pass_at_1": 0.5714285714285714,
-      "total_cases": 56,
-      "passed_cases": 32
+      "pass_at_1": 0.7695852534562212,
+      "total_cases": 217,
+      "passed_cases": 167
     },
     {
       "reasoning_type": "rule_application",
-      "pass_at_1": 0.625,
-      "total_cases": 32,
-      "passed_cases": 20
+      "pass_at_1": 0.7878787878787878,
+      "total_cases": 132,
+      "passed_cases": 104
     },
     {
       "reasoning_type": "cross_domain",
-      "pass_at_1": 0.3333333333333333,
-      "total_cases": 9,
-      "passed_cases": 3
+      "pass_at_1": 0.5,
+      "total_cases": 38,
+      "passed_cases": 19
     },
     {
       "reasoning_type": "system_reasoning",
-      "pass_at_1": 0.4375,
-      "total_cases": 32,
-      "passed_cases": 14
+      "pass_at_1": 0.6956521739130435,
+      "total_cases": 115,
+      "passed_cases": 80
     }
   ],
   "overall": {
-    "total_cases": 61,
+    "total_cases": 233,
     "total_models": 1,
     "best_model": "claude-code://sonnet",
-    "best_pass_at_1": 0.5409836065573771,
+    "best_pass_at_1": 0.7339055793991416,
     "common_cases": null,
     "case_set_warning": null
   },
@@ -216,7 +228,7 @@
   "n_runs": 1,
   "run_timestamp": "2026-04-11",
   "model": "claude-code://sonnet",
-  "total_results": 61,
-  "passed": 33,
-  "failed": 28
+  "total_results": 233,
+  "passed": 171,
+  "failed": 62
 }

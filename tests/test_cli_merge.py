@@ -198,6 +198,65 @@ def test_synthesized_layers_carry_skipped_marker_for_quality_scoring():
     assert model_score.passed_cases_quality == 1  # quality: counts
 
 
+def test_tracker_aggregation_covers_multiple_models():
+    """Given tracker entries for two models, _build_comprehensive_results
+    can be called per-model to produce independent aggregates."""
+    from embedeval.scorer import score
+
+    tracker = TrackerData()
+    tracker.results["model-a"] = {
+        "kconfig-001": CaseResult(
+            case_id="kconfig-001",
+            model="model-a",
+            passed=True,
+            failed_at_layer=None,
+            failed_checks=[],
+            case_git_hash="a" * 16,
+            tested_at="2026-04-11T00:00:00+00:00",
+        ),
+        "kconfig-002": CaseResult(
+            case_id="kconfig-002",
+            model="model-a",
+            passed=False,
+            failed_at_layer=1,
+            failed_checks=["build"],
+            case_git_hash="b" * 16,
+            tested_at="2026-04-11T00:00:00+00:00",
+        ),
+    }
+    tracker.results["model-b"] = {
+        "kconfig-001": CaseResult(
+            case_id="kconfig-001",
+            model="model-b",
+            passed=True,
+            failed_at_layer=None,
+            failed_checks=[],
+            case_git_hash="a" * 16,
+            tested_at="2026-04-11T00:00:00+00:00",
+        ),
+        "kconfig-002": CaseResult(
+            case_id="kconfig-002",
+            model="model-b",
+            passed=True,
+            failed_at_layer=None,
+            failed_checks=[],
+            case_git_hash="b" * 16,
+            tested_at="2026-04-11T00:00:00+00:00",
+        ),
+    }
+    metas = {m.id: m for m in (_meta("kconfig-001"), _meta("kconfig-002"))}
+
+    reports = []
+    for m in ("model-a", "model-b"):
+        merged = _build_comprehensive_results([], tracker, m, metas)
+        reports.append(score(merged))
+
+    a_score = reports[0].models[0]
+    b_score = reports[1].models[0]
+    assert a_score.model == "model-a" and a_score.passed_cases == 1
+    assert b_score.model == "model-b" and b_score.passed_cases == 2
+
+
 def test_score_aggregation_matches_comprehensive_not_new_only():
     """Integration: the scorer applied to the merged list must reflect
     the full model state, not just the retested slice."""

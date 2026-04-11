@@ -1,13 +1,13 @@
 # EmbedEval Test Results
 
-*Last updated: 2026-04-11 11:42 UTC*
+*Last updated: 2026-04-11 12:17 UTC*
 
 ## Summary
 
 | Model | Cases | Passed | Failed | pass@1 | Retest |
 |-------|-------|--------|--------|--------|--------|
-| claude-code://haiku | 233 | 143 | 90 | 61.4% | - |
-| claude-code://sonnet | 239 | 176 | 63 | 73.6% | - |
+| claude-code://haiku | 233 | 144 | 89 | 61.8% | - |
+| claude-code://sonnet | 239 | 177 | 62 | 74.1% | - |
 | mock | 8 | 0 | 8 | 0.0% | - |
 
 ## claude-code://haiku
@@ -30,7 +30,7 @@
 | esp-timer | 1 | 1 | 100% | - |
 | esp-wifi | 1 | 1 | 100% | - |
 | gpio-basic | 4 | 3 | 75% | west_build_docker |
-| isr-concurrency | 12 | 4 | 33% | llm_call, no_printk_in_isr, init_before_isr_call, fifo_reserved_field, west_build_docker (+4) |
+| isr-concurrency | 12 | 5 | 42% | llm_call, no_printk_in_isr, init_before_isr_call, fifo_reserved_field, memory_barrier_present (+3) |
 | kconfig | 10 | 7 | 70% | spi_dma_enabled, uart_line_ctrl_enabled, mbedtls_builtin_enabled, mbedtls_psa_crypto_enabled, hw_cc3xx_enabled |
 | linux-driver | 10 | 9 | 90% | init_error_path_cleanup |
 | memory-opt | 12 | 5 | 42% | mem_slab_defined, slab_alloc_called, slab_free_called, slab_defined, slab_alloc_called (+9) |
@@ -57,7 +57,7 @@
 | watchdog | 10 | 8 | 80% | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max, kernel_header_included, watchdog_header_included (+1) |
 | yocto | 10 | 8 | 80% | rootfs_size_uses_weak_assignment, machine_features_defined, kernel_devicetree_defined, serial_consoles_defined |
 
-### Failed Cases (90)
+### Failed Cases (89)
 
 | Case | Layer | Failed Checks | Tested |
 |------|-------|---------------|--------|
@@ -88,7 +88,6 @@
 | isr-concurrency-002 | L0 | no_printk_in_isr | 2026-03-29 |
 | isr-concurrency-005 | L0 | init_before_isr_call | 2026-03-29 |
 | isr-concurrency-006 | L0 | fifo_reserved_field | 2026-03-29 |
-| isr-concurrency-007 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-008 | L3 | memory_barrier_present, barrier_between_data_and_index_update | 2026-04-04 |
 | isr-concurrency-009 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-011 | L1 | west_build_docker | 2026-04-04 |
@@ -172,7 +171,7 @@
 | esp-timer | 1 | 1 | 100% | - |
 | esp-wifi | 1 | 1 | 100% | - |
 | gpio-basic | 10 | 8 | 80% | device_ready_check, west_build_docker |
-| isr-concurrency | 12 | 4 | 33% | message_struct_defined, no_forbidden_apis_in_isr, k_sleep_present, output_validation, west_build_docker (+4) |
+| isr-concurrency | 12 | 5 | 42% | message_struct_defined, no_forbidden_apis_in_isr, k_sleep_present, output_validation, west_build_docker (+3) |
 | kconfig | 10 | 8 | 80% | spi_dma_enabled, hw_cc3xx_enabled |
 | linux-driver | 10 | 7 | 70% | init_error_path_cleanup, init_error_path_cleanup, gpio_direction_set |
 | memory-opt | 12 | 7 | 58% | west_build_docker, output_validation, partition_added_to_domain, fpu_disabled, output_validation |
@@ -199,7 +198,7 @@
 | watchdog | 10 | 8 | 80% | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max, llm_call |
 | yocto | 10 | 10 | 100% | - |
 
-### Failed Cases (63)
+### Failed Cases (62)
 
 | Case | Layer | Failed Checks | Tested |
 |------|-------|---------------|--------|
@@ -219,7 +218,6 @@
 | isr-concurrency-003 | L3 | k_sleep_present | 2026-04-11 |
 | isr-concurrency-005 | L2 | output_validation | 2026-03-30 |
 | isr-concurrency-006 | L1 | west_build_docker | 2026-03-30 |
-| isr-concurrency-007 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-008 | L2 | output_validation | 2026-04-04 |
 | isr-concurrency-009 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-012 | L0 | no_isr_unsafe_primitives | 2026-04-11 |

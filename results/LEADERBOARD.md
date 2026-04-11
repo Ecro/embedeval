@@ -5,8 +5,8 @@
 
 | Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |
 |-------|---------------|------------------|--------|--------|--------|---------|-------|---------|
-| claude-code://haiku | 61.4% | 73.8% | [55.0%, 67.4%] | 61.4% | 143 | 172 | 233 | n=1 |
-| claude-code://sonnet | 73.0% | 85.8% | [66.9%, 78.3%] | 73.0% | 170 | 200 | 233 | n=1 |
+| claude-code://haiku | 61.8% | 73.8% | [55.4%, 67.8%] | 61.8% | 144 | 172 | 233 | n=1 |
+| claude-code://sonnet | 73.4% | 85.8% | [67.4%, 78.7%] | 73.4% | 171 | 200 | 233 | n=1 |
 
 *pass@1 (full) = all layers must pass. pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*
 
@@ -16,21 +16,21 @@
 |------|--------|--------|-------|
 | Sanity (not scored) | 50.0% | 2 | 4 |
 | Core | 69.9% | 86 | 123 |
-| Challenge | 51.9% | 55 | 106 |
+| Challenge | 52.8% | 56 | 106 |
 | Sanity (not scored) | 75.0% | 3 | 4 |
 | Core | 80.5% | 99 | 123 |
-| Challenge | 64.2% | 68 | 106 |
+| Challenge | 65.1% | 69 | 106 |
 
 ## Reasoning Type Breakdown
 
 | Reasoning Type | pass@1 | Cases | LLM Reliability |
 |----------------|--------|-------|-----------------|
-| L1 API Recall | 64.1% | 217 | Expert review required |
-| L2 Rule Application | 68.9% | 132 | Expert review required |
+| L1 API Recall | 64.5% | 217 | Expert review required |
+| L2 Rule Application | 69.7% | 132 | Expert review required |
 | L3 Cross-Domain | 42.1% | 38 | Expert review required |
 | L4 System Reasoning | 58.3% | 115 | Expert review required |
-| L1 API Recall | 76.5% | 217 | Review recommended |
-| L2 Rule Application | 78.0% | 132 | Review recommended |
+| L1 API Recall | 77.0% | 217 | Review recommended |
+| L2 Rule Application | 78.8% | 132 | Review recommended |
 | L3 Cross-Domain | 50.0% | 38 | Expert review required |
 | L4 System Reasoning | 69.6% | 115 | Expert review required |
 
@@ -44,7 +44,7 @@
 | device-tree | 90.0% | 9 | 10 | PASS |
 | dma | 0.0% | 0 | 13 | FAIL |
 | gpio-basic | 66.7% | 4 | 6 | PARTIAL |
-| isr-concurrency | 38.5% | 5 | 13 | FAIL |
+| isr-concurrency | 46.2% | 6 | 13 | FAIL |
 | kconfig | 70.0% | 7 | 10 | PARTIAL |
 | linux-driver | 90.0% | 9 | 10 | PASS |
 | memory-opt | 41.7% | 5 | 12 | FAIL |
@@ -67,7 +67,7 @@
 | device-tree | 100.0% | 10 | 10 | PASS |
 | dma | 46.2% | 6 | 13 | FAIL |
 | gpio-basic | 66.7% | 4 | 6 | PARTIAL |
-| isr-concurrency | 38.5% | 5 | 13 | FAIL |
+| isr-concurrency | 46.2% | 6 | 13 | FAIL |
 | kconfig | 80.0% | 8 | 10 | PASS |
 | linux-driver | 70.0% | 7 | 10 | PARTIAL |
 | memory-opt | 58.3% | 7 | 12 | PARTIAL |
@@ -89,15 +89,15 @@
 
 | Model| L0 Static| L1 Build| L2 Runtime| L3 Heuristic| L4 Mutation| |
 |-------|----------|----------|----------|----------|----------||
-| claude-code://haiku| 82%| 88%| 96%| 88%| 100%| |
-| claude-code://sonnet| 93%| 92%| 94%| 91%| 100%| |
+| claude-code://haiku| 82%| 89%| 96%| 88%| 100%| |
+| claude-code://sonnet| 93%| 93%| 94%| 91%| 100%| |
 
 ## Failure Distribution
 
 | Layer | Failures | % of Total |
 |-------|----------|-----------|
 | L0 Static | 0.2 | 33% |
-| L1 Build | 0.2 | 26% |
+| L1 Build | 0.2 | 25% |
 | L2 Runtime | 0.1 | 14% |
 | L3 Heuristic | 0.2 | 28% |
 | L4 Mutation | 0.0 | 0% |
@@ -112,7 +112,7 @@
 | device-tree | 90% | 10 |
 | dma | 0% | 13 |
 | gpio-basic | 67% | 6 |
-| isr-concurrency | 38% | 13 |
+| isr-concurrency | 46% | 13 |
 | kconfig | 70% | 10 |
 | linux-driver | 90% | 10 |
 | memory-opt | 42% | 12 |
@@ -135,7 +135,7 @@
 | device-tree | 100% | 10 |
 | dma | 46% | 13 |
 | gpio-basic | 67% | 6 |
-| isr-concurrency | 38% | 13 |
+| isr-concurrency | 46% | 13 |
 | kconfig | 80% | 10 |
 | linux-driver | 70% | 10 |
 | memory-opt | 58% | 12 |
@@ -157,7 +157,7 @@
 
 | Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |
 |-------|-----------|-----------|------------------|---------------------|-----------|
-| claude-code://haiku | 84.0% | 48.2% | 61.4% | 73.8% | -22.6%p |
-| claude-code://sonnet | 93.7% | 72.2% | 73.0% | 85.8% | -20.7%p |
+| claude-code://haiku | 84.0% | 48.2% | 61.8% | 73.8% | -22.2%p |
+| claude-code://sonnet | 93.7% | 72.2% | 73.4% | 85.8% | -20.3%p |
 
 *Embed Gap = EmbedEval pass@1 - HumanEval. Negative = harder than general coding.*

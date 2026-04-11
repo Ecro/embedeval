@@ -4,26 +4,26 @@
   "models": [
     {
       "model": "claude-code://haiku",
-      "pass_at_1": 0.6137339055793991,
+      "pass_at_1": 0.6180257510729614,
       "pass_at_1_quality": 0.7381974248927039,
       "pass_at_1_comparable": null,
-      "pass_at_3": 0.6137339055793991,
-      "pass_at_5": 0.6137339055793991,
-      "avg_score": 0.6137339055793991,
+      "pass_at_3": 0.6180257510729614,
+      "pass_at_5": 0.6180257510729614,
+      "avg_score": 0.6180257510729614,
       "total_cases": 233,
-      "passed_cases": 143,
+      "passed_cases": 144,
       "passed_cases_quality": 172,
       "comparable_cases": null,
       "layer_pass_rates": {
-        "compile_gate": 0.8848167539267016,
-        "runtime_execution": 0.9585798816568047,
+        "compile_gate": 0.8900523560209425,
+        "runtime_execution": 0.9588235294117647,
         "static_analysis": 0.8197424892703863,
-        "static_heuristic": 0.8827160493827161,
+        "static_heuristic": 0.8834355828220859,
         "test_quality_proof": 1.0
       },
       "pass_at_1_ci": [
-        0.5498518785118529,
-        0.6739263766595358
+        0.5542021657450316,
+        0.678020551885655
       ],
       "n_samples": 1
     }
@@ -67,9 +67,9 @@
     },
     {
       "category": "isr-concurrency",
-      "pass_at_1": 0.38461538461538464,
+      "pass_at_1": 0.46153846153846156,
       "total_cases": 13,
-      "passed_cases": 5
+      "passed_cases": 6
     },
     {
       "category": "kconfig",
@@ -183,23 +183,23 @@
     },
     {
       "tier": "challenge",
-      "pass_at_1": 0.5188679245283019,
+      "pass_at_1": 0.5283018867924528,
       "total_cases": 106,
-      "passed_cases": 55
+      "passed_cases": 56
     }
   ],
   "reasoning_scores": [
     {
       "reasoning_type": "api_recall",
-      "pass_at_1": 0.6405529953917051,
+      "pass_at_1": 0.6451612903225806,
       "total_cases": 217,
-      "passed_cases": 139
+      "passed_cases": 140
     },
     {
       "reasoning_type": "rule_application",
-      "pass_at_1": 0.6893939393939394,
+      "pass_at_1": 0.696969696969697,
       "total_cases": 132,
-      "passed_cases": 91
+      "passed_cases": 92
     },
     {
       "reasoning_type": "cross_domain",
@@ -218,7 +218,7 @@
     "total_cases": 233,
     "total_models": 1,
     "best_model": "claude-code://haiku",
-    "best_pass_at_1": 0.6137339055793991,
+    "best_pass_at_1": 0.6180257510729614,
     "common_cases": null,
     "case_set_warning": null
   },

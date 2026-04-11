@@ -4,26 +4,26 @@
   "models": [
     {
       "model": "claude-code://sonnet",
-      "pass_at_1": 0.7296137339055794,
+      "pass_at_1": 0.7339055793991416,
       "pass_at_1_quality": 0.8583690987124464,
       "pass_at_1_comparable": null,
-      "pass_at_3": 0.7296137339055794,
-      "pass_at_5": 0.7296137339055794,
-      "avg_score": 0.7296137339055794,
+      "pass_at_3": 0.7339055793991416,
+      "pass_at_5": 0.7339055793991416,
+      "avg_score": 0.7339055793991416,
       "total_cases": 233,
-      "passed_cases": 170,
+      "passed_cases": 171,
       "passed_cases_quality": 200,
       "comparable_cases": null,
       "layer_pass_rates": {
-        "compile_gate": 0.9216589861751152,
-        "runtime_execution": 0.935,
+        "compile_gate": 0.9262672811059908,
+        "runtime_execution": 0.9353233830845771,
         "static_analysis": 0.9313304721030042,
-        "static_heuristic": 0.9090909090909091,
+        "static_heuristic": 0.9095744680851063,
         "test_quality_proof": 1.0
       },
       "pass_at_1_ci": [
-        0.6691995407340623,
-        0.7825792008383641
+        0.6737024479779193,
+        0.7865207560538047
       ],
       "n_samples": 1
     }
@@ -67,9 +67,9 @@
     },
     {
       "category": "isr-concurrency",
-      "pass_at_1": 0.38461538461538464,
+      "pass_at_1": 0.46153846153846156,
       "total_cases": 13,
-      "passed_cases": 5
+      "passed_cases": 6
     },
     {
       "category": "kconfig",
@@ -183,23 +183,23 @@
     },
     {
       "tier": "challenge",
-      "pass_at_1": 0.6415094339622641,
+      "pass_at_1": 0.6509433962264151,
       "total_cases": 106,
-      "passed_cases": 68
+      "passed_cases": 69
     }
   ],
   "reasoning_scores": [
     {
       "reasoning_type": "api_recall",
-      "pass_at_1": 0.7649769585253456,
+      "pass_at_1": 0.7695852534562212,
       "total_cases": 217,
-      "passed_cases": 166
+      "passed_cases": 167
     },
     {
       "reasoning_type": "rule_application",
-      "pass_at_1": 0.7803030303030303,
+      "pass_at_1": 0.7878787878787878,
       "total_cases": 132,
-      "passed_cases": 103
+      "passed_cases": 104
     },
     {
       "reasoning_type": "cross_domain",
@@ -218,7 +218,7 @@
     "total_cases": 233,
     "total_models": 1,
     "best_model": "claude-code://sonnet",
-    "best_pass_at_1": 0.7296137339055794,
+    "best_pass_at_1": 0.7339055793991416,
     "common_cases": null,
     "case_set_warning": null
   },
