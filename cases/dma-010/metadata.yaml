@@ -1,0 +1,15 @@
+id: dma-010
+category: dma
+difficulty: hard
+title: "DMA from CPU-Written Buffer with Implicit Cache Handling"
+description: "DMA transfer from a buffer the CPU just wrote — ensure the DMA controller observes the CPU's latest value"
+tags: [zephyr, dma, cache, coherence, tc-set-v2, implicit-gap]
+platform: native_sim
+estimated_tokens: 600
+sdk_version: "4.1.0"
+build_board: nrf52840dk/nrf52840
+created_date: "2026-04-11"
+tier: challenge
+reasoning_types: [cross_domain, system_reasoning]
+l1_skip: true
+l2_skip: true
