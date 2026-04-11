@@ -2,7 +2,7 @@
 
 *Auto-generated from benchmark results. Use this to decide when LLM-generated code needs human review.*
 
-**Last updated:** 2026-04-11 10:32 UTC
+**Last updated:** 2026-04-11 11:59 UTC
 
 ## Models Tested
 
@@ -60,8 +60,8 @@
 
 | Pattern | Failures | What to Check |
 |---------|----------|---------------|
-| `west_build_docker` | 143 | Review LLM output against hardware/RTOS requirements |
-| `output_validation` | 66 | Review LLM output against hardware/RTOS requirements |
+| `west_build_docker` | 145 | Review LLM output against hardware/RTOS requirements |
+| `output_validation` | 70 | Review LLM output against hardware/RTOS requirements |
 | `init_error_path_cleanup` | 9 | Init error paths must free all previously acquired resources |
 | `device_ready_check` | 9 | Review LLM output against hardware/RTOS requirements |
 | `kconfig_format` | 8 | Review LLM output against hardware/RTOS requirements |

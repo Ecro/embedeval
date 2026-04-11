@@ -3,15 +3,119 @@
 import json
 import logging
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import TYPE_CHECKING, Annotated, Optional
 
 import typer
 
 from embedeval.models import CaseCategory, DifficultyTier, Visibility
 
+if TYPE_CHECKING:
+    from embedeval.models import CaseMetadata, EvalResult
+    from embedeval.test_tracker import TrackerData
+
 app = typer.Typer(help="EmbedEval: Embedded firmware LLM benchmark")
 
 logger = logging.getLogger(__name__)
+
+# Matches LAYER_ORDER in reporter.py — kept here to synthesize per-layer
+# result fields when rebuilding EvalResults from tracker entries.
+_LAYER_NAMES: list[str] = [
+    "static_analysis",
+    "compile_gate",
+    "runtime_execution",
+    "static_heuristic",
+    "test_quality_proof",
+]
+
+
+def _build_comprehensive_results(
+    new_results: list["EvalResult"],
+    tracker: "TrackerData",
+    model: str,
+    all_cases_meta: dict[str, "CaseMetadata"],
+) -> list["EvalResult"]:
+    """Merge the current run's EvalResults with prior tracker state.
+
+    Leaderboard/run-archive consumers expect a *comprehensive* per-model
+    snapshot, not just the cases that happened to be retested this run.
+    For every case in the tracker that isn't in `new_results`, this
+    synthesizes a minimal EvalResult from the stored pass/failed_layer
+    plus CaseMetadata (category/tier/reasoning types). New results take
+    priority when a case_id overlaps.
+
+    Cases with orphaned tracker entries (no matching CaseMetadata,
+    e.g. deleted TCs) are skipped to avoid polluting aggregates.
+    """
+    from embedeval.models import EvalResult, LayerResult, TokenUsage
+
+    new_ids = {r.case_id for r in new_results}
+    merged: list[EvalResult] = list(new_results)
+
+    prior = tracker.results.get(model, {})
+    for case_id, cr in prior.items():
+        if case_id in new_ids:
+            continue
+        meta = all_cases_meta.get(case_id)
+        if meta is None:
+            continue
+
+        failed_layer = cr.failed_at_layer
+        layers: list[LayerResult] = []
+        for idx, name in enumerate(_LAYER_NAMES):
+            if cr.passed:
+                layer_passed = True
+                layer_error: str | None = None
+            elif failed_layer is None:
+                layer_passed = False
+                layer_error = None
+            elif idx < failed_layer:
+                layer_passed = True
+                layer_error = None
+            elif idx == failed_layer:
+                layer_passed = False
+                layer_error = None
+            else:
+                # Layers after the failing one get the same "skipped
+                # due to earlier failure" marker that the real evaluator
+                # emits — scorer._count_quality_passes keys off this
+                # marker to avoid penalising L3 when L1/L2 broke.
+                layer_passed = False
+                layer_error = f"Skipped: layer {failed_layer} failed"
+            layers.append(
+                LayerResult(
+                    layer=idx,
+                    name=name,
+                    passed=layer_passed,
+                    details=[],
+                    duration_seconds=0.0,
+                    error=layer_error,
+                )
+            )
+
+        merged.append(
+            EvalResult(
+                case_id=case_id,
+                category=meta.category,
+                model=model,
+                attempt=1,
+                generated_code="",
+                layers=layers,
+                failed_at_layer=failed_layer,
+                passed=cr.passed,
+                total_score=1.0 if cr.passed else 0.0,
+                duration_seconds=0.0,
+                token_usage=TokenUsage(
+                    input_tokens=0,
+                    output_tokens=0,
+                    total_tokens=0,
+                ),
+                cost_usd=0.0,
+                tier=meta.tier,
+                reasoning_types=meta.reasoning_types,
+            )
+        )
+
+    return merged
 
 
 @app.callback(invoke_without_command=True)
@@ -230,7 +334,28 @@ def run(
         typer.echo("No results generated.")
         raise typer.Exit(code=1)
 
-    report = score_results(results)
+    # Merge with tracker history so the leaderboard/safe-guide reflect the
+    # comprehensive per-model state, not just this run's (possibly partial)
+    # slice. --retest-only runs would otherwise clobber LEADERBOARD.md
+    # with the 3-case view.
+    from embedeval.test_tracker import (
+        generate_results_doc,
+        load_tracker,
+        save_tracker,
+        update_tracker,
+    )
+
+    prior_tracker = load_tracker(output_dir)
+    all_cases_meta = {meta.id: meta for _, meta in _discover(cases_dir)}
+    if private_cases:
+        for _, meta in _discover(private_cases):
+            all_cases_meta[meta.id] = meta
+
+    comprehensive_results = _build_comprehensive_results(
+        results, prior_tracker, model, all_cases_meta
+    )
+
+    report = score_results(comprehensive_results)
     report.scenario = scenario
     report.temperature = temperature
     report.n_samples_per_case = attempts
@@ -250,20 +375,18 @@ def run(
     leaderboard_path = output_dir / "LEADERBOARD.md"
     generate_leaderboard([report], leaderboard_path)
 
-    run_dir = generate_run_archive(results, report, output_dir, model)
+    run_dir = generate_run_archive(
+        comprehensive_results, report, output_dir, model
+    )
+    # Failure report still lists just this run's failures — the archive
+    # has the full picture, but the one-page report is most useful as
+    # "what broke in *this* invocation".
     generate_failure_report(results, run_dir / "report.md", model)
 
-    # Update test tracker with results (reuses case_dir_map built above)
-    from embedeval.test_tracker import (
-        generate_results_doc,
-        load_tracker,
-        save_tracker,
-        update_tracker,
-    )
-
-    tracker = load_tracker(output_dir)
+    # Update tracker after building comprehensive_results so the "prior"
+    # snapshot used for merging reflects the state *before* this run.
     tracker = update_tracker(
-        tracker, results, cases_dir, model, case_dir_map=case_dir_map
+        prior_tracker, results, cases_dir, model, case_dir_map=case_dir_map
     )
     save_tracker(tracker, output_dir)
     generate_results_doc(
