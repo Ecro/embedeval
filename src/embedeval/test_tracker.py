@@ -41,42 +41,36 @@ class TrackerData(BaseModel):
 def _case_content_hash(case_dir: Path) -> str:
     """Get a content-based hash for a case directory.
 
-    Uses git ls-tree for committed state + checks for uncommitted changes.
-    More reliable than commit hash alone since it catches staged/unstaged edits.
+    Deterministic across path representations: the hash depends only on
+    which files live under case_dir and their bytes, not on whether the
+    caller passed a relative or absolute path, symlinked path, or how the
+    surrounding git repo is laid out. (Earlier versions ran `git ls-tree`
+    with cwd=parent.parent, which silently returned empty output for
+    relative paths outside that cwd's repo, producing different hashes
+    for the same directory depending on how it was referenced.)
     """
+    import hashlib
+
     try:
-        # Get tree hash for committed content
-        result = subprocess.run(
-            ["git", "ls-tree", "-r", "--name-only", "HEAD", "--", str(case_dir)],
-            capture_output=True,
-            text=True,
-            cwd=case_dir.parent.parent,
-        )
-        committed_files = result.stdout.strip() if result.returncode == 0 else ""
+        if not case_dir.is_dir():
+            return "unknown"
 
-        # Check for any uncommitted changes in this directory
-        result = subprocess.run(
-            ["git", "status", "--porcelain", "--", str(case_dir)],
-            capture_output=True,
-            text=True,
-            cwd=case_dir.parent.parent,
-        )
-        uncommitted = result.stdout.strip() if result.returncode == 0 else ""
-
-        # Build composite hash from committed tree + uncommitted indicator
-        import hashlib
-
-        content = committed_files + "\n" + uncommitted
-        # Hash actual file contents (not mtime — mtime resets on clone)
+        case_dir = case_dir.resolve()
+        parts: list[str] = []
         for f in sorted(case_dir.rglob("*")):
-            if f.is_file() and not f.name.startswith("."):
-                try:
-                    fhash = hashlib.sha256(f.read_bytes()).hexdigest()[:8]
-                    content += f"\n{f.relative_to(case_dir)}:{fhash}"
-                except Exception:
-                    pass
+            if not f.is_file():
+                continue
+            # Skip dotfiles and Python cache — neither affects case semantics
+            rel = f.relative_to(case_dir)
+            if any(p.startswith(".") or p == "__pycache__" for p in rel.parts):
+                continue
+            try:
+                fhash = hashlib.sha256(f.read_bytes()).hexdigest()[:8]
+            except OSError:
+                continue
+            parts.append(f"{rel.as_posix()}:{fhash}")
 
-        return hashlib.sha256(content.encode()).hexdigest()[:16]
+        return hashlib.sha256("\n".join(parts).encode()).hexdigest()[:16]
     except Exception:
         return "unknown"
 

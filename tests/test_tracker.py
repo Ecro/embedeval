@@ -134,6 +134,54 @@ def test_update_tracker_map_overrides_cases_dir_for_same_id(tmp_path: Path):
     assert stored != _case_content_hash(cases_dir / "shared-001")
 
 
+def test_case_content_hash_is_path_representation_independent(tmp_path: Path):
+    """Regression: hash must be identical for the same directory regardless
+    of whether it was reached via a relative or absolute path. The earlier
+    version invoked `git ls-tree` with cwd=parent.parent, which silently
+    returned empty for relative paths outside that cwd's repo — producing
+    different hashes and causing --retest-only to re-flag every private
+    case on every run."""
+    import os
+
+    case_dir = _make_case_dir(tmp_path / "cases", "case-001", "content")
+
+    abs_hash = _case_content_hash(case_dir.resolve())
+
+    old_cwd = Path.cwd()
+    try:
+        os.chdir(tmp_path)
+        rel_hash = _case_content_hash(Path("cases/case-001"))
+    finally:
+        os.chdir(old_cwd)
+
+    assert abs_hash == rel_hash
+    assert abs_hash != "unknown"
+
+
+def test_case_content_hash_changes_when_file_content_changes(tmp_path: Path):
+    case_dir = _make_case_dir(tmp_path / "cases", "case-001", "version 1")
+    h1 = _case_content_hash(case_dir)
+
+    (case_dir / "prompt.md").write_text("version 2 — different")
+    h2 = _case_content_hash(case_dir)
+
+    assert h1 != h2
+
+
+def test_case_content_hash_ignores_pycache(tmp_path: Path):
+    """__pycache__ and dotfiles shouldn't affect the semantic hash."""
+    case_dir = _make_case_dir(tmp_path / "cases", "case-001", "content")
+    h_before = _case_content_hash(case_dir)
+
+    pycache = case_dir / "__pycache__"
+    pycache.mkdir()
+    (pycache / "checks.cpython-312.pyc").write_bytes(b"\x00\x01\x02")
+    (case_dir / ".DS_Store").write_bytes(b"junk")
+
+    h_after = _case_content_hash(case_dir)
+    assert h_before == h_after
+
+
 def test_update_tracker_mixed_public_and_private(tmp_path: Path):
     """Both a public case and a private case in one update call get
     non-empty, distinct hashes."""

@@ -8,7 +8,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e925172555c82362",
+        "case_git_hash": "f0d9c66855a242e2",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -18,7 +18,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "84ad0dea7b5a37e2",
+        "case_git_hash": "61b4370de6d64838",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -30,7 +30,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "4251392cf3aa5e2c",
+        "case_git_hash": "9f71334dc6696a95",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -40,7 +40,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "bb92f78cd3bab3fe",
+        "case_git_hash": "2cd73180b9014850",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -50,7 +50,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b5851331935f3b6f",
+        "case_git_hash": "b5b0d6b6cf44cf48",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -60,7 +60,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "163ffe0f8f74c154",
+        "case_git_hash": "26aa0991cb2c7b42",
         "tested_at": "2026-04-04T12:48:23.543189+00:00",
         "pass_at_1": 0.0
       },
@@ -70,7 +70,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f7d549ce3f5189e9",
+        "case_git_hash": "0665a43815f635cc",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -80,7 +80,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cbed14e8d1e7c0f7",
+        "case_git_hash": "3e9ee7921c7b6dbf",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -90,7 +90,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ee42a9b36dbe9347",
+        "case_git_hash": "fdf8a634a9daa461",
         "tested_at": "2026-04-04T12:48:23.543189+00:00",
         "pass_at_1": 0.0
       },
@@ -102,7 +102,7 @@
         "failed_checks": [
           "conn_cleanup_on_failed_connect"
         ],
-        "case_git_hash": "0bb0b92fea1b522c",
+        "case_git_hash": "03c53a8e38dd6865",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -112,7 +112,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3480ec1c8738cf3f",
+        "case_git_hash": "4fc210e86b8eb752",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -122,7 +122,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "490a8ae960d26100",
+        "case_git_hash": "552a48c88c61127a",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -132,7 +132,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7489cfb5952046b4",
+        "case_git_hash": "60bca9c41d6591ee",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -142,7 +142,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "0daacabcd78d6803",
+        "case_git_hash": "769cdb3b1ee66b15",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -152,7 +152,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2f8389b355216357",
+        "case_git_hash": "5057e3eea6823b88",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -162,7 +162,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d73cad8878382187",
+        "case_git_hash": "c15f1f85f4f5ebad",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -172,7 +172,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f633f6dc4f232dd2",
+        "case_git_hash": "02ea13ba50cc1bfe",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -182,7 +182,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1bac2e1dad936a67",
+        "case_git_hash": "1c97fc5de9ae61c9",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -192,7 +192,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6a48c68e70f09d3c",
+        "case_git_hash": "423c6b45f91e0558",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -202,7 +202,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9e63df784004a99e",
+        "case_git_hash": "ada7982807a13f2f",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -214,7 +214,7 @@
         "failed_checks": [
           "pwm_polarity_specified"
         ],
-        "case_git_hash": "8ce93ca3e83a5d26",
+        "case_git_hash": "3fbb8992b135a867",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -224,7 +224,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c3cb87ac59aa19c6",
+        "case_git_hash": "b3f825a5c4a69141",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -234,7 +234,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "db96750cf1156209",
+        "case_git_hash": "b73f593d79173ee3",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -244,7 +244,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c69d9f0766dfebb3",
+        "case_git_hash": "b7c355f350208024",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -254,7 +254,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "77702f5b203d2f29",
+        "case_git_hash": "62cb81e6536204cd",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -264,7 +264,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7fc886e78bd67860",
+        "case_git_hash": "a8a66fb1181421fb",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -276,7 +276,7 @@
         "failed_checks": [
           "dma_header_included"
         ],
-        "case_git_hash": "a72997c81c465b27",
+        "case_git_hash": "9977beff9388820b",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -288,7 +288,7 @@
         "failed_checks": [
           "dma_config_called"
         ],
-        "case_git_hash": "66baf65401a895c6",
+        "case_git_hash": "22cb3b3375082f60",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -301,7 +301,7 @@
           "cyclic_flag_set",
           "dma_reload_called"
         ],
-        "case_git_hash": "017d38ea590f7226",
+        "case_git_hash": "941b341ab5cb1b49",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -314,7 +314,7 @@
           "dma_header_included",
           "multiple_block_descriptors"
         ],
-        "case_git_hash": "118fd7fd1bbcab45",
+        "case_git_hash": "509e8a496e76bc22",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -328,7 +328,7 @@
           "cache_invalidate_present",
           "dst_buffer_aligned"
         ],
-        "case_git_hash": "ac6ff97d650b17bc",
+        "case_git_hash": "442f31502512580b",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -340,7 +340,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "8d5340cabb1e3309",
+        "case_git_hash": "3e3d85f00164b509",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -352,7 +352,7 @@
         "failed_checks": [
           "channel_priority_field_used"
         ],
-        "case_git_hash": "12809c6c6f4741b6",
+        "case_git_hash": "24a20af3968bdf40",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -364,7 +364,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "3cb13da7147210b6",
+        "case_git_hash": "dc143023e9769843",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -377,7 +377,7 @@
           "dma_header_included",
           "kernel_header_included"
         ],
-        "case_git_hash": "5ec10741fec71813",
+        "case_git_hash": "a9a514b43ac19c6b",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -392,7 +392,7 @@
           "gpio_config_used",
           "no_zephyr_apis"
         ],
-        "case_git_hash": "563f2a6777b72366",
+        "case_git_hash": "961f6f22c5e8dbd4",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -407,7 +407,7 @@
           "no_legacy_i2c_driver",
           "no_zephyr_apis"
         ],
-        "case_git_hash": "be27d94a0ccdbb46",
+        "case_git_hash": "6d33afa5a871c122",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -417,7 +417,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8121ca14116d761c",
+        "case_git_hash": "2c1e3b9bf80b91a5",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -427,7 +427,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1d788fc40c569d89",
+        "case_git_hash": "cbac307f7e10fd61",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -437,7 +437,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2a7e62d68b71fc5e",
+        "case_git_hash": "992d5f866e06fd9e",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -447,7 +447,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cbf45ea0a9a4b2cb",
+        "case_git_hash": "4bd22ba50d97918b",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -457,7 +457,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4830bca239c42023",
+        "case_git_hash": "0ec2c492373159e7",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -467,7 +467,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1bd882ff82d8877c",
+        "case_git_hash": "422e436d786f67b4",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -479,7 +479,7 @@
         "failed_checks": [
           "llm_call"
         ],
-        "case_git_hash": "42853fb26c0d4434",
+        "case_git_hash": "04792a7ef58efa23",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -491,7 +491,7 @@
         "failed_checks": [
           "no_printk_in_isr"
         ],
-        "case_git_hash": "443ad34a8a4ad81d",
+        "case_git_hash": "1a84263bcccb043c",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -501,7 +501,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "320d72cb1f5c173f",
+        "case_git_hash": "1d2e6ddf4085c83e",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -511,7 +511,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "29cf6a48db098cf6",
+        "case_git_hash": "318c2cdc22bd7167",
         "tested_at": "2026-04-04T12:48:23.543189+00:00",
         "pass_at_1": 0.0
       },
@@ -523,7 +523,7 @@
         "failed_checks": [
           "init_before_isr_call"
         ],
-        "case_git_hash": "20b5c4a0b80bd9d1",
+        "case_git_hash": "313e698130d37d90",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -535,7 +535,7 @@
         "failed_checks": [
           "fifo_reserved_field"
         ],
-        "case_git_hash": "08a686c28438c0e1",
+        "case_git_hash": "16e537a919327cff",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -548,7 +548,7 @@
           "memory_barrier_present",
           "barrier_between_data_and_index_update"
         ],
-        "case_git_hash": "088736632e9687bd",
+        "case_git_hash": "8a934d53ec373540",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -560,7 +560,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "4b7ba8b89568f5c6",
+        "case_git_hash": "0eabd9347798ddff",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -572,7 +572,7 @@
         "failed_checks": [
           "spi_dma_enabled"
         ],
-        "case_git_hash": "3c05ecf70d1bfec2",
+        "case_git_hash": "40d7d426718f24d2",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -582,7 +582,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f98172c9addfabfc",
+        "case_git_hash": "aa5c147d368d9086",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -594,7 +594,7 @@
         "failed_checks": [
           "uart_line_ctrl_enabled"
         ],
-        "case_git_hash": "87117f5aa9f0f301",
+        "case_git_hash": "267b39f1523dc73c",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -604,7 +604,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8898b3149c013bfd",
+        "case_git_hash": "4417233ec07e13e2",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -614,7 +614,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cdb9dd61b3f93eb8",
+        "case_git_hash": "6825e45cb74d0bc7",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -624,7 +624,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3676eedc3470bfff",
+        "case_git_hash": "c414b51b00e54d01",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -634,7 +634,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a0d0e26ba733b356",
+        "case_git_hash": "80a2c5bbcf911ca2",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -644,7 +644,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "936d357c9382ba73",
+        "case_git_hash": "632998d04743417d",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -654,7 +654,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "58a476df77c1b44e",
+        "case_git_hash": "c3d06da607d96cd7",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -664,7 +664,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d65d3f309244cc64",
+        "case_git_hash": "288d3118b8f1764a",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -674,7 +674,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9beab7b5960f9d95",
+        "case_git_hash": "a03b58e13ab015a3",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -684,7 +684,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "fc51be15996fd39f",
+        "case_git_hash": "0045597f811487fb",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -694,7 +694,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "494963998544b8ea",
+        "case_git_hash": "45e30c2ecec1e34f",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -706,7 +706,7 @@
         "failed_checks": [
           "init_error_path_cleanup"
         ],
-        "case_git_hash": "03fa8c4805b41f4a",
+        "case_git_hash": "4b24113ad02176d9",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -716,7 +716,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a876b81c8d793490",
+        "case_git_hash": "4cb086231356be45",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -726,7 +726,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "11f4e106ff28bfab",
+        "case_git_hash": "ba3865126ee78074",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -740,7 +740,7 @@
           "slab_alloc_called",
           "slab_free_called"
         ],
-        "case_git_hash": "5895f1e78ac82140",
+        "case_git_hash": "8d8e2a58707b02c6",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -750,7 +750,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "98ab3d363046c1e5",
+        "case_git_hash": "7e8e131cc2e4c612",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -764,7 +764,7 @@
           "slab_alloc_called",
           "slab_free_called"
         ],
-        "case_git_hash": "a28b10b89a7b188d",
+        "case_git_hash": "58a4963eac3dbad5",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -778,7 +778,7 @@
           "thread_analyzer_config",
           "thread_analyzer_print_called"
         ],
-        "case_git_hash": "b54b1cafcf4454c0",
+        "case_git_hash": "d0c6ab7877fe1ee7",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -791,7 +791,7 @@
           "app_memdomain_header",
           "partition_defined"
         ],
-        "case_git_hash": "7c4531941ba4b6c2",
+        "case_git_hash": "a98fa4bd665a044c",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -801,7 +801,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9e9b2428eae22dd7",
+        "case_git_hash": "1d41ecce647f3361",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -813,7 +813,7 @@
         "failed_checks": [
           "null_returned_on_exhaustion"
         ],
-        "case_git_hash": "9921c762b9529f33",
+        "case_git_hash": "1c64c3a66eb06d14",
         "tested_at": "2026-04-04T12:48:23.543189+00:00",
         "pass_at_1": 0.0
       },
@@ -825,7 +825,7 @@
         "failed_checks": [
           "dynamic_thread_disabled"
         ],
-        "case_git_hash": "dd5fe6bc16881dbb",
+        "case_git_hash": "71f87c0fb048d931",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -835,7 +835,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6975080abf5c39da",
+        "case_git_hash": "f3130336ca7c8394",
         "tested_at": "2026-04-04T12:48:23.543189+00:00",
         "pass_at_1": 0.0
       },
@@ -845,7 +845,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4690e819c91d480a",
+        "case_git_hash": "a5405712958f8a74",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -855,7 +855,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "49a020839b2256ad",
+        "case_git_hash": "468b5bab8c756d3b",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -867,7 +867,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "ba91781aeb61e193",
+        "case_git_hash": "42ced33fedd756d8",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -877,7 +877,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "74f52a1771a50d9f",
+        "case_git_hash": "0cf02d80cec2cf01",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -887,7 +887,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ea1dbd88a3a6a149",
+        "case_git_hash": "ac0fb5bcf9d45ee8",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -897,7 +897,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d581400c55bec44b",
+        "case_git_hash": "dabd581445ac0d64",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -909,7 +909,7 @@
         "failed_checks": [
           "timeout_not_infinite"
         ],
-        "case_git_hash": "2436b2b382982434",
+        "case_git_hash": "b8491ac389d65464",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -921,7 +921,7 @@
         "failed_checks": [
           "connect_error_handling"
         ],
-        "case_git_hash": "9b457292cb0d6d0f",
+        "case_git_hash": "507ecc81f1d46ee8",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -931,7 +931,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f7b2487ebd2ba966",
+        "case_git_hash": "de67ee1744f01af8",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -941,7 +941,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7f28b3ca2f4d9cd9",
+        "case_git_hash": "9c519456479a2003",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -951,7 +951,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7f97ab4eb3ab0240",
+        "case_git_hash": "c4e81a3e75a69aa7",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -961,7 +961,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ed504bbec6f917a1",
+        "case_git_hash": "13747463d35ca465",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -974,7 +974,7 @@
           "rollback_abort_on_download_error",
           "rollback_on_error"
         ],
-        "case_git_hash": "846b72831beb95d3",
+        "case_git_hash": "216df2556a53a04a",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -984,7 +984,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "49eca69c6a4f1b6a",
+        "case_git_hash": "6aaed745ff8efd94",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -994,7 +994,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "89fcdc0f8124fa15",
+        "case_git_hash": "80ca3b5342dd0c2f",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1004,7 +1004,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e946bdfc4eae8035",
+        "case_git_hash": "7f39cbf92979eda9",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1014,7 +1014,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "27a00bf470bbca64",
+        "case_git_hash": "2094a5165934169f",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1024,7 +1024,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d32b7dec98c5e8d1",
+        "case_git_hash": "1b233f85d842f16a",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1034,7 +1034,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4e679e8e8025a4bd",
+        "case_git_hash": "5335e2a529bf8325",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1044,7 +1044,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8e5f95fcf92ea860",
+        "case_git_hash": "a9c84092a2ff6d31",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1056,7 +1056,7 @@
         "failed_checks": [
           "pm_action_run_called"
         ],
-        "case_git_hash": "70e4d32877d9e520",
+        "case_git_hash": "4904122860962b82",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1066,7 +1066,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "000ccef44093cdc1",
+        "case_git_hash": "5fae0c31689d41b1",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1076,7 +1076,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "89ee53a5405e5b4e",
+        "case_git_hash": "d769d72977368dec",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1086,7 +1086,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3629d579fc660ff7",
+        "case_git_hash": "d74e42d26b0783d2",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1096,7 +1096,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "87b229bedde9cbc3",
+        "case_git_hash": "c0bbbcd7fbaa57db",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1108,7 +1108,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "983633059b491cfa",
+        "case_git_hash": "fa5568e3ca898aab",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1120,7 +1120,7 @@
         "failed_checks": [
           "runtime_started"
         ],
-        "case_git_hash": "161f563c108981f7",
+        "case_git_hash": "1e1ac34332c401e5",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1130,7 +1130,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "08399e58c3930743",
+        "case_git_hash": "654c2987f8425b84",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1142,7 +1142,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "bbc6ca4e5c56e50e",
+        "case_git_hash": "1c5e42caf3663b9c",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1152,7 +1152,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a7bff3da6a210be2",
+        "case_git_hash": "db804aef2ea90eac",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1162,7 +1162,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ed3acc3f6a751840",
+        "case_git_hash": "49a19b082ad84fe7",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1172,7 +1172,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6ca71b4c5e208ab7",
+        "case_git_hash": "0703d182f291fc2b",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1184,7 +1184,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "e7cf10a20c59365d",
+        "case_git_hash": "831980ee52d6dc6a",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1194,7 +1194,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "aba5836c302bbaad",
+        "case_git_hash": "de05bf1b8ac0143e",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1204,7 +1204,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8a8fa791f007363b",
+        "case_git_hash": "7af15dafcffb253a",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1214,7 +1214,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "dd9ffa3c0298a6ff",
+        "case_git_hash": "3eea1b9ecbb0c12e",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1224,7 +1224,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a1959382d91d4b57",
+        "case_git_hash": "29c6fa84f6eff72d",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1234,7 +1234,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f5ebd34328062b2c",
+        "case_git_hash": "63d2aec9d2a0e184",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1244,7 +1244,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6833a7fb3b24604b",
+        "case_git_hash": "bfb1a7b459763b8c",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1254,7 +1254,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "af00ac9d328f2b70",
+        "case_git_hash": "9c265a8b68628c60",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1264,7 +1264,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5bfa89cbd37af879",
+        "case_git_hash": "750550fa9051c448",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1274,7 +1274,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7d55eeca1982e6e5",
+        "case_git_hash": "a9230975dbfb885e",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1284,7 +1284,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f61c77789346bdd6",
+        "case_git_hash": "7af59b6963755c43",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1294,7 +1294,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1ac62160a1e79d37",
+        "case_git_hash": "5856c7a210434da2",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1308,7 +1308,7 @@
           "write_command_0x02",
           "read_command_0x03"
         ],
-        "case_git_hash": "2e6552a32aaa9034",
+        "case_git_hash": "735c31edc157b362",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1318,7 +1318,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "96398ea5a796155c",
+        "case_git_hash": "9c594a7a73846276",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1328,7 +1328,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c04d40f44a8efa83",
+        "case_git_hash": "d94cf6cd500bfd48",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1338,7 +1338,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "63ed460dcf6993ca",
+        "case_git_hash": "9fcfe273b1020c97",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1348,7 +1348,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "69948f4265430494",
+        "case_git_hash": "162687bd4e4dadcd",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1358,7 +1358,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "48c187b647216a31",
+        "case_git_hash": "e11bc310ca7e3713",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1368,7 +1368,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4bed7f5eb1959918",
+        "case_git_hash": "c8254ac53d24bd11",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1380,7 +1380,7 @@
         "failed_checks": [
           "hal_i2c_mem_read_used"
         ],
-        "case_git_hash": "07032cc412ae6f1f",
+        "case_git_hash": "3c9a519331efedd9",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1390,7 +1390,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f3350ef3dae9da36",
+        "case_git_hash": "17fafb85f71057da",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1402,7 +1402,7 @@
         "failed_checks": [
           "interrupt_receive_used"
         ],
-        "case_git_hash": "732f77bb37be775b",
+        "case_git_hash": "ba6694e21048cf06",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1412,7 +1412,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "98a0c5b070330c3d",
+        "case_git_hash": "84113fde32318b4a",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1424,7 +1424,7 @@
         "failed_checks": [
           "runtime_started"
         ],
-        "case_git_hash": "a0bf90bdf05c1506",
+        "case_git_hash": "ac3f03914b270614",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1434,7 +1434,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a8fffe528d7aabdc",
+        "case_git_hash": "cc5c2d92eb048a44",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1444,7 +1444,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "aea3f9a6775f1b5a",
+        "case_git_hash": "1a4bb2721e8b2391",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1456,7 +1456,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "d3f5f03484bd3c6e",
+        "case_git_hash": "9f7adac3bb6d431a",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1468,7 +1468,7 @@
         "failed_checks": [
           "success_printed"
         ],
-        "case_git_hash": "d2ab4f0c0e2f7cdc",
+        "case_git_hash": "504b193302de874d",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1478,7 +1478,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6df41308ed01ae78",
+        "case_git_hash": "d587d3e2d5903db0",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1490,7 +1490,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "fe1a333536e56a44",
+        "case_git_hash": "618507658ae4803b",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1502,7 +1502,7 @@
         "failed_checks": [
           "write_rate_limited"
         ],
-        "case_git_hash": "12357b78ffe5c824",
+        "case_git_hash": "a36446766d669d9d",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1514,7 +1514,7 @@
         "failed_checks": [
           "different_thread_priorities"
         ],
-        "case_git_hash": "50690a0f9460b81b",
+        "case_git_hash": "8f6a00c41bee6980",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1524,7 +1524,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ab2f9de68918ce52",
+        "case_git_hash": "cba27d4280a27290",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1534,7 +1534,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6b37e2f1fe048a53",
+        "case_git_hash": "445d0c91d74b7459",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1546,7 +1546,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "0cf240d71bc5f17e",
+        "case_git_hash": "dbd01f3214d63627",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1558,7 +1558,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "730fa92fdac88750",
+        "case_git_hash": "90eeac080a1e64f2",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1571,7 +1571,7 @@
           "lock_order_a_before_b",
           "unlock_order_b_before_a"
         ],
-        "case_git_hash": "daabd700f2f5ab24",
+        "case_git_hash": "18085b4481c3d0f7",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1583,7 +1583,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "85f93b14243b851c",
+        "case_git_hash": "3d430cfec00928a2",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1595,7 +1595,7 @@
         "failed_checks": [
           "deadline_constant_not_magic"
         ],
-        "case_git_hash": "b0059517c47b718d",
+        "case_git_hash": "f011162f3374719e",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1607,7 +1607,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "137bbd25412eb721",
+        "case_git_hash": "9cfd0467ff651048",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1621,7 +1621,7 @@
           "thread_created",
           "has_main_function"
         ],
-        "case_git_hash": "5bbd201399b21bf3",
+        "case_git_hash": "ee9fe14e21f3dea7",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1633,7 +1633,7 @@
         "failed_checks": [
           "counter_is_volatile"
         ],
-        "case_git_hash": "1fc55e65192e9fb8",
+        "case_git_hash": "c2040424222bc1a4",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1643,7 +1643,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cd95530ff1e24276",
+        "case_git_hash": "39c734bd4b9abe47",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1653,7 +1653,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e6eb2e19e5aad3a0",
+        "case_git_hash": "336c3c56bc9d5870",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1663,7 +1663,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "0e34d3161c96ba4f",
+        "case_git_hash": "d2368981b84f2fb1",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1675,7 +1675,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "2cb264a2d630531b",
+        "case_git_hash": "56b4cdb7fd27404f",
         "tested_at": "2026-04-04T12:48:23.543189+00:00",
         "pass_at_1": 0.0
       },
@@ -1685,7 +1685,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "dbeeee6b000c633a",
+        "case_git_hash": "5084152619571ab5",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1695,7 +1695,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b8a310fe85fa6771",
+        "case_git_hash": "43754cb305bacb91",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1705,7 +1705,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "fecc5ebde93b68f3",
+        "case_git_hash": "1c03dfb9680128d4",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1715,7 +1715,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ea7813ff11fd7e6c",
+        "case_git_hash": "299be458b61f5f15",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1727,7 +1727,7 @@
         "failed_checks": [
           "callback_before_rx_enable"
         ],
-        "case_git_hash": "4f3ea90bcbc5e6b1",
+        "case_git_hash": "eccab11937fdfc85",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1737,7 +1737,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "aead1dad2f2a140d",
+        "case_git_hash": "0c676bbf9969c034",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1747,7 +1747,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "02fc831d8796fc50",
+        "case_git_hash": "199e20819ee8efdf",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1757,7 +1757,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d6ef92a242cf9cf7",
+        "case_git_hash": "21b4feb819c69c21",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1767,7 +1767,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c0ed5aaf5861789f",
+        "case_git_hash": "ff29673e0b2fe49d",
         "tested_at": "2026-04-04T12:24:49.410072+00:00",
         "pass_at_1": 0.0
       },
@@ -1777,7 +1777,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ac6e05d1b8722559",
+        "case_git_hash": "98ad47d594002662",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1787,7 +1787,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e0ca3011e1b6c932",
+        "case_git_hash": "0e5079bc53d8552f",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1797,7 +1797,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5feaefac5face462",
+        "case_git_hash": "5b079690013723c7",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1807,7 +1807,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e9c0c8e51dedb1c4",
+        "case_git_hash": "4bdad05177f4cc0e",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1822,7 +1822,7 @@
           "persistent_storage_header_included",
           "printk_present"
         ],
-        "case_git_hash": "4fa47eaa6461796a",
+        "case_git_hash": "e5e7620433177b2d",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1832,7 +1832,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4ef825ac703a50f3",
+        "case_git_hash": "3b1e5f8868a8b156",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1842,7 +1842,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3bb17140ea3f9620",
+        "case_git_hash": "04dfd8c734ee0536",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1852,7 +1852,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c094ed4a38856384",
+        "case_git_hash": "eb067989319f00ad",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1862,7 +1862,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "feb0dca34f412aff",
+        "case_git_hash": "6655b340286b5dc3",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1872,7 +1872,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8a145a2043e62464",
+        "case_git_hash": "cfb45444c5aa519c",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1882,7 +1882,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6ac7089952382f8f",
+        "case_git_hash": "0ab0a8bca21b9f51",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1894,7 +1894,7 @@
         "failed_checks": [
           "rootfs_size_uses_weak_assignment"
         ],
-        "case_git_hash": "2f4f3cb56e415f4d",
+        "case_git_hash": "dbd21f35e24eaf13",
         "tested_at": "2026-03-29T15:17:25.748296+00:00",
         "pass_at_1": 0.0
       },
@@ -1904,7 +1904,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "314005e1baf00431",
+        "case_git_hash": "3f48047d0311e4b4",
         "tested_at": "2026-04-04T08:16:30.701633+00:00",
         "pass_at_1": 0.0
       },
@@ -1916,7 +1916,7 @@
         "failed_checks": [
           "block_count_three"
         ],
-        "case_git_hash": "8eea66dc33cf9f71",
+        "case_git_hash": "8e84a7685ae7bb37",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1929,7 +1929,7 @@
           "dma_header_included",
           "cache_flush_before_dma"
         ],
-        "case_git_hash": "5b0a5809dc160863",
+        "case_git_hash": "1d9a04932de7638b",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1939,7 +1939,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "dd66d6eaf50fd670",
+        "case_git_hash": "a264e9693c26be9e",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1951,7 +1951,7 @@
         "failed_checks": [
           "self_test_failure_branch"
         ],
-        "case_git_hash": "5caa5578e10fb4f9",
+        "case_git_hash": "34c1417cb1322595",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1961,7 +1961,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a7ea7dcd14bc7d21",
+        "case_git_hash": "38929394e7888009",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1975,7 +1975,7 @@
           "shared_flag_volatile",
           "consumer_waits_for_flag"
         ],
-        "case_git_hash": "d995fdede20c1163",
+        "case_git_hash": "a520fb0168b815e1",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1987,7 +1987,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "4312181862557804",
+        "case_git_hash": "103300fd4ab8bf91",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -1999,7 +1999,7 @@
         "failed_checks": [
           "bt_l2cap_chan_send_used"
         ],
-        "case_git_hash": "557f7963b5358f3c",
+        "case_git_hash": "0af36dca2950433b",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2009,7 +2009,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3eb78012c2144927",
+        "case_git_hash": "ef0cd43391e522b0",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2019,7 +2019,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c1f6f2d861828e03",
+        "case_git_hash": "b3737f66ad2071a6",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2029,7 +2029,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e7b0a3408fdba574",
+        "case_git_hash": "cb84fa90bbbfc2e3",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2039,7 +2039,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "38fcb24d82f02034",
+        "case_git_hash": "069ba35f0b5e5d1c",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2051,7 +2051,7 @@
         "failed_checks": [
           "dma_reload_called"
         ],
-        "case_git_hash": "59efc418365a8111",
+        "case_git_hash": "6159ad7d4c80db88",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2064,7 +2064,7 @@
           "calibration_before_raw_to_voltage",
           "adc_read_error_checked"
         ],
-        "case_git_hash": "3db4ee530897ce29",
+        "case_git_hash": "276c808b51e2e7ab",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2074,7 +2074,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9ea3940bfed25a8a",
+        "case_git_hash": "a2a381e979f6e09b",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2084,7 +2084,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ee0c1099ddc5caa5",
+        "case_git_hash": "5c0196e503665c8a",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2098,7 +2098,7 @@
           "firmware_validation",
           "error_handling_present"
         ],
-        "case_git_hash": "2a8585e3b9aacab9",
+        "case_git_hash": "63365c5a2e2dac17",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2113,7 +2113,7 @@
           "deep_sleep_used",
           "gpio_wakeup_configured"
         ],
-        "case_git_hash": "b2b75ec8823876bd",
+        "case_git_hash": "0a356938274591a1",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2125,7 +2125,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "2d3a9e29609fd7da",
+        "case_git_hash": "7a8c3333c7c5dbf6",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2137,7 +2137,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "bc8e66918d585852",
+        "case_git_hash": "bfa1fa208fa1e2e3",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2147,7 +2147,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1f0ba9967e37ba0d",
+        "case_git_hash": "33b9b57265cc0d8e",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2157,7 +2157,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4752744eaec20280",
+        "case_git_hash": "cae67a9e3632fd6a",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2171,7 +2171,7 @@
           "mbedtls_psa_crypto_enabled",
           "hw_cc3xx_enabled"
         ],
-        "case_git_hash": "9232593ac52579a7",
+        "case_git_hash": "292321f95742c10d",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2181,7 +2181,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "42953159890fde75",
+        "case_git_hash": "58cd04b0dfee3634",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2191,7 +2191,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "049487a863c8d6ef",
+        "case_git_hash": "7c45255a860be769",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2201,7 +2201,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b6a1e6691697472a",
+        "case_git_hash": "8a8d2d72cd902cf8",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2211,7 +2211,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8f64d573cc9cd330",
+        "case_git_hash": "d33a155d27b4211b",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2223,7 +2223,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "e03ab90581f09420",
+        "case_git_hash": "1e50269d7631476b",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2233,7 +2233,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c5db69f5aeab6580",
+        "case_git_hash": "721925fc7deea503",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2243,7 +2243,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c3aeb50812a990f5",
+        "case_git_hash": "774f53b5dfee8229",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2255,7 +2255,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "6189e4207779ec0c",
+        "case_git_hash": "df2cc229600148ab",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2269,7 +2269,7 @@
           "periodic_battery_check",
           "multiple_sleep_depths"
         ],
-        "case_git_hash": "c10cb068071f1bfc",
+        "case_git_hash": "4a802cea6615f16a",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2279,7 +2279,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5d2b929841504ce8",
+        "case_git_hash": "8923fd4b95df68d9",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2291,7 +2291,7 @@
         "failed_checks": [
           "return_value_checked"
         ],
-        "case_git_hash": "95145ea1390b5688",
+        "case_git_hash": "ad9c09eb7800f749",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2301,7 +2301,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "707fb6f5dcba21b5",
+        "case_git_hash": "f52e8f307f7cfe5d",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2313,7 +2313,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "4218cadbeeb2afb5",
+        "case_git_hash": "19e193ef642e0648",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2325,7 +2325,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "08ae622ba1e3e3e6",
+        "case_git_hash": "8a257050418345c6",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2337,7 +2337,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "e695a015883752d1",
+        "case_git_hash": "0e89f2fec1365255",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2347,7 +2347,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c454e6ab344dad46",
+        "case_git_hash": "4c5534ce2b401dd4",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2363,7 +2363,7 @@
           "adc_started_with_dma",
           "adc_12bit_resolution"
         ],
-        "case_git_hash": "c9df34af0758d501",
+        "case_git_hash": "cc4970f61c826714",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2379,7 +2379,7 @@
           "m2m_direction_configured",
           "dma_start_it_used"
         ],
-        "case_git_hash": "d554eb653ef54536",
+        "case_git_hash": "3c5da4116d53852a",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2389,7 +2389,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7f3a84139a0e60c2",
+        "case_git_hash": "2ddb6a1b98a24238",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2405,7 +2405,7 @@
           "rtc_alarm_interrupt_used",
           "wfi_entry_mode_specified"
         ],
-        "case_git_hash": "a3242d91754cbe49",
+        "case_git_hash": "e94cd6265ab1cd15",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2421,7 +2421,7 @@
           "pwm_start_called",
           "timer_clock_enabled"
         ],
-        "case_git_hash": "414ce3bf75a2e28a",
+        "case_git_hash": "7348cc872d827aac",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2433,7 +2433,7 @@
         "failed_checks": [
           "zero_size_check"
         ],
-        "case_git_hash": "786b46cb3d962055",
+        "case_git_hash": "ca3a983fe8759b33",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2443,7 +2443,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "fd0179b130427c67",
+        "case_git_hash": "593ef45333326301",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2453,7 +2453,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "67856f08fa29451f",
+        "case_git_hash": "9616c185b96d0d9f",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2463,7 +2463,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f0a8084c5ecebf98",
+        "case_git_hash": "ef8e1d08c31245fd",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2473,7 +2473,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5da9c6cfd45d793e",
+        "case_git_hash": "d71f25cac97a958b",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2483,7 +2483,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9eb085b30715afdc",
+        "case_git_hash": "0149730cfeddd866",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2495,7 +2495,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "ef88c9b42a5c3fe0",
+        "case_git_hash": "25ad4149f46057f6",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2510,7 +2510,7 @@
           "window_min_less_than_max",
           "wdt_configured"
         ],
-        "case_git_hash": "a545ad5068399ec8",
+        "case_git_hash": "bf3330d97e73c0a0",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2525,7 +2525,7 @@
           "serial_consoles_defined",
           "kernel_imagetype_defined"
         ],
-        "case_git_hash": "48f36de6f73bd916",
+        "case_git_hash": "c05e8b1e373335b2",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2535,7 +2535,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "348da3285263f97c",
+        "case_git_hash": "4f717506554484b2",
         "tested_at": "2026-04-11T09:59:39.468701+00:00",
         "pass_at_1": 0.0
       },
@@ -2547,32 +2547,32 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "811a4f7e47999f36",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "case_git_hash": "760132a7686e109b",
+        "tested_at": "2026-04-11T11:38:41.475043+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-012": {
         "case_id": "memory-opt-012",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "west_build_docker"
+          "output_validation"
         ],
-        "case_git_hash": "91a33b46a13044b1",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "case_git_hash": "b5b527f9aca72cc5",
+        "tested_at": "2026-04-11T11:38:41.475043+00:00",
         "pass_at_1": 0.0
       },
       "threading-013": {
         "case_id": "threading-013",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "west_build_docker"
+          "output_validation"
         ],
-        "case_git_hash": "f27a79da8d84c843",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "case_git_hash": "471deea531761343",
+        "tested_at": "2026-04-11T11:38:41.475043+00:00",
         "pass_at_1": 0.0
       }
     },
@@ -2583,7 +2583,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4251392cf3aa5e2c",
+        "case_git_hash": "9f71334dc6696a95",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2593,7 +2593,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "bb92f78cd3bab3fe",
+        "case_git_hash": "2cd73180b9014850",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2603,7 +2603,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b5851331935f3b6f",
+        "case_git_hash": "b5b0d6b6cf44cf48",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2613,7 +2613,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "163ffe0f8f74c154",
+        "case_git_hash": "26aa0991cb2c7b42",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2623,7 +2623,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f7d549ce3f5189e9",
+        "case_git_hash": "0665a43815f635cc",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2633,7 +2633,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cbed14e8d1e7c0f7",
+        "case_git_hash": "3e9ee7921c7b6dbf",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2643,7 +2643,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ee42a9b36dbe9347",
+        "case_git_hash": "fdf8a634a9daa461",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2653,7 +2653,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "0bb0b92fea1b522c",
+        "case_git_hash": "03c53a8e38dd6865",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2665,7 +2665,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "4312181862557804",
+        "case_git_hash": "103300fd4ab8bf91",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2677,7 +2677,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "557f7963b5358f3c",
+        "case_git_hash": "0af36dca2950433b",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2687,7 +2687,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3480ec1c8738cf3f",
+        "case_git_hash": "4fc210e86b8eb752",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2697,7 +2697,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "490a8ae960d26100",
+        "case_git_hash": "552a48c88c61127a",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2707,7 +2707,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7489cfb5952046b4",
+        "case_git_hash": "60bca9c41d6591ee",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2717,7 +2717,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "0daacabcd78d6803",
+        "case_git_hash": "769cdb3b1ee66b15",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2727,7 +2727,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2f8389b355216357",
+        "case_git_hash": "5057e3eea6823b88",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2737,7 +2737,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d73cad8878382187",
+        "case_git_hash": "c15f1f85f4f5ebad",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2747,7 +2747,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f633f6dc4f232dd2",
+        "case_git_hash": "02ea13ba50cc1bfe",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2757,7 +2757,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1bac2e1dad936a67",
+        "case_git_hash": "1c97fc5de9ae61c9",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2767,7 +2767,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3eb78012c2144927",
+        "case_git_hash": "ef0cd43391e522b0",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2777,7 +2777,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c1f6f2d861828e03",
+        "case_git_hash": "b3737f66ad2071a6",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2787,7 +2787,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6a48c68e70f09d3c",
+        "case_git_hash": "423c6b45f91e0558",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2797,7 +2797,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9e63df784004a99e",
+        "case_git_hash": "ada7982807a13f2f",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2807,7 +2807,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8ce93ca3e83a5d26",
+        "case_git_hash": "3fbb8992b135a867",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2817,7 +2817,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c3cb87ac59aa19c6",
+        "case_git_hash": "b3f825a5c4a69141",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2827,7 +2827,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "db96750cf1156209",
+        "case_git_hash": "b73f593d79173ee3",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2837,7 +2837,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c69d9f0766dfebb3",
+        "case_git_hash": "b7c355f350208024",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2847,7 +2847,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "77702f5b203d2f29",
+        "case_git_hash": "62cb81e6536204cd",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2857,7 +2857,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7fc886e78bd67860",
+        "case_git_hash": "a8a66fb1181421fb",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -2867,7 +2867,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e7b0a3408fdba574",
+        "case_git_hash": "cb84fa90bbbfc2e3",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2877,7 +2877,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "38fcb24d82f02034",
+        "case_git_hash": "069ba35f0b5e5d1c",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -2887,7 +2887,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a72997c81c465b27",
+        "case_git_hash": "9977beff9388820b",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2899,7 +2899,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "66baf65401a895c6",
+        "case_git_hash": "22cb3b3375082f60",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -2911,7 +2911,7 @@
         "failed_checks": [
           "cyclic_enabled"
         ],
-        "case_git_hash": "017d38ea590f7226",
+        "case_git_hash": "941b341ab5cb1b49",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2923,7 +2923,7 @@
         "failed_checks": [
           "multiple_block_descriptors"
         ],
-        "case_git_hash": "118fd7fd1bbcab45",
+        "case_git_hash": "509e8a496e76bc22",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -2933,7 +2933,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ac6ff97d650b17bc",
+        "case_git_hash": "442f31502512580b",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -2943,7 +2943,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8d5340cabb1e3309",
+        "case_git_hash": "3e3d85f00164b509",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -2955,7 +2955,7 @@
         "failed_checks": [
           "channel_priority_field_used"
         ],
-        "case_git_hash": "12809c6c6f4741b6",
+        "case_git_hash": "24a20af3968bdf40",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -2965,7 +2965,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3cb13da7147210b6",
+        "case_git_hash": "dc143023e9769843",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2978,7 +2978,7 @@
           "dma_config_after_stop",
           "dma_start_called_twice"
         ],
-        "case_git_hash": "5ec10741fec71813",
+        "case_git_hash": "a9a514b43ac19c6b",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -2990,7 +2990,7 @@
         "failed_checks": [
           "dma_reload_called"
         ],
-        "case_git_hash": "59efc418365a8111",
+        "case_git_hash": "6159ad7d4c80db88",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3002,7 +3002,7 @@
         "failed_checks": [
           "adc_read_error_checked"
         ],
-        "case_git_hash": "3db4ee530897ce29",
+        "case_git_hash": "276c808b51e2e7ab",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3012,7 +3012,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9ea3940bfed25a8a",
+        "case_git_hash": "a2a381e979f6e09b",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3022,7 +3022,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "563f2a6777b72366",
+        "case_git_hash": "961f6f22c5e8dbd4",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3032,7 +3032,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "be27d94a0ccdbb46",
+        "case_git_hash": "6d33afa5a871c122",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3042,7 +3042,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ee0c1099ddc5caa5",
+        "case_git_hash": "5c0196e503665c8a",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3052,7 +3052,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2a8585e3b9aacab9",
+        "case_git_hash": "63365c5a2e2dac17",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3062,7 +3062,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b2b75ec8823876bd",
+        "case_git_hash": "0a356938274591a1",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3072,7 +3072,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8121ca14116d761c",
+        "case_git_hash": "2c1e3b9bf80b91a5",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3082,7 +3082,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1d788fc40c569d89",
+        "case_git_hash": "cbac307f7e10fd61",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3092,7 +3092,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2a7e62d68b71fc5e",
+        "case_git_hash": "992d5f866e06fd9e",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3104,7 +3104,7 @@
         "failed_checks": [
           "device_ready_check"
         ],
-        "case_git_hash": "cbf45ea0a9a4b2cb",
+        "case_git_hash": "4bd22ba50d97918b",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3144,7 +3144,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4830bca239c42023",
+        "case_git_hash": "0ec2c492373159e7",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3154,7 +3154,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1bd882ff82d8877c",
+        "case_git_hash": "422e436d786f67b4",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3196,7 +3196,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "2d3a9e29609fd7da",
+        "case_git_hash": "7a8c3333c7c5dbf6",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3206,7 +3206,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "42853fb26c0d4434",
+        "case_git_hash": "04792a7ef58efa23",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3219,7 +3219,7 @@
           "message_struct_defined",
           "no_forbidden_apis_in_isr"
         ],
-        "case_git_hash": "443ad34a8a4ad81d",
+        "case_git_hash": "1a84263bcccb043c",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3231,7 +3231,7 @@
         "failed_checks": [
           "k_sleep_present"
         ],
-        "case_git_hash": "320d72cb1f5c173f",
+        "case_git_hash": "1d2e6ddf4085c83e",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3241,7 +3241,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "29cf6a48db098cf6",
+        "case_git_hash": "318c2cdc22bd7167",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3253,7 +3253,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "20b5c4a0b80bd9d1",
+        "case_git_hash": "313e698130d37d90",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -3265,7 +3265,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "08a686c28438c0e1",
+        "case_git_hash": "16e537a919327cff",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -3277,7 +3277,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "088736632e9687bd",
+        "case_git_hash": "8a934d53ec373540",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3289,7 +3289,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "bc8e66918d585852",
+        "case_git_hash": "bfa1fa208fa1e2e3",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3299,7 +3299,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1f0ba9967e37ba0d",
+        "case_git_hash": "33b9b57265cc0d8e",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3311,7 +3311,7 @@
         "failed_checks": [
           "spi_dma_enabled"
         ],
-        "case_git_hash": "3c05ecf70d1bfec2",
+        "case_git_hash": "40d7d426718f24d2",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3321,7 +3321,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f98172c9addfabfc",
+        "case_git_hash": "aa5c147d368d9086",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3331,7 +3331,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "87117f5aa9f0f301",
+        "case_git_hash": "267b39f1523dc73c",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3341,7 +3341,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8898b3149c013bfd",
+        "case_git_hash": "4417233ec07e13e2",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3351,7 +3351,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cdb9dd61b3f93eb8",
+        "case_git_hash": "6825e45cb74d0bc7",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3361,7 +3361,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3676eedc3470bfff",
+        "case_git_hash": "c414b51b00e54d01",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3371,7 +3371,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a0d0e26ba733b356",
+        "case_git_hash": "80a2c5bbcf911ca2",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3381,7 +3381,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "936d357c9382ba73",
+        "case_git_hash": "632998d04743417d",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3391,7 +3391,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4752744eaec20280",
+        "case_git_hash": "cae67a9e3632fd6a",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3403,7 +3403,7 @@
         "failed_checks": [
           "hw_cc3xx_enabled"
         ],
-        "case_git_hash": "9232593ac52579a7",
+        "case_git_hash": "292321f95742c10d",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3413,7 +3413,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "58a476df77c1b44e",
+        "case_git_hash": "c3d06da607d96cd7",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3423,7 +3423,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d65d3f309244cc64",
+        "case_git_hash": "288d3118b8f1764a",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3433,7 +3433,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9beab7b5960f9d95",
+        "case_git_hash": "a03b58e13ab015a3",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3445,7 +3445,7 @@
         "failed_checks": [
           "init_error_path_cleanup"
         ],
-        "case_git_hash": "fc51be15996fd39f",
+        "case_git_hash": "0045597f811487fb",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3455,7 +3455,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "494963998544b8ea",
+        "case_git_hash": "45e30c2ecec1e34f",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3467,7 +3467,7 @@
         "failed_checks": [
           "init_error_path_cleanup"
         ],
-        "case_git_hash": "03fa8c4805b41f4a",
+        "case_git_hash": "4b24113ad02176d9",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3477,7 +3477,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a876b81c8d793490",
+        "case_git_hash": "4cb086231356be45",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3487,7 +3487,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "11f4e106ff28bfab",
+        "case_git_hash": "ba3865126ee78074",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -3499,7 +3499,7 @@
         "failed_checks": [
           "gpio_direction_set"
         ],
-        "case_git_hash": "42953159890fde75",
+        "case_git_hash": "58cd04b0dfee3634",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3509,7 +3509,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "049487a863c8d6ef",
+        "case_git_hash": "7c45255a860be769",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3521,7 +3521,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "5895f1e78ac82140",
+        "case_git_hash": "8d8e2a58707b02c6",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3531,7 +3531,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "98ab3d363046c1e5",
+        "case_git_hash": "7e8e131cc2e4c612",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3543,7 +3543,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "a28b10b89a7b188d",
+        "case_git_hash": "58a4963eac3dbad5",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -3553,7 +3553,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b54b1cafcf4454c0",
+        "case_git_hash": "d0c6ab7877fe1ee7",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3565,7 +3565,7 @@
         "failed_checks": [
           "partition_added_to_domain"
         ],
-        "case_git_hash": "7c4531941ba4b6c2",
+        "case_git_hash": "a98fa4bd665a044c",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3575,7 +3575,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9e9b2428eae22dd7",
+        "case_git_hash": "1d41ecce647f3361",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3585,7 +3585,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9921c762b9529f33",
+        "case_git_hash": "1c64c3a66eb06d14",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3597,7 +3597,7 @@
         "failed_checks": [
           "fpu_disabled"
         ],
-        "case_git_hash": "dd5fe6bc16881dbb",
+        "case_git_hash": "71f87c0fb048d931",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3607,7 +3607,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b6a1e6691697472a",
+        "case_git_hash": "8a8d2d72cd902cf8",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3617,7 +3617,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8f64d573cc9cd330",
+        "case_git_hash": "d33a155d27b4211b",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3627,7 +3627,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4690e819c91d480a",
+        "case_git_hash": "a5405712958f8a74",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3637,7 +3637,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "49a020839b2256ad",
+        "case_git_hash": "468b5bab8c756d3b",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3647,7 +3647,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ba91781aeb61e193",
+        "case_git_hash": "42ced33fedd756d8",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3657,7 +3657,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "74f52a1771a50d9f",
+        "case_git_hash": "0cf02d80cec2cf01",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3667,7 +3667,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ea1dbd88a3a6a149",
+        "case_git_hash": "ac0fb5bcf9d45ee8",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3677,7 +3677,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d581400c55bec44b",
+        "case_git_hash": "dabd581445ac0d64",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3687,7 +3687,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2436b2b382982434",
+        "case_git_hash": "b8491ac389d65464",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3697,7 +3697,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9b457292cb0d6d0f",
+        "case_git_hash": "507ecc81f1d46ee8",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3709,7 +3709,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "e03ab90581f09420",
+        "case_git_hash": "1e50269d7631476b",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3719,7 +3719,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c5db69f5aeab6580",
+        "case_git_hash": "721925fc7deea503",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3729,7 +3729,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f7b2487ebd2ba966",
+        "case_git_hash": "de67ee1744f01af8",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3739,7 +3739,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7f28b3ca2f4d9cd9",
+        "case_git_hash": "9c519456479a2003",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3749,7 +3749,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7f97ab4eb3ab0240",
+        "case_git_hash": "c4e81a3e75a69aa7",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3759,7 +3759,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ed504bbec6f917a1",
+        "case_git_hash": "13747463d35ca465",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3772,7 +3772,7 @@
           "rollback_abort_on_download_error",
           "rollback_on_error"
         ],
-        "case_git_hash": "846b72831beb95d3",
+        "case_git_hash": "216df2556a53a04a",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3782,7 +3782,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "49eca69c6a4f1b6a",
+        "case_git_hash": "6aaed745ff8efd94",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3792,7 +3792,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "89fcdc0f8124fa15",
+        "case_git_hash": "80ca3b5342dd0c2f",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3802,7 +3802,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e946bdfc4eae8035",
+        "case_git_hash": "7f39cbf92979eda9",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3812,7 +3812,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c3aeb50812a990f5",
+        "case_git_hash": "774f53b5dfee8229",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3824,7 +3824,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "6189e4207779ec0c",
+        "case_git_hash": "df2cc229600148ab",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3836,7 +3836,7 @@
         "failed_checks": [
           "mutation_missing_default_enotsup"
         ],
-        "case_git_hash": "27a00bf470bbca64",
+        "case_git_hash": "2094a5165934169f",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3846,7 +3846,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d32b7dec98c5e8d1",
+        "case_git_hash": "1b233f85d842f16a",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3856,7 +3856,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4e679e8e8025a4bd",
+        "case_git_hash": "5335e2a529bf8325",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3866,7 +3866,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8e5f95fcf92ea860",
+        "case_git_hash": "a9c84092a2ff6d31",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3876,7 +3876,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "70e4d32877d9e520",
+        "case_git_hash": "4904122860962b82",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3886,7 +3886,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "000ccef44093cdc1",
+        "case_git_hash": "5fae0c31689d41b1",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3896,7 +3896,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "89ee53a5405e5b4e",
+        "case_git_hash": "d769d72977368dec",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3906,7 +3906,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3629d579fc660ff7",
+        "case_git_hash": "d74e42d26b0783d2",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3918,7 +3918,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "c10cb068071f1bfc",
+        "case_git_hash": "4a802cea6615f16a",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3928,7 +3928,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5d2b929841504ce8",
+        "case_git_hash": "8923fd4b95df68d9",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3940,7 +3940,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "983633059b491cfa",
+        "case_git_hash": "fa5568e3ca898aab",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3950,7 +3950,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "161f563c108981f7",
+        "case_git_hash": "1e1ac34332c401e5",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3960,7 +3960,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "08399e58c3930743",
+        "case_git_hash": "654c2987f8425b84",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -3972,7 +3972,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "bbc6ca4e5c56e50e",
+        "case_git_hash": "1c5e42caf3663b9c",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -3982,7 +3982,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a7bff3da6a210be2",
+        "case_git_hash": "db804aef2ea90eac",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -3992,7 +3992,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ed3acc3f6a751840",
+        "case_git_hash": "49a19b082ad84fe7",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4004,7 +4004,7 @@
         "failed_checks": [
           "error_path_returns_early"
         ],
-        "case_git_hash": "6ca71b4c5e208ab7",
+        "case_git_hash": "0703d182f291fc2b",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4016,7 +4016,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "e7cf10a20c59365d",
+        "case_git_hash": "831980ee52d6dc6a",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4026,7 +4026,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "95145ea1390b5688",
+        "case_git_hash": "ad9c09eb7800f749",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4036,7 +4036,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "707fb6f5dcba21b5",
+        "case_git_hash": "f52e8f307f7cfe5d",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4046,7 +4046,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "aba5836c302bbaad",
+        "case_git_hash": "de05bf1b8ac0143e",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4056,7 +4056,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8a8fa791f007363b",
+        "case_git_hash": "7af15dafcffb253a",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4066,7 +4066,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "dd9ffa3c0298a6ff",
+        "case_git_hash": "3eea1b9ecbb0c12e",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4076,7 +4076,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a1959382d91d4b57",
+        "case_git_hash": "29c6fa84f6eff72d",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4086,7 +4086,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f5ebd34328062b2c",
+        "case_git_hash": "63d2aec9d2a0e184",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4096,7 +4096,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6833a7fb3b24604b",
+        "case_git_hash": "bfb1a7b459763b8c",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4106,7 +4106,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "af00ac9d328f2b70",
+        "case_git_hash": "9c265a8b68628c60",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4116,7 +4116,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5bfa89cbd37af879",
+        "case_git_hash": "750550fa9051c448",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4128,7 +4128,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "4218cadbeeb2afb5",
+        "case_git_hash": "19e193ef642e0648",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4140,7 +4140,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "08ae622ba1e3e3e6",
+        "case_git_hash": "8a257050418345c6",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4150,7 +4150,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7d55eeca1982e6e5",
+        "case_git_hash": "a9230975dbfb885e",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4160,7 +4160,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "f61c77789346bdd6",
+        "case_git_hash": "7af59b6963755c43",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4170,7 +4170,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1ac62160a1e79d37",
+        "case_git_hash": "5856c7a210434da2",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4182,7 +4182,7 @@
         "failed_checks": [
           "poll_loop_bounded"
         ],
-        "case_git_hash": "2e6552a32aaa9034",
+        "case_git_hash": "735c31edc157b362",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4192,7 +4192,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "96398ea5a796155c",
+        "case_git_hash": "9c594a7a73846276",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4202,7 +4202,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c04d40f44a8efa83",
+        "case_git_hash": "d94cf6cd500bfd48",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4212,7 +4212,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "63ed460dcf6993ca",
+        "case_git_hash": "9fcfe273b1020c97",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4222,7 +4222,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "69948f4265430494",
+        "case_git_hash": "162687bd4e4dadcd",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4234,7 +4234,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "e695a015883752d1",
+        "case_git_hash": "0e89f2fec1365255",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4244,7 +4244,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c454e6ab344dad46",
+        "case_git_hash": "4c5534ce2b401dd4",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4254,7 +4254,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "98a0c5b070330c3d",
+        "case_git_hash": "84113fde32318b4a",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4266,7 +4266,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "a0bf90bdf05c1506",
+        "case_git_hash": "ac3f03914b270614",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4276,7 +4276,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a8fffe528d7aabdc",
+        "case_git_hash": "cc5c2d92eb048a44",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4286,7 +4286,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "aea3f9a6775f1b5a",
+        "case_git_hash": "1a4bb2721e8b2391",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4298,7 +4298,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "d3f5f03484bd3c6e",
+        "case_git_hash": "9f7adac3bb6d431a",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4308,7 +4308,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d2ab4f0c0e2f7cdc",
+        "case_git_hash": "504b193302de874d",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4318,7 +4318,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6df41308ed01ae78",
+        "case_git_hash": "d587d3e2d5903db0",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4332,7 +4332,7 @@
           "verify_before_commit",
           "delete_after_commit"
         ],
-        "case_git_hash": "fe1a333536e56a44",
+        "case_git_hash": "618507658ae4803b",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4344,7 +4344,7 @@
         "failed_checks": [
           "offset_plus_size_boundary_check"
         ],
-        "case_git_hash": "786b46cb3d962055",
+        "case_git_hash": "ca3a983fe8759b33",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4354,7 +4354,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "fd0179b130427c67",
+        "case_git_hash": "593ef45333326301",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4366,7 +4366,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "50690a0f9460b81b",
+        "case_git_hash": "8f6a00c41bee6980",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4376,7 +4376,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ab2f9de68918ce52",
+        "case_git_hash": "cba27d4280a27290",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4386,7 +4386,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6b37e2f1fe048a53",
+        "case_git_hash": "445d0c91d74b7459",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4396,7 +4396,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "0cf240d71bc5f17e",
+        "case_git_hash": "dbd01f3214d63627",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4406,7 +4406,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "730fa92fdac88750",
+        "case_git_hash": "90eeac080a1e64f2",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4416,7 +4416,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "daabd700f2f5ab24",
+        "case_git_hash": "18085b4481c3d0f7",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4428,7 +4428,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "85f93b14243b851c",
+        "case_git_hash": "3d430cfec00928a2",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4440,7 +4440,7 @@
         "failed_checks": [
           "deadline_constant_not_magic"
         ],
-        "case_git_hash": "b0059517c47b718d",
+        "case_git_hash": "f011162f3374719e",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4450,7 +4450,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "67856f08fa29451f",
+        "case_git_hash": "9616c185b96d0d9f",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4462,7 +4462,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "f0a8084c5ecebf98",
+        "case_git_hash": "ef8e1d08c31245fd",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4472,7 +4472,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "1fc55e65192e9fb8",
+        "case_git_hash": "c2040424222bc1a4",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4482,7 +4482,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "cd95530ff1e24276",
+        "case_git_hash": "39c734bd4b9abe47",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4492,7 +4492,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e6eb2e19e5aad3a0",
+        "case_git_hash": "336c3c56bc9d5870",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4502,7 +4502,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "0e34d3161c96ba4f",
+        "case_git_hash": "d2368981b84f2fb1",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4512,7 +4512,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2cb264a2d630531b",
+        "case_git_hash": "56b4cdb7fd27404f",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4522,7 +4522,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "dbeeee6b000c633a",
+        "case_git_hash": "5084152619571ab5",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4532,7 +4532,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "b8a310fe85fa6771",
+        "case_git_hash": "43754cb305bacb91",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4542,7 +4542,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "fecc5ebde93b68f3",
+        "case_git_hash": "1c03dfb9680128d4",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4552,7 +4552,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5da9c6cfd45d793e",
+        "case_git_hash": "d71f25cac97a958b",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4562,7 +4562,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "9eb085b30715afdc",
+        "case_git_hash": "0149730cfeddd866",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4572,7 +4572,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "aead1dad2f2a140d",
+        "case_git_hash": "0c676bbf9969c034",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4582,7 +4582,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "02fc831d8796fc50",
+        "case_git_hash": "199e20819ee8efdf",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4592,7 +4592,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d6ef92a242cf9cf7",
+        "case_git_hash": "21b4feb819c69c21",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4602,7 +4602,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c0ed5aaf5861789f",
+        "case_git_hash": "ff29673e0b2fe49d",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4612,7 +4612,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ac6e05d1b8722559",
+        "case_git_hash": "98ad47d594002662",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4622,7 +4622,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e0ca3011e1b6c932",
+        "case_git_hash": "0e5079bc53d8552f",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4632,7 +4632,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5feaefac5face462",
+        "case_git_hash": "5b079690013723c7",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4642,7 +4642,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e9c0c8e51dedb1c4",
+        "case_git_hash": "4bdad05177f4cc0e",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4656,7 +4656,7 @@
           "window_max_greater_than_zero",
           "window_min_less_than_max"
         ],
-        "case_git_hash": "a545ad5068399ec8",
+        "case_git_hash": "bf3330d97e73c0a0",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4668,7 +4668,7 @@
         "failed_checks": [
           "llm_call"
         ],
-        "case_git_hash": "4fa47eaa6461796a",
+        "case_git_hash": "e5e7620433177b2d",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4678,7 +4678,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4ef825ac703a50f3",
+        "case_git_hash": "3b1e5f8868a8b156",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4688,7 +4688,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "3bb17140ea3f9620",
+        "case_git_hash": "04dfd8c734ee0536",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4698,7 +4698,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c094ed4a38856384",
+        "case_git_hash": "eb067989319f00ad",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4708,7 +4708,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "feb0dca34f412aff",
+        "case_git_hash": "6655b340286b5dc3",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4718,7 +4718,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "8a145a2043e62464",
+        "case_git_hash": "cfb45444c5aa519c",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4728,7 +4728,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6ac7089952382f8f",
+        "case_git_hash": "0ab0a8bca21b9f51",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4738,7 +4738,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "2f4f3cb56e415f4d",
+        "case_git_hash": "dbd21f35e24eaf13",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4748,7 +4748,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "314005e1baf00431",
+        "case_git_hash": "3f48047d0311e4b4",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4758,7 +4758,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "48f36de6f73bd916",
+        "case_git_hash": "c05e8b1e373335b2",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4768,7 +4768,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "348da3285263f97c",
+        "case_git_hash": "4f717506554484b2",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4778,7 +4778,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "e925172555c82362",
+        "case_git_hash": "f0d9c66855a242e2",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4788,7 +4788,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "84ad0dea7b5a37e2",
+        "case_git_hash": "61b4370de6d64838",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4798,7 +4798,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4b7ba8b89568f5c6",
+        "case_git_hash": "0eabd9347798ddff",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4808,7 +4808,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "6975080abf5c39da",
+        "case_git_hash": "f3130336ca7c8394",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4818,7 +4818,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "87b229bedde9cbc3",
+        "case_git_hash": "c0bbbcd7fbaa57db",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4830,7 +4830,7 @@
         "failed_checks": [
           "stm32_hal_header_included"
         ],
-        "case_git_hash": "48c187b647216a31",
+        "case_git_hash": "e11bc310ca7e3713",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4840,7 +4840,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4bed7f5eb1959918",
+        "case_git_hash": "c8254ac53d24bd11",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4850,7 +4850,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "07032cc412ae6f1f",
+        "case_git_hash": "3c9a519331efedd9",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4862,7 +4862,7 @@
         "failed_checks": [
           "spi_clock_before_init"
         ],
-        "case_git_hash": "f3350ef3dae9da36",
+        "case_git_hash": "17fafb85f71057da",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4872,7 +4872,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "732f77bb37be775b",
+        "case_git_hash": "ba6694e21048cf06",
         "tested_at": "2026-03-29T03:28:03.182780+00:00",
         "pass_at_1": 0.0
       },
@@ -4884,7 +4884,7 @@
         "failed_checks": [
           "write_rate_limited"
         ],
-        "case_git_hash": "12357b78ffe5c824",
+        "case_git_hash": "a36446766d669d9d",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4896,7 +4896,7 @@
         "failed_checks": [
           "output_validation"
         ],
-        "case_git_hash": "137bbd25412eb721",
+        "case_git_hash": "9cfd0467ff651048",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4908,7 +4908,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "5bbd201399b21bf3",
+        "case_git_hash": "ee9fe14e21f3dea7",
         "tested_at": "2026-03-30T11:14:54.801259+00:00",
         "pass_at_1": 0.0
       },
@@ -4918,7 +4918,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "ea7813ff11fd7e6c",
+        "case_git_hash": "299be458b61f5f15",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4928,7 +4928,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "4f3ea90bcbc5e6b1",
+        "case_git_hash": "eccab11937fdfc85",
         "tested_at": "2026-04-04T17:54:36.526381+00:00",
         "pass_at_1": 0.0
       },
@@ -4940,7 +4940,7 @@
         "failed_checks": [
           "single_dma_start"
         ],
-        "case_git_hash": "8eea66dc33cf9f71",
+        "case_git_hash": "8e84a7685ae7bb37",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4950,7 +4950,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "5b0a5809dc160863",
+        "case_git_hash": "1d9a04932de7638b",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4962,7 +4962,7 @@
         "failed_checks": [
           "no_isr_unsafe_primitives"
         ],
-        "case_git_hash": "dd66d6eaf50fd670",
+        "case_git_hash": "a264e9693c26be9e",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4974,7 +4974,7 @@
         "failed_checks": [
           "self_test_failure_branch"
         ],
-        "case_git_hash": "5caa5578e10fb4f9",
+        "case_git_hash": "34c1417cb1322595",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -4986,7 +4986,7 @@
         "failed_checks": [
           "save_not_unconditional_in_loop"
         ],
-        "case_git_hash": "a7ea7dcd14bc7d21",
+        "case_git_hash": "38929394e7888009",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5000,7 +5000,7 @@
           "shared_flag_volatile",
           "consumer_waits_for_flag"
         ],
-        "case_git_hash": "d995fdede20c1163",
+        "case_git_hash": "a520fb0168b815e1",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5010,7 +5010,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "c9df34af0758d501",
+        "case_git_hash": "cc4970f61c826714",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5020,7 +5020,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "d554eb653ef54536",
+        "case_git_hash": "3c5da4116d53852a",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5030,7 +5030,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "7f3a84139a0e60c2",
+        "case_git_hash": "2ddb6a1b98a24238",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5040,7 +5040,7 @@
         "passed": true,
         "failed_at_layer": null,
         "failed_checks": [],
-        "case_git_hash": "a3242d91754cbe49",
+        "case_git_hash": "e94cd6265ab1cd15",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5052,7 +5052,7 @@
         "failed_checks": [
           "timer_clock_before_init"
         ],
-        "case_git_hash": "414ce3bf75a2e28a",
+        "case_git_hash": "7348cc872d827aac",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5064,7 +5064,7 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "ef88c9b42a5c3fe0",
+        "case_git_hash": "25ad4149f46057f6",
         "tested_at": "2026-04-11T10:32:46.464631+00:00",
         "pass_at_1": 0.0
       },
@@ -5076,32 +5076,32 @@
         "failed_checks": [
           "west_build_docker"
         ],
-        "case_git_hash": "811a4f7e47999f36",
-        "tested_at": "2026-03-30T11:14:54.801259+00:00",
+        "case_git_hash": "760132a7686e109b",
+        "tested_at": "2026-04-11T11:42:43.629897+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-012": {
         "case_id": "memory-opt-012",
         "model": "claude-code://sonnet",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "west_build_docker"
+          "output_validation"
         ],
-        "case_git_hash": "91a33b46a13044b1",
-        "tested_at": "2026-04-04T17:54:36.526381+00:00",
+        "case_git_hash": "b5b527f9aca72cc5",
+        "tested_at": "2026-04-11T11:42:43.629897+00:00",
         "pass_at_1": 0.0
       },
       "threading-013": {
         "case_id": "threading-013",
         "model": "claude-code://sonnet",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "west_build_docker"
+          "output_validation"
         ],
-        "case_git_hash": "f27a79da8d84c843",
-        "tested_at": "2026-03-30T11:14:54.801259+00:00",
+        "case_git_hash": "471deea531761343",
+        "tested_at": "2026-04-11T11:42:43.629897+00:00",
         "pass_at_1": 0.0
       }
     },
@@ -5117,7 +5117,7 @@
           "img_manager_enabled",
           "flash_enabled"
         ],
-        "case_git_hash": "1d30d52263d5cb3c",
+        "case_git_hash": "4fc210e86b8eb752",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5131,7 +5131,7 @@
           "boot_delay_set",
           "cmd_env_enabled"
         ],
-        "case_git_hash": "490a8ae960d26100",
+        "case_git_hash": "552a48c88c61127a",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5147,7 +5147,7 @@
           "signature_key_file",
           "flash_enabled"
         ],
-        "case_git_hash": "7489cfb5952046b4",
+        "case_git_hash": "60bca9c41d6591ee",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5162,7 +5162,7 @@
           "swap_using_move_enabled",
           "max_img_sectors_set"
         ],
-        "case_git_hash": "0daacabcd78d6803",
+        "case_git_hash": "769cdb3b1ee66b15",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5177,7 +5177,7 @@
           "boot_image_number_2",
           "pcd_app_enabled"
         ],
-        "case_git_hash": "2f8389b355216357",
+        "case_git_hash": "5057e3eea6823b88",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5192,7 +5192,7 @@
           "boot_encrypt_rsa_enabled",
           "boot_signature_type_rsa_enabled"
         ],
-        "case_git_hash": "d73cad8878382187",
+        "case_git_hash": "c15f1f85f4f5ebad",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5207,7 +5207,7 @@
           "boot_serial_cdc_acm_enabled",
           "usb_device_stack_enabled"
         ],
-        "case_git_hash": "f633f6dc4f232dd2",
+        "case_git_hash": "02ea13ba50cc1bfe",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       },
@@ -5222,7 +5222,7 @@
           "boot_version_cmp_build_number_enabled",
           "boot_validate_slot0_enabled"
         ],
-        "case_git_hash": "1bac2e1dad936a67",
+        "case_git_hash": "1c97fc5de9ae61c9",
         "tested_at": "2026-03-29T13:25:14.823028+00:00",
         "pass_at_1": 0.0
       }

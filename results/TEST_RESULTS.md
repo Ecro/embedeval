@@ -1,16 +1,14 @@
 # EmbedEval Test Results
 
-*Last updated: 2026-04-11 10:32 UTC*
+*Last updated: 2026-04-11 11:42 UTC*
 
 ## Summary
-
-> **1 case(s) need retesting** — run `/test <model> --retest-only`
 
 | Model | Cases | Passed | Failed | pass@1 | Retest |
 |-------|-------|--------|--------|--------|--------|
 | claude-code://haiku | 233 | 143 | 90 | 61.4% | - |
 | claude-code://sonnet | 239 | 176 | 63 | 73.6% | - |
-| mock | 8 | 0 | 8 | 0.0% | 1 |
+| mock | 8 | 0 | 8 | 0.0% | - |
 
 ## claude-code://haiku
 
@@ -90,7 +88,7 @@
 | isr-concurrency-002 | L0 | no_printk_in_isr | 2026-03-29 |
 | isr-concurrency-005 | L0 | init_before_isr_call | 2026-03-29 |
 | isr-concurrency-006 | L0 | fifo_reserved_field | 2026-03-29 |
-| isr-concurrency-007 | L1 | west_build_docker | 2026-03-29 |
+| isr-concurrency-007 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-008 | L3 | memory_barrier_present, barrier_between_data_and_index_update | 2026-04-04 |
 | isr-concurrency-009 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-011 | L1 | west_build_docker | 2026-04-04 |
@@ -104,7 +102,7 @@
 | memory-opt-005 | L0 | app_memdomain_header, partition_defined | 2026-04-04 |
 | memory-opt-007 | L0 | null_returned_on_exhaustion | 2026-04-04 |
 | memory-opt-008 | L0 | dynamic_thread_disabled | 2026-04-04 |
-| memory-opt-012 | L1 | west_build_docker | 2026-04-04 |
+| memory-opt-012 | L2 | output_validation | 2026-04-11 |
 | networking-003 | L1 | west_build_docker | 2026-04-04 |
 | networking-007 | L3 | timeout_not_infinite | 2026-04-04 |
 | networking-008 | L3 | connect_error_handling | 2026-04-11 |
@@ -143,7 +141,7 @@
 | threading-008 | L3 | deadline_constant_not_magic | 2026-04-04 |
 | threading-011 | L1 | west_build_docker | 2026-03-29 |
 | threading-012 | L0 | kernel_header_included, thread_created, has_main_function | 2026-03-29 |
-| threading-013 | L1 | west_build_docker | 2026-04-04 |
+| threading-013 | L2 | output_validation | 2026-04-11 |
 | threading-014 | L0 | explicit_memory_barrier, shared_flag_volatile, consumer_waits_for_flag | 2026-04-11 |
 | timer-001 | L3 | counter_is_volatile | 2026-04-04 |
 | timer-005 | L1 | west_build_docker | 2026-04-04 |
@@ -177,7 +175,7 @@
 | isr-concurrency | 12 | 4 | 33% | message_struct_defined, no_forbidden_apis_in_isr, k_sleep_present, output_validation, west_build_docker (+4) |
 | kconfig | 10 | 8 | 80% | spi_dma_enabled, hw_cc3xx_enabled |
 | linux-driver | 10 | 7 | 70% | init_error_path_cleanup, init_error_path_cleanup, gpio_direction_set |
-| memory-opt | 12 | 7 | 58% | west_build_docker, output_validation, partition_added_to_domain, fpu_disabled, west_build_docker |
+| memory-opt | 12 | 7 | 58% | west_build_docker, output_validation, partition_added_to_domain, fpu_disabled, output_validation |
 | networking | 10 | 9 | 90% | west_build_docker |
 | ota | 11 | 8 | 73% | rollback_abort_on_download_error, rollback_on_error, west_build_docker, self_test_failure_branch |
 | power-mgmt | 10 | 9 | 90% | west_build_docker |
@@ -221,7 +219,7 @@
 | isr-concurrency-003 | L3 | k_sleep_present | 2026-04-11 |
 | isr-concurrency-005 | L2 | output_validation | 2026-03-30 |
 | isr-concurrency-006 | L1 | west_build_docker | 2026-03-30 |
-| isr-concurrency-007 | L1 | west_build_docker | 2026-03-30 |
+| isr-concurrency-007 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-008 | L2 | output_validation | 2026-04-04 |
 | isr-concurrency-009 | L1 | west_build_docker | 2026-04-11 |
 | isr-concurrency-012 | L0 | no_isr_unsafe_primitives | 2026-04-11 |
@@ -234,7 +232,7 @@
 | memory-opt-003 | L2 | output_validation | 2026-03-30 |
 | memory-opt-005 | L0 | partition_added_to_domain | 2026-04-04 |
 | memory-opt-008 | L0 | fpu_disabled | 2026-04-04 |
-| memory-opt-012 | L1 | west_build_docker | 2026-04-04 |
+| memory-opt-012 | L2 | output_validation | 2026-04-11 |
 | networking-009 | L1 | west_build_docker | 2026-04-11 |
 | ota-005 | L3 | rollback_abort_on_download_error, rollback_on_error | 2026-04-04 |
 | ota-010 | L1 | west_build_docker | 2026-04-11 |
@@ -263,7 +261,7 @@
 | threading-010 | L1 | west_build_docker | 2026-04-11 |
 | threading-011 | L2 | output_validation | 2026-03-30 |
 | threading-012 | L1 | west_build_docker | 2026-03-30 |
-| threading-013 | L1 | west_build_docker | 2026-03-30 |
+| threading-013 | L2 | output_validation | 2026-04-11 |
 | threading-014 | L0 | explicit_memory_barrier, shared_flag_volatile, consumer_waits_for_flag | 2026-04-11 |
 | uart-003 | L1 | west_build_docker | 2026-04-11 |
 | watchdog-009 | L0 | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max | 2026-04-11 |
@@ -271,24 +269,20 @@
 
 ## mock
 
-### Needs Retest (1)
-
-- **boot-001** (was FAIL, tested 2026-03-29)
-
 | Category | Cases | Passed | pass@1 | Failed Checks |
 |----------|-------|--------|--------|---------------|
 | boot | 8 | 0 | 0% | kconfig_format, mcuboot_enabled, img_manager_enabled, kconfig_format, boot_delay_set (+19) |
 
 ### Failed Cases (8)
 
-| Case | Layer | Failed Checks | Tested | Status |
-|------|-------|---------------|--------|--------|
-| boot-001 | L0 | kconfig_format, mcuboot_enabled, img_manager_enabled, flash_enabled | 2026-03-29 | RETEST |
-| boot-002 | L0 | kconfig_format, boot_delay_set, cmd_env_enabled | 2026-03-29 | - |
-| boot-003 | L0 | kconfig_format, mcuboot_enabled, rsa_signature_type, signature_key_file (+1) | 2026-03-29 | - |
-| boot-004 | L0 | kconfig_format, mcuboot_enabled, swap_using_move_enabled, max_img_sectors_set | 2026-03-29 | - |
-| boot-005 | L0 | kconfig_format, mcuboot_enabled, boot_image_number_2, pcd_app_enabled | 2026-03-29 | - |
-| boot-006 | L0 | kconfig_format, boot_encrypt_image_enabled, boot_encrypt_rsa_enabled, boot_signature_type_rsa_enabled | 2026-03-29 | - |
-| boot-007 | L0 | kconfig_format, mcuboot_serial_enabled, boot_serial_cdc_acm_enabled, usb_device_stack_enabled | 2026-03-29 | - |
-| boot-008 | L0 | kconfig_format, mcuboot_enabled, boot_version_cmp_build_number_enabled, boot_validate_slot0_enabled | 2026-03-29 | - |
+| Case | Layer | Failed Checks | Tested |
+|------|-------|---------------|--------|
+| boot-001 | L0 | kconfig_format, mcuboot_enabled, img_manager_enabled, flash_enabled | 2026-03-29 |
+| boot-002 | L0 | kconfig_format, boot_delay_set, cmd_env_enabled | 2026-03-29 |
+| boot-003 | L0 | kconfig_format, mcuboot_enabled, rsa_signature_type, signature_key_file (+1) | 2026-03-29 |
+| boot-004 | L0 | kconfig_format, mcuboot_enabled, swap_using_move_enabled, max_img_sectors_set | 2026-03-29 |
+| boot-005 | L0 | kconfig_format, mcuboot_enabled, boot_image_number_2, pcd_app_enabled | 2026-03-29 |
+| boot-006 | L0 | kconfig_format, boot_encrypt_image_enabled, boot_encrypt_rsa_enabled, boot_signature_type_rsa_enabled | 2026-03-29 |
+| boot-007 | L0 | kconfig_format, mcuboot_serial_enabled, boot_serial_cdc_acm_enabled, usb_device_stack_enabled | 2026-03-29 |
+| boot-008 | L0 | kconfig_format, mcuboot_enabled, boot_version_cmp_build_number_enabled, boot_validate_slot0_enabled | 2026-03-29 |
 

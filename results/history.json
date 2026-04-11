@@ -150,5 +150,21 @@
     "passed": 33,
     "failed": 28,
     "pass_at_1": 0.5409836065573771
+  },
+  {
+    "timestamp": "2026-04-11",
+    "model": "claude-code://haiku",
+    "total": 3,
+    "passed": 0,
+    "failed": 3,
+    "pass_at_1": 0.0
+  },
+  {
+    "timestamp": "2026-04-11",
+    "model": "claude-code://sonnet",
+    "total": 3,
+    "passed": 0,
+    "failed": 3,
+    "pass_at_1": 0.0
   }
 ]
