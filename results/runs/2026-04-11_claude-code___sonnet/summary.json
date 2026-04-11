@@ -213,5 +213,10 @@
   "scenario": "generation",
   "temperature": 0.0,
   "n_samples_per_case": 1,
-  "n_runs": 1
+  "n_runs": 1,
+  "run_timestamp": "2026-04-11",
+  "model": "claude-code://sonnet",
+  "total_results": 61,
+  "passed": 33,
+  "failed": 28
 }

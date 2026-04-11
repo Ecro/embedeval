@@ -2,14 +2,14 @@
 
 *Auto-generated from benchmark results. Use this to decide when LLM-generated code needs human review.*
 
-**Last updated:** 2026-04-04 17:54 UTC
+**Last updated:** 2026-04-11 10:32 UTC
 
 ## Models Tested
 
 | Model | pass@1 | Cases |
 |-------|--------|-------|
-| haiku | 66.7% | 6 |
-| sonnet | 81.7% | 109 |
+| haiku | 47.6% | 63 |
+| sonnet | 54.1% | 61 |
 | mock | 0.0% | 8 |
 
 ## CRITICAL — Do Not Trust
@@ -18,11 +18,19 @@
 
 | Category | haiku | sonnet | mock |
 |----------|------|------|------|
-| boot | - | 0% | 0% |
-| kconfig | - | 0% | - |
-| timer | 0% | 100% | - |
-| security | - | 33% | - |
-| threading | - | 40% | - |
+| boot | 100% | 100% | 0% |
+| dma | 0% | 50% | - |
+| gpio-basic | 0% | 0% | - |
+| sensor-driver | 0% | 25% | - |
+| uart | 0% | 0% | - |
+| watchdog | 0% | 0% | - |
+| ota | 25% | 50% | - |
+| power-mgmt | 25% | 75% | - |
+| threading | 50% | 25% | - |
+| ble | 33% | 33% | - |
+| networking | 33% | 50% | - |
+| security | 33% | 67% | - |
+| isr-concurrency | 80% | 40% | - |
 
 ## CAUTION — Always Review
 
@@ -30,21 +38,12 @@
 
 | Category | haiku | sonnet | mock |
 |----------|------|------|------|
-| dma | - | 50% | - |
-| isr-concurrency | 100% | 50% | - |
-| memory-opt | 50% | 56% | - |
-| gpio-basic | - | 75% | - |
-
-## MODERATE — Spot Check
-
-*LLM is mostly correct (80-89%). Review safety-critical patterns (volatile, ISR, error paths).*
-
-| Category | haiku | sonnet | mock |
-|----------|------|------|------|
-| storage | - | 80% | - |
-| ota | - | 88% | - |
-| spi-i2c | - | 88% | - |
-| watchdog | - | 89% | - |
+| kconfig | 50% | 50% | - |
+| linux-driver | 100% | 50% | - |
+| spi-i2c | 50% | 50% | - |
+| storage | 75% | 50% | - |
+| yocto | 50% | 100% | - |
+| timer | 75% | 67% | - |
 
 ## RELIABLE — Generally Safe
 
@@ -52,16 +51,8 @@
 
 | Category | haiku | sonnet | mock |
 |----------|------|------|------|
-| adc | - | 100% | - |
-| ble | 100% | 100% | - |
-| device-tree | - | 100% | - |
-| linux-driver | - | 100% | - |
-| networking | - | 100% | - |
-| power-mgmt | - | 100% | - |
-| pwm | - | 100% | - |
-| sensor-driver | - | 100% | - |
-| uart | - | 100% | - |
-| yocto | - | 100% | - |
+| device-tree | 100% | 100% | - |
+| memory-opt | 100% | 100% | - |
 
 ## Most Common Failure Patterns
 
@@ -69,26 +60,26 @@
 
 | Pattern | Failures | What to Check |
 |---------|----------|---------------|
-| `west_build_docker` | 122 | Review LLM output against hardware/RTOS requirements |
-| `output_validation` | 61 | Review LLM output against hardware/RTOS requirements |
+| `west_build_docker` | 143 | Review LLM output against hardware/RTOS requirements |
+| `output_validation` | 66 | Review LLM output against hardware/RTOS requirements |
 | `init_error_path_cleanup` | 9 | Init error paths must free all previously acquired resources |
 | `device_ready_check` | 9 | Review LLM output against hardware/RTOS requirements |
 | `kconfig_format` | 8 | Review LLM output against hardware/RTOS requirements |
-| `connect_error_handling` | 7 | Check return values of all API calls |
+| `connect_error_handling` | 8 | Check return values of all API calls |
 | `rollback_abort_on_download_error` | 7 | Review LLM output against hardware/RTOS requirements |
+| `dma_header_included` | 6 | Review LLM output against hardware/RTOS requirements |
 | `deadline_constant_not_magic` | 6 | Review LLM output against hardware/RTOS requirements |
 | `mcuboot_enabled` | 5 | Review LLM output against hardware/RTOS requirements |
+| `stm32_hal_header_included` | 5 | Review LLM output against hardware/RTOS requirements |
+| `dma_reload_called` | 5 | Review LLM output against hardware/RTOS requirements |
 | `kernel_header_included` | 5 | Review LLM output against hardware/RTOS requirements |
-| `dma_header_included` | 5 | Review LLM output against hardware/RTOS requirements |
 | `memory_barrier_present` | 5 | Data + index update needs compiler_barrier() or __dmb() |
 | `barrier_between_data_and_index_update` | 5 | Review LLM output against hardware/RTOS requirements |
 | `multiple_block_descriptors` | 5 | Review LLM output against hardware/RTOS requirements |
 | `shared_variable_declared` | 5 | Review LLM output against hardware/RTOS requirements |
+| `periodic_battery_check` | 4 | Review LLM output against hardware/RTOS requirements |
+| `adc_read_error_checked` | 4 | Review LLM output against hardware/RTOS requirements |
 | `will_configured_before_connect` | 4 | Review LLM output against hardware/RTOS requirements |
-| `rollback_on_error` | 4 | Review LLM output against hardware/RTOS requirements |
-| `cyclic_flag_set` | 4 | Review LLM output against hardware/RTOS requirements |
-| `counter_is_volatile` | 4 | Variable shared with ISR/callback must be volatile |
-| `slab_alloc_called` | 4 | Review LLM output against hardware/RTOS requirements |
 
 ## Practical Recommendations
 

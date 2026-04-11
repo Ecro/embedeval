@@ -245,4 +245,100 @@ Post-hoc classification of the 5 regressions whose detail files are available
 | `results/LEADERBOARD.md` | Current leaderboard (latest model) |
 | `results/runs/2026-04-04_claude-code___haiku/` | Full Haiku run details |
 | `results/runs/2026-04-04_claude-code___sonnet/` | Full Sonnet run details |
+| `results/runs/2026-04-11_claude-code___haiku/` | Phase B partial retest (Haiku, 63 cases) |
+| `results/runs/2026-04-11_claude-code___sonnet/` | Phase B partial retest (Sonnet, 61 cases) |
 | `results/history.json` | Historical run summaries |
+
+---
+
+## 8. Phase B Partial Update (2026-04-11)
+
+**Source:** `plans/PLAN-benchmark-followup-2026-04-11.md` Phase B1/B2
+**Run command:** `scripts/run-haiku-sonnet-sequential.sh` (`--retest-only` + `--include-private`, EMBEDEVAL_ENABLE_BUILD=docker)
+**Runtime:** Haiku 41 min (63 cases), Sonnet ~1h (61 cases)
+
+### 8.1 What was actually retested
+
+`--retest-only` only re-runs cases whose `case_git_hash` changed since the last recorded run. The 2026-04-11 run therefore covered:
+
+- 6 new Phase C2 implicit-gap cases (added via commit `bd4baf1`)
+- ~5 Phase A2 security/storage cases (reference/config fixes)
+- ~45–50 Phase C1 regression check fixes
+- **Total: 61 (Sonnet) / 63 (Haiku) cases out of 233+**
+
+It did **not** cover the 3 Phase A1 Docker-build cases (`isr-concurrency-007`, `memory-opt-012`, `threading-013`) — these fail on a `_extract_code()` bug in `llm_client.py` that was fixed in commit `d70cb1c`, but the case files themselves were unchanged, so `--retest-only` skipped them. Their tracker entries remain `FAIL@L1` from 2026-03-29 to 2026-04-04.
+
+### 8.2 Aggregated tracker state (mixed-date baseline)
+
+| Model | Passed | Total | pass@1 | Layer failures (L0/L1/L2/L3) |
+|-------|--------|-------|--------|------------------------------|
+| claude-code://haiku | 143 | 233 | **61.4%** | 42 / 24 / 5 / 19 |
+| claude-code://sonnet | 176 | 239 | **73.6%** | 16 / 19 / 11 / 17 |
+
+> **⚠ Mixed-date caveat:** These aggregates stitch together results from 2026-03-28 through 2026-04-11, so they are *not* a fair single-run baseline. Cases that were not retested on 2026-04-11 still reflect pre-check-fix behavior. A full re-run (without `--retest-only`) remains on the backlog as the true Phase B1.
+
+### 8.3 Phase A verification — did the fixes work?
+
+| Case | Phase | Haiku (post-retest) | Sonnet (post-retest) | Notes |
+|------|-------|---------------------|----------------------|-------|
+| isr-concurrency-007 | A1 | FAIL@L1 (stale, 03-29) | FAIL@L1 (stale, 03-30) | Not retested — case hash unchanged |
+| memory-opt-012 | A1 | FAIL@L1 (stale, 04-04) | FAIL@L1 (stale, 04-04) | Not retested — case hash unchanged |
+| threading-013 | A1 | FAIL@L1 (stale, 04-04) | FAIL@L1 (stale, 03-30) | Not retested — case hash unchanged |
+| security-002 | A2 | FAIL@L2 (04-11) | **PASS (04-11)** | Expected SHA-256 fix landed; Haiku still fails on its own codegen |
+| security-004 | A2 | FAIL@L2 (04-11) | FAIL@L2 (04-11) | PSA config fix landed; both models still fail runtime output |
+| security-006 | A2 | **PASS (04-11)** | **PASS (04-11)** | volatile-lifetime + "KEY SECURE" fix confirmed |
+| security-008 | A2 | FAIL@L2 (04-11) | FAIL@L2 (04-11) | HMAC config fix landed; models fail runtime output |
+| storage-002 | A2 | FAIL@L2 (stale, 03-29) | FAIL@L2 (stale, 03-30) | Plan concluded TC was fine → no hash change → not retested |
+| isr-concurrency-001 | A3 | FAIL@L0 (stale, 04-04) | PASS (stale, 03-29) | Prose-retry fix lives in llm_client — not a case change |
+| watchdog-010 | A3 | FAIL@L0 (stale, 04-04) | FAIL@L0 (stale, 04-04) | Same as above |
+
+**Action items to close Phase A/B properly:**
+1. Force-retest the 3 Phase A1 cases (bust hash cache or run without `--retest-only`) to confirm `_extract_code()` fix reaches them
+2. Investigate why security-004/008 still fail L2 after config fix — reference solution may need revalidation under Docker
+3. Run full Sonnet + Haiku baseline (no `--retest-only`) to replace the mixed-date aggregate
+
+### 8.4 Per-category snapshot (aggregated tracker)
+
+| Category | Haiku | Sonnet | Δ |
+|----------|-------|--------|---|
+| adc | 100% (2/2) | 100% (2/2) | 0 |
+| ble | 60% (6/10) | 80% (8/10) | +20 |
+| boot | 100% (10/10) | 100% (10/10) | 0 |
+| device-tree | 90% (9/10) | 100% (10/10) | +10 |
+| dma | **0% (0/12)** | 42% (5/12) | +42 |
+| gpio-basic | 75% (3/4) | 80% (8/10) | — |
+| isr-concurrency | 33% (4/12) | 33% (4/12) | 0 |
+| kconfig | 70% (7/10) | 80% (8/10) | +10 |
+| linux-driver | 90% (9/10) | 70% (7/10) | -20 |
+| memory-opt | 42% (5/12) | 58% (7/12) | +16 |
+| networking | 60% (6/10) | 90% (9/10) | +30 |
+| ota | 73% (8/11) | 73% (8/11) | 0 |
+| power-mgmt | 80% (8/10) | 90% (9/10) | +10 |
+| security | 50% (5/10) | 60% (6/10) | +10 |
+| sensor-driver | 80% (8/10) | 80% (8/10) | 0 |
+| spi-i2c | 80% (8/10) | 80% (8/10) | 0 |
+| storage | 50% (6/12) | 50% (6/12) | 0 |
+| threading | 29% (4/14) | 43% (6/14) | +14 |
+| timer | 80% (8/10) | 100% (10/10) | +20 |
+| uart | 33% (1/3) | 67% (2/3) | +34 |
+| watchdog | 80% (8/10) | 80% (8/10) | 0 |
+| yocto | 80% (8/10) | 100% (10/10) | +20 |
+
+> Private-cases categories (`esp-*`, `stm32-*`, `pwm`) reflect the 48 held-out set and are counted only where entries exist for each model.
+
+### 8.5 Movers since 2026-04-05 baseline
+
+**Sonnet:**
+- dma: 44% → 42% (basically flat; 1 regression within margin)
+- threading: 45% → 43% (Phase C check fixes didn't move the needle)
+- memory-opt: 50% → 58% (+8)
+- linux-driver: 75% → 70% (-5; check update exposed one more failure)
+- security: 25% → 60% (+35 — driven by Phase A2 fixes removing env-inflated failures)
+
+**Haiku:**
+- dma: 0% → 0% (still worst category)
+- isr-concurrency: 22% → 33% (Phase C1 check relaxations helped)
+- threading: 27% → 29% (marginal)
+- security: 38% → 50% (+12 from Phase A2)
+
+> Interpretation: the Phase A2 security fix was the only change with large directional impact. Weak categories (dma, isr-concurrency, memory-opt, threading) stayed weak — reinforcing the "implicit knowledge gap" hypothesis and justifying Phase C2 implicit-gap TC set.
