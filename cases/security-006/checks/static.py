@@ -35,32 +35,22 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: PSA_KEY_USAGE_EXPORT must NOT be set (LLM failure: always adds it)
     # Strip comments first to avoid matching mentions in comment text
-    code_no_comments = re.sub(r'/\*.*?\*/', '', generated_code, flags=re.DOTALL)
-    code_no_comments = re.sub(r'//[^\n]*', '', code_no_comments)
+    code_no_comments = re.sub(r"/\*.*?\*/", "", generated_code, flags=re.DOTALL)
+    code_no_comments = re.sub(r"//[^\n]*", "", code_no_comments)
     has_export_flag = "PSA_KEY_USAGE_EXPORT" in code_no_comments
     details.append(
         CheckDetail(
             check_name="no_export_usage_flag",
             passed=not has_export_flag,
             expected="PSA_KEY_USAGE_EXPORT must NOT be set (non-extractable key)",
-            actual="EXPORT flag present (security violation!)" if has_export_flag else "EXPORT flag absent (correct)",
+            actual="EXPORT flag present (security violation!)"
+            if has_export_flag
+            else "EXPORT flag absent (correct)",
             check_type="constraint",
         )
     )
 
-    # Check 4: PSA_KEY_LIFETIME_PERSISTENT used
-    has_persistent = "PSA_KEY_LIFETIME_PERSISTENT" in generated_code
-    details.append(
-        CheckDetail(
-            check_name="persistent_lifetime",
-            passed=has_persistent,
-            expected="PSA_KEY_LIFETIME_PERSISTENT set for key lifetime",
-            actual="present" if has_persistent else "missing (volatile key only)",
-            check_type="exact_match",
-        )
-    )
-
-    # Check 5: psa_import_key called
+    # Check 4: psa_import_key called
     has_import = "psa_import_key" in generated_code
     details.append(
         CheckDetail(
@@ -69,20 +59,6 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             expected="psa_import_key() called",
             actual="present" if has_import else "missing",
             check_type="exact_match",
-        )
-    )
-
-    # Check 6: Key ID is non-zero (slot ID valid)
-    # Reject patterns like psa_set_key_id(&attrs, 0) or psa_set_key_id(&x, 0U)
-    zero_id_pattern = r'psa_set_key_id\s*\([^,]+,\s*0[UuLl]*\s*\)'
-    has_zero_id = bool(re.search(zero_id_pattern, generated_code))
-    details.append(
-        CheckDetail(
-            check_name="key_id_nonzero",
-            passed=not has_zero_id,
-            expected="Key ID must be non-zero",
-            actual="zero ID detected (invalid!)" if has_zero_id else "non-zero key ID",
-            check_type="constraint",
         )
     )
 

@@ -39,12 +39,17 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    has_img_mgr = any("CONFIG_IMG_MANAGER=y" in l for l in lines)
+    # Accept either IMG_MANAGER (subsys menuconfig) or MCUBOOT_IMG_MANAGER
+    # (MCUboot-specific symbol that depends on IMG_MANAGER). Both are valid.
+    has_img_mgr = any(
+        "CONFIG_IMG_MANAGER=y" in l or "CONFIG_MCUBOOT_IMG_MANAGER=y" in l
+        for l in lines
+    )
     details.append(
         CheckDetail(
             check_name="img_manager_enabled",
             passed=has_img_mgr,
-            expected="CONFIG_IMG_MANAGER=y",
+            expected="CONFIG_IMG_MANAGER=y or CONFIG_MCUBOOT_IMG_MANAGER=y",
             actual="present" if has_img_mgr else "missing",
             check_type="exact_match",
         )

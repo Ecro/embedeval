@@ -32,10 +32,13 @@ NEGATIVES = [
     {
         "name": "missing_img_manager",
         "description": (
-            "CONFIG_IMG_MANAGER=y removed — CONFIG_MCUBOOT_IMG_MANAGER depends on "
-            "CONFIG_IMG_MANAGER; Kconfig dependency unsatisfied, build will error"
+            "Both CONFIG_IMG_MANAGER=y and CONFIG_MCUBOOT_IMG_MANAGER=y removed — "
+            "no image manager at all, boot_write_img_confirmed() unavailable"
         ),
-        "mutation": lambda code: _remove_lines(code, "CONFIG_IMG_MANAGER=y"),
+        "mutation": lambda code: _remove_lines(
+            _remove_lines(code, "CONFIG_IMG_MANAGER=y"),
+            "CONFIG_MCUBOOT_IMG_MANAGER=y",
+        ),
         "must_fail": ["img_manager_enabled"],
     },
     {

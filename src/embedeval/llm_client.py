@@ -35,6 +35,12 @@ void main(void) {
 CLAUDE_CODE_PREFIX = "claude-code://"
 
 
+_PROSE_RETRY_SUFFIX = (
+    "\n\nIMPORTANT: Respond with ONLY the complete C source file wrapped in a "
+    "```c code block. No prose, no explanations, no setup instructions — just the code."
+)
+
+
 def call_model(
     model: str,
     prompt: str,
@@ -50,6 +56,11 @@ def call_model(
     - "claude-code://MODEL": Uses `claude -p` CLI with subscription (no API key).
       e.g. "claude-code://sonnet", "claude-code://opus", "claude-code://haiku"
     - Any other string: Uses litellm (requires API keys).
+
+    If the first response looks like prose (no C-family tokens), retry once
+    with a stronger "code only" instruction appended to the prompt. This
+    recovers non-deterministic format failures (isr-concurrency-001,
+    watchdog-010 in prior runs) without a full rerun.
     """
     if model == "mock":
         return _mock_response()
@@ -57,10 +68,45 @@ def call_model(
     context = _build_context(context_files or [])
     full_prompt = f"{context}\n{prompt}" if context else prompt
 
-    if model.startswith(CLAUDE_CODE_PREFIX):
-        return _call_claude_code(model, full_prompt, timeout)
+    def _dispatch(p: str) -> LLMResponse:
+        if model.startswith(CLAUDE_CODE_PREFIX):
+            return _call_claude_code(model, p, timeout)
+        return _call_litellm(model, p, timeout, max_retries, rate_limit_delay)
 
-    return _call_litellm(model, full_prompt, timeout, max_retries, rate_limit_delay)
+    response = _dispatch(full_prompt)
+
+    if _looks_like_prose(response.generated_code):
+        logger.warning(
+            "LLM %s returned prose (len=%d). Retrying once with code-only hint.",
+            model,
+            len(response.generated_code),
+        )
+        response = _dispatch(full_prompt + _PROSE_RETRY_SUFFIX)
+
+    return response
+
+
+def _looks_like_prose(text: str) -> bool:
+    """Return True if the extracted text lacks C-family code markers.
+
+    Conservative heuristic — triggers retry only when no recognizable C
+    tokens exist in the response. Avoids false positives on valid but
+    minimal C (e.g. single-function responses).
+    """
+    if not text or not text.strip():
+        return True
+    code_markers = (
+        "#include",
+        "int main",
+        "void main",
+        "static ",
+        "struct ",
+        "typedef ",
+        "return ",
+        "printk(",
+        "printf(",
+    )
+    return not any(m in text for m in code_markers)
 
 
 def _call_claude_code(
@@ -228,17 +274,29 @@ def _mock_response() -> LLMResponse:
     )
 
 
+_C_FAMILY_LANGS = {"c", "cpp", "c++", "cc", "h", "hpp", "objective-c"}
+
+
 def _extract_code(text: str) -> str:
     """Extract code from LLM response, stripping markdown code blocks.
 
-    LLMs typically wrap code in ```lang ... ``` blocks. This extracts
-    the code content, or returns the original text if no blocks found.
+    Strategy (prevents joining prose/shell/dirtree blocks into main.c):
+    1. If any block is explicitly tagged as a C-family language, return
+       only those blocks joined.
+    2. Otherwise return the FIRST code block only.
+    3. If no fenced blocks exist, return the original text.
     """
-    # Match ```<optional-lang>\n...\n```
-    blocks = re.findall(r"```\w*\n(.*?)```", text, re.DOTALL)
-    if blocks:
-        return "\n".join(blocks).strip()
-    return text.strip()
+    pattern = re.compile(r"```(\w*)\n(.*?)```", re.DOTALL)
+    matches = pattern.findall(text)
+    if not matches:
+        return text.strip()
+
+    c_blocks = [content for lang, content in matches if lang.lower() in _C_FAMILY_LANGS]
+    if c_blocks:
+        return "\n".join(c_blocks).strip()
+
+    first_block: str = matches[0][1]
+    return first_block.strip()
 
 
 def _build_context(context_files: list[str]) -> str:

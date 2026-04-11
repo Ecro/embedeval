@@ -2,7 +2,8 @@
 
 import re
 
-from embedeval.check_utils import (check_no_cross_platform_apis,
+from embedeval.check_utils import (
+    check_no_cross_platform_apis,
     strip_comments,
 )
 from embedeval.models import CheckDetail
@@ -55,7 +56,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_name="export_denial_verified",
             passed=has_export_call,
             expected="psa_export_key() called to verify export is denied",
-            actual="present" if has_export_call else "missing (no verification of non-extractability)",
+            actual="present"
+            if has_export_call
+            else "missing (no verification of non-extractability)",
             check_type="constraint",
         )
     )
@@ -67,7 +70,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_name="not_permitted_checked",
             passed=has_not_permitted,
             expected="PSA_ERROR_NOT_PERMITTED checked after psa_export_key()",
-            actual="present" if has_not_permitted else "missing (export denial not detected)",
+            actual="present"
+            if has_not_permitted
+            else "missing (export denial not detected)",
             check_type="constraint",
         )
     )
@@ -91,7 +96,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
             check_name="attributes_initialized",
             passed=has_attrs_init,
             expected="PSA_KEY_ATTRIBUTES_INIT used to zero-initialize key attributes",
-            actual="present" if has_attrs_init else "missing (uninitialized attributes risk)",
+            actual="present"
+            if has_attrs_init
+            else "missing (uninitialized attributes risk)",
             check_type="constraint",
         )
     )
@@ -113,42 +120,48 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # The reference calls psa_destroy_key unconditionally at end (after export check).
     # We verify it's present AND comes after the import (i.e., not a forward declaration).
     destroy_pos = generated_code.rfind("psa_destroy_key")
-    error_path_destroy = (
-        has_destroy
-        and import_pos != -1
-        and destroy_pos > import_pos
-    )
+    error_path_destroy = has_destroy and import_pos != -1 and destroy_pos > import_pos
     details.append(
         CheckDetail(
             check_name="error_path_key_destroyed",
             passed=error_path_destroy,
             expected="psa_destroy_key() present to clean up key slot after use",
-            actual="key cleanup present" if error_path_destroy else "key may leak on error",
+            actual="key cleanup present"
+            if error_path_destroy
+            else "key may leak on error",
             check_type="constraint",
         )
     )
 
     # Check 8: No rand()/srand() or insecure patterns in security code
-    has_rand = bool(re.search(r'\brand\s*\(|\bsrand\s*\(', stripped))
-    has_ecb = bool(re.search(r'\bPSA_ALG_ECB\b(?!_NO_PADDING)', stripped))
+    has_rand = bool(re.search(r"\brand\s*\(|\bsrand\s*\(", stripped))
+    has_ecb = bool(re.search(r"\bPSA_ALG_ECB\b(?!_NO_PADDING)", stripped))
     details.append(
         CheckDetail(
             check_name="no_insecure_patterns",
             passed=not has_rand and not has_ecb,
             expected="No rand()/srand() or ECB mode in security code",
-            actual="clean" if not (has_rand or has_ecb) else f"insecure: rand={has_rand}, ECB={has_ecb}",
+            actual="clean"
+            if not (has_rand or has_ecb)
+            else f"insecure: rand={has_rand}, ECB={has_ecb}",
             check_type="constraint",
         )
     )
 
     # Check: No cross-platform API contamination
-    cross_plat = check_no_cross_platform_apis(generated_code, skip_platforms=["Linux_Userspace"])
-    details.append(CheckDetail(
-        check_name="no_cross_platform_apis",
-        passed=len(cross_plat) == 0,
-        expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
-        actual="clean" if not cross_plat else f"found: {[a for a, _ in cross_plat]}",
-        check_type="constraint",
-    ))
+    cross_plat = check_no_cross_platform_apis(
+        generated_code, skip_platforms=["Linux_Userspace"]
+    )
+    details.append(
+        CheckDetail(
+            check_name="no_cross_platform_apis",
+            passed=len(cross_plat) == 0,
+            expected="No FreeRTOS/Arduino/STM32_HAL/POSIX APIs",
+            actual="clean"
+            if not cross_plat
+            else f"found: {[a for a, _ in cross_plat]}",
+            check_type="constraint",
+        )
+    )
 
     return details

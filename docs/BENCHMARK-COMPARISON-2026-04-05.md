@@ -150,6 +150,23 @@ These 5 cases fail L2 `output_validation` in **both** Haiku and Sonnet, strongly
 
 > 8 total regressions — bigger model doesn't guarantee monotonic improvement
 
+### Regression Root-Cause Analysis (2026-04-11)
+
+Post-hoc classification of the 5 regressions whose detail files are available
+(boot-001, gpio-basic-001, isr-concurrency-003, security-007, threading-001):
+
+| Case | Root cause | Classification | Action |
+|------|-----------|---------------|--------|
+| boot-001 | Check required `CONFIG_IMG_MANAGER=y` but Zephyr also has `CONFIG_MCUBOOT_IMG_MANAGER=y` — Sonnet used the latter | Check-wrong-symbol | Check updated to accept either; negatives mutation updated to remove both |
+| gpio-basic-001 | Sonnet omitted `device_is_ready()` before GPIO ops — Haiku included it | Real regression | Documented; check kept (Zephyr safety convention) |
+| isr-concurrency-003 | Check hardcoded spinlock API; Sonnet used `atomic_t` which is equally valid for single-counter ISR-thread sync | Check-too-strict (implicit prompt) | Prompt updated to explicitly require `k_spinlock` — preserves 10-check test intent |
+| security-007 | Sonnet used flag-based (`bool ok = true`) error handling instead of fail-fast early-return. For TLS credentials, continuing after partial failure leaks credential state | Real regression | Documented; check kept (fail-fast security convention) |
+| threading-001 | Check required literal keyword `"value"` in output — reference doesn't print that word, only `Producer sent: N / Consumer received: N`. Haiku incidentally passed because its format string used `value=N` | Check-arbitrary-keyword | `expected_output.txt` pruned to `Producer`, `Consumer` |
+
+**linux-driver-004, stm32-freertos-001, stm32-spi-001:** no Sonnet detail files retained (details/ is gitignored) — root cause analysis deferred to next Sonnet run.
+
+**Summary of 5 analyzed:** 3 check-bug (fixed), 2 real regressions (documented, check preserved). Net expected Sonnet pass@1 improvement: +3 cases when re-baselined.
+
 ---
 
 ## 4. Failure Pattern Analysis

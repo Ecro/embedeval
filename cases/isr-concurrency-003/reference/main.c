@@ -5,7 +5,7 @@
 
 #include <zephyr/kernel.h>
 
-static K_SPINLOCK_DEFINE(counter_lock);
+static struct k_spinlock counter_lock;
 static uint32_t shared_counter;
 
 /* Simulated ISR: uses spinlock (mutex forbidden in ISR) */

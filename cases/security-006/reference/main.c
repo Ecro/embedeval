@@ -26,9 +26,8 @@ int main(void)
 	psa_set_key_type(&attrs, PSA_KEY_TYPE_AES);
 	psa_set_key_bits(&attrs, KEY_BITS);
 	psa_set_key_algorithm(&attrs, PSA_ALG_CBC_NO_PADDING);
-	psa_set_key_lifetime(&attrs, PSA_KEY_LIFETIME_PERSISTENT);
-	psa_set_key_id(&attrs, KEY_ID);
-	/* Intentionally NO PSA_KEY_USAGE_EXPORT — key is non-extractable */
+	/* Volatile lifetime — native_sim has no TF-M / persistent storage. */
+	/* Non-extractability is enforced by omitting PSA_KEY_USAGE_EXPORT. */
 	psa_set_key_usage_flags(&attrs, PSA_KEY_USAGE_ENCRYPT);
 
 	status = psa_import_key(&attrs, key_material, sizeof(key_material),
