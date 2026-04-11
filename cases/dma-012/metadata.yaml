@@ -1,4 +1,4 @@
-id: dma-010
+id: dma-012
 category: dma
 difficulty: hard
 title: "DMA from CPU-Written Buffer with Implicit Cache Handling"
