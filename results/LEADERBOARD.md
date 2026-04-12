@@ -6,7 +6,7 @@
 | Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |
 |-------|---------------|------------------|--------|--------|--------|---------|-------|---------|
 | claude-code://haiku | 57.1% | 71.7% | [50.7%, 63.3%] | 57.1% | 133 | 167 | 233 | n=1 |
-| claude-code://sonnet | 73.4% | 85.8% | [67.4%, 78.7%] | 73.4% | 171 | 200 | 233 | n=1 |
+| claude-code://sonnet | 67.4% | 82.8% | [61.1%, 73.1%] | 67.4% | 157 | 193 | 233 | n=1 |
 
 *pass@1 (full) = all layers must pass. pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*
 
@@ -18,8 +18,8 @@
 | Core | 63.4% | 78 | 123 |
 | Challenge | 50.0% | 53 | 106 |
 | Sanity (not scored) | 75.0% | 3 | 4 |
-| Core | 80.5% | 99 | 123 |
-| Challenge | 65.1% | 69 | 106 |
+| Core | 71.5% | 88 | 123 |
+| Challenge | 62.3% | 66 | 106 |
 
 ## Reasoning Type Breakdown
 
@@ -29,10 +29,10 @@
 | L2 Rule Application | 65.9% | 132 | Expert review required |
 | L3 Cross-Domain | 36.8% | 38 | Expert review required |
 | L4 System Reasoning | 58.3% | 115 | Expert review required |
-| L1 API Recall | 77.0% | 217 | Review recommended |
-| L2 Rule Application | 78.8% | 132 | Review recommended |
-| L3 Cross-Domain | 50.0% | 38 | Expert review required |
-| L4 System Reasoning | 69.6% | 115 | Expert review required |
+| L1 API Recall | 70.5% | 217 | Review recommended |
+| L2 Rule Application | 73.5% | 132 | Review recommended |
+| L3 Cross-Domain | 47.4% | 38 | Expert review required |
+| L4 System Reasoning | 62.6% | 115 | Expert review required |
 
 ## Category Results
 
@@ -63,43 +63,43 @@
 | yocto | 70.0% | 7 | 10 | PARTIAL |
 | adc | 100.0% | 2 | 2 | PASS |
 | ble | 81.8% | 9 | 11 | PASS |
-| boot | 100.0% | 10 | 10 | PASS |
+| boot | 90.0% | 9 | 10 | PASS |
 | device-tree | 100.0% | 10 | 10 | PASS |
-| dma | 46.2% | 6 | 13 | FAIL |
+| dma | 30.8% | 4 | 13 | FAIL |
 | gpio-basic | 66.7% | 4 | 6 | PARTIAL |
-| isr-concurrency | 46.2% | 6 | 13 | FAIL |
-| kconfig | 80.0% | 8 | 10 | PASS |
+| isr-concurrency | 23.1% | 3 | 13 | FAIL |
+| kconfig | 90.0% | 9 | 10 | PASS |
 | linux-driver | 70.0% | 7 | 10 | PARTIAL |
-| memory-opt | 58.3% | 7 | 12 | PARTIAL |
-| networking | 91.7% | 11 | 12 | PASS |
-| ota | 75.0% | 9 | 12 | PARTIAL |
-| power-mgmt | 91.7% | 11 | 12 | PASS |
+| memory-opt | 66.7% | 8 | 12 | PARTIAL |
+| networking | 75.0% | 9 | 12 | PARTIAL |
+| ota | 66.7% | 8 | 12 | PARTIAL |
+| power-mgmt | 75.0% | 9 | 12 | PARTIAL |
 | pwm | 100.0% | 1 | 1 | PASS |
-| security | 60.0% | 6 | 10 | PARTIAL |
+| security | 50.0% | 5 | 10 | PARTIAL |
 | sensor-driver | 75.0% | 9 | 12 | PARTIAL |
 | spi-i2c | 78.6% | 11 | 14 | PARTIAL |
 | storage | 53.8% | 7 | 13 | PARTIAL |
-| threading | 40.0% | 6 | 15 | FAIL |
-| timer | 91.7% | 11 | 12 | PASS |
-| uart | 66.7% | 2 | 3 | PARTIAL |
-| watchdog | 80.0% | 8 | 10 | PASS |
-| yocto | 100.0% | 10 | 10 | PASS |
+| threading | 33.3% | 5 | 15 | FAIL |
+| timer | 83.3% | 10 | 12 | PASS |
+| uart | 33.3% | 1 | 3 | FAIL |
+| watchdog | 90.0% | 9 | 10 | PASS |
+| yocto | 80.0% | 8 | 10 | PASS |
 
 ## Layer Pass Rate Heatmap
 
 | Model| L0 Static| L1 Build| L2 Runtime| L3 Heuristic| L4 Mutation| |
 |-------|----------|----------|----------|----------|----------||
 | claude-code://haiku| 82%| 88%| 93%| 85%| 100%| |
-| claude-code://sonnet| 93%| 93%| 94%| 91%| 100%| |
+| claude-code://sonnet| 94%| 93%| 90%| 85%| 100%| |
 
 ## Failure Distribution
 
 | Layer | Failures | % of Total |
 |-------|----------|-----------|
-| L0 Static | 0.2 | 30% |
-| L1 Build | 0.2 | 24% |
-| L2 Runtime | 0.1 | 16% |
-| L3 Heuristic | 0.2 | 30% |
+| L0 Static | 0.2 | 26% |
+| L1 Build | 0.2 | 22% |
+| L2 Runtime | 0.2 | 18% |
+| L3 Heuristic | 0.3 | 34% |
 | L4 Mutation | 0.0 | 0% |
 
 ## Category Breakdown
@@ -131,33 +131,33 @@
 | yocto | 70% | 10 |
 | adc | 100% | 2 |
 | ble | 82% | 11 |
-| boot | 100% | 10 |
+| boot | 90% | 10 |
 | device-tree | 100% | 10 |
-| dma | 46% | 13 |
+| dma | 31% | 13 |
 | gpio-basic | 67% | 6 |
-| isr-concurrency | 46% | 13 |
-| kconfig | 80% | 10 |
+| isr-concurrency | 23% | 13 |
+| kconfig | 90% | 10 |
 | linux-driver | 70% | 10 |
-| memory-opt | 58% | 12 |
-| networking | 92% | 12 |
-| ota | 75% | 12 |
-| power-mgmt | 92% | 12 |
+| memory-opt | 67% | 12 |
+| networking | 75% | 12 |
+| ota | 67% | 12 |
+| power-mgmt | 75% | 12 |
 | pwm | 100% | 1 |
-| security | 60% | 10 |
+| security | 50% | 10 |
 | sensor-driver | 75% | 12 |
 | spi-i2c | 79% | 14 |
 | storage | 54% | 13 |
-| threading | 40% | 15 |
-| timer | 92% | 12 |
-| uart | 67% | 3 |
-| watchdog | 80% | 10 |
-| yocto | 100% | 10 |
+| threading | 33% | 15 |
+| timer | 83% | 12 |
+| uart | 33% | 3 |
+| watchdog | 90% | 10 |
+| yocto | 80% | 10 |
 
 ## Cross-Benchmark Comparison
 
 | Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |
 |-------|-----------|-----------|------------------|---------------------|-----------|
 | claude-code://haiku | 84.0% | 48.2% | 57.1% | 71.7% | -26.9%p |
-| claude-code://sonnet | 93.7% | 72.2% | 73.4% | 85.8% | -20.3%p |
+| claude-code://sonnet | 93.7% | 72.2% | 67.4% | 82.8% | -26.3%p |
 
 *Embed Gap = EmbedEval pass@1 - HumanEval. Negative = harder than general coding.*

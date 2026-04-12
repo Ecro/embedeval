@@ -389,6 +389,43 @@ It did **not** cover the 3 Phase A1 Docker-build cases (`isr-concurrency-007`, `
 
 > The n=3 mean (56.9%) is lower than the prior mixed-date aggregate (61.4%) — prior runs had some stale pre-check-fix results that inflated the pass rate. The n=3 number is the fair, reproducible baseline.
 
-### 9.5 Next: Sonnet n=3
+### 9.5 Sonnet n=3 (2026-04-13)
 
-Sonnet n=3 run is pending. Once done, both models will have reproducible CI-estimated baselines for publication.
+**Model:** claude-sonnet-4-6 (Sonnet 4.6)
+**Full report:** [`docs/BENCHMARK-n3-sonnet.md`](BENCHMARK-n3-sonnet.md)
+
+| Run | pass@1 | passed | total |
+|-----|--------|--------|-------|
+| n1 | 66.1% | 154 | 233 |
+| n2 | 70.4% | 164 | 233 |
+| n3 | 67.4% | 157 | 233 |
+
+| Metric | Value |
+|--------|-------|
+| **Mean pass@1** | **68.0%** |
+| Sample stdev | 2.20%p |
+| **95% CI (Wilson, pooled 699 trials)** | **[64.4%, 71.3%]** |
+| Case stability (3/3 or 0/3) | 87.1% (203/233) |
+
+| Passed in k of 3 runs | Cases |
+|------------------------|-------|
+| 0 (always fail) | 60 |
+| 1 (flaky-fail) | 14 |
+| 2 (flaky-pass) | 16 |
+| 3 (always pass) | 143 |
+
+> Sonnet is more stable than Haiku: 87% case consistency vs 73%, and only 30 flaky cases vs 63.
+
+### 9.6 Head-to-head: Haiku 4.5 vs Sonnet 4.6 (n=3)
+
+| Metric | Haiku 4.5 | Sonnet 4.6 | Δ |
+|--------|-----------|------------|---|
+| **Mean pass@1** | **56.9%** | **68.0%** | **+11.1%p** |
+| Sample stdev | 1.51%p | 2.20%p | |
+| **95% CI** | [53.2%, 60.6%] | [64.4%, 71.3%] | **no overlap** |
+| Case stability | 73.0% | 87.1% | +14.1%p |
+| Always pass | 99 | 143 | +44 |
+| Flaky cases | 63 (27%) | 30 (13%) | -33 |
+| Always fail | 71 | 60 | -11 |
+
+> The 95% confidence intervals do not overlap — the performance gap between Haiku 4.5 and Sonnet 4.6 on embedded firmware tasks is statistically significant at p<0.05. Sonnet solves 44 more cases consistently and has half the flaky-case count.

@@ -206,5 +206,29 @@
     "passed": 133,
     "failed": 100,
     "pass_at_1": 0.5708154506437768
+  },
+  {
+    "timestamp": "2026-04-12",
+    "model": "claude-code://sonnet",
+    "total": 233,
+    "passed": 154,
+    "failed": 79,
+    "pass_at_1": 0.6609442060085837
+  },
+  {
+    "timestamp": "2026-04-12",
+    "model": "claude-code://sonnet",
+    "total": 233,
+    "passed": 164,
+    "failed": 69,
+    "pass_at_1": 0.703862660944206
+  },
+  {
+    "timestamp": "2026-04-12",
+    "model": "claude-code://sonnet",
+    "total": 233,
+    "passed": 157,
+    "failed": 76,
+    "pass_at_1": 0.6738197424892703
   }
 ]

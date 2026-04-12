@@ -158,6 +158,7 @@ def aggregate(runs: list[RunSummary], model: str) -> dict[str, Any]:
         "pooled_passes": total_passes,
         "pooled_trials": total_trials,
         "stability": stability,
+        "stable_cases": stable_count,
         "full_coverage_cases": full_coverage_count,
         "pass_count_distribution": dict(sorted(pass_dist.items())),
     }
@@ -191,7 +192,8 @@ def format_markdown(agg: dict[str, Any], runs: list[RunSummary]) -> str:
         ),
         (
             f"- Case stability: {agg['stability']:.1%} "
-            f"({agg['full_coverage_cases']} cases observed in all runs)"
+            f"({agg['stable_cases']}/{agg['full_coverage_cases']}"
+            f" stable across all runs)"
         ),
         "",
         "## Pass-count distribution",

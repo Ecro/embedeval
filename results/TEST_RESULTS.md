@@ -1,13 +1,13 @@
 # EmbedEval Test Results
 
-*Last updated: 2026-04-12 09:37 UTC*
+*Last updated: 2026-04-12 22:09 UTC*
 
 ## Summary
 
 | Model | Cases | Passed | Failed | pass@1 | Retest |
 |-------|-------|--------|--------|--------|--------|
 | claude-code://haiku | 233 | 133 | 100 | 57.1% | - |
-| claude-code://sonnet | 239 | 177 | 62 | 74.1% | - |
+| claude-code://sonnet | 239 | 163 | 76 | 68.2% | - |
 | mock | 8 | 0 | 8 | 0.0% | - |
 
 ## claude-code://haiku
@@ -168,113 +168,127 @@
 |----------|-------|--------|--------|---------------|
 | adc | 2 | 2 | 100% | - |
 | ble | 10 | 8 | 80% | west_build_docker, west_build_docker |
-| boot | 10 | 10 | 100% | - |
+| boot | 10 | 9 | 90% | img_manager_dependency |
 | device-tree | 10 | 10 | 100% | - |
-| dma | 12 | 5 | 42% | west_build_docker, cyclic_enabled, multiple_block_descriptors, channel_priority_field_used, dma_config_after_stop (+3) |
+| dma | 12 | 3 | 25% | west_build_docker, west_build_docker, cyclic_flag_set, output_validation, output_validation (+4) |
 | esp-adc | 1 | 0 | 0% | adc_read_error_checked |
 | esp-ble | 1 | 1 | 100% | - |
 | esp-gpio | 1 | 1 | 100% | - |
 | esp-i2c | 1 | 1 | 100% | - |
-| esp-nvs | 1 | 1 | 100% | - |
-| esp-ota | 1 | 1 | 100% | - |
-| esp-sleep | 1 | 1 | 100% | - |
+| esp-nvs | 1 | 0 | 0% | nvs_set_error_checked |
+| esp-ota | 1 | 0 | 0% | firmware_validation |
+| esp-sleep | 1 | 0 | 0% | gpio_pull_configured |
 | esp-spi | 1 | 1 | 100% | - |
 | esp-timer | 1 | 1 | 100% | - |
 | esp-wifi | 1 | 1 | 100% | - |
 | gpio-basic | 10 | 8 | 80% | device_ready_check, west_build_docker |
-| isr-concurrency | 12 | 5 | 42% | message_struct_defined, no_forbidden_apis_in_isr, k_sleep_present, output_validation, west_build_docker (+3) |
-| kconfig | 10 | 8 | 80% | spi_dma_enabled, hw_cc3xx_enabled |
+| isr-concurrency | 12 | 3 | 25% | no_printk, output_validation, k_sleep_present, output_validation, output_validation (+5) |
+| kconfig | 10 | 9 | 90% | spi_dma_enabled |
 | linux-driver | 10 | 7 | 70% | init_error_path_cleanup, init_error_path_cleanup, gpio_direction_set |
-| memory-opt | 12 | 7 | 58% | west_build_docker, output_validation, partition_added_to_domain, fpu_disabled, output_validation |
-| networking | 10 | 9 | 90% | west_build_docker |
+| memory-opt | 12 | 8 | 67% | output_validation, output_validation, partition_added_to_domain, no_large_string_literals |
+| networking | 10 | 8 | 80% | connect_error_handling, west_build_docker |
 | ota | 11 | 8 | 73% | rollback_abort_on_download_error, rollback_on_error, west_build_docker, self_test_failure_branch |
-| power-mgmt | 10 | 9 | 90% | west_build_docker |
+| power-mgmt | 10 | 8 | 80% | all_three_devices_suspended, periodic_battery_check |
 | pwm | 1 | 1 | 100% | - |
-| security | 10 | 6 | 60% | output_validation, output_validation, error_path_returns_early, output_validation |
+| security | 10 | 5 | 50% | output_validation, output_validation, output_validation, error_path_returns_early, output_validation |
 | sensor-driver | 10 | 8 | 80% | west_build_docker, west_build_docker |
-| spi-i2c | 10 | 8 | 80% | poll_loop_bounded, west_build_docker |
+| spi-i2c | 10 | 9 | 90% | west_build_docker |
 | stm32-adc | 1 | 1 | 100% | - |
 | stm32-dma | 1 | 1 | 100% | - |
-| stm32-freertos | 2 | 1 | 50% | stm32_hal_header_included |
+| stm32-freertos | 2 | 0 | 0% | different_task_priorities, stm32_hal_header_included |
 | stm32-gpio | 1 | 1 | 100% | - |
-| stm32-i2c | 1 | 1 | 100% | - |
+| stm32-i2c | 1 | 0 | 0% | hal_i2c_mem_read_used |
 | stm32-lowpower | 1 | 1 | 100% | - |
-| stm32-spi | 1 | 0 | 0% | spi_clock_before_init |
+| stm32-spi | 1 | 0 | 0% | cs_deasserted_after_transfer |
 | stm32-timer | 1 | 0 | 0% | timer_clock_before_init |
-| stm32-uart | 1 | 1 | 100% | - |
-| storage | 12 | 6 | 50% | output_validation, output_validation, write_verify_commit_order, verify_before_commit, delete_after_commit (+3) |
-| threading | 14 | 6 | 43% | output_validation, output_validation, deadline_constant_not_magic, west_build_docker, output_validation (+5) |
-| timer | 10 | 10 | 100% | - |
-| uart | 3 | 2 | 67% | west_build_docker |
-| watchdog | 10 | 8 | 80% | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max, llm_call |
-| yocto | 10 | 10 | 100% | - |
+| stm32-uart | 1 | 0 | 0% | receive_it_rearmed_in_callback |
+| storage | 12 | 7 | 58% | output_validation, output_validation, write_verify_commit_order, verify_before_commit, delete_after_commit (+2) |
+| threading | 14 | 5 | 36% | output_validation, output_validation, output_validation, deadline_constant_not_magic, west_build_docker (+6) |
+| timer | 10 | 9 | 90% | output_validation |
+| uart | 3 | 1 | 33% | callback_before_rx_enable, west_build_docker |
+| watchdog | 10 | 9 | 90% | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max |
+| yocto | 10 | 8 | 80% | summary_defined, license_defined, lic_files_chksum, rootfs_size_uses_weak_assignment |
 
-### Failed Cases (62)
+### Failed Cases (76)
 
 | Case | Layer | Failed Checks | Tested |
 |------|-------|---------------|--------|
-| ble-009 | L1 | west_build_docker | 2026-04-11 |
-| ble-010 | L1 | west_build_docker | 2026-04-11 |
-| dma-002 | L1 | west_build_docker | 2026-03-30 |
-| dma-003 | L3 | cyclic_enabled | 2026-04-04 |
-| dma-004 | L0 | multiple_block_descriptors | 2026-03-30 |
-| dma-007 | L0 | channel_priority_field_used | 2026-03-30 |
-| dma-009 | L3 | dma_config_after_stop, dma_start_called_twice | 2026-04-04 |
-| dma-010 | L0 | dma_reload_called | 2026-04-11 |
-| dma-011 | L0 | single_dma_start | 2026-04-11 |
-| esp-adc-001 | L3 | adc_read_error_checked | 2026-04-11 |
-| gpio-basic-001 | L3 | device_ready_check | 2026-04-04 |
-| gpio-basic-010 | L1 | west_build_docker | 2026-04-11 |
-| isr-concurrency-002 | L3 | message_struct_defined, no_forbidden_apis_in_isr | 2026-03-29 |
-| isr-concurrency-003 | L3 | k_sleep_present | 2026-04-11 |
-| isr-concurrency-005 | L2 | output_validation | 2026-03-30 |
-| isr-concurrency-006 | L1 | west_build_docker | 2026-03-30 |
-| isr-concurrency-008 | L2 | output_validation | 2026-04-04 |
-| isr-concurrency-009 | L1 | west_build_docker | 2026-04-11 |
-| isr-concurrency-012 | L0 | no_isr_unsafe_primitives | 2026-04-11 |
-| kconfig-001 | L0 | spi_dma_enabled | 2026-04-04 |
-| kconfig-010 | L0 | hw_cc3xx_enabled | 2026-04-11 |
-| linux-driver-004 | L3 | init_error_path_cleanup | 2026-03-29 |
-| linux-driver-006 | L3 | init_error_path_cleanup | 2026-03-29 |
-| linux-driver-009 | L0 | gpio_direction_set | 2026-04-11 |
-| memory-opt-001 | L1 | west_build_docker | 2026-04-04 |
-| memory-opt-003 | L2 | output_validation | 2026-03-30 |
-| memory-opt-005 | L0 | partition_added_to_domain | 2026-04-04 |
-| memory-opt-008 | L0 | fpu_disabled | 2026-04-04 |
-| memory-opt-012 | L2 | output_validation | 2026-04-11 |
-| networking-009 | L1 | west_build_docker | 2026-04-11 |
-| ota-005 | L3 | rollback_abort_on_download_error, rollback_on_error | 2026-04-04 |
-| ota-010 | L1 | west_build_docker | 2026-04-11 |
-| ota-011 | L3 | self_test_failure_branch | 2026-04-11 |
-| power-mgmt-009 | L1 | west_build_docker | 2026-04-11 |
-| security-001 | L2 | output_validation | 2026-04-04 |
-| security-004 | L2 | output_validation | 2026-04-11 |
-| security-007 | L3 | error_path_returns_early | 2026-04-04 |
-| security-008 | L2 | output_validation | 2026-04-11 |
-| sensor-driver-009 | L1 | west_build_docker | 2026-04-11 |
-| sensor-driver-010 | L1 | west_build_docker | 2026-04-11 |
-| spi-i2c-004 | L3 | poll_loop_bounded | 2026-04-04 |
-| spi-i2c-009 | L1 | west_build_docker | 2026-04-11 |
-| stm32-freertos-001 | L0 | stm32_hal_header_included | 2026-03-29 |
-| stm32-spi-001 | L3 | spi_clock_before_init | 2026-03-29 |
-| stm32-timer-001 | L3 | timer_clock_before_init | 2026-04-11 |
-| storage-002 | L2 | output_validation | 2026-03-30 |
-| storage-005 | L2 | output_validation | 2026-03-30 |
-| storage-008 | L3 | write_verify_commit_order, verify_before_commit, delete_after_commit | 2026-03-30 |
-| storage-009 | L0 | offset_plus_size_boundary_check | 2026-04-11 |
-| storage-012 | L3 | write_rate_limited | 2026-04-04 |
-| storage-013 | L0 | save_not_unconditional_in_loop | 2026-04-11 |
-| threading-001 | L2 | output_validation | 2026-04-11 |
-| threading-007 | L2 | output_validation | 2026-04-04 |
-| threading-008 | L3 | deadline_constant_not_magic | 2026-04-04 |
-| threading-010 | L1 | west_build_docker | 2026-04-11 |
-| threading-011 | L2 | output_validation | 2026-03-30 |
-| threading-012 | L1 | west_build_docker | 2026-03-30 |
-| threading-013 | L2 | output_validation | 2026-04-11 |
-| threading-014 | L0 | explicit_memory_barrier, shared_flag_volatile, consumer_waits_for_flag | 2026-04-11 |
-| uart-003 | L1 | west_build_docker | 2026-04-11 |
-| watchdog-009 | L0 | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max | 2026-04-11 |
-| watchdog-010 | L0 | llm_call | 2026-04-04 |
+| ble-009 | L1 | west_build_docker | 2026-04-12 |
+| ble-010 | L1 | west_build_docker | 2026-04-12 |
+| boot-001 | L3 | img_manager_dependency | 2026-04-12 |
+| dma-001 | L1 | west_build_docker | 2026-04-12 |
+| dma-002 | L1 | west_build_docker | 2026-04-12 |
+| dma-003 | L0 | cyclic_flag_set | 2026-04-12 |
+| dma-004 | L2 | output_validation | 2026-04-12 |
+| dma-007 | L2 | output_validation | 2026-04-12 |
+| dma-009 | L3 | dma_config_after_stop | 2026-04-12 |
+| dma-010 | L0 | dma_reload_called | 2026-04-12 |
+| dma-011 | L0 | single_dma_start | 2026-04-12 |
+| dma-012 | L0 | cache_flush_before_dma | 2026-04-12 |
+| esp-adc-001 | L3 | adc_read_error_checked | 2026-04-12 |
+| esp-nvs-001 | L3 | nvs_set_error_checked | 2026-04-12 |
+| esp-ota-001 | L3 | firmware_validation | 2026-04-12 |
+| esp-sleep-001 | L3 | gpio_pull_configured | 2026-04-12 |
+| gpio-basic-001 | L3 | device_ready_check | 2026-04-12 |
+| gpio-basic-010 | L1 | west_build_docker | 2026-04-12 |
+| isr-concurrency-001 | L0 | no_printk | 2026-04-12 |
+| isr-concurrency-002 | L2 | output_validation | 2026-04-12 |
+| isr-concurrency-003 | L3 | k_sleep_present | 2026-04-12 |
+| isr-concurrency-005 | L2 | output_validation | 2026-04-12 |
+| isr-concurrency-006 | L2 | output_validation | 2026-04-12 |
+| isr-concurrency-008 | L3 | memory_barrier_present, barrier_between_data_and_index_update | 2026-04-12 |
+| isr-concurrency-009 | L1 | west_build_docker | 2026-04-12 |
+| isr-concurrency-011 | L2 | output_validation | 2026-04-12 |
+| isr-concurrency-012 | L1 | west_build_docker | 2026-04-12 |
+| kconfig-001 | L0 | spi_dma_enabled | 2026-04-12 |
+| linux-driver-004 | L3 | init_error_path_cleanup | 2026-04-12 |
+| linux-driver-006 | L3 | init_error_path_cleanup | 2026-04-12 |
+| linux-driver-009 | L0 | gpio_direction_set | 2026-04-12 |
+| memory-opt-001 | L2 | output_validation | 2026-04-12 |
+| memory-opt-003 | L2 | output_validation | 2026-04-12 |
+| memory-opt-005 | L0 | partition_added_to_domain | 2026-04-12 |
+| memory-opt-012 | L3 | no_large_string_literals | 2026-04-12 |
+| networking-008 | L3 | connect_error_handling | 2026-04-12 |
+| networking-009 | L1 | west_build_docker | 2026-04-12 |
+| ota-005 | L3 | rollback_abort_on_download_error, rollback_on_error | 2026-04-12 |
+| ota-010 | L1 | west_build_docker | 2026-04-12 |
+| ota-011 | L3 | self_test_failure_branch | 2026-04-12 |
+| power-mgmt-005 | L3 | all_three_devices_suspended | 2026-04-12 |
+| power-mgmt-009 | L3 | periodic_battery_check | 2026-04-12 |
+| security-001 | L2 | output_validation | 2026-04-12 |
+| security-002 | L2 | output_validation | 2026-04-12 |
+| security-004 | L2 | output_validation | 2026-04-12 |
+| security-007 | L3 | error_path_returns_early | 2026-04-12 |
+| security-008 | L2 | output_validation | 2026-04-12 |
+| sensor-driver-009 | L1 | west_build_docker | 2026-04-12 |
+| sensor-driver-010 | L1 | west_build_docker | 2026-04-12 |
+| spi-i2c-009 | L1 | west_build_docker | 2026-04-12 |
+| stm32-freertos-001 | L3 | different_task_priorities | 2026-04-12 |
+| stm32-freertos-002 | L0 | stm32_hal_header_included | 2026-04-12 |
+| stm32-i2c-001 | L0 | hal_i2c_mem_read_used | 2026-04-12 |
+| stm32-spi-001 | L3 | cs_deasserted_after_transfer | 2026-04-12 |
+| stm32-timer-001 | L3 | timer_clock_before_init | 2026-04-12 |
+| stm32-uart-001 | L3 | receive_it_rearmed_in_callback | 2026-04-12 |
+| storage-002 | L2 | output_validation | 2026-04-12 |
+| storage-005 | L2 | output_validation | 2026-04-12 |
+| storage-008 | L3 | write_verify_commit_order, verify_before_commit, delete_after_commit | 2026-04-12 |
+| storage-009 | L1 | west_build_docker | 2026-04-12 |
+| storage-012 | L3 | write_rate_limited | 2026-04-12 |
+| threading-001 | L2 | output_validation | 2026-04-12 |
+| threading-006 | L2 | output_validation | 2026-04-12 |
+| threading-007 | L2 | output_validation | 2026-04-12 |
+| threading-008 | L3 | deadline_constant_not_magic | 2026-04-12 |
+| threading-010 | L1 | west_build_docker | 2026-04-12 |
+| threading-011 | L2 | output_validation | 2026-04-12 |
+| threading-012 | L1 | west_build_docker | 2026-04-12 |
+| threading-013 | L2 | output_validation | 2026-04-12 |
+| threading-014 | L0 | explicit_memory_barrier, shared_flag_volatile, consumer_waits_for_flag | 2026-04-12 |
+| timer-001 | L2 | output_validation | 2026-04-12 |
+| uart-002 | L3 | callback_before_rx_enable | 2026-04-12 |
+| uart-003 | L1 | west_build_docker | 2026-04-12 |
+| watchdog-009 | L0 | window_min_greater_than_zero, window_max_greater_than_zero, window_min_less_than_max | 2026-04-12 |
+| yocto-001 | L0 | summary_defined, license_defined, lic_files_chksum, src_uri_defined (+1) | 2026-04-12 |
+| yocto-007 | L3 | rootfs_size_uses_weak_assignment | 2026-04-12 |
 
 ## mock
 

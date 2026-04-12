@@ -19,7 +19,7 @@
         "runtime_execution": 0.9019607843137255,
         "static_analysis": 0.944206008583691,
         "static_heuristic": 0.8532608695652174,
-        "test_quality_proof": 1.0
+        "test_quality_proof": 0.9936305732484076
       },
       "pass_at_1_ci": [
         0.6112264887368034,
@@ -225,5 +225,11 @@
   "scenario": "generation",
   "temperature": 0.0,
   "n_samples_per_case": 1,
-  "n_runs": 1
+  "n_runs": 1,
+  "run_timestamp": "2026-04-12",
+  "model": "claude-code://sonnet",
+  "total_results": 233,
+  "passed": 157,
+  "failed": 76,
+  "run_id": "n3"
 }

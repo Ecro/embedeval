@@ -13,7 +13,7 @@
 - Mean pass@1: **56.9%**
 - Sample stdev: 1.51%
 - 95% CI (Wilson, pooled n×cases=699): [53.2%, 60.6%]
-- Case stability: 73.0% (233 cases observed in all runs)
+- Case stability: 73.0% (170/233 stable across all runs)
 
 ## Pass-count distribution
 
