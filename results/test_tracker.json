@@ -9,17 +9,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "f0d9c66855a242e2",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "adc-002": {
         "case_id": "adc-002",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "periodic_read_with_sleep"
+        ],
         "case_git_hash": "61b4370de6d64838",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-001": {
@@ -31,7 +33,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "9f71334dc6696a95",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-002": {
@@ -41,17 +43,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "2cd73180b9014850",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-003": {
         "case_id": "ble-003",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 1,
+        "failed_checks": [
+          "west_build_docker"
+        ],
         "case_git_hash": "b5b0d6b6cf44cf48",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-004": {
@@ -61,17 +65,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "26aa0991cb2c7b42",
-        "tested_at": "2026-04-04T12:48:23.543189+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-005": {
         "case_id": "ble-005",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "security_set_in_connected_cb"
+        ],
         "case_git_hash": "0665a43815f635cc",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-006": {
@@ -81,7 +87,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "3e9ee7921c7b6dbf",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-007": {
@@ -91,7 +97,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "fdf8a634a9daa461",
-        "tested_at": "2026-04-04T12:48:23.543189+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-008": {
@@ -103,7 +109,7 @@
           "conn_cleanup_on_failed_connect"
         ],
         "case_git_hash": "03c53a8e38dd6865",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-001": {
@@ -113,7 +119,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4fc210e86b8eb752",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-002": {
@@ -123,7 +129,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "552a48c88c61127a",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-003": {
@@ -133,7 +139,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "60bca9c41d6591ee",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-004": {
@@ -143,7 +149,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "769cdb3b1ee66b15",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-005": {
@@ -153,7 +159,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "5057e3eea6823b88",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-006": {
@@ -163,7 +169,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "c15f1f85f4f5ebad",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-007": {
@@ -173,7 +179,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "02ea13ba50cc1bfe",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-008": {
@@ -183,7 +189,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "1c97fc5de9ae61c9",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-001": {
@@ -193,7 +199,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "423c6b45f91e0558",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-002": {
@@ -203,19 +209,17 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "ada7982807a13f2f",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-003": {
         "case_id": "device-tree-003",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 3,
-        "failed_checks": [
-          "pwm_polarity_specified"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "3fbb8992b135a867",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-004": {
@@ -225,7 +229,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "b3f825a5c4a69141",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-005": {
@@ -235,7 +239,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "b73f593d79173ee3",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-006": {
@@ -245,7 +249,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "b7c355f350208024",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-007": {
@@ -255,7 +259,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "62cb81e6536204cd",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-008": {
@@ -265,7 +269,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "a8a66fb1181421fb",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-001": {
@@ -274,22 +278,22 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "dma_header_included"
+          "dma_config_called"
         ],
         "case_git_hash": "9977beff9388820b",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-002": {
         "case_id": "dma-002",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 0,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "dma_config_called"
+          "output_validation"
         ],
         "case_git_hash": "22cb3b3375082f60",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-003": {
@@ -298,11 +302,13 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
+          "dma_header_included",
           "cyclic_flag_set",
-          "dma_reload_called"
+          "dma_reload_called",
+          "dma_config_and_start"
         ],
         "case_git_hash": "941b341ab5cb1b49",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-004": {
@@ -311,11 +317,10 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "dma_header_included",
           "multiple_block_descriptors"
         ],
         "case_git_hash": "509e8a496e76bc22",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-005": {
@@ -324,12 +329,10 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "cache_flush_present",
-          "cache_invalidate_present",
           "dst_buffer_aligned"
         ],
         "case_git_hash": "442f31502512580b",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-006": {
@@ -341,7 +344,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "3e3d85f00164b509",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-007": {
@@ -353,19 +356,19 @@
           "channel_priority_field_used"
         ],
         "case_git_hash": "24a20af3968bdf40",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-008": {
         "case_id": "dma-008",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 2,
+        "failed_at_layer": 1,
         "failed_checks": [
-          "output_validation"
+          "west_build_docker"
         ],
         "case_git_hash": "dc143023e9769843",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-009": {
@@ -374,41 +377,32 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "dma_header_included",
-          "kernel_header_included"
+          "dma_header_included"
         ],
         "case_git_hash": "a9a514b43ac19c6b",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-gpio-001": {
         "case_id": "esp-gpio-001",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "gpio_header",
-          "app_main_defined",
-          "gpio_config_used",
-          "no_zephyr_apis"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "961f6f22c5e8dbd4",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-i2c-001": {
         "case_id": "esp-i2c-001",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 0,
+        "failed_at_layer": 3,
         "failed_checks": [
-          "i2c_master_header",
-          "i2c_master_new_api",
-          "no_legacy_i2c_driver",
-          "no_zephyr_apis"
+          "transmit_receive_used"
         ],
         "case_git_hash": "6d33afa5a871c122",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-spi-001": {
@@ -418,7 +412,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "2c1e3b9bf80b91a5",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-timer-001": {
@@ -428,7 +422,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "cbac307f7e10fd61",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-wifi-001": {
@@ -438,7 +432,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "992d5f866e06fd9e",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "gpio-basic-001": {
@@ -448,7 +442,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4bd22ba50d97918b",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "gpio-basic-005": {
@@ -458,7 +452,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0ec2c492373159e7",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "gpio-basic-006": {
@@ -468,7 +462,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "422e436d786f67b4",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-001": {
@@ -477,32 +471,35 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "llm_call"
+          "uses_atomic_operations",
+          "zephyr_headers_included"
         ],
         "case_git_hash": "04792a7ef58efa23",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-002": {
         "case_id": "isr-concurrency-002",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 0,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "no_printk_in_isr"
+          "output_validation"
         ],
         "case_git_hash": "1a84263bcccb043c",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-003": {
         "case_id": "isr-concurrency-003",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "k_sleep_present"
+        ],
         "case_git_hash": "1d2e6ddf4085c83e",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-004": {
@@ -512,7 +509,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "318c2cdc22bd7167",
-        "tested_at": "2026-04-04T12:48:23.543189+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-005": {
@@ -524,7 +521,7 @@
           "init_before_isr_call"
         ],
         "case_git_hash": "313e698130d37d90",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-006": {
@@ -536,7 +533,7 @@
           "fifo_reserved_field"
         ],
         "case_git_hash": "16e537a919327cff",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-008": {
@@ -549,7 +546,7 @@
           "barrier_between_data_and_index_update"
         ],
         "case_git_hash": "8a934d53ec373540",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-011": {
@@ -561,7 +558,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "0eabd9347798ddff",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-001": {
@@ -573,7 +570,7 @@
           "spi_dma_enabled"
         ],
         "case_git_hash": "40d7d426718f24d2",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-002": {
@@ -583,7 +580,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "aa5c147d368d9086",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-003": {
@@ -595,7 +592,7 @@
           "uart_line_ctrl_enabled"
         ],
         "case_git_hash": "267b39f1523dc73c",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-004": {
@@ -605,17 +602,21 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4417233ec07e13e2",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-005": {
         "case_id": "kconfig-005",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "net_sockets_sockopt_tls_enabled",
+          "tls_credentials_enabled",
+          "mbedtls_builtin_enabled"
+        ],
         "case_git_hash": "6825e45cb74d0bc7",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-006": {
@@ -625,7 +626,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "c414b51b00e54d01",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-007": {
@@ -635,7 +636,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "80a2c5bbcf911ca2",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-008": {
@@ -645,7 +646,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "632998d04743417d",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-001": {
@@ -655,7 +656,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "c3d06da607d96cd7",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-002": {
@@ -665,7 +666,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "288d3118b8f1764a",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-003": {
@@ -675,7 +676,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "a03b58e13ab015a3",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-004": {
@@ -685,17 +686,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0045597f811487fb",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-005": {
         "case_id": "linux-driver-005",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "sysfs_create_group_error_handled"
+        ],
         "case_git_hash": "45e30c2ecec1e34f",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-006": {
@@ -707,7 +710,7 @@
           "init_error_path_cleanup"
         ],
         "case_git_hash": "4b24113ad02176d9",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-007": {
@@ -717,7 +720,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4cb086231356be45",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-008": {
@@ -727,7 +730,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "ba3865126ee78074",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-001": {
@@ -741,17 +744,20 @@
           "slab_free_called"
         ],
         "case_git_hash": "8d8e2a58707b02c6",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-002": {
         "case_id": "memory-opt-002",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "minimal_libc_enabled",
+          "newlib_not_enabled"
+        ],
         "case_git_hash": "7e8e131cc2e4c612",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-003": {
@@ -765,7 +771,7 @@
           "slab_free_called"
         ],
         "case_git_hash": "58a4963eac3dbad5",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-004": {
@@ -776,10 +782,11 @@
         "failed_checks": [
           "thread_analyzer_header",
           "thread_analyzer_config",
+          "thread_stack_defined",
           "thread_analyzer_print_called"
         ],
         "case_git_hash": "d0c6ab7877fe1ee7",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-005": {
@@ -788,33 +795,32 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "app_memdomain_header",
-          "partition_defined"
+          "app_memdomain_header"
         ],
         "case_git_hash": "a98fa4bd665a044c",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-006": {
         "case_id": "memory-opt-006",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "config_thread_stack_info_enabled"
+        ],
         "case_git_hash": "1d41ecce647f3361",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-007": {
         "case_id": "memory-opt-007",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "null_returned_on_exhaustion"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "1c64c3a66eb06d14",
-        "tested_at": "2026-04-04T12:48:23.543189+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-008": {
@@ -823,10 +829,11 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
+          "cbprintf_nano_enabled",
           "dynamic_thread_disabled"
         ],
         "case_git_hash": "71f87c0fb048d931",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-011": {
@@ -836,17 +843,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "f3130336ca7c8394",
-        "tested_at": "2026-04-04T12:48:23.543189+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-001": {
         "case_id": "networking-001",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 1,
+        "failed_checks": [
+          "west_build_docker"
+        ],
         "case_git_hash": "a5405712958f8a74",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-002": {
@@ -856,19 +865,17 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "468b5bab8c756d3b",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-003": {
         "case_id": "networking-003",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 1,
-        "failed_checks": [
-          "west_build_docker"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "42ced33fedd756d8",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-004": {
@@ -878,7 +885,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0cf02d80cec2cf01",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-005": {
@@ -888,7 +895,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "ac0fb5bcf9d45ee8",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-006": {
@@ -898,19 +905,17 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "dabd581445ac0d64",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-007": {
         "case_id": "networking-007",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 3,
-        "failed_checks": [
-          "timeout_not_infinite"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "b8491ac389d65464",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-008": {
@@ -922,7 +927,7 @@
           "connect_error_handling"
         ],
         "case_git_hash": "507ecc81f1d46ee8",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-001": {
@@ -932,7 +937,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "de67ee1744f01af8",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-002": {
@@ -942,7 +947,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "9c519456479a2003",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-003": {
@@ -952,7 +957,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "c4e81a3e75a69aa7",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-004": {
@@ -962,7 +967,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "13747463d35ca465",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-005": {
@@ -975,7 +980,7 @@
           "rollback_on_error"
         ],
         "case_git_hash": "216df2556a53a04a",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-006": {
@@ -985,7 +990,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "6aaed745ff8efd94",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-007": {
@@ -995,7 +1000,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "80ca3b5342dd0c2f",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-008": {
@@ -1005,7 +1010,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "7f39cbf92979eda9",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-001": {
@@ -1013,19 +1018,23 @@
         "model": "claude-code://haiku",
         "passed": true,
         "failed_at_layer": null,
-        "failed_checks": [],
+        "failed_checks": [
+          "mutation_missing_default_enotsup"
+        ],
         "case_git_hash": "2094a5165934169f",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-002": {
         "case_id": "power-mgmt-002",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "multiple_printk_calls"
+        ],
         "case_git_hash": "1b233f85d842f16a",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-003": {
@@ -1035,7 +1044,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "5335e2a529bf8325",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-004": {
@@ -1045,19 +1054,17 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "a9c84092a2ff6d31",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-005": {
         "case_id": "power-mgmt-005",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "pm_action_run_called"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "4904122860962b82",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-006": {
@@ -1067,7 +1074,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "5fae0c31689d41b1",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-007": {
@@ -1077,7 +1084,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "d769d72977368dec",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-008": {
@@ -1087,7 +1094,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "d74e42d26b0783d2",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "pwm-001": {
@@ -1097,7 +1104,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "c0bbbcd7fbaa57db",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-001": {
@@ -1109,19 +1116,17 @@
           "west_build_docker"
         ],
         "case_git_hash": "fa5568e3ca898aab",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-002": {
         "case_id": "security-002",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 2,
-        "failed_checks": [
-          "runtime_started"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "1e1ac34332c401e5",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-003": {
@@ -1131,7 +1136,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "654c2987f8425b84",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-004": {
@@ -1143,7 +1148,7 @@
           "output_validation"
         ],
         "case_git_hash": "1c5e42caf3663b9c",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-005": {
@@ -1153,7 +1158,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "db804aef2ea90eac",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-006": {
@@ -1163,7 +1168,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "49a19b082ad84fe7",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-007": {
@@ -1173,7 +1178,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0703d182f291fc2b",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-008": {
@@ -1185,7 +1190,7 @@
           "output_validation"
         ],
         "case_git_hash": "831980ee52d6dc6a",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-001": {
@@ -1195,7 +1200,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "de05bf1b8ac0143e",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-002": {
@@ -1205,7 +1210,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "7af15dafcffb253a",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-003": {
@@ -1215,7 +1220,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "3eea1b9ecbb0c12e",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-004": {
@@ -1225,7 +1230,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "29c6fa84f6eff72d",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-005": {
@@ -1235,7 +1240,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "63d2aec9d2a0e184",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-006": {
@@ -1245,7 +1250,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "bfb1a7b459763b8c",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-007": {
@@ -1255,7 +1260,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "9c265a8b68628c60",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-008": {
@@ -1265,7 +1270,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "750550fa9051c448",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-001": {
@@ -1275,7 +1280,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "a9230975dbfb885e",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-002": {
@@ -1285,7 +1290,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "7af59b6963755c43",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-003": {
@@ -1295,31 +1300,29 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "5856c7a210434da2",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-004": {
         "case_id": "spi-i2c-004",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "spi_header_included",
-          "write_command_0x02",
-          "read_command_0x03"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "735c31edc157b362",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-005": {
         "case_id": "spi-i2c-005",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "found_count_reported"
+        ],
         "case_git_hash": "9c594a7a73846276",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-006": {
@@ -1329,7 +1332,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "d94cf6cd500bfd48",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-007": {
@@ -1339,7 +1342,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "9fcfe273b1020c97",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-008": {
@@ -1349,17 +1352,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "162687bd4e4dadcd",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-freertos-001": {
         "case_id": "stm32-freertos-001",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "stm32_hal_header_included"
+        ],
         "case_git_hash": "e11bc310ca7e3713",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-gpio-001": {
@@ -1369,7 +1374,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "c8254ac53d24bd11",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-i2c-001": {
@@ -1378,42 +1383,52 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "hal_i2c_mem_read_used"
+          "stm32_hal_header_included",
+          "i2c_handle_typedef_used",
+          "i2c1_instance_configured",
+          "hal_i2c_mem_read_used",
+          "i2c_clock_enabled"
         ],
         "case_git_hash": "3c9a519331efedd9",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-spi-001": {
         "case_id": "stm32-spi-001",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "stm32_hal_header_included",
+          "spi_handle_typedef_used",
+          "spi1_instance_configured",
+          "software_nss_used",
+          "spi_clock_enabled"
+        ],
         "case_git_hash": "17fafb85f71057da",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-uart-001": {
         "case_id": "stm32-uart-001",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "interrupt_receive_used"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "ba6694e21048cf06",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-001": {
         "case_id": "storage-001",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 2,
+        "failed_checks": [
+          "output_validation"
+        ],
         "case_git_hash": "84113fde32318b4a",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-002": {
@@ -1425,7 +1440,7 @@
           "runtime_started"
         ],
         "case_git_hash": "ac3f03914b270614",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-003": {
@@ -1435,17 +1450,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "cc5c2d92eb048a44",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-004": {
         "case_id": "storage-004",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 1,
+        "failed_checks": [
+          "west_build_docker"
+        ],
         "case_git_hash": "1a4bb2721e8b2391",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-005": {
@@ -1457,7 +1474,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "9f7adac3bb6d431a",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-006": {
@@ -1469,7 +1486,7 @@
           "success_printed"
         ],
         "case_git_hash": "504b193302de874d",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-007": {
@@ -1479,53 +1496,53 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "d587d3e2d5903db0",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-008": {
         "case_id": "storage-008",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 0,
         "failed_checks": [
-          "west_build_docker"
+          "memcmp_verification"
         ],
         "case_git_hash": "618507658ae4803b",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-012": {
         "case_id": "storage-012",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 3,
+        "failed_at_layer": 0,
         "failed_checks": [
-          "write_rate_limited"
+          "no_freertos_apis"
         ],
         "case_git_hash": "a36446766d669d9d",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-001": {
         "case_id": "threading-001",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 3,
-        "failed_checks": [
-          "different_thread_priorities"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "8f6a00c41bee6980",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-002": {
         "case_id": "threading-002",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 2,
+        "failed_checks": [
+          "runtime_started"
+        ],
         "case_git_hash": "cba27d4280a27290",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-003": {
@@ -1535,56 +1552,51 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "445d0c91d74b7459",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-004": {
         "case_id": "threading-004",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 1,
-        "failed_checks": [
-          "west_build_docker"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "dbd01f3214d63627",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-005": {
         "case_id": "threading-005",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 1,
-        "failed_checks": [
-          "west_build_docker"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "90eeac080a1e64f2",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-006": {
         "case_id": "threading-006",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 3,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "lock_order_a_before_b",
-          "unlock_order_b_before_a"
+          "output_validation"
         ],
         "case_git_hash": "18085b4481c3d0f7",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-007": {
         "case_id": "threading-007",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 3,
         "failed_checks": [
-          "west_build_docker"
+          "volatile_on_initialized_flag"
         ],
         "case_git_hash": "3d430cfec00928a2",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-008": {
@@ -1596,33 +1608,31 @@
           "deadline_constant_not_magic"
         ],
         "case_git_hash": "f011162f3374719e",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-011": {
         "case_id": "threading-011",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 1,
+        "failed_at_layer": 2,
         "failed_checks": [
-          "west_build_docker"
+          "output_validation"
         ],
         "case_git_hash": "9cfd0467ff651048",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-012": {
         "case_id": "threading-012",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 0,
+        "failed_at_layer": 1,
         "failed_checks": [
-          "kernel_header_included",
-          "thread_created",
-          "has_main_function"
+          "west_build_docker"
         ],
         "case_git_hash": "ee9fe14e21f3dea7",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-001": {
@@ -1634,17 +1644,19 @@
           "counter_is_volatile"
         ],
         "case_git_hash": "c2040424222bc1a4",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-002": {
         "case_id": "timer-002",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "one_shot_period_no_wait"
+        ],
         "case_git_hash": "39c734bd4b9abe47",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-003": {
@@ -1654,17 +1666,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "336c3c56bc9d5870",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-004": {
         "case_id": "timer-004",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "main_waits_for_work"
+        ],
         "case_git_hash": "d2368981b84f2fb1",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-005": {
@@ -1676,7 +1690,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "56b4cdb7fd27404f",
-        "tested_at": "2026-04-04T12:48:23.543189+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-006": {
@@ -1686,7 +1700,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "5084152619571ab5",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-007": {
@@ -1696,17 +1710,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "43754cb305bacb91",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-008": {
         "case_id": "timer-008",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 1,
+        "failed_checks": [
+          "west_build_docker"
+        ],
         "case_git_hash": "1c03dfb9680128d4",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "uart-001": {
@@ -1716,29 +1732,29 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "299be458b61f5f15",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "uart-002": {
         "case_id": "uart-002",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 3,
-        "failed_checks": [
-          "callback_before_rx_enable"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "eccab11937fdfc85",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-001": {
         "case_id": "watchdog-001",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "install_before_setup"
+        ],
         "case_git_hash": "0c676bbf9969c034",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-002": {
@@ -1748,7 +1764,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "199e20819ee8efdf",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-003": {
@@ -1758,17 +1774,20 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "21b4feb819c69c21",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-004": {
         "case_id": "watchdog-004",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "two_channels_installed",
+          "separate_channel_ids"
+        ],
         "case_git_hash": "ff29673e0b2fe49d",
-        "tested_at": "2026-04-04T12:24:49.410072+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-005": {
@@ -1778,7 +1797,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "98ad47d594002662",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-006": {
@@ -1788,17 +1807,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0e5079bc53d8552f",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-007": {
         "case_id": "watchdog-007",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 3,
+        "failed_checks": [
+          "wdt_feed_after_flag_check"
+        ],
         "case_git_hash": "5b079690013723c7",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-008": {
@@ -1808,32 +1829,33 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4bdad05177f4cc0e",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-010": {
         "case_id": "watchdog-010",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "kernel_header_included",
-          "watchdog_header_included",
-          "persistent_storage_header_included",
-          "printk_present"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "e5e7620433177b2d",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-001": {
         "case_id": "yocto-001",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "summary_defined",
+          "license_defined",
+          "lic_files_chksum",
+          "src_uri_defined",
+          "do_install_defined"
+        ],
         "case_git_hash": "3b1e5f8868a8b156",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-002": {
@@ -1843,7 +1865,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "04dfd8c734ee0536",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-003": {
@@ -1853,7 +1875,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "eb067989319f00ad",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-004": {
@@ -1863,7 +1885,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "6655b340286b5dc3",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-005": {
@@ -1873,7 +1895,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "cfb45444c5aa519c",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-006": {
@@ -1883,7 +1905,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0ab0a8bca21b9f51",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-007": {
@@ -1895,7 +1917,7 @@
           "rootfs_size_uses_weak_assignment"
         ],
         "case_git_hash": "dbd21f35e24eaf13",
-        "tested_at": "2026-03-29T15:17:25.748296+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-008": {
@@ -1905,19 +1927,17 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "3f48047d0311e4b4",
-        "tested_at": "2026-04-04T08:16:30.701633+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-011": {
         "case_id": "dma-011",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "block_count_three"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "8e84a7685ae7bb37",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-012": {
@@ -1926,11 +1946,10 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "dma_header_included",
           "cache_flush_before_dma"
         ],
         "case_git_hash": "1d9a04932de7638b",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-012": {
@@ -1940,7 +1959,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "a264e9693c26be9e",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-011": {
@@ -1952,17 +1971,19 @@
           "self_test_failure_branch"
         ],
         "case_git_hash": "34c1417cb1322595",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-013": {
         "case_id": "storage-013",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "flash_write_rate_limited"
+        ],
         "case_git_hash": "38929394e7888009",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-014": {
@@ -1976,7 +1997,7 @@
           "consumer_waits_for_flag"
         ],
         "case_git_hash": "a520fb0168b815e1",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-009": {
@@ -1988,7 +2009,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "103300fd4ab8bf91",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ble-010": {
@@ -2000,7 +2021,7 @@
           "bt_l2cap_chan_send_used"
         ],
         "case_git_hash": "0af36dca2950433b",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-009": {
@@ -2010,7 +2031,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "ef0cd43391e522b0",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "boot-010": {
@@ -2020,7 +2041,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "b3737f66ad2071a6",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-009": {
@@ -2030,7 +2051,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "cb84fa90bbbfc2e3",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "device-tree-010": {
@@ -2040,7 +2061,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "069ba35f0b5e5d1c",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "dma-010": {
@@ -2049,10 +2070,11 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
+          "atomic_buffer_index",
           "dma_reload_called"
         ],
         "case_git_hash": "6159ad7d4c80db88",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-adc-001": {
@@ -2065,7 +2087,7 @@
           "adc_read_error_checked"
         ],
         "case_git_hash": "276c808b51e2e7ab",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-ble-001": {
@@ -2075,7 +2097,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "a2a381e979f6e09b",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-nvs-001": {
@@ -2085,7 +2107,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "5c0196e503665c8a",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-ota-001": {
@@ -2094,12 +2116,10 @@
         "passed": false,
         "failed_at_layer": 3,
         "failed_checks": [
-          "rollback_on_failure",
-          "firmware_validation",
-          "error_handling_present"
+          "rollback_on_failure"
         ],
         "case_git_hash": "63365c5a2e2dac17",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "esp-sleep-001": {
@@ -2114,7 +2134,7 @@
           "gpio_wakeup_configured"
         ],
         "case_git_hash": "0a356938274591a1",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "gpio-basic-010": {
@@ -2126,7 +2146,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "7a8c3333c7c5dbf6",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-009": {
@@ -2138,7 +2158,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "bfa1fa208fa1e2e3",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-010": {
@@ -2148,7 +2168,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "33b9b57265cc0d8e",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-009": {
@@ -2158,7 +2178,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "cae67a9e3632fd6a",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "kconfig-010": {
@@ -2167,22 +2187,23 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "mbedtls_builtin_enabled",
           "mbedtls_psa_crypto_enabled",
           "hw_cc3xx_enabled"
         ],
         "case_git_hash": "292321f95742c10d",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-009": {
         "case_id": "linux-driver-009",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "gpiod_set_value_used"
+        ],
         "case_git_hash": "58cd04b0dfee3634",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "linux-driver-010": {
@@ -2192,7 +2213,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "7c45255a860be769",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-009": {
@@ -2202,7 +2223,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "8a8d2d72cd902cf8",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-010": {
@@ -2212,7 +2233,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "d33a155d27b4211b",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-009": {
@@ -2224,7 +2245,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "1e50269d7631476b",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "networking-010": {
@@ -2234,17 +2255,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "721925fc7deea503",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-009": {
         "case_id": "ota-009",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 1,
+        "failed_checks": [
+          "west_build_docker"
+        ],
         "case_git_hash": "774f53b5dfee8229",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "ota-010": {
@@ -2256,7 +2279,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "df2cc229600148ab",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-009": {
@@ -2270,7 +2293,7 @@
           "multiple_sleep_depths"
         ],
         "case_git_hash": "4a802cea6615f16a",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "power-mgmt-010": {
@@ -2280,19 +2303,17 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "8923fd4b95df68d9",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-009": {
         "case_id": "security-009",
         "model": "claude-code://haiku",
-        "passed": false,
-        "failed_at_layer": 0,
-        "failed_checks": [
-          "return_value_checked"
-        ],
+        "passed": true,
+        "failed_at_layer": null,
+        "failed_checks": [],
         "case_git_hash": "ad9c09eb7800f749",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "security-010": {
@@ -2302,7 +2323,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "f52e8f307f7cfe5d",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-009": {
@@ -2314,7 +2335,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "19e193ef642e0648",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "sensor-driver-010": {
@@ -2326,7 +2347,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "8a257050418345c6",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-009": {
@@ -2338,7 +2359,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "0e89f2fec1365255",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "spi-i2c-010": {
@@ -2348,7 +2369,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4c5534ce2b401dd4",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-adc-001": {
@@ -2364,7 +2385,7 @@
           "adc_12bit_resolution"
         ],
         "case_git_hash": "cc4970f61c826714",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-dma-001": {
@@ -2380,7 +2401,7 @@
           "dma_start_it_used"
         ],
         "case_git_hash": "3c5da4116d53852a",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-freertos-002": {
@@ -2390,7 +2411,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "2ddb6a1b98a24238",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-lowpower-001": {
@@ -2399,14 +2420,10 @@
         "passed": false,
         "failed_at_layer": 0,
         "failed_checks": [
-          "stm32_hal_header_included",
-          "stop_mode_api_used",
-          "rtc_handle_typedef_used",
-          "rtc_alarm_interrupt_used",
-          "wfi_entry_mode_specified"
+          "stm32_hal_header_included"
         ],
         "case_git_hash": "e94cd6265ab1cd15",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "stm32-timer-001": {
@@ -2422,19 +2439,19 @@
           "timer_clock_enabled"
         ],
         "case_git_hash": "7348cc872d827aac",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-009": {
         "case_id": "storage-009",
         "model": "claude-code://haiku",
         "passed": false,
-        "failed_at_layer": 0,
+        "failed_at_layer": 1,
         "failed_checks": [
-          "zero_size_check"
+          "west_build_docker"
         ],
         "case_git_hash": "ca3a983fe8759b33",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "storage-010": {
@@ -2444,7 +2461,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "593ef45333326301",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-009": {
@@ -2454,17 +2471,19 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "9616c185b96d0d9f",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-010": {
         "case_id": "threading-010",
         "model": "claude-code://haiku",
-        "passed": true,
-        "failed_at_layer": null,
-        "failed_checks": [],
+        "passed": false,
+        "failed_at_layer": 0,
+        "failed_checks": [
+          "k_sem_for_write_exclusion"
+        ],
         "case_git_hash": "ef8e1d08c31245fd",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-009": {
@@ -2474,7 +2493,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "d71f25cac97a958b",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "timer-010": {
@@ -2484,7 +2503,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "0149730cfeddd866",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "uart-003": {
@@ -2496,7 +2515,7 @@
           "west_build_docker"
         ],
         "case_git_hash": "25ad4149f46057f6",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "watchdog-009": {
@@ -2507,11 +2526,10 @@
         "failed_checks": [
           "window_min_greater_than_zero",
           "window_max_greater_than_zero",
-          "window_min_less_than_max",
-          "wdt_configured"
+          "window_min_less_than_max"
         ],
         "case_git_hash": "bf3330d97e73c0a0",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-009": {
@@ -2526,7 +2544,7 @@
           "kernel_imagetype_defined"
         ],
         "case_git_hash": "c05e8b1e373335b2",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "yocto-010": {
@@ -2536,7 +2554,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "4f717506554484b2",
-        "tested_at": "2026-04-11T09:59:39.468701+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "isr-concurrency-007": {
@@ -2546,7 +2564,7 @@
         "failed_at_layer": null,
         "failed_checks": [],
         "case_git_hash": "10e0544dc806386f",
-        "tested_at": "2026-04-11T12:16:05.917092+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "memory-opt-012": {
@@ -2558,7 +2576,7 @@
           "output_validation"
         ],
         "case_git_hash": "b5b527f9aca72cc5",
-        "tested_at": "2026-04-11T11:38:41.475043+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       },
       "threading-013": {
@@ -2570,7 +2588,7 @@
           "output_validation"
         ],
         "case_git_hash": "471deea531761343",
-        "tested_at": "2026-04-11T11:38:41.475043+00:00",
+        "tested_at": "2026-04-12T09:37:27.179958+00:00",
         "pass_at_1": 0.0
       }
     },

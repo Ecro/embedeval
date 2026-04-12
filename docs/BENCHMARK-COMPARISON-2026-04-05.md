@@ -342,3 +342,53 @@ It did **not** cover the 3 Phase A1 Docker-build cases (`isr-concurrency-007`, `
 - security: 38% → 50% (+12 from Phase A2)
 
 > Interpretation: the Phase A2 security fix was the only change with large directional impact. Weak categories (dma, isr-concurrency, memory-opt, threading) stayed weak — reinforcing the "implicit knowledge gap" hypothesis and justifying Phase C2 implicit-gap TC set.
+
+---
+
+## 9. Phase D: Haiku n=3 (2026-04-12)
+
+**Source:** `scripts/run_n_samples.sh 3 claude-code://haiku`
+**Model:** claude-haiku-4-5-20251001 (Haiku 4.5)
+**Case set:** 233 (185 public + 48 private), temperature=0.0
+**Full report:** [`docs/BENCHMARK-n3-haiku.md`](BENCHMARK-n3-haiku.md)
+
+### 9.1 Per-run pass@1
+
+| Run | pass@1 | passed | total |
+|-----|--------|--------|-------|
+| n1 | 58.4% | 136 | 233 |
+| n2 | 55.4% | 129 | 233 |
+| n3 | 57.1% | 133 | 233 |
+
+### 9.2 Aggregate
+
+| Metric | Value |
+|--------|-------|
+| **Mean pass@1** | **56.9%** |
+| Sample stdev | 1.51%p |
+| **95% CI (Wilson, pooled 699 trials)** | **[53.2%, 60.6%]** |
+| Case stability (3/3 or 0/3) | 73.0% (170/233) |
+
+### 9.3 Pass-count distribution
+
+| Passed in k of 3 runs | Cases |
+|------------------------|-------|
+| 0 (always fail) | 71 |
+| 1 (flaky-fail) | 25 |
+| 2 (flaky-pass) | 38 |
+| 3 (always pass) | 99 |
+
+> 63 flaky cases (27%) — these contribute most of the ±1.5%p run-to-run variance. The always-pass / always-fail core (170 cases) is stable.
+
+### 9.4 Comparison: Haiku n=3 vs prior single-run
+
+| Metric | Prior (mixed-date, n=1) | n=3 mean | Δ |
+|--------|------------------------|----------|---|
+| pass@1 | 61.4% (143/233) | 56.9% | -4.5%p |
+| 95% CI | [55.0%, 67.4%] | [53.2%, 60.6%] | narrowed |
+
+> The n=3 mean (56.9%) is lower than the prior mixed-date aggregate (61.4%) — prior runs had some stale pre-check-fix results that inflated the pass rate. The n=3 number is the fair, reproducible baseline.
+
+### 9.5 Next: Sonnet n=3
+
+Sonnet n=3 run is pending. Once done, both models will have reproducible CI-estimated baselines for publication.

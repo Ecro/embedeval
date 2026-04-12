@@ -182,5 +182,29 @@
     "passed": 171,
     "failed": 62,
     "pass_at_1": 0.7339055793991416
+  },
+  {
+    "timestamp": "2026-04-12",
+    "model": "claude-code://haiku",
+    "total": 233,
+    "passed": 136,
+    "failed": 97,
+    "pass_at_1": 0.5836909871244635
+  },
+  {
+    "timestamp": "2026-04-12",
+    "model": "claude-code://haiku",
+    "total": 233,
+    "passed": 129,
+    "failed": 104,
+    "pass_at_1": 0.5536480686695279
+  },
+  {
+    "timestamp": "2026-04-12",
+    "model": "claude-code://haiku",
+    "total": 233,
+    "passed": 133,
+    "failed": 100,
+    "pass_at_1": 0.5708154506437768
   }
 ]

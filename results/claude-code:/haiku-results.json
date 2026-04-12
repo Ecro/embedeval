@@ -1,29 +1,29 @@
 {
   "version": "0.1.0",
-  "date": "2026-04-11",
+  "date": "2026-04-12",
   "models": [
     {
       "model": "claude-code://haiku",
-      "pass_at_1": 0.6180257510729614,
-      "pass_at_1_quality": 0.7381974248927039,
+      "pass_at_1": 0.5708154506437768,
+      "pass_at_1_quality": 0.7167381974248928,
       "pass_at_1_comparable": null,
-      "pass_at_3": 0.6180257510729614,
-      "pass_at_5": 0.6180257510729614,
-      "avg_score": 0.6180257510729614,
+      "pass_at_3": 0.5708154506437768,
+      "pass_at_5": 0.5708154506437768,
+      "avg_score": 0.5708154506437768,
       "total_cases": 233,
-      "passed_cases": 144,
-      "passed_cases_quality": 172,
+      "passed_cases": 133,
+      "passed_cases_quality": 167,
       "comparable_cases": null,
       "layer_pass_rates": {
-        "compile_gate": 0.8900523560209425,
-        "runtime_execution": 0.9588235294117647,
+        "compile_gate": 0.8795811518324608,
+        "runtime_execution": 0.9345238095238095,
         "static_analysis": 0.8197424892703863,
-        "static_heuristic": 0.8834355828220859,
+        "static_heuristic": 0.8471337579617835,
         "test_quality_proof": 1.0
       },
       "pass_at_1_ci": [
-        0.5542021657450316,
-        0.678020551885655
+        0.5066191420103829,
+        0.6327144885680289
       ],
       "n_samples": 1
     }
@@ -31,15 +31,15 @@
   "categories": [
     {
       "category": "adc",
-      "pass_at_1": 1.0,
+      "pass_at_1": 0.5,
       "total_cases": 2,
-      "passed_cases": 2
+      "passed_cases": 1
     },
     {
       "category": "ble",
-      "pass_at_1": 0.6363636363636364,
+      "pass_at_1": 0.45454545454545453,
       "total_cases": 11,
-      "passed_cases": 7
+      "passed_cases": 5
     },
     {
       "category": "boot",
@@ -49,57 +49,57 @@
     },
     {
       "category": "device-tree",
-      "pass_at_1": 0.9,
+      "pass_at_1": 1.0,
       "total_cases": 10,
-      "passed_cases": 9
+      "passed_cases": 10
     },
     {
       "category": "dma",
-      "pass_at_1": 0.0,
+      "pass_at_1": 0.07692307692307693,
       "total_cases": 13,
-      "passed_cases": 0
+      "passed_cases": 1
     },
     {
       "category": "gpio-basic",
-      "pass_at_1": 0.6666666666666666,
+      "pass_at_1": 0.8333333333333334,
       "total_cases": 6,
-      "passed_cases": 4
+      "passed_cases": 5
     },
     {
       "category": "isr-concurrency",
-      "pass_at_1": 0.46153846153846156,
+      "pass_at_1": 0.38461538461538464,
       "total_cases": 13,
-      "passed_cases": 6
+      "passed_cases": 5
     },
     {
       "category": "kconfig",
+      "pass_at_1": 0.6,
+      "total_cases": 10,
+      "passed_cases": 6
+    },
+    {
+      "category": "linux-driver",
       "pass_at_1": 0.7,
       "total_cases": 10,
       "passed_cases": 7
     },
     {
-      "category": "linux-driver",
-      "pass_at_1": 0.9,
-      "total_cases": 10,
-      "passed_cases": 9
-    },
-    {
       "category": "memory-opt",
-      "pass_at_1": 0.4166666666666667,
+      "pass_at_1": 0.3333333333333333,
       "total_cases": 12,
-      "passed_cases": 5
+      "passed_cases": 4
     },
     {
       "category": "networking",
-      "pass_at_1": 0.5833333333333334,
+      "pass_at_1": 0.75,
       "total_cases": 12,
-      "passed_cases": 7
+      "passed_cases": 9
     },
     {
       "category": "ota",
-      "pass_at_1": 0.6666666666666666,
+      "pass_at_1": 0.5833333333333334,
       "total_cases": 12,
-      "passed_cases": 8
+      "passed_cases": 7
     },
     {
       "category": "power-mgmt",
@@ -115,9 +115,9 @@
     },
     {
       "category": "security",
-      "pass_at_1": 0.5,
+      "pass_at_1": 0.7,
       "total_cases": 10,
-      "passed_cases": 5
+      "passed_cases": 7
     },
     {
       "category": "sensor-driver",
@@ -127,15 +127,15 @@
     },
     {
       "category": "spi-i2c",
-      "pass_at_1": 0.7142857142857143,
+      "pass_at_1": 0.6428571428571429,
       "total_cases": 14,
-      "passed_cases": 10
+      "passed_cases": 9
     },
     {
       "category": "storage",
-      "pass_at_1": 0.5384615384615384,
+      "pass_at_1": 0.3076923076923077,
       "total_cases": 13,
-      "passed_cases": 7
+      "passed_cases": 4
     },
     {
       "category": "threading",
@@ -145,27 +145,27 @@
     },
     {
       "category": "timer",
-      "pass_at_1": 0.75,
+      "pass_at_1": 0.5,
       "total_cases": 12,
-      "passed_cases": 9
+      "passed_cases": 6
     },
     {
       "category": "uart",
-      "pass_at_1": 0.3333333333333333,
+      "pass_at_1": 0.6666666666666666,
       "total_cases": 3,
-      "passed_cases": 1
+      "passed_cases": 2
     },
     {
       "category": "watchdog",
-      "pass_at_1": 0.8,
+      "pass_at_1": 0.6,
       "total_cases": 10,
-      "passed_cases": 8
+      "passed_cases": 6
     },
     {
       "category": "yocto",
-      "pass_at_1": 0.8,
+      "pass_at_1": 0.7,
       "total_cases": 10,
-      "passed_cases": 8
+      "passed_cases": 7
     }
   ],
   "tier_scores": [
@@ -177,35 +177,35 @@
     },
     {
       "tier": "core",
-      "pass_at_1": 0.6991869918699187,
+      "pass_at_1": 0.6341463414634146,
       "total_cases": 123,
-      "passed_cases": 86
+      "passed_cases": 78
     },
     {
       "tier": "challenge",
-      "pass_at_1": 0.5283018867924528,
+      "pass_at_1": 0.5,
       "total_cases": 106,
-      "passed_cases": 56
+      "passed_cases": 53
     }
   ],
   "reasoning_scores": [
     {
       "reasoning_type": "api_recall",
-      "pass_at_1": 0.6451612903225806,
+      "pass_at_1": 0.5898617511520737,
       "total_cases": 217,
-      "passed_cases": 140
+      "passed_cases": 128
     },
     {
       "reasoning_type": "rule_application",
-      "pass_at_1": 0.696969696969697,
+      "pass_at_1": 0.6590909090909091,
       "total_cases": 132,
-      "passed_cases": 92
+      "passed_cases": 87
     },
     {
       "reasoning_type": "cross_domain",
-      "pass_at_1": 0.42105263157894735,
+      "pass_at_1": 0.3684210526315789,
       "total_cases": 38,
-      "passed_cases": 16
+      "passed_cases": 14
     },
     {
       "reasoning_type": "system_reasoning",
@@ -218,7 +218,7 @@
     "total_cases": 233,
     "total_models": 1,
     "best_model": "claude-code://haiku",
-    "best_pass_at_1": 0.6180257510729614,
+    "best_pass_at_1": 0.5708154506437768,
     "common_cases": null,
     "case_set_warning": null
   },

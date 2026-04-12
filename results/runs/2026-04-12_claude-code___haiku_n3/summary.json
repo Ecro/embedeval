@@ -3,27 +3,27 @@
   "date": "2026-04-12",
   "models": [
     {
-      "model": "claude-code://sonnet",
-      "pass_at_1": 0.7339055793991416,
-      "pass_at_1_quality": 0.8583690987124464,
+      "model": "claude-code://haiku",
+      "pass_at_1": 0.5708154506437768,
+      "pass_at_1_quality": 0.7167381974248928,
       "pass_at_1_comparable": null,
-      "pass_at_3": 0.7339055793991416,
-      "pass_at_5": 0.7339055793991416,
-      "avg_score": 0.7339055793991416,
+      "pass_at_3": 0.5708154506437768,
+      "pass_at_5": 0.5708154506437768,
+      "avg_score": 0.5708154506437768,
       "total_cases": 233,
-      "passed_cases": 171,
-      "passed_cases_quality": 200,
+      "passed_cases": 133,
+      "passed_cases_quality": 167,
       "comparable_cases": null,
       "layer_pass_rates": {
-        "compile_gate": 0.9262672811059908,
-        "runtime_execution": 0.9353233830845771,
-        "static_analysis": 0.9313304721030042,
-        "static_heuristic": 0.9095744680851063,
-        "test_quality_proof": 1.0
+        "compile_gate": 0.8795811518324608,
+        "runtime_execution": 0.9345238095238095,
+        "static_analysis": 0.8197424892703863,
+        "static_heuristic": 0.8471337579617835,
+        "test_quality_proof": 0.9924812030075187
       },
       "pass_at_1_ci": [
-        0.6737024479779193,
-        0.7865207560538047
+        0.5066191420103829,
+        0.6327144885680289
       ],
       "n_samples": 1
     }
@@ -31,15 +31,15 @@
   "categories": [
     {
       "category": "adc",
-      "pass_at_1": 1.0,
+      "pass_at_1": 0.5,
       "total_cases": 2,
-      "passed_cases": 2
+      "passed_cases": 1
     },
     {
       "category": "ble",
-      "pass_at_1": 0.8181818181818182,
+      "pass_at_1": 0.45454545454545453,
       "total_cases": 11,
-      "passed_cases": 9
+      "passed_cases": 5
     },
     {
       "category": "boot",
@@ -55,27 +55,27 @@
     },
     {
       "category": "dma",
-      "pass_at_1": 0.46153846153846156,
+      "pass_at_1": 0.07692307692307693,
       "total_cases": 13,
-      "passed_cases": 6
+      "passed_cases": 1
     },
     {
       "category": "gpio-basic",
-      "pass_at_1": 0.6666666666666666,
+      "pass_at_1": 0.8333333333333334,
       "total_cases": 6,
-      "passed_cases": 4
+      "passed_cases": 5
     },
     {
       "category": "isr-concurrency",
-      "pass_at_1": 0.46153846153846156,
+      "pass_at_1": 0.38461538461538464,
       "total_cases": 13,
-      "passed_cases": 6
+      "passed_cases": 5
     },
     {
       "category": "kconfig",
-      "pass_at_1": 0.8,
+      "pass_at_1": 0.6,
       "total_cases": 10,
-      "passed_cases": 8
+      "passed_cases": 6
     },
     {
       "category": "linux-driver",
@@ -85,27 +85,27 @@
     },
     {
       "category": "memory-opt",
-      "pass_at_1": 0.5833333333333334,
+      "pass_at_1": 0.3333333333333333,
       "total_cases": 12,
-      "passed_cases": 7
+      "passed_cases": 4
     },
     {
       "category": "networking",
-      "pass_at_1": 0.9166666666666666,
-      "total_cases": 12,
-      "passed_cases": 11
-    },
-    {
-      "category": "ota",
       "pass_at_1": 0.75,
       "total_cases": 12,
       "passed_cases": 9
     },
     {
-      "category": "power-mgmt",
-      "pass_at_1": 0.9166666666666666,
+      "category": "ota",
+      "pass_at_1": 0.5833333333333334,
       "total_cases": 12,
-      "passed_cases": 11
+      "passed_cases": 7
+    },
+    {
+      "category": "power-mgmt",
+      "pass_at_1": 0.6666666666666666,
+      "total_cases": 12,
+      "passed_cases": 8
     },
     {
       "category": "pwm",
@@ -115,39 +115,39 @@
     },
     {
       "category": "security",
-      "pass_at_1": 0.6,
+      "pass_at_1": 0.7,
       "total_cases": 10,
-      "passed_cases": 6
-    },
-    {
-      "category": "sensor-driver",
-      "pass_at_1": 0.75,
-      "total_cases": 12,
-      "passed_cases": 9
-    },
-    {
-      "category": "spi-i2c",
-      "pass_at_1": 0.7857142857142857,
-      "total_cases": 14,
-      "passed_cases": 11
-    },
-    {
-      "category": "storage",
-      "pass_at_1": 0.5384615384615384,
-      "total_cases": 13,
       "passed_cases": 7
     },
     {
+      "category": "sensor-driver",
+      "pass_at_1": 0.6666666666666666,
+      "total_cases": 12,
+      "passed_cases": 8
+    },
+    {
+      "category": "spi-i2c",
+      "pass_at_1": 0.6428571428571429,
+      "total_cases": 14,
+      "passed_cases": 9
+    },
+    {
+      "category": "storage",
+      "pass_at_1": 0.3076923076923077,
+      "total_cases": 13,
+      "passed_cases": 4
+    },
+    {
       "category": "threading",
-      "pass_at_1": 0.4,
+      "pass_at_1": 0.3333333333333333,
       "total_cases": 15,
-      "passed_cases": 6
+      "passed_cases": 5
     },
     {
       "category": "timer",
-      "pass_at_1": 0.9166666666666666,
+      "pass_at_1": 0.5,
       "total_cases": 12,
-      "passed_cases": 11
+      "passed_cases": 6
     },
     {
       "category": "uart",
@@ -157,73 +157,79 @@
     },
     {
       "category": "watchdog",
-      "pass_at_1": 0.8,
+      "pass_at_1": 0.6,
       "total_cases": 10,
-      "passed_cases": 8
+      "passed_cases": 6
     },
     {
       "category": "yocto",
-      "pass_at_1": 1.0,
+      "pass_at_1": 0.7,
       "total_cases": 10,
-      "passed_cases": 10
+      "passed_cases": 7
     }
   ],
   "tier_scores": [
     {
       "tier": "sanity",
-      "pass_at_1": 0.75,
+      "pass_at_1": 0.5,
       "total_cases": 4,
-      "passed_cases": 3
+      "passed_cases": 2
     },
     {
       "tier": "core",
-      "pass_at_1": 0.8048780487804879,
+      "pass_at_1": 0.6341463414634146,
       "total_cases": 123,
-      "passed_cases": 99
+      "passed_cases": 78
     },
     {
       "tier": "challenge",
-      "pass_at_1": 0.6509433962264151,
+      "pass_at_1": 0.5,
       "total_cases": 106,
-      "passed_cases": 69
+      "passed_cases": 53
     }
   ],
   "reasoning_scores": [
     {
       "reasoning_type": "api_recall",
-      "pass_at_1": 0.7695852534562212,
+      "pass_at_1": 0.5898617511520737,
       "total_cases": 217,
-      "passed_cases": 167
+      "passed_cases": 128
     },
     {
       "reasoning_type": "rule_application",
-      "pass_at_1": 0.7878787878787878,
+      "pass_at_1": 0.6590909090909091,
       "total_cases": 132,
-      "passed_cases": 104
+      "passed_cases": 87
     },
     {
       "reasoning_type": "cross_domain",
-      "pass_at_1": 0.5,
+      "pass_at_1": 0.3684210526315789,
       "total_cases": 38,
-      "passed_cases": 19
+      "passed_cases": 14
     },
     {
       "reasoning_type": "system_reasoning",
-      "pass_at_1": 0.6956521739130435,
+      "pass_at_1": 0.5826086956521739,
       "total_cases": 115,
-      "passed_cases": 80
+      "passed_cases": 67
     }
   ],
   "overall": {
     "total_cases": 233,
     "total_models": 1,
-    "best_model": "claude-code://sonnet",
-    "best_pass_at_1": 0.7339055793991416,
+    "best_model": "claude-code://haiku",
+    "best_pass_at_1": 0.5708154506437768,
     "common_cases": null,
     "case_set_warning": null
   },
   "scenario": "generation",
   "temperature": 0.0,
   "n_samples_per_case": 1,
-  "n_runs": 1
+  "n_runs": 1,
+  "run_timestamp": "2026-04-12",
+  "model": "claude-code://haiku",
+  "total_results": 233,
+  "passed": 133,
+  "failed": 100,
+  "run_id": "n3"
 }

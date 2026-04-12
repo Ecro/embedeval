@@ -4,12 +4,12 @@ project: embedeval
 task_slug: benchmark-followup-2026-04-11
 status: in_progress
 created: 2026-04-11
-updated: 2026-04-11
+updated: 2026-04-12
 tags: [embedeval, plan, python, benchmark, testing, methodology]
 summary: "P0+P1 benchmark follow-up: fix env failures, re-baseline Sonnet, add gap TCs, then n=3 runs"
 ---
 
-> **Status (2026-04-11 evening):** Phase A + Phase C done (committed `d70cb1c`, `bd4baf1`, `88e7f5e`). Phase B ran partially via `--retest-only` (Haiku 63, Sonnet 61 cases). Full re-baseline (B1 proper) and Phase A1 cache-bust pending. Phase D (n=3) blocked on those.
+> **Status (2026-04-12):** Phase A/B/C done. Phase D Haiku n=3 complete (mean 56.9%, CI [53.2%, 60.6%]). Sonnet n=3 pending. Multiple infrastructure bugs found and fixed along the way: private-case hash, path determinism, leaderboard stomp, per-case error resilience, JSONL checkpoint for resume.
 
 # PLAN: Benchmark Follow-up (2026-04-11)
 
@@ -341,10 +341,12 @@ uv run python scripts/verify_references_build.py       # reference solution 빌�
 - [x] 회귀 check fixes (커밋 `d70cb1c` — 5개 케이스 check 완화/교정)
 - [x] 약점 영역 implicit gap TC v2 6개 추가 (커밋 `bd4baf1`, 리네임 `88e7f5e`)
 
-### Phase D (n=3) — BLOCKED on B full
-- [ ] 두 모델 각각 n=3 풀세트 실행 완료
-- [ ] mean ± 95% CI 산출, std ≤5%p
-- [ ] 발표용 문서 `docs/BENCHMARK-2026-04-1X-final.md` 작성
+### Phase D (n=3) — Haiku DONE, Sonnet pending
+- [x] Haiku n=3 풀세트 실행 완료 (2026-04-12): mean 56.9%, std 1.51%p, CI [53.2%, 60.6%]
+  - [x] `docs/BENCHMARK-n3-haiku.md` 작성
+  - [x] `docs/BENCHMARK-COMPARISON-2026-04-05.md` §9 업데이트
+- [ ] Sonnet n=3 풀세트 실행
+- [ ] 발표용 최종 문서 `docs/BENCHMARK-2026-04-1X-final.md` 작성
 
 ### 종합
 - [ ] false negative rate <3% (현재 ~6%)
