@@ -321,6 +321,15 @@ def run(
         f"Running benchmark: model={model}, cases={cases_dir}, scenario={scenario}"
     )
 
+    # Build a checkpoint path so a crashed run can resume instead of
+    # starting from scratch. Deleted on successful completion below.
+    model_slug = model.replace("/", "_").replace(":", "_")
+    ckpt_suffix = f"_{run_id}" if run_id else ""
+    checkpoint_path = (
+        output_dir / "runs" / f".checkpoint_{model_slug}{ckpt_suffix}.jsonl"
+    )
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+
     if scenario == "bugfix":
         from embedeval.bugfix import run_bugfix_benchmark
 
@@ -340,6 +349,7 @@ def run(
             feedback_rounds=feedback_rounds,
             include_private=include_private,
             extra_cases_dirs=extra_dirs,
+            checkpoint_path=checkpoint_path,
         )
 
     if not results:
@@ -425,6 +435,11 @@ def run(
 
     # Generate safe guide from all available runs
     guide_path = generate_safe_guide(output_dir)
+
+    # Clean checkpoint — run succeeded, all data is persisted.
+    if checkpoint_path.is_file():
+        checkpoint_path.unlink()
+        logger.info("Checkpoint removed: %s", checkpoint_path)
 
     typer.echo(f"Results: {json_path}")
     typer.echo(f"Leaderboard: {leaderboard_path}")

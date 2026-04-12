@@ -1,5 +1,6 @@
 """EmbedEval benchmark runner."""
 
+import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -166,6 +167,169 @@ def _inject_board_target(prompt: str, meta: CaseMetadata) -> str:
     return prompt.rstrip() + "\n\nTarget board: " + board + "\n"
 
 
+def _make_error_result(
+    meta: CaseMetadata,
+    model: str,
+    attempt: int,
+    exc: BaseException,
+) -> EvalResult:
+    """Synthesize a FAIL@L0 EvalResult for an unhandled per-case error."""
+    error_msg = f"{type(exc).__name__}: {exc}"
+    result = EvalResult(
+        case_id=meta.id,
+        category=meta.category,
+        model=model,
+        attempt=attempt,
+        generated_code="",
+        layers=[
+            LayerResult(
+                layer=0,
+                name="static_analysis",
+                passed=False,
+                details=[
+                    CheckDetail(
+                        check_name="llm_call",
+                        passed=False,
+                        expected="LLM response",
+                        actual=error_msg[:500],
+                        check_type="llm_error",
+                    )
+                ],
+                error=error_msg[:500],
+                duration_seconds=0.0,
+            )
+        ],
+        failed_at_layer=0,
+        passed=False,
+        total_score=0.0,
+        duration_seconds=0.0,
+        token_usage=TokenUsage(
+            input_tokens=0,
+            output_tokens=0,
+            total_tokens=0,
+        ),
+        cost_usd=0.0,
+    )
+    result.tier = meta.tier
+    result.reasoning_types = meta.reasoning_types
+    return result
+
+
+def _load_checkpoint(path: Path) -> dict[str, EvalResult]:
+    """Load previously completed results from a JSONL checkpoint file.
+
+    Returns a mapping of case_id -> EvalResult for cases that were
+    already evaluated in a prior (interrupted) invocation.
+    """
+    if not path.is_file():
+        return {}
+    completed: dict[str, EvalResult] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            data = json.loads(line)
+            result = EvalResult.model_validate(data)
+            completed[result.case_id] = result
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Ignoring bad checkpoint line: %s", exc)
+    logger.info(
+        "Loaded %d completed case(s) from checkpoint %s",
+        len(completed),
+        path,
+    )
+    return completed
+
+
+def _append_checkpoint(path: Path, result: EvalResult) -> None:
+    """Append one EvalResult as a single JSONL line to the checkpoint."""
+    with path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(result.model_dump(mode="json"), ensure_ascii=False))
+        f.write("\n")
+
+
+def _run_single_case(
+    *,
+    meta: CaseMetadata,
+    case_dir: Path,
+    prompt: str,
+    context_files: list[str],
+    model: str,
+    attempt: int,
+    feedback_rounds: int,
+) -> EvalResult:
+    """Evaluate one case/attempt — extracted so the caller can wrap it
+    in a broad try/except without duplicating the happy-path logic."""
+    llm_response = call_model(
+        model=model,
+        prompt=prompt,
+        context_files=context_files,
+    )
+
+    result = evaluate(
+        case_dir=case_dir,
+        generated_code=llm_response.generated_code,
+        model=model,
+        attempt=attempt,
+        token_usage=llm_response.token_usage,
+        cost_usd=llm_response.cost_usd,
+        category=meta.category,
+    )
+    result.tier = meta.tier
+    result.reasoning_types = meta.reasoning_types
+
+    # Compiler feedback loop: retry with error context on early failures
+    if (
+        feedback_rounds > 0
+        and not result.passed
+        and result.failed_at_layer is not None
+        and result.failed_at_layer <= 1
+    ):
+        for feedback_round in range(feedback_rounds):
+            failed_layer = result.layers[result.failed_at_layer]
+            error_msg = failed_layer.error or ""
+            failed_details = "\n".join(
+                f"- {d.check_name}: expected={d.expected},"
+                f" actual={d.actual}"
+                for d in failed_layer.details
+                if not d.passed
+            )
+            error_info = (
+                "\n".join(filter(None, [error_msg, failed_details]))
+                or "Check failed"
+            )
+            feedback_prompt = (
+                f"Your previous code had the following error:\n"
+                f"```\n{error_info[:800]}\n```\n\n"
+                f"Original task:\n{prompt}\n\n"
+                f"Please fix the code and output ONLY the complete"
+                f" corrected C source file."
+            )
+            fb_response = call_model(model=model, prompt=feedback_prompt)
+            generated_code = fb_response.generated_code
+            result = evaluate(
+                case_dir=case_dir,
+                generated_code=generated_code,
+                model=model,
+                attempt=attempt,
+                token_usage=fb_response.token_usage,
+                cost_usd=fb_response.cost_usd,
+                category=meta.category,
+            )
+            logger.info(
+                "Feedback round %d/%d for case %s: %s",
+                feedback_round + 1,
+                feedback_rounds,
+                meta.id,
+                "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}",
+            )
+            if result.passed:
+                break
+
+    return result
+
+
 def run_benchmark(
     cases_dir: Path,
     model: str,
@@ -174,6 +338,7 @@ def run_benchmark(
     feedback_rounds: int = 0,
     include_private: bool = False,
     extra_cases_dirs: list[Path] | None = None,
+    checkpoint_path: Path | None = None,
 ) -> list[EvalResult]:
     """Run the benchmark pipeline: discover, filter, LLM call, evaluate.
 
@@ -189,6 +354,10 @@ def run_benchmark(
             Defaults to False for contamination prevention.
         extra_cases_dirs: Additional directories to discover cases from
             (e.g., private cases from a separate repo).
+        checkpoint_path: Optional path to a JSONL checkpoint file.
+            If the file exists, previously completed cases are loaded
+            and skipped. Each newly completed case is appended
+            immediately so the run can resume after an interruption.
 
     Returns:
         List of EvalResult for all case/attempt combinations.
@@ -205,8 +374,14 @@ def run_benchmark(
         logger.warning("No cases selected after filtering")
         return []
 
-    results: list[EvalResult] = []
+    # Load checkpoint from a prior interrupted run (if any)
+    completed: dict[str, EvalResult] = {}
+    if checkpoint_path is not None:
+        completed = _load_checkpoint(checkpoint_path)
+
+    results: list[EvalResult] = list(completed.values())
     total_tasks = len(selected) * attempts
+    skipped = 0
 
     with Progress(
         SpinnerColumn(),
@@ -219,6 +394,12 @@ def run_benchmark(
         )
 
         for case_dir, meta in selected:
+            # Skip cases already completed in a prior (interrupted) run
+            if meta.id in completed:
+                skipped += 1
+                progress.advance(task, advance=attempts)
+                continue
+
             prompt = _load_prompt(case_dir)
             prompt = _inject_board_target(prompt, meta)
             context_files = _collect_context_files(case_dir)
@@ -230,131 +411,38 @@ def run_benchmark(
                 )
 
                 try:
-                    llm_response = call_model(
-                        model=model,
+                    result = _run_single_case(
+                        meta=meta,
+                        case_dir=case_dir,
                         prompt=prompt,
                         context_files=context_files,
-                    )
-                except RuntimeError as exc:
-                    logger.warning(
-                        "Case %s attempt %d: LLM call failed: %s",
-                        meta.id,
-                        attempt,
-                        exc,
-                    )
-                    result = EvalResult(
-                        case_id=meta.id,
-                        category=meta.category,
                         model=model,
                         attempt=attempt,
-                        generated_code="",
-                        layers=[
-                            LayerResult(
-                                layer=0,
-                                name="static_analysis",
-                                passed=False,
-                                details=[
-                                    CheckDetail(
-                                        check_name="llm_call",
-                                        passed=False,
-                                        expected="LLM response",
-                                        actual=str(exc),
-                                        check_type="llm_error",
-                                    )
-                                ],
-                                error=str(exc),
-                                duration_seconds=0.0,
-                            )
-                        ],
-                        failed_at_layer=0,
-                        passed=False,
-                        total_score=0.0,
-                        duration_seconds=0.0,
-                        token_usage=TokenUsage(
-                            input_tokens=0,
-                            output_tokens=0,
-                            total_tokens=0,
-                        ),
-                        cost_usd=0.0,
+                        feedback_rounds=feedback_rounds,
                     )
-                    result.tier = meta.tier
-                    result.reasoning_types = meta.reasoning_types
-                    results.append(result)
-                    progress.advance(task)
-                    logger.info(
-                        "Case %s attempt %d: FAIL@L0 (LLM error)",
+                except Exception as exc:  # noqa: BLE001
+                    # Catch ANY per-case error (UnicodeDecodeError,
+                    # network timeouts, JSON parse failures, etc.) so
+                    # one broken case doesn't kill the entire run.
+                    logger.exception(
+                        "Case %s attempt %d: unhandled %s — recording FAIL@L0",
                         meta.id,
                         attempt,
+                        type(exc).__name__,
                     )
-                    continue
-
-                result = evaluate(
-                    case_dir=case_dir,
-                    generated_code=llm_response.generated_code,
-                    model=model,
-                    attempt=attempt,
-                    token_usage=llm_response.token_usage,
-                    cost_usd=llm_response.cost_usd,
-                    category=meta.category,
-                )
-                result.tier = meta.tier
-                result.reasoning_types = meta.reasoning_types
-
-                # Compiler feedback loop: retry with error context on early
-                # layer failures
-                if (
-                    feedback_rounds > 0
-                    and not result.passed
-                    and result.failed_at_layer is not None
-                    and result.failed_at_layer <= 1
-                ):
-                    for feedback_round in range(feedback_rounds):
-                        failed_layer = result.layers[result.failed_at_layer]
-                        error_msg = failed_layer.error or ""
-                        failed_details = "\n".join(
-                            f"- {d.check_name}: expected={d.expected},"
-                            f" actual={d.actual}"
-                            for d in failed_layer.details
-                            if not d.passed
-                        )
-                        error_info = (
-                            "\n".join(filter(None, [error_msg, failed_details]))
-                            or "Check failed"
-                        )
-                        feedback_prompt = (
-                            f"Your previous code had the following error:\n"
-                            f"```\n{error_info[:800]}\n```\n\n"
-                            f"Original task:\n{prompt}\n\n"
-                            f"Please fix the code and output ONLY the complete"
-                            f" corrected C source file."
-                        )
-                        fb_response = call_model(model=model, prompt=feedback_prompt)
-                        generated_code = fb_response.generated_code
-                        result = evaluate(
-                            case_dir=case_dir,
-                            generated_code=generated_code,
-                            model=model,
-                            attempt=attempt,
-                            token_usage=fb_response.token_usage,
-                            cost_usd=fb_response.cost_usd,
-                            category=meta.category,
-                        )
-                        logger.info(
-                            "Feedback round %d/%d for case %s: %s",
-                            feedback_round + 1,
-                            feedback_rounds,
-                            meta.id,
-                            "PASS"
-                            if result.passed
-                            else f"FAIL@L{result.failed_at_layer}",
-                        )
-                        if result.passed:
-                            break
+                    result = _make_error_result(meta, model, attempt, exc)
 
                 results.append(result)
                 progress.advance(task)
 
-                status = "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}"
+                # Checkpoint: persist immediately so crashes don't
+                # discard hours of prior progress.
+                if checkpoint_path is not None:
+                    _append_checkpoint(checkpoint_path, result)
+
+                status = (
+                    "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}"
+                )
                 logger.info(
                     "Case %s attempt %d: %s",
                     meta.id,
@@ -362,5 +450,11 @@ def run_benchmark(
                     status,
                 )
 
+    if skipped:
+        logger.info(
+            "Resumed from checkpoint: %d cases skipped, %d new",
+            skipped,
+            len(results) - len(completed),
+        )
     logger.info("Benchmark complete: %d results", len(results))
     return results
