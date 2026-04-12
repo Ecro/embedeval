@@ -221,6 +221,18 @@ def run(
             help="Only run cases that changed since last test or were never tested",
         ),
     ] = False,
+    run_id: Annotated[
+        Optional[str],
+        typer.Option(
+            "--run-id",
+            help=(
+                "Distinct tag appended to the run archive directory "
+                "(e.g. 'n1', 'n2') so multiple runs of the same model on "
+                "the same day don't overwrite each other — required when "
+                "collecting n>=2 samples for CI analysis"
+            ),
+        ),
+    ] = None,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -391,7 +403,7 @@ def run(
     generate_leaderboard(leaderboard_reports, leaderboard_path)
 
     run_dir = generate_run_archive(
-        comprehensive_results, report, output_dir, model
+        comprehensive_results, report, output_dir, model, run_id=run_id
     )
     # Failure report still lists just this run's failures — the archive
     # has the full picture, but the one-page report is most useful as

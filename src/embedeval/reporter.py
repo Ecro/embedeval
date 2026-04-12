@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -471,19 +472,43 @@ def _cross_benchmark_comparison(reports: list[BenchmarkReport]) -> list[str]:
     return lines
 
 
+_RUN_ID_SAFE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def _sanitize_run_id(run_id: str) -> str:
+    """Reduce a caller-supplied run id to filesystem-safe characters."""
+    cleaned = _RUN_ID_SAFE.sub("-", run_id.strip()).strip("-.")
+    return cleaned
+
+
 def generate_run_archive(
     results: list[EvalResult],
     report: BenchmarkReport,
     output_base: Path,
     model: str,
+    run_id: str | None = None,
 ) -> Path:
     """Save detailed per-case results and summary to a timestamped run directory.
+
+    Args:
+        run_id: Optional suffix (e.g. "n1", "n2") that distinguishes
+            multiple runs of the same model on the same day. Without it,
+            a second run on 2026-04-11 would overwrite the first under
+            `runs/2026-04-11_<model>/`. When provided, the archive goes
+            to `runs/<date>_<model>_<run_id>/`. The id is sanitized to
+            `[A-Za-z0-9._-]` to keep it filesystem-safe.
 
     Returns the run directory path.
     """
     timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     model_slug = model.replace("/", "_").replace(":", "_")
-    run_dir = output_base / "runs" / f"{timestamp}_{model_slug}"
+    dir_name = f"{timestamp}_{model_slug}"
+    safe_run_id: str | None = None
+    if run_id:
+        safe_run_id = _sanitize_run_id(run_id)
+        if safe_run_id:
+            dir_name = f"{dir_name}_{safe_run_id}"
+    run_dir = output_base / "runs" / dir_name
     details_dir = run_dir / "details"
     details_dir.mkdir(parents=True, exist_ok=True)
 
@@ -505,6 +530,8 @@ def generate_run_archive(
     summary["total_results"] = len(results)
     summary["passed"] = sum(1 for r in results if r.passed)
     summary["failed"] = sum(1 for r in results if not r.passed)
+    if safe_run_id:
+        summary["run_id"] = safe_run_id
     summary_file.write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
