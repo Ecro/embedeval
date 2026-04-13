@@ -11,8 +11,8 @@ development teams to optimize their token investment.
 - [LLM-EMBEDDED-DEVELOPMENT-GUIDE.md](LLM-EMBEDDED-DEVELOPMENT-GUIDE.md) — HOW to use LLMs (7-phase workflow, tactical)
 - **→ This document** — THE ECONOMICS of token investment (strategic/architectural)
 
-**Version:** 1.0 (2026-04-07)
-**Evidence:** EmbedEval benchmark data (Haiku 4.5 vs Sonnet 4.6, 227 TCs), 15+ arXiv papers (2024-2026)
+**Version:** 1.1 (2026-04-13)
+**Evidence:** EmbedEval benchmark data (Haiku 4.5 vs Sonnet 4.6, **233 TCs**, 185 public + 48 private, **n=3 aggregate** mean pass@1 with 95% CIs), 15+ arXiv papers (2024-2026)
 
 ---
 
@@ -176,7 +176,7 @@ As detailed in [LLM-EMBEDDED-CONSIDERATIONS.md §1.2](./LLM-EMBEDDED-CONSIDERATI
 
 ### 3.4 The Four Levels of Implicit Knowledge
 
-LLM performance by knowledge level, confirmed by EmbedEval benchmark data:
+LLM performance by knowledge level, illustrated with EmbedEval-style tiering; **headline benchmark (233 TCs, n=3 mean):** Haiku pass@1 **56.9%** (95% CI **[53.2%, 60.6%]**), Sonnet **68.0%** (**[64.4%, 71.3%]**), model gap **11.1** percentage points.
 
 ```
 Level 1: C Language Knowledge          ← Sonnet ~95%, Haiku ~80%
@@ -191,6 +191,8 @@ Level 3: Hardware Knowledge            ← Sonnet ~60%, Haiku ~30%
 Level 4: System Safety Knowledge       ← Sonnet ~50%, Haiku ~30%
   OTA rollback, reverse cleanup, fail-fast, conditional WDT feed
 ```
+
+The per-level percentages are **qualitative** (training-data availability); aggregate pass@1 above is from the n=3 leaderboard mean over all cases.
 
 **Levels 1-2** are abundant in training data (C textbooks, RTOS tutorials).
 **Levels 3-4** exist primarily in datasheets, internal docs, and experienced engineers' heads — **outside the LLM's knowledge boundary**.
@@ -222,14 +224,17 @@ Analyzing EmbedEval's 5-layer evaluation architecture from an automation perspec
 
 ### Failure Distribution by Layer from EmbedEval Data
 
-| Layer | Haiku Failures | Sonnet Failures | Solvable by Token Scaling? |
-|-------|---------------|----------------|--------------------------|
-| L0 (Static) | 27 | 9 | **YES** — more iterations + compiler feedback improves this |
-| L1 (Build) | 15 | 7 | **YES** — SDK error message feedback enables fixes |
-| L2 (Runtime) | 6 | 13 | **PARTIAL** — only within emulator scope |
-| L3 (Behavioral) | 15 | 13 | **LIMITED** — safety patterns require context injection |
+Layer **pass rates** below are from the **n=3** EmbedEval run (233 TCs: 185 public + 48 private); see [results/LEADERBOARD.md](../results/LEADERBOARD.md) for the full heatmap and methodology.
 
-**Key insight:** Scaling from Haiku to Sonnet dramatically improves L0/L1 (42→16), but L2/L3 barely changes (21→26). **Model size (= more training tokens) does not solve problems above the physical ceiling.**
+| Layer | Haiku pass@layer (n=3) | Sonnet pass@layer (n=3) | Solvable by Token Scaling? |
+|-------|------------------------|-------------------------|--------------------------|
+| L0 (Static) | 82% | 94% | **YES** — more iterations + compiler feedback improves this |
+| L1 (Build) | 88% | 93% | **YES** — SDK error message feedback enables fixes |
+| L2 (Runtime) | 93% | 90% | **PARTIAL** — only within emulator scope |
+| L3 (Heuristic) | 85% | 85% | **LIMITED** — safety patterns require context injection |
+| L4 (Mutation) | 100% | 100% | **LIMITED** — subtle variants still slip without broader verification |
+
+**Key insight:** The largest lift from Haiku to Sonnet is at **L0** (82%→94%); **L1** improves modestly (88%→93%). **L2–L3** sit in a similar band (L3 both 85%), so behavioral and emulator-bound gaps are **not** erased by a stronger model alone — **model scale does not replace context and physical verification.**
 
 ---
 
@@ -242,7 +247,7 @@ Five points where the general-SW autonomous loop breaks down in embedded:
 | Comparison | General SW | Embedded |
 |------------|-----------|----------|
 | Training data | Abundant (Python/JS/Java) | Sparse (embedded C = tiny fraction of GitHub) |
-| Best pass@1 | ~97% (HumanEval) | 55.6% (EmbedAgent), 80% (EmbedEval) |
+| Best pass@1 | ~97% (HumanEval) | 55.6% (EmbedAgent), 56.9–68.0% (EmbedEval n=3 mean, Haiku–Sonnet, 233 TCs) |
 | RAG effectiveness | Moderate | **High** — EmbedAgent: 29.4% → 65.1% (+35.7%p) |
 | Compiler feedback effect | Moderate | **High** — error messages are specific and actionable |
 
@@ -310,7 +315,7 @@ Below the ceiling, tokens deliver high ROI. **Embedded teams should concentrate 
 | Compiler feedback loop | Dramatic L0/L1 failure reduction | EmbedAgent: +35.7%p |
 | Datasheet RAG | Closes implicit knowledge gap | EmbedEval: explicit → 95%, implicit → 60% → RAG can reach 80%+ |
 | Multi-pass generation | Select highest-quality code | S* (arXiv 2502.14382): increasing k in pass@k = quality increase |
-| SDK example injection | Correct API pattern learning | EmbedEval: kconfig 75-88%, yocto 88-100% |
+| SDK example injection | Correct API pattern learning | EmbedEval (n=3): kconfig 60–90%, yocto 70–80% |
 
 **Practical application:**
 ```
@@ -378,13 +383,13 @@ LLMs can explore architectural alternatives faster than humans.
 
 ### 6.6 Configuration Optimization (ROI: ◉◉◉○○)
 
-EmbedEval data shows Kconfig/DT have the highest pass@1 — rule-based with abundant training data.
+EmbedEval data shows Kconfig/DT/Yocto remain high-ROI categories — rule-based with abundant training data. Figures below are **category pass@1** from the **n=3** benchmark (last of three runs per model; 233 TCs total).
 
 | Area | Haiku pass@1 | Sonnet pass@1 | Token Strategy |
 |------|-------------|--------------|---------------|
-| Kconfig | 75% | 88% | Auto-explore dependency chains, generate minimal configs |
-| Device Tree | 88% | 100% | Auto-generate compatible nodes from DT bindings |
-| Yocto recipes | 88% | 100% | Learn existing recipe patterns + auto-generate |
+| Kconfig | 60% | 90% | Auto-explore dependency chains, generate minimal configs |
+| Device Tree | 100% | 100% | Auto-generate compatible nodes from DT bindings |
+| Yocto recipes | 70% | 80% | Learn existing recipe patterns + auto-generate |
 
 ### 6.7 Documentation (ROI: ◉◉○○○)
 
@@ -896,6 +901,8 @@ EmbedEval can serve as a key tool for this token-scaling research:
 
 ### LLM + Embedded Systems
 - [EmbedAgent (arXiv 2506.11003, ICSE 2026)](https://arxiv.org/html/2506.11003v2) — embedded LLM benchmark, RAG+feedback effect
+- [LLM-FSM (arXiv 2503.09061)](https://arxiv.org/abs/2503.09061) — formal verification bridge for LLM-generated code
+- [SpecMap (arXiv 2503.11901)](https://arxiv.org/abs/2503.11901) — datasheet-to-code traceability for RAG pipelines
 - [Securing LLM-Generated Firmware (arXiv 2509.09970)](https://arxiv.org/abs/2509.09970) — agent-driven firmware security validation
 - [Exploring LLMs for Embedded (arXiv 2307.03817)](https://arxiv.org/abs/2307.03817) — GPT-4 embedded code generation
 - [HardSecBench (arXiv 2601.13864)](https://www.arxiv.org/pdf/2601.13864) — HW security benchmark
@@ -913,7 +920,8 @@ EmbedEval can serve as a key tool for this token-scaling research:
 - [Five Levels of AI Agent Autonomy (Swarmia)](https://www.swarmia.com/blog/five-levels-ai-agent-autonomy/)
 
 ### EmbedEval Internal Data
-- [BENCHMARK-COMPARISON-2026-04-05.md](./BENCHMARK-COMPARISON-2026-04-05.md) — Haiku vs Sonnet comparison
+- [results/LEADERBOARD.md](../results/LEADERBOARD.md) — n=3 aggregate pass@1, CIs, layer heatmap (233 TCs)
+- [BENCHMARK-COMPARISON-2026-04-05.md](./BENCHMARK-COMPARISON-2026-04-05.md) — Haiku vs Sonnet comparison (historical write-up)
 - [LLM-EMBEDDED-FAILURE-FACTORS.md](./LLM-EMBEDDED-FAILURE-FACTORS.md) — 42 failure factors
 - [LLM-EMBEDDED-CONSIDERATIONS.md](./LLM-EMBEDDED-CONSIDERATIONS.md) — 14 production-scale failure patterns
 - [LLM-EMBEDDED-DEVELOPMENT-GUIDE.md](./LLM-EMBEDDED-DEVELOPMENT-GUIDE.md) — 7-phase workflow

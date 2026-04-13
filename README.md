@@ -3,12 +3,12 @@
 [![CI](https://github.com/Ecro/embedeval/actions/workflows/ci.yml/badge.svg)](https://github.com/Ecro/embedeval/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
-[![Cases](https://img.shields.io/badge/cases-227-orange)]()
-[![Tests](https://img.shields.io/badge/tests-1186-green)]()
+[![Cases](https://img.shields.io/badge/cases-233-orange)]()
+[![Tests](https://img.shields.io/badge/tests-1277-green)]()
 
 **LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 
-EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, Linux kernel drivers, and Yocto recipes across 227 test cases (179 public + 48 private held-out).
+EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, Linux kernel drivers, and Yocto recipes across 233 test cases (185 public + 48 private held-out).
 
 Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://www.swebench.com/) which test general coding, EmbedEval tests knowledge that only embedded engineers would have: interrupt safety, cache coherency, DMA alignment, power management, and real-time constraints — **without telling the LLM what to check**.
 
@@ -36,48 +36,48 @@ What an embedded engineer knows (not in prompt):
 
 ## Leaderboard
 
-Benchmark run on 179 public cases (2026-04-05, post-check-fix):
+n=3 aggregate across 233 cases (185 public + 48 private, 2026-04-12):
 
-| Model | pass@1 | 95% CI | Weakest Category | Strongest |
-|-------|--------|--------|------------------|-----------|
-| **Sonnet 4.6** | **76.5%** (137/179) | [69.8%, 82.3%] | isr-concurrency (33%), dma (44%), threading (45%) | ble, device-tree, networking, timer (100%) |
-| Haiku 4.5 | 64.8% (116/179) | [57.5%, 71.5%] | dma (0%), isr-concurrency (22%), threading (27%) | adc, sensor-driver (100%) |
+| Model | pass@1 (n=3 mean) | 95% CI | Stability | Weakest Category | Strongest |
+|-------|-------------------|--------|-----------|------------------|-----------|
+| **Sonnet 4.6** | **68.0%** | [64.4%, 71.3%] | 87.1% | isr-concurrency (23%), dma (31%), threading (33%) | adc, device-tree, pwm (100%) |
+| Haiku 4.5 | 56.9% | [53.2%, 60.6%] | 73.0% | dma (8%), isr-concurrency (38%), memory-opt (33%) | boot, device-tree, pwm (100%) |
 
-**Model gap:** 11.7%p overall, up to 44%p on DMA. Sonnet failures: 31% L2 (runtime) + 31% L3 (behavioral). Haiku failures: 43% L0 (static) + 24% L1 (build).
+**Model gap:** 11.1%p overall (CIs don't overlap — statistically significant). Sonnet stability: 87.1% vs Haiku 73.0%.
 
 See detailed comparison: [`docs/BENCHMARK-COMPARISON-2026-04-05.md`](docs/BENCHMARK-COMPARISON-2026-04-05.md)
 See analysis & conclusions: [`docs/LLM-EMBEDDED-CONSIDERATIONS.md`](docs/LLM-EMBEDDED-CONSIDERATIONS.md)
 
 ### Category Heatmap
 
-All 23 categories (179 public cases, 2026-04-05, post-check-fix):
+All 23 categories (233 cases, n=3 run, 2026-04-12):
 
 ```
 Category          Sonnet   Haiku    Gap      What it tests
 ----------------  -------  -------  -------  --------------------------
-ble               100%      75%    +25%p     BLE stack API, connection mgmt
-device-tree       100%      88%    +12%p     DT syntax, node references
-networking        100%      62%    +38%p     Socket lifecycle, error paths
-timer             100%      62%    +38%p     Timer callback safety
-power-mgmt        100%      88%    +12%p     Sleep modes, power domains
-sensor-driver     100%     100%       0      Sensor API patterns
-yocto             100%      88%    +12%p     Yocto recipe authoring
-adc               100%     100%       0      ADC read, sampling patterns
-uart              100%      50%    +50%p     UART config, async TX/RX
-kconfig            88%      75%    +12%p     Build config generation
-ota                88%      88%       0      OTA update lifecycle
-spi-i2c            88%      88%       0      Bus protocol, transfer sequences
-boot               88%     100%    -12%p     Boot sequence + Kconfig
-watchdog           89%      89%       0      WDT feed timing, reset handling
-linux-driver       75%      88%    -12%p     Kernel module, syscall interfaces
-gpio-basic         67%     100%    -33%p     GPIO config, device_ready() checks
-storage            56%      44%    +11%p     Flash lifecycle, NVS patterns
-memory-opt         50%      30%    +20%p     Memory domains, slab allocators
-threading          45%      27%    +18%p     Mutex ordering, thread safety
-dma                44%       0%    +44%p     Cache alignment, DMA lifecycle
-isr-concurrency    33%      22%    +11%p     ISR safety, volatile, barriers
-security           25%      38%    -12%p     Crypto API, key management
-pwm               n/a      n/a      n/a      PWM duty cycle, device binding (n=1)
+adc               100%      50%    +50%p     ADC read, sampling patterns
+ble                82%      45%    +37%p     BLE stack API, connection mgmt
+boot               90%     100%    -10%p     Boot sequence + Kconfig
+device-tree       100%     100%       0      DT syntax, node references
+dma                31%       8%    +23%p     Cache alignment, DMA lifecycle
+gpio-basic         67%      83%    -16%p     GPIO config, device_ready() checks
+isr-concurrency    23%      38%    -15%p     ISR safety, volatile, barriers
+kconfig            90%      60%    +30%p     Build config generation
+linux-driver       70%      70%       0      Kernel module, syscall interfaces
+memory-opt         67%      33%    +34%p     Memory domains, slab allocators
+networking         75%      75%       0      Socket lifecycle, error paths
+ota                67%      58%     +9%p     OTA update lifecycle
+power-mgmt         75%      67%     +8%p     Sleep modes, power domains
+pwm               100%     100%       0      PWM duty cycle, device binding (n=1)
+security           50%      70%    -20%p     Crypto API, key management
+sensor-driver      75%      67%     +8%p     Sensor API patterns
+spi-i2c            79%      64%    +15%p     Bus protocol, transfer sequences
+storage            54%      31%    +23%p     Flash lifecycle, NVS patterns
+threading          33%      33%       0      Mutex ordering, thread safety
+timer              83%      50%    +33%p     Timer callback safety
+uart               33%      67%    -34%p     UART config, async TX/RX
+watchdog           90%      60%    +30%p     WDT feed timing, reset handling
+yocto              80%      70%    +10%p     Yocto recipe authoring
 ```
 
 ---
@@ -275,8 +275,8 @@ cases/isr-concurrency-003/
 ├── checks/
 │   ├── static.py           # L0: required includes, struct layout, ISR signature
 │   ├── behavior.py         # L3: volatile qualifiers, lock ordering, ISR safety
-│   ├── expected_output.txt # L2: expected program output pattern (optional, 119/179)
-│   └── negatives.py        # L4: mutation tests to validate checks (optional, 30/179)
+│   ├── expected_output.txt # L2: expected program output pattern (optional, 119/185)
+│   └── negatives.py        # L4: mutation tests to validate checks (optional, 30/185)
 ├── CMakeLists.txt          # Zephyr build config
 └── prj.conf                # Zephyr Kconfig
 ```
@@ -318,8 +318,8 @@ embedeval/
 │   ├── failure_taxonomy.py  # Automated failure classification (8 patterns)
 │   ├── safety_guide.py      # Risk-tier safety guide generation
 │   └── test_tracker.py      # Incremental retest tracking
-├── cases/                   # 179 public test cases
-├── tests/                   # 1186 pytest tests
+├── cases/                   # 185 public test cases
+├── tests/                   # 1277 pytest tests
 ├── docs/
 │   ├── METHODOLOGY.md                    # Full benchmark methodology + architecture diagrams
 │   ├── CONTRIBUTING.md                   # How to add new test cases
@@ -362,7 +362,7 @@ Documented in [LLM-EMBEDDED-CONSIDERATIONS.md](docs/LLM-EMBEDDED-CONSIDERATIONS.
 2. **4-Level Implicit Knowledge Model** — C language → RTOS patterns → Hardware constraints → System safety
 3. **Failure Distribution** — Sonnet: 31% L2 + 31% L3. Haiku: 43% L0 + 24% L1. Bigger models fail later (safety, not syntax).
 4. **General vs Embedded** — 56% of failures are general SW problems (error paths), 44% are embedded-specific (HW constraints)
-5. **Model Size Sensitivity** — HW categories (DMA, networking, timer) show largest Sonnet-Haiku gap (up to 44%p)
+5. **Model Size Sensitivity** — Category-level gaps reach up to 50%p (e.g., adc); overall n=3 Sonnet–Haiku gap is 11.1%p (CIs non-overlapping)
 6. **6 LLM Failure Patterns** — happy path bias, semantic mismatch, resource imbalance, order violation, cross-platform hallucination, missing safety guards
 7. **"3AM Paranoia" Layer** — 8 categories of field knowledge (timer overflow, flash wear, sensor plausibility, radio corruption) that LLMs structurally cannot learn
 
@@ -384,7 +384,7 @@ See [METHODOLOGY.md](docs/METHODOLOGY.md) for our complete self-assessment.
 | Dimension | HumanEval | SWE-bench | EmbedAgent (ICSE'26) | **EmbedEval** |
 |-----------|-----------|-----------|----------------------|---------------|
 | Domain | General Python | Python SWE | Arduino/ESP32/RPi | **Embedded (Zephyr/ESP-IDF/STM32/Linux/Yocto)** |
-| Cases | 164 | 2,294 | 126 | **227** |
+| Cases | 164 | 2,294 | 126 | **233** |
 | Platforms | 1 | 1 | 3 | **6** |
 | Verification | assert | pytest | Wokwi sim | **5-layer pipeline** |
 | Contamination | None | PR-based | HW combos | **Separate private repo + temporal** |

@@ -28,7 +28,7 @@ Every case requires a `metadata.yaml` file with the following fields:
 
 ```yaml
 id: "kconfig-001"                 # Unique case ID (must match directory name)
-category: "kconfig"               # One of the 20 supported categories
+category: "kconfig"               # One of the 23 supported categories
 difficulty: "easy"                 # easy | medium | hard
 title: "Short descriptive title"  # Human-readable title
 description: "Detailed task description for documentation"
@@ -38,9 +38,9 @@ estimated_tokens: 200             # Expected output token count
 sdk_version: "4.1.0"              # Target SDK/framework version
 ```
 
-**Supported categories (20):**
+**Supported categories (23):**
 
-Platform-agnostic: `gpio-basic`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`
+Platform-agnostic: `gpio-basic`, `uart`, `adc`, `pwm`, `spi-i2c`, `dma`, `isr-concurrency`, `threading`, `timer`, `sensor-driver`, `networking`, `ble`, `security`, `storage`
 
 System-level: `kconfig`, `device-tree`, `boot`, `ota`, `power-mgmt`, `watchdog`
 

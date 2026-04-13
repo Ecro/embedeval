@@ -1,8 +1,8 @@
 # Considerations for Embedded Development with LLMs
 
-**Date:** 2026-04-05
-**Based on:** EmbedEval benchmark data (Haiku 4.5 vs Sonnet 4.6, 179 public + 48 private cases)
-**Test Results:** See companion document [`BENCHMARK-COMPARISON-2026-04-05.md`](BENCHMARK-COMPARISON-2026-04-05.md)
+**Date:** 2026-04-13
+**Based on:** EmbedEval benchmark data (Haiku 4.5 vs Sonnet 4.6, **233 cases** = 185 public + 48 private, **n=3 aggregate** pass@1 means). Model 95% CIs do not overlap (Haiku [53.2%, 60.6%] vs Sonnet [64.4%, 71.3%]), so the Sonnet–Haiku gap is statistically distinguishable from run noise.
+**Test Results:** See companion document [`BENCHMARK-COMPARISON-2026-04-05.md`](BENCHMARK-COMPARISON-2026-04-05.md) (includes n=3 section)
 **Full Factor Taxonomy:** [`LLM-EMBEDDED-FAILURE-FACTORS.md`](./LLM-EMBEDDED-FAILURE-FACTORS.md) (42 code factors + 19 non-code factors)
 **Token Scaling Economics:** [`LLM-EMBEDDED-TOKEN-SCALING.md`](./LLM-EMBEDDED-TOKEN-SCALING.md) — why infinite tokens aren't enough for embedded
 
@@ -16,11 +16,11 @@ These aren't weaknesses in specific models — they're structural properties of 
 
 | # | Meta-Property | Benchmark Evidence |
 |---|--------------|-------------------|
-| **M1** | **Training Data Sparsity** | Haiku: 0% DMA, 0% on ESP-IDF/STM32 platform-specific cases. Sonnet: 44% DMA. Rare APIs = worse performance. |
+| **M1** | **Training Data Sparsity** | Haiku: **8%** DMA (n=3 category run); Sonnet: **31%** DMA. Still weak on ESP-IDF/STM32 platform-specific cases. Rare APIs = worse performance. |
 | **M2** | **Silent Failure** | 4 security cases pass L0+L1 but fail L2 in both models. Code "looks right" but doesn't work. |
 | **M3** | **Implicit Knowledge Gap** | Haiku fails `volatile` check; Sonnet passes. Both fail memory barriers. 35%p explicit-vs-implicit gap. |
-| **M4** | **Complexity Cliff** | Tier 1 categories ~90%. Tier 3 (DMA, ISR, threading) ~30%. Same model, 60%p gap. |
-| **M5** | **Familiarity Bias** | DMA scatter-gather (rare): 0% both. Basic GPIO (common): 67-100%. Same difficulty, vastly different pass rates. |
+| **M4** | **Complexity Cliff** | “Easy” config categories (device-tree, PWM) ~100% both; DMA/ISR/threading sit ~8–38% (n=3). Same model family, >50%p spread across categories. |
+| **M5** | **Familiarity Bias** | DMA category (n=3): **31%** Sonnet vs **8%** Haiku. GPIO-basic (common patterns): **67–83%**. Same nominal difficulty band, very different outcomes. |
 | **M6** | **RLHF Alignment Bias** | Both models omit `volatile`, skip `goto err_cleanup`, generate tutorial-style code. 10% secure code naively vs 100% when explicitly prompted. |
 
 ### 1.2 What LLMs Structurally Cannot Access
@@ -29,7 +29,7 @@ The deepest insight isn't about specific API failures — it's about **entire ca
 
 | Missing Context | What It Contains | Why LLM Can't Have It | Impact on Generated Code |
 |----------------|-----------------|----------------------|-------------------------|
-| **Datasheet** | Register maps, timing diagrams, electrical specs, init sequences | Proprietary PDFs, not in training data. Too large for context (100-500 pages). | Wrong init order, wrong DMA config, wrong clock setup. **Root cause of DMA 0-44%.** |
+| **Datasheet** | Register maps, timing diagrams, electrical specs, init sequences | Proprietary PDFs, not in training data. Too large for context (100-500 pages). | Wrong init order, wrong DMA config, wrong clock setup. **Root cause of low DMA pass rates (n=3: 31% / 8%).** |
 | **Schematic** | Pin connections, voltage levels, pull-ups, level shifters | Board-specific, never in code repos. Visual format. | Pin mux errors, missing level shifter awareness. |
 | **Silicon Errata** | Chip-revision-specific bugs and workarounds | Per-revision vendor docs. Nearly zero training examples. | Works on Rev A, fails on Rev B silicon. |
 | **Runtime State** | Memory layout, stack depth, ISR nesting, timing jitter | Only observable with debugger/oscilloscope. | Optimistic stack sizes, no jitter margins, single-shot demos. |
@@ -63,10 +63,10 @@ Level 4: System Safety Knowledge     ← Sonnet ~50%, Haiku ~30%
 
 | Risk Zone (Test Data) | Root Factor Categories | Key Meta-Properties |
 |----------------------|----------------------|-------------------|
-| DMA (0-44%) | A. Hardware Awareness + D. Cache Coherency + C. Alignment | M1 (training sparsity), M2 (silent failure) |
-| ISR/Concurrency (22-33%) | D. Memory Model + B. Timing | M3 (implicit gap), M6 (RLHF suppresses volatile) |
+| DMA (31% / 8%) | A. Hardware Awareness + D. Cache Coherency + C. Alignment | M1 (training sparsity), M2 (silent failure) |
+| ISR/Concurrency (23% / 38%) | D. Memory Model + B. Timing | M3 (implicit gap), M6 (RLHF suppresses volatile) |
 | Error Path (fails on complex) | E. Error Handling | M6 (RLHF prefers clean code), autoregressive bias |
-| Memory Optimization (30-50%) | C. Memory Constraints | M1 (rare APIs), M5 (familiarity bias) |
+| Memory Optimization (67% / 33%) | C. Memory Constraints | M1 (rare APIs), M5 (familiarity bias) |
 | HW Timing/Protocols (varies) | A. Hardware Awareness + B. Temporal | M1 (datasheet absent), M4 (complexity cliff) |
 
 ### 1.5 LLM-Embedded Knowledge Boundaries
@@ -77,14 +77,14 @@ Level 4: System Safety Knowledge     ← Sonnet ~50%, Haiku ~30%
 │                                                                     │
 │  ┌───────────────────────────────────────┐                          │
 │  │  INSIDE: Training Data                │                          │
-│  │  API signatures, header names,        │  Haiku: ~65% pass       │
-│  │  basic RTOS patterns, tutorials       │  Sonnet: ~80% pass      │
+│  │  API signatures, header names,        │  Haiku: ~57% pass@1     │
+│  │  basic RTOS patterns, tutorials       │  Sonnet: ~68% pass@1    │
 │  └───────────────────────────────────────┘                          │
 │                                                                     │
 │  ┌───────────────────────────────────────┐                          │
 │  │  BOUNDARY: Implicit Domain Knowledge  │                          │
-│  │  volatile for ISR, spinlock vs        │  Sonnet: ~60% pass      │
-│  │  mutex, error cleanup ordering        │  Haiku: ~40% pass       │
+│  │  volatile for ISR, spinlock vs        │  Sonnet: ~58% pass      │
+│  │  mutex, error cleanup ordering        │  Haiku: ~47% pass       │
 │  └───────────────────────────────────────┘  (35%p gap vs explicit) │
 │                                                                     │
 │  ┌───────────────────────────────────────┐                          │
@@ -259,7 +259,7 @@ if (now - last_read_time > FRESHNESS_TIMEOUT_MS) {
 - Boot-order discipline: permanent allocations first, transient last
 - [Stack painting](https://barrgroup.com/blog/top-5-causes-nasty-embedded-software-bugs): fill stack with known pattern at boot, periodically check high-water mark
 
-**Why this is different from "memory optimization":** Memory-opt (Section 3.1, Risk Zone 4) tests static allocation APIs. This pattern is about runtime behavior over weeks — a temporal dimension LLMs cannot simulate.
+**Why this is different from "memory optimization":** Memory-opt (Section 3.1, high-risk tier — **67% / 33%** n=3) tests static allocation APIs. This pattern is about runtime behavior over weeks — a temporal dimension LLMs cannot simulate.
 
 ### 2.10 Endianness Bugs at Protocol Boundaries
 
@@ -437,40 +437,65 @@ sys_reboot();
 
 ## 3. Practical Guidance for Embedded Teams
 
-### 3.1 Risk Zones (Derived from Benchmark Data)
+### 3.1 Risk Zones (Derived from n=3 Benchmark Data)
 
-| Zone | Category | Pass Rate | Root Cause | Action |
-|------|----------|-----------|------------|--------|
-| 1 | DMA | 0-44% | Datasheet (M1) + silent failure (M2) | Never trust LLM DMA code |
-| 2 | ISR/Concurrency | 22-33% | Implicit gap (M3) + RLHF (M6) | Verify: no blocking, correct sync, barriers |
-| 3 | Error paths | Fails complex | RLHF (M6) + autoregressive bias | Every multi-resource init needs review |
-| 4 | Memory opt | 30-50% | Rare APIs (M1) + familiarity (M5) | Expert review all memory config |
-| 5 | HW timing | Varies | Datasheet (M1) + complexity (M4) | Datasheet-level init/timing review |
+Rates are **Sonnet / Haiku** pass@1 on the category (n=3 reference run, 233 cases total).
+
+**Critical — both models &lt;50%**
+
+| Category | Sonnet | Haiku | Root cause | Action |
+|----------|--------|-------|------------|--------|
+| isr-concurrency | 23% | 38% | Implicit gap (M3) + RLHF (M6) | Verify: no blocking, correct sync, barriers |
+| threading | 33% | 33% | Complexity + timing | Treat as expert-only |
+| dma | 31% | 8% | Datasheet (M1) + silent failure (M2) | Never trust LLM DMA without HW validation |
+
+**High risk — at least one model &lt;50%**
+
+| Category | Sonnet | Haiku | Notes |
+|----------|--------|-------|--------|
+| memory-opt | 67% | 33% | Large Sonnet–Haiku split |
+| storage | 54% | 31% | Both weak; Haiku especially |
+| uart | 33% | 67% | Sonnet collapses on UART cases |
+| security | 50% | 70% | Sonnet below 50% |
+
+**Moderate — both &gt;50%, at least one &lt;80%**
+
+gpio-basic (67% / 83%), ble (82% / 45%), ota (67% / 58%), kconfig (90% / 60%), power-mgmt (75% / 67%), sensor-driver (75% / 67%), spi-i2c (79% / 64%), linux-driver (70% / 70%), yocto (80% / 70%), timer (83% / 50%)
+
+**Low risk — both &gt;80%**
+
+device-tree (100% / 100%), pwm (100% / 100%), boot (90% / 100%)
+
+**Still review:** Error paths on complex init (qualitative), and any category where **stability** is low (Haiku 73.0% vs Sonnet 87.1% case-level consistency across the 3 runs).
 
 ### 3.2 What LLMs ARE Good At
 
-| Task | Pass Rate | Why It Works |
-|------|-----------|-------------|
-| Kconfig fragments | 75-88% | Pattern-matching, abundant training data |
-| Device tree overlays | 88-100% | Structured syntax, well-represented |
-| Sensor driver boilerplate | 100% | Standard formulaic patterns |
-| BLE service scaffolding | 75-100% | Common tutorial topic |
-| Yocto recipes | 88-100% | Structured syntax |
-| Watchdog basic config | 89% | Simple pattern |
+Sonnet / Haiku pass@1 by category (n=3 reference run). Strong does not mean “ship without review.”
 
-### 3.3 Three-Tier Trust Model
+| Task | Sonnet | Haiku | Why it works |
+|------|--------|-------|--------------|
+| Kconfig fragments | 90% | 60% | Pattern-matching, abundant training data |
+| Device tree overlays | 100% | 100% | Structured syntax, well-represented |
+| Sensor driver boilerplate | 75% | 67% | Formulaic driver patterns |
+| BLE service scaffolding | 82% | 45% | Common tutorial topic — Haiku still unreliable |
+| Yocto recipes | 80% | 70% | Structured build metadata |
+| Watchdog basic config | 90% | 60% | Simple recurring pattern |
+| MCU boot flow | 90% | 100% | Often board-init / image layout boilerplate |
+| OTA patterns | 67% | 58% | Functional drafts common; rollback / signing still human-owned |
 
-**Tier 1: Trust but Verify (>85%)**
-Kconfig, device-tree, sensor-driver, BLE (Sonnet), networking (Sonnet), timer (Sonnet), watchdog, yocto
-- Inside LLM boundary. Light review.
+### 3.3 Three-Tier Trust Model (n=3)
 
-**Tier 2: Starting Point (50-85%)**
-boot, gpio-basic, linux-driver, ota, power-mgmt, spi-i2c, storage, uart
-- At the boundary. Mandatory review for error paths and HW interaction.
+**Trust (≥90% both)** — light syntax/config review; still run your pipeline.
 
-**Tier 3: Expert Review Required (<50%)**
-DMA, ISR-concurrency, memory-opt, threading, security
-- Outside LLM boundary. Code "works" in simulator, fails on hardware.
+- device-tree **100% / 100%**, pwm **100% / 100%**
+
+**Verify (mandatory review; Sonnet-usable band)** — run the full static → build → sim path. *Strict “&gt;60% both” is not met for kconfig (Haiku 60%) and BLE (Haiku 45%); they remain here because Sonnet is strong and both need the same review gates.*
+
+- networking **75% / 75%**, linux-driver **70% / 70%**, boot **90% / 100%**, kconfig **90% / 60%**, ble **82% / 45%**, yocto **80% / 70%**, power-mgmt **75% / 67%**, sensor-driver **75% / 67%**, spi-i2c **79% / 64%**, ota **67% / 58%**, gpio-basic **67% / 83%**
+
+**Never trust (&lt;60% for either model)** — treat as draft only; expert ownership.
+
+- threading **33% / 33%**, isr-concurrency **23% / 38%**, dma **31% / 8%**, memory-opt **67% / 33%**, storage **54% / 31%**, security **50% / 70%**, timer **83% / 50%**, uart **33% / 67%**, adc **100% / 50%**
 
 ### 3.4 The Implicit Knowledge Paradox
 
@@ -487,10 +512,11 @@ Implicit requirement (LLM derives from context)     → ~60% pass
 
 ### 3.5 Model Size: Bigger Helps, But Not Enough
 
-- Sonnet > Haiku by 12%p, mostly from Level 1-2 knowledge (more API exposure)
-- Level 3-4 barely improves — both fail on memory barriers, cache coherence, reverse cleanup
-- Sonnet **regresses on 8 cases** Haiku passes — bigger is not always better
-- Bottleneck is missing context and structural generation bias, not model size
+- Sonnet > Haiku by **11.1%p** overall pass@1 (n=3 mean: **68.0%** vs **56.9%**); 95% CIs do not overlap
+- **Stability** (same outcome 3/3 runs): Sonnet **87.1%** of cases vs Haiku **73.0%** — smaller model is flakier even when mean score is acceptable
+- Gains are mostly Level 1–2 style API exposure; Level 3–4 (barriers, cache, cleanup) still collapses for both
+- Sonnet still **regresses vs Haiku on individual cases** — bigger is not uniformly better
+- Bottleneck is missing context and structural generation bias, not raw model size
 
 ### 3.6 Recommended Workflow
 
@@ -506,16 +532,16 @@ Implicit requirement (LLM derives from context)     → ~60% pass
 │                                                                  │
 │  3. STATIC CHECK (Automated)                                     │
 │     volatile on ISR vars? No blocking in ISR? Error cleanup?     │
-│     Catches L0 failures (~26% of total errors)                   │
+│     Catches L0 failures (~26% of pooled failures, n=3)          │
 │                                                                  │
 │  4. BUILD (Toolchain: -Wall -Werror)                             │
-│     Catches L1 failures (~9%)                                    │
+│     Catches L1 failures (~22%)                                   │
 │                                                                  │
 │  5. RUNTIME (QEMU/simulator)                                     │
-│     Catches L2 failures (~19%). Misses real HW issues.           │
+│     Catches L2 failures (~18%). Misses real HW issues.           │
 │                                                                  │
 │  6. EXPERT REVIEW (Human)                                        │
-│     Focus: Tier 2-3 code. Catches L3 failures (~40%).            │
+│     Focus: Verify + Never-trust tiers. Catches L3 (~34%).        │
 │     The layer where LLMs fail silently.                          │
 │                                                                  │
 │  7. HARDWARE TEST (Board)                                        │
@@ -525,6 +551,8 @@ Implicit requirement (LLM derives from context)     → ~60% pass
 ```
 
 ### 3.7 The Bottom Line
+
+**n=3 aggregate (233 cases):** Haiku 4.5 pass@1 **56.9%** (95% CI [53.2%, 60.6%]; per-case stability **73.0%**). Sonnet 4.6 **68.0%** ([64.4%, 71.3%]; stability **87.1%**). **Gap: 11.1%p** — confidence intervals do not overlap, so the lift is not explained by a single lucky run.
 
 | LLM Output | Trust Level | Why |
 |------------|------------|-----|
@@ -552,12 +580,12 @@ An honest assessment of EmbedEval's limitations, evaluated from both embedded ex
 
 **Show-stoppers:**
 - **S1. No compilation.** L1/L2 are disabled. Calling regex pattern matching "behavioral check" is overclaiming. True behavioral evaluation requires QEMU execution + ThreadSanitizer + timing measurement.
-- **S2. Non-reproducible single trial.** pass@1 from a single run. LLMs are stochastic — 1 case change in a 10-case category = 10%p swing. A confidence interval is required for statistical significance.
+- **S2. Residual stochasticity.** Headline Haiku/Sonnet scores now use **n=3** means with Wilson CIs, but **small categories** (e.g., 2–3 cases) still swing ~10%p per flip — always read category tables with *n* in mind.
 
 **Major limitations:**
 - **M1. Construct validity:** "Embedded capability" ≠ "API recall." When explicit prompts yield 95% and implicit 60%, we're measuring prompt-following, not domain knowledge.
 - **M2. Platform bias:** Zephyr dominates (>90%). Calling this an "Embedded benchmark" is generous — "Zephyr RTOS benchmark" is more accurate.
-- **M3. No human baseline:** Is 80% good or bad? Without a junior engineer comparison, absolute scores are uninterpretable.
+- **M3. No human baseline:** Is ~68% good or bad? Without a junior engineer comparison, absolute scores are uninterpretable.
 - **M4. Prompt sensitivity:** Rephrasing prompts changes scores — a robust benchmark should tolerate reasonable variation.
 - **M5. Toy complexity:** Single-file, ~50-line problems. Real projects are multi-module, multi-thousand-line systems.
 
@@ -573,7 +601,7 @@ An honest assessment of EmbedEval's limitations, evaluated from both embedded ex
 |-----------|-------------------|
 | "Embedded Last Exam" | "Zephyr RTOS Code Generation Benchmark" |
 | "Behavioral evaluation" | "Static pattern heuristics" |
-| "pass@1 = 91%" | "pass@1 = 91% (single run, n=10/cat)" |
+| "pass@1 = 91%" | "pass@1 = 68% (Sonnet n=3 mean); single-shot runs overstate precision" |
 | "LLM embedded capability" | "API recall + safety pattern awareness" |
 
 ### 4.2 Check Precision: 40% on Subtle Mutations
@@ -604,8 +632,15 @@ Blind spots:                           9/15          (60%)
 | Evaluation | assert exec | pytest exec | exec+predict | Wokwi simulator | **regex patterns** |
 | Code execution | Yes | Yes | Yes | Yes | **No** |
 | Contamination prevention | None | Large-scale | Temporal cutoff | HW combinations | **48 private TCs** |
-| TC count | 164 | 2,294 | 1,055 | 126 | **227** |
-| Top pass@1 | ~97% | ~75% | ~65% | 55.6% | 80.2% |
+| TC count | 164 | 2,294 | 1,055 | 126 | **233** |
+| Top pass@1 | ~97% | ~75% | ~65% | 55.6% | **68.0%** (Sonnet 4.6, n=3 mean) |
+
+**Additional related benchmarks (2026)**
+
+| Benchmark | Focus | Reference |
+|-----------|-------|-----------|
+| InCoder-32B + EmbedCGen | Embedded C code generation evaluation | [arXiv:2603.16790](https://arxiv.org/abs/2603.16790) |
+| MobileKernelBench | Mobile / embedded kernel benchmarks | [arXiv:2603.09292](https://arxiv.org/abs/2603.09292) |
 
 **EmbedEval's unique contributions:**
 1. **Implicit Knowledge Gap (35%p)** — no other benchmark measures this
@@ -616,7 +651,7 @@ Blind spots:                           9/15          (60%)
 
 **Where EmbedEval trails:**
 1. No code execution (all competitors execute)
-2. Inflated pass@1 due to no execution (80% vs EmbedBench 55.6%)
+2. Inflated pass@1 vs execution-heavy benches (68% vs EmbedBench 55.6% with simulator) — still not apples-to-apples
 3. Weaker contamination prevention than LiveCodeBench temporal cutoff
 4. Single-shot only — no compiler feedback or agent iteration
 
@@ -678,6 +713,12 @@ Blind spots:                           9/15          (60%)
 - [ISO 26262 Software Architectural Design](http://embeddedinembedded.blogspot.com/)
 
 ### Academic Papers
+- [arXiv:2603.11139 — H2LooP](https://arxiv.org/abs/2603.11139) — 7B continual pretraining for hardware-aware code generation
+- [arXiv:2603.16790 — InCoder-32B + EmbedCGen](https://arxiv.org/abs/2603.16790) — embedded code generation benchmark suite
+- [arXiv:2603.09292 — MobileKernelBench](https://arxiv.org/abs/2603.09292) — mobile / embedded kernel evaluation
+- [arXiv:2503.09061 — LLM-FSM](https://arxiv.org/abs/2503.09061) — bridging LLM code to formal verification (FSM extraction)
+- [arXiv:2503.11901 — SpecMap](https://arxiv.org/abs/2503.11901) — datasheet-to-code traceability / spec alignment
+- [arXiv:2404.07732 — VulInstruct](https://arxiv.org/abs/2404.07732) — implicit security specifications mined from CVEs
 - [arXiv:2509.09970 — Securing LLM-Generated Embedded Firmware](https://arxiv.org/abs/2509.09970) (92.4% vulnerability remediation)
 - [arXiv:2601.13864 — HardSecBench: Security Awareness of LLMs for HW Code](https://arxiv.org/abs/2601.13864)
 - [arXiv:2603.19583 — IoT-SkillsBench: Skilled AI Agents for Embedded/IoT](https://arxiv.org/abs/2603.19583)

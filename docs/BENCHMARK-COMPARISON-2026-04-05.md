@@ -6,6 +6,8 @@
 **Categories:** 23 embedded categories across Zephyr, FreeRTOS, ESP-IDF, STM32, Yocto
 **Analysis:** See companion document [`LLM-EMBEDDED-CONSIDERATIONS.md`](LLM-EMBEDDED-CONSIDERATIONS.md) for conclusions and practical guidance.
 
+*Final n=3 aggregate results available in Section 9 and [LEADERBOARD.md](../results/LEADERBOARD.md).*
+
 ---
 
 ## 1. Overall Results

@@ -1122,48 +1122,58 @@ gpio_set_level, esp_log_write, analogRead, digitalWrite, delay().
 ## 5. Model Selection for Embedded Tasks
 
 Not all LLMs perform equally on embedded code. EmbedEval benchmark data
-(2026-04-05, 179 test cases across 23 categories, post-check-fix) shows
+(n=3 run aggregate mean, **233 cases** — 185 public + 48 private — across 23 categories, post-check-fix) shows
 significant performance gaps between model tiers.
 
 ### 5.1 Overall Performance
 
 | Model | pass@1 | 95% CI | Failed | Strongest | Weakest |
 |-------|--------|--------|--------|-----------|---------|
-| Sonnet 4.6 | 76.5% | [69.8%, 82.3%] | 42/179 | ble, device-tree, networking, timer (100%) | security (25%), isr-concurrency (33%), dma (44%) |
-| Haiku 4.5 | 64.8% | [57.5%, 71.5%] | 63/179 | adc, sensor-driver (100%) | dma (0%), isr-concurrency (22%), threading (27%) |
+| Sonnet 4.6 | 68.0% (n=3 mean) | [64.4%, 71.3%] | ~75/233 | adc, device-tree, pwm (100%) | isr-concurrency (23%), dma (31%), threading (33%) |
+| Haiku 4.5 | 56.9% (n=3 mean) | [53.2%, 60.6%] | ~100/233 | boot, device-tree, pwm (100%) | dma (8%), storage (31%), memory-opt (33%) |
 
-**Gap: 11.7 percentage points overall, up to 44pp on DMA.**
+**Gap: 11.1 percentage points overall; largest category split on DMA (31% vs 8% pass@1).**
 
 See [BENCHMARK-COMPARISON-2026-04-05.md](BENCHMARK-COMPARISON-2026-04-05.md) for detailed per-case analysis.
 
 ### 5.2 Category Risk Tiers
 
-Based on benchmark failure rates, embedded tasks fall into three risk tiers:
+Based on n=3 aggregate pass@1, embedded tasks fall into four risk tiers (rates are Sonnet / Haiku unless noted):
 
-| Risk Tier | Categories | Sonnet | Haiku | Recommendation |
-|-----------|-----------|--------|-------|----------------|
-| **Safe** (>85% Sonnet) | ble, device-tree, networking, timer, power-mgmt, sensor-driver, kconfig, ota, spi-i2c, watchdog, yocto | 88-100% | 62-100% | Sonnet recommended. Haiku acceptable with extra review. |
-| **Moderate** (50-85% Sonnet) | boot, gpio-basic, linux-driver, storage, uart, memory-opt | 50-88% | 30-100% | Sonnet minimum. Mandatory review for error paths and HW interaction. |
-| **Dangerous** (<50% Sonnet) | threading, isr-concurrency, dma, security | 25-45% | 0-38% | Sonnet minimum. Always manual expert review. Haiku not recommended. |
+| Risk Tier | Categories | Pass@1 (illustrative) | Recommendation |
+|-----------|------------|----------------------|----------------|
+| **Critical risk** (best model under 40%) | threading (33%/33%), isr-concurrency (23%/38%), dma (31%/8%) | — | Sonnet minimum; expert review mandatory. Haiku especially weak on DMA. |
+| **High risk** (40–65% or mixed quality) | memory-opt (67%/33%), storage (54%/31%), security (50%/70%), uart (33%/67%), adc (100%/50%) | — | Sonnet strongly preferred where it leads (e.g. adc, uart); full review of concurrency and error paths. |
+| **Moderate** (65–85%) | gpio-basic, ble, ota, kconfig, power-mgmt, sensor-driver, spi-i2c, linux-driver, yocto, timer | e.g. ble 82%/45%, timer 83%/50%, networking 75%/75% | Sonnet default; mandatory review for HW interaction and timing. |
+| **Low risk** (best model over 85%) | device-tree, pwm, boot (90%/100%), watchdog (90%/60%) | 90–100% / 60–100% | Sonnet or Haiku often sufficient; still run CI and spot-check. |
 
 ### 5.3 When to Use Which Model
 
 **Use a larger model (Sonnet/Opus) when:**
-- Task involves ISR handlers, DMA configuration, or threading synchronization
+- Task involves ISR handlers, DMA configuration, or threading synchronization (Critical risk tier — pass@1 often below 40% even for Sonnet)
 - Code has shared state between ISR and thread (volatile, spinlock, atomic)
 - Linux kernel module with error path cleanup (goto unwinding)
 - Memory optimization using Zephyr-specific APIs (mem_slab, mem_domain)
-- Any task in the "Dangerous" tier above
+- Any task in the **Critical** or **High** risk tiers above, or mixed Sonnet/Haiku results (e.g. adc, uart)
 
 **Haiku is acceptable when:**
-- Simple GPIO, UART, or ADC driver with well-defined interface
-- Boot sequence, security configuration, BLE service setup
-- Kconfig generation from clear requirements
-- Boilerplate generation where the template provides most of the logic
+- Categories in the **Low** or lighter **Moderate** band (e.g. device-tree, pwm, boot scaffolding) with templates and clear interfaces
+- Kconfig generation from clear requirements (watch transitive `CONFIG_*` deps)
+- Boilerplate where the template provides most of the logic and you will still compile on hardware
+
+Avoid relying on Haiku alone for **DMA**, **ISR/concurrency**, and **threading** (Haiku pass@1 down to **8%** on DMA in this aggregate).
 
 ### 5.4 What No Model Gets Right
 
-Even the best models fail on these patterns — always verify manually:
+Even the best models fail on these patterns — always verify manually.
+
+**EmbedEval category pass@1 (n=3, 233 cases)** — systemic weak spots that mirror the pattern failures below:
+
+| Category | Sonnet | Haiku |
+|----------|--------|-------|
+| dma | 31% | 8% |
+| isr-concurrency | 23% | 38% |
+| threading | 33% | 33% |
 
 | Pattern | Sonnet Fail Rate | Why LLMs Struggle |
 |---------|-----------------|-------------------|
@@ -1616,7 +1626,7 @@ this would automate it.
 | Testing only in debug builds | Med | printf hides race conditions. Optimizer at -O2 removes "unnecessary" volatile reads. Different stack layout. | Always test on optimized builds. Use runtime log levels, not `#ifdef DEBUG`. |
 | 32-bit ms counter without wrap handling | Med | System hangs at exactly 49.7 days of uptime. | Use 64-bit counters, or unsigned wrap-safe arithmetic. Test at the 49.7-day boundary. |
 | Not updating knowledge base | Low | Board profile gets stale, new errata missed | Update after every field issue. Schedule quarterly review. |
-| "The LLM said it's correct" | Low | 76.5% pass rate (Sonnet) = 1 in 4 modules has a bug. Haiku: 1 in 3. | Review EVERY module. Trust but verify. |
+| "The LLM said it's correct" | Low | 68.0% pass rate (Sonnet, n=3 on 233 cases) ≈ 1 in 3 may still miss benchmark checks. Haiku 56.9% ≈ more than 2 in 5. | Review EVERY module. Trust but verify. |
 
 ---
 

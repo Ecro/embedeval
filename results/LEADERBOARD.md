@@ -3,12 +3,19 @@
 
 ## Model Comparison
 
-| Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |
-|-------|---------------|------------------|--------|--------|--------|---------|-------|---------|
-| claude-code://haiku | 57.1% | 71.7% | [50.7%, 63.3%] | 57.1% | 133 | 167 | 233 | n=1 |
-| claude-code://sonnet | 67.4% | 82.8% | [61.1%, 73.1%] | 67.4% | 157 | 193 | 233 | n=1 |
+| Model | pass@1 (n=3 mean) | 95% CI | Stability | Passed (mean) | Total | Samples |
+|-------|-------------------|--------|-----------|---------------|-------|---------|
+| claude-code://sonnet | 68.0% | [64.4%, 71.3%] | 87.1% | 158.3 | 233 | n=3 |
+| claude-code://haiku | 56.9% | [53.2%, 60.6%] | 73.0% | 132.7 | 233 | n=3 |
 
-*pass@1 (full) = all layers must pass. pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*
+## n=3 Stability Analysis
+
+| Model | Always Pass (3/3) | Flaky (1-2/3) | Always Fail (0/3) | Stability |
+|-------|------------------|---------------|-------------------|-----------|
+| claude-code://sonnet | 143 | 30 | 60 | 87.1% |
+| claude-code://haiku | 99 | 63 | 71 | 73.0% |
+
+*Stability = percentage of cases with consistent results across all 3 runs.*
 
 ## Tier Breakdown
 
@@ -36,6 +43,10 @@
 
 ## Category Results
 
+*Category results from n3 run (last of 3 runs per model).*
+
+### claude-code://haiku
+
 | Category | pass@1 | Passed | Total | Status |
 |----------|--------|--------|-------|--------|
 | adc | 50.0% | 1 | 2 | PARTIAL |
@@ -61,6 +72,11 @@
 | uart | 66.7% | 2 | 3 | PARTIAL |
 | watchdog | 60.0% | 6 | 10 | PARTIAL |
 | yocto | 70.0% | 7 | 10 | PARTIAL |
+
+### claude-code://sonnet
+
+| Category | pass@1 | Passed | Total | Status |
+|----------|--------|--------|-------|--------|
 | adc | 100.0% | 2 | 2 | PASS |
 | ble | 81.8% | 9 | 11 | PASS |
 | boot | 90.0% | 9 | 10 | PASS |
@@ -104,6 +120,8 @@
 
 ## Category Breakdown
 
+### claude-code://haiku
+
 | Category | Pass@1 | Cases |
 |----------|--------|-------|
 | adc | 50% | 2 |
@@ -129,6 +147,11 @@
 | uart | 67% | 3 |
 | watchdog | 60% | 10 |
 | yocto | 70% | 10 |
+
+### claude-code://sonnet
+
+| Category | Pass@1 | Cases |
+|----------|--------|-------|
 | adc | 100% | 2 |
 | ble | 82% | 11 |
 | boot | 90% | 10 |
@@ -155,9 +178,9 @@
 
 ## Cross-Benchmark Comparison
 
-| Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |
-|-------|-----------|-----------|------------------|---------------------|-----------|
-| claude-code://haiku | 84.0% | 48.2% | 57.1% | 71.7% | -26.9%p |
-| claude-code://sonnet | 93.7% | 72.2% | 67.4% | 82.8% | -26.3%p |
+| Model | HumanEval | SWE-bench | EmbedEval (n=3 mean) | Embed Gap |
+|-------|-----------|-----------|---------------------|-----------|
+| claude-code://haiku | 84.0% | 48.2% | 56.9% | -27.1%p |
+| claude-code://sonnet | 93.7% | 72.2% | 68.0% | -25.7%p |
 
-*Embed Gap = EmbedEval pass@1 - HumanEval. Negative = harder than general coding.*
+*Embed Gap = EmbedEval - HumanEval. Negative = harder than general coding.*

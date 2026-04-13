@@ -3,9 +3,9 @@
 Why LLMs systematically fail at embedded firmware compared to general software,
 and where the gaps are largest.
 
-**Version:** 1.1 (2026-03-29)
+**Version:** 1.5 (2026-04-13)
 **Factors:** 42 code-observable factors across 6 categories
-**Evidence:** EmbedEval benchmark (210 TCs, 97 unique failed checks, 109 failure instances), 12+ research papers (2024-2026)
+**Evidence:** EmbedEval benchmark (233 TCs, 97 unique failed checks, 109 failure instances), 15+ research papers (2024-2026)
 **Companion documents:**
 - [LLM-EMBEDDED-DEVELOPMENT-GUIDE.md](LLM-EMBEDDED-DEVELOPMENT-GUIDE.md) — end-to-end workflow, context templates, environment setup
 - [LLM-EMBEDDED-CONSIDERATIONS.md](LLM-EMBEDDED-CONSIDERATIONS.md) — production-scale failure patterns and practical guidance
@@ -260,7 +260,7 @@ here cause compilation failures — the most immediately visible failure mode.
 
 | Evidence Level | Count | Meaning |
 |---------------|-------|---------|
-| Empirical | 29 | Observed in EmbedEval benchmark (97 unique failed checks, 109 instances, 2 models) |
+| Empirical | 29 | Observed in EmbedEval benchmark (233 TCs, 97 unique failed checks, 109 instances, 2 models) |
 | Research | 8 | Cited in published papers with quantitative data |
 | Theoretical | 5 | Strong domain reasoning, no direct LLM measurement yet |
 
@@ -623,8 +623,11 @@ product.**
 | RunSafe | AI in Embedded Systems Report, 2025 | 83.5% deploy AI code to production; security #1 concern |
 | MISRA-LLM | Umer et al., 2025 | 23-29 violations/KLOC baseline; 83% reduction with instructions |
 | Homogenization | arXiv:2507.06920 | LLM errors cluster tightly; cross-validation needed |
+| H2LooP | arXiv:2603.11139, 2026 | Continual pretraining for hardware design — 7B model achieving domain-specific improvements |
+| VulInstruct | arXiv:2404.07732, 2024 | Implicit security specifications from CVE patterns for embedded vulnerability detection |
+| InCoder-32B + EmbedCGen | arXiv:2603.16790, 2026 | Dedicated embedded code generation model and benchmark |
 | Stack-v2 | arXiv:2402.19173 | 775B tokens; embedded C is tiny fraction |
-| EmbedEval | This project | 210 TCs, 97 unique failed checks, implicit knowledge gap 35%p |
+| EmbedEval | This project | 233 TCs, 97 unique failed checks, implicit knowledge gap 35%p |
 | CONCUR | arXiv:2603.03683, 2026 | First concurrent code generation benchmark (deadlocks, races, sync) |
 | LLM-CSEC | arXiv:2511.18966, 2025 | C/C++ security: CWE-120, -787, -122, -190, -401 found across 10 LLMs |
 | Safety-Auto | PMLR v284, Sevenhuijsen 2025 | ISO 26262 C: 540/800 easy, 46/800 hard; Zero-Shot CoT best strategy |
@@ -640,6 +643,11 @@ product.**
 ---
 
 ## Changelog
+
+### v1.5 (2026-04-13)
+- Updated TC count from 210 to 233 (6 new cases: adc, uart, pwm categories)
+- Added research sources: H2LooP, VulInstruct, InCoder-32B/EmbedCGen
+- All evidence now based on n=3 aggregate results
 
 - **v1.4 (2026-03-29):** Research-backed update. Added 11 new research sources
   (CONCUR, LLM-CSEC, spec2code, Clover, CoT-Quality, Persona-EMNLP,
