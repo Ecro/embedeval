@@ -290,14 +290,12 @@ def _run_single_case(
             failed_layer = result.layers[result.failed_at_layer]
             error_msg = failed_layer.error or ""
             failed_details = "\n".join(
-                f"- {d.check_name}: expected={d.expected},"
-                f" actual={d.actual}"
+                f"- {d.check_name}: expected={d.expected}, actual={d.actual}"
                 for d in failed_layer.details
                 if not d.passed
             )
             error_info = (
-                "\n".join(filter(None, [error_msg, failed_details]))
-                or "Check failed"
+                "\n".join(filter(None, [error_msg, failed_details])) or "Check failed"
             )
             feedback_prompt = (
                 f"Your previous code had the following error:\n"
@@ -440,9 +438,7 @@ def run_benchmark(
                 if checkpoint_path is not None:
                     _append_checkpoint(checkpoint_path, result)
 
-                status = (
-                    "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}"
-                )
+                status = "PASS" if result.passed else f"FAIL@L{result.failed_at_layer}"
                 logger.info(
                     "Case %s attempt %d: %s",
                     meta.id,

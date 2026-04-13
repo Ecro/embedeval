@@ -268,9 +268,7 @@ def run(
     # under cases_dir and record the empty-content hash.
     from embedeval.runner import discover_cases as _discover
 
-    case_dir_map: dict[str, Path] = {
-        meta.id: cd for cd, meta in _discover(cases_dir)
-    }
+    case_dir_map: dict[str, Path] = {meta.id: cd for cd, meta in _discover(cases_dir)}
     if private_cases:
         for cd, meta in _discover(private_cases):
             case_dir_map[meta.id] = cd
