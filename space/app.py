@@ -78,6 +78,14 @@ def category_df() -> pd.DataFrame:
     )
 
 
+PLOTLY_LAYOUT_DEFAULTS = dict(
+    paper_bgcolor="white",
+    plot_bgcolor="white",
+    font=dict(color="#111827", family="system-ui, -apple-system, sans-serif"),
+    title_font=dict(color="#111827", size=14),
+)
+
+
 def heatmap_figure() -> go.Figure:
     df = category_df().set_index("Category")
     fig = px.imshow(
@@ -87,14 +95,16 @@ def heatmap_figure() -> go.Figure:
         zmax=100,
         aspect="auto",
         labels={"x": "Category", "y": "Model", "color": "pass@1 %"},
-        text_auto=True,
+        text_auto=".0f",
     )
     fig.update_layout(
         title="pass@1 by category (n=3 last run, 2026-04-12)",
         height=320,
         margin=dict(l=10, r=10, t=60, b=10),
+        **PLOTLY_LAYOUT_DEFAULTS,
     )
-    fig.update_xaxes(tickangle=-45)
+    fig.update_xaxes(tickangle=-45, color="#111827")
+    fig.update_yaxes(color="#111827")
     return fig
 
 
@@ -108,16 +118,24 @@ def category_bar_figure(model: str) -> go.Figure:
         color=model,
         color_continuous_scale="RdYlGn",
         range_color=[0, 100],
-        text=model,
         labels={model: "pass@1 %"},
     )
-    fig.update_traces(texttemplate="%{text}%", textposition="outside")
+    # Plotly's texttemplate uses %{x} %{y} for axis values (no surrounding %).
+    # For a horizontal bar, the value lives on the x axis.
+    fig.update_traces(
+        texttemplate="%{x:.0f}%",
+        textposition="outside",
+        cliponaxis=False,
+    )
     fig.update_layout(
         title=f"{model} — pass@1 by category (sorted)",
         height=720,
-        margin=dict(l=10, r=10, t=60, b=10),
+        margin=dict(l=10, r=40, t=60, b=10),
         coloraxis_showscale=False,
+        **PLOTLY_LAYOUT_DEFAULTS,
     )
+    fig.update_xaxes(color="#111827", range=[0, 110])
+    fig.update_yaxes(color="#111827")
     return fig
 
 
@@ -160,12 +178,63 @@ threading, memory optimization.
 
 
 def build_ui() -> gr.Blocks:
+    # Surgical CSS — only target text containers (markdown, prose, tab labels,
+    # footer). Do NOT touch chart SVG content or dataframe cells; those have
+    # their own colors set by plotly / pandas styler.
+    custom_css = """
+    /* Page background */
+    .gradio-container { background: #ffffff; }
+
+    /* Markdown / prose blocks */
+    .prose, .prose p, .prose li,
+    .prose h1, .prose h2, .prose h3, .prose h4 { color: #111827; }
+    .prose strong { color: #111827; }
+    .prose a { color: #4338ca; text-decoration: underline; }
+    .prose code {
+        color: #b91c1c;
+        background: #fef2f2;
+        padding: 1px 4px;
+        border-radius: 3px;
+    }
+
+    /* Tab labels */
+    button[role="tab"] { color: #4b5563; }
+    button[role="tab"][aria-selected="true"] {
+        color: #4338ca;
+        font-weight: 600;
+    }
+
+    /* Footer area */
+    footer, footer * { color: #6b7280; }
+    footer a { color: #4338ca; }
+
+    /* Dataframe cells (pandas styler may emit white text by default) */
+    .table-wrap td, .table-wrap th { color: #111827; }
+    .table-wrap th { background: #f3f4f6; font-weight: 600; }
+    """
+
+    # Force light theme on first load — Gradio 5 otherwise inherits OS
+    # dark-mode preference, which produces poor contrast for our static
+    # content. The reload only happens once because we then set the
+    # __theme query param.
+    force_light_js = """
+    () => {
+        const url = new URL(window.location);
+        if (url.searchParams.get('__theme') !== 'light') {
+            url.searchParams.set('__theme', 'light');
+            window.location.replace(url.toString());
+        }
+    }
+    """
+
     with gr.Blocks(
         title="EmbedEval Leaderboard",
         theme=gr.themes.Default(
             primary_hue="indigo",
             neutral_hue="slate",
         ),
+        css=custom_css,
+        js=force_light_js,
     ) as demo:
         gr.Markdown(INTRO_MD)
 
