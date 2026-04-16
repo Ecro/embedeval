@@ -160,7 +160,13 @@ threading, memory optimization.
 
 
 def build_ui() -> gr.Blocks:
-    with gr.Blocks(title="EmbedEval Leaderboard", theme=gr.themes.Soft()) as demo:
+    with gr.Blocks(
+        title="EmbedEval Leaderboard",
+        theme=gr.themes.Default(
+            primary_hue="indigo",
+            neutral_hue="slate",
+        ),
+    ) as demo:
         gr.Markdown(INTRO_MD)
 
         with gr.Tab("Leaderboard"):
