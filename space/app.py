@@ -294,6 +294,15 @@ button[role="tab"][aria-selected="true"] { color: #4338ca !important; font-weigh
 /* Footer */
 footer, footer * { color: #6b7280 !important; }
 footer a { color: #4338ca !important; }
+
+/* Inline code (gradio defaults to dark background which clashes) */
+code, .prose code, .dark code, .dark .prose code {
+    color: #b91c1c !important;
+    background: #fef2f2 !important;
+    padding: 1px 5px !important;
+    border-radius: 3px !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+}
 """
 
 
