@@ -8,9 +8,13 @@
 
 **LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 
-EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, Linux kernel drivers, and Yocto recipes across 233 test cases (185 public + 48 private held-out).
+EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, FreeRTOS, Linux kernel drivers, and Yocto recipes across 233 test cases (185 public + 48 private held-out).
+
+![pass@1 heatmap by category](assets/launch/heatmap.png)
 
 Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://www.swebench.com/) which test general coding, EmbedEval tests knowledge that only embedded engineers would have: interrupt safety, cache coherency, DMA alignment, power management, and real-time constraints — **without telling the LLM what to check**.
+
+[Live leaderboard](https://huggingface.co/spaces/ecro/embedeval) · [Methodology](https://github.com/Ecro/embedeval/blob/main/docs/METHODOLOGY.md) · [Roadmap](https://github.com/Ecro/embedeval/blob/main/ROADMAP.md) · [Contribute](https://github.com/Ecro/embedeval/blob/main/docs/CONTRIBUTING.md)
 
 ---
 
@@ -31,6 +35,8 @@ What an embedded engineer knows (not in prompt):
 ```
 
 **Measured impact:** Explicit prompts ("use volatile") pass at ~95%. Implicit prompts (derive from domain knowledge) pass at ~60%. This **35%p gap** means current benchmarks overestimate LLM capability in embedded domains.
+
+![Implicit knowledge gap](assets/launch/implicit-gap.png)
 
 ---
 
@@ -383,7 +389,7 @@ See [METHODOLOGY.md](docs/METHODOLOGY.md) for our complete self-assessment.
 
 | Dimension | HumanEval | SWE-bench | EmbedAgent (ICSE'26) | **EmbedEval** |
 |-----------|-----------|-----------|----------------------|---------------|
-| Domain | General Python | Python SWE | Arduino/ESP32/RPi | **Embedded (Zephyr/ESP-IDF/STM32/Linux/Yocto)** |
+| Domain | General Python | Python SWE | Arduino/ESP32/RPi | **Embedded (Zephyr/ESP-IDF/STM32/FreeRTOS/Linux/Yocto)** |
 | Cases | 164 | 2,294 | 126 | **233** |
 | Platforms | 1 | 1 | 3 | **6** |
 | Verification | assert | pytest | Wokwi sim | **5-layer pipeline** |
@@ -391,16 +397,43 @@ See [METHODOLOGY.md](docs/METHODOLOGY.md) for our complete self-assessment.
 | Scoring | pass@k | % resolved | pass@1 | **pass@k + 95% CI + Embed Gap** |
 | Unique | — | — | Circuit design | **Implicit Knowledge Gap** |
 
+**vs EmbedAgent (ICSE'26).** Both target embedded LLM evaluation, but the focus is different. EmbedAgent measures cross-platform programming on hobbyist boards (Arduino / ESP32 / Raspberry Pi Pico) with Wokwi circuit simulation and bundles Programmer / Architect / Integrator role tasks. EmbedEval measures production embedded firmware on Zephyr RTOS, ESP-IDF, STM32 HAL, FreeRTOS, Linux kernel drivers, and Yocto, deliberately withholds safety hints from prompts (the "implicit knowledge gap"), and verifies through five layers including a mutation-testing meta-layer. They are complementary: EmbedAgent for breadth across hobbyist hardware, EmbedEval for depth on production RTOS/driver patterns.
+
+---
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the v0.2/v0.3 plan. Open an [issue](https://github.com/Ecro/embedeval/issues) to influence direction. Briefly: v0.2 broadens model coverage and adds FreeRTOS / Linux driver cases; v0.3 adds multi-file scaffolding and cross-platform migration; v1.0 freezes the schema.
+
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for how to add new test cases. In brief:
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for case authoring. In brief:
 
-1. Create `cases/<category>-<NNN>/` with `metadata.yaml`, `prompt.md`, `reference/main.c`
-2. Write `checks/static.py` (L0) and `checks/behavior.py` (L3)
-3. Verify with `uv run embedeval validate --cases cases/ -c <category>`
-4. Run `uv run pytest` to ensure all tests pass
+- **New case:** create `cases/<category>-<NNN>/` with `metadata.yaml`, `prompt.md`, `reference/main.c`, plus `checks/static.py` and `checks/behavior.py`. Verify with `uv run embedeval validate --cases cases/ -c <category>`.
+- **New model:** run `uv run embedeval run --model <litellm-id> --cases cases/` for n=3, then PR `results/runs/<date>_<model>/` along with an updated `LEADERBOARD.md`.
+- **Methodology critique:** open an issue using the methodology-question template.
+
+Issue templates: model evaluation request, case contribution, methodology discussion (under `.github/ISSUE_TEMPLATE/`).
+
+---
+
+## Citation
+
+If EmbedEval is useful for your work, please cite:
+
+```bibtex
+@misc{embedeval2026,
+  title  = {EmbedEval: A Benchmark for LLM-Generated Embedded Firmware},
+  author = {{EmbedEval Contributors}},
+  year   = {2026},
+  url    = {https://github.com/Ecro/embedeval},
+  note   = {Open benchmark with 233 cases across Zephyr, ESP-IDF, STM32 HAL,
+            FreeRTOS, Linux kernel drivers, and Yocto. Measures the implicit
+            knowledge gap in LLM-generated embedded code.}
+}
+```
 
 ---
 

@@ -397,15 +397,49 @@ The following table shows which evaluation layers apply to each category, based 
 - **Cross-platform detection** (`check_no_cross_platform_apis`) — catches API contamination
 - **ISR safety** (`check_no_isr_forbidden`) — verifies no blocking calls in ISR context
 
-### Layer 4: Mutation Testing
+### Layer 4: Mutation Testing (Meta-Verification)
 
-**Purpose:** Meta-verification — ensures the benchmark's own checks catch known bugs in the LLM-generated code's structure.
+L4 is the layer most likely to draw external scrutiny because L3 uses regex
+heuristics rather than full semantic analysis. L4 exists to bound how badly
+those L3 heuristics can mislead the leaderboard.
 
-**Implementation:** 9 cases have `checks/negatives.py` with 18 `must_fail` mutations. The evaluator loads the NEGATIVES data, applies each mutation to the generated code, runs L0+L3 checks on the mutated result, and verifies that the targeted checks detect the seeded bug.
+**Purpose.** Verify that the benchmark's own L0/L3 checks catch known bugs.
+A check that "passes" generated code that contains a seeded bug is a *check
+defect*, not an LLM merit. L4 surfaces these defects so they can be fixed.
 
-**Scoring:** L4 is meta-verification only — L4 failures do not affect the overall case pass/fail determination or pass@1 scores. They indicate gaps in the benchmark's check coverage rather than LLM quality issues.
+**Implementation.** 30 cases ship `checks/negatives.py` with `must_fail`
+mutations (62 mutations total in the v0.1 release). Each mutation is a small
+edit to the reference solution (drop `volatile`, swap lock order, remove a
+header, etc.) targeting a specific check. The evaluator:
+1. Applies the mutation to the reference solution.
+2. Runs the same L0+L3 checks on the mutated code.
+3. Verifies that the targeted check fires.
+4. Records each (mutation, check) pair as `pass` (check fired) or `fail`
+   (check missed the seeded bug).
 
-**Skip conditions:** If the mutation doesn't change the generated code (different structure from reference), that mutation is skipped. If no `negatives.py` file exists, L4 auto-passes with no details.
+**Scoring.** L4 is meta-verification only. **L4 results do not affect the
+case pass/fail verdict or per-model pass@1.** A model is never penalized
+because the benchmark's checks happened to be sound on its outputs. L4
+results are summarized at the *benchmark* level, not the *model* level.
+
+**Why this matters for the leaderboard.** When a model passes a case, L4
+tells the reader whether that pass is *trustworthy* (the L3 check was
+mutation-tested and held up) or *provisional* (no L4 mutation defends it
+yet). The current 30-case L4 coverage skews toward the categories with the
+weakest pass rates, where check defects would be most consequential. v0.2
+expands L4 to all categories.
+
+**Skip conditions.** If a mutation does not change the generated code
+(structurally different from the reference), that single mutation is
+skipped — the benchmark cannot validate a check against code it does not
+apply to. If no `negatives.py` file exists, L4 auto-passes with no details.
+
+**Failure mode handled.** If an L3 regex check matches a substring or a
+typedef instead of the intended construct, an L4 mutation that *removes*
+the intended construct should still cause the check to fire (because the
+regex is matching the wrong thing). When L4 catches this, the check is
+revised. This was the primary signal for several check rewrites between
+v0.0 and v0.1.
 
 ---
 
