@@ -1,14 +1,14 @@
 ---
 title: EmbedEval
-emoji: " "
+emoji: "🧪"
 colorFrom: indigo
 colorTo: purple
 sdk: gradio
-sdk_version: 4.44.0
+sdk_version: 5.0.0
 app_file: app.py
 pinned: false
 license: apache-2.0
-short_description: LLM benchmark for embedded firmware (Zephyr, ESP-IDF, STM32, Linux, Yocto)
+short_description: Benchmark for LLM-generated embedded firmware
 tags:
   - benchmark
   - embedded

@@ -1,3 +1,5 @@
-gradio>=4.44.0
+gradio>=5.0.0
+huggingface_hub<1.0
 pandas>=2.2.0
 plotly>=5.20.0
+audioop-lts; python_version >= "3.13"
