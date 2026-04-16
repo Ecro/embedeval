@@ -1,0 +1,3 @@
+gradio>=4.44.0
+pandas>=2.2.0
+plotly>=5.20.0
