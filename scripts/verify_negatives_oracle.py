@@ -32,7 +32,7 @@ from typing import Any
 class OracleResult:
     case_id: str
     status: str  # "pass" | "fail" | "skip"
-    negatives_checked: int = 0
+    negatives_attempted: int = 0
     missed: list[dict[str, Any]] = field(default_factory=list)
     error: str | None = None
 
@@ -99,7 +99,7 @@ def verify_case(case_dir: Path) -> OracleResult:
         else None
     )
 
-    result = OracleResult(case_id=case_id, status="pass", negatives_checked=0)
+    result = OracleResult(case_id=case_id, status="pass", negatives_attempted=0)
 
     for neg in negatives:
         if "must_fail" not in neg:
@@ -159,7 +159,7 @@ def verify_case(case_dir: Path) -> OracleResult:
                 )
                 result.status = "fail"
 
-        result.negatives_checked += 1
+        result.negatives_attempted += 1
 
     return result
 
@@ -211,7 +211,7 @@ def main() -> int:
                 for m in r.missed:
                     print(f"  - {m}")
             elif r.status == "pass" and args.case:
-                print(f"PASS {r.case_id} ({r.negatives_checked} negatives)")
+                print(f"PASS {r.case_id} ({r.negatives_attempted} negatives)")
 
         print(f"\nTotal: {len(results)} | PASS={passed} FAIL={failed} SKIP={skipped}")
 

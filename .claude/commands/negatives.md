@@ -48,14 +48,19 @@ Schema:
       "case_id": "dma-002",
       "category": "dma",
       "priority": 1,
-      "status": "pending | in-progress | done | skipped",
-      "started_at": "YYYY-MM-DD HH:MM" or null,
-      "completed_at": "YYYY-MM-DD HH:MM" or null,
+      "status": "pending | in-progress | done | skipped | orphaned",
+      "started_at": "YYYY-MM-DD" or null,
+      "completed_at": "YYYY-MM-DD" or null,
       "notes": "skip reason or oracle warnings" or null
     }
   ]
 }
 ```
+
+**Field ownership:**
+- `status`, `category`, `priority`, `completed_at`, `notes`: written by `sync_negatives_progress.py`.
+- `started_at`: written by the `/negatives` command itself when a TC first
+  transitions to `in-progress` (Step 3 below). The sync script never touches it.
 
 Priority order (from PLAN-hiloop-transpile-readiness, weakest Haiku first):
 1. `dma` (priority 1) — Haiku 7.7%
@@ -122,7 +127,13 @@ Loses notes, timestamps, skip reasons. Only use if file is corrupted.
 
 If no pending cases: print "All 186 cases have negatives. Run `uv run python scripts/verify_negatives_oracle.py` to verify oracle gate." and exit.
 
-### Step 3. Load TC context (no user interaction)
+### Step 3. Load TC context + mark in-progress
+
+Before presenting context, update the TC's progress entry:
+- `status`: `in-progress`
+- `started_at`: today's date `YYYY-MM-DD` if currently null (preserve earlier value on resume)
+
+Then read and present:
 
 For the chosen case, read and present:
 

@@ -95,6 +95,80 @@ def test_pending_tc_auto_promoted_when_negatives_added(tmp_path: Path) -> None:
     assert "auto-promoted" in entry["notes"]
 
 
+def test_in_progress_tc_auto_promoted_when_negatives_added(tmp_path: Path) -> None:
+    """Resume case: TC was being authored (in-progress) and file now exists."""
+    cases = tmp_path / "cases"
+    cases.mkdir()
+    _make_case(cases, "dma-150", with_negatives=True)
+    progress = tmp_path / "progress.json"
+    progress.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "generated": "2026-04-19",
+                "cases": [
+                    {
+                        "case_id": "dma-150",
+                        "category": "dma",
+                        "priority": 1,
+                        "status": "in-progress",
+                        "started_at": "2026-04-18",
+                        "completed_at": None,
+                        "notes": "user abandoned mid-session",
+                    }
+                ],
+            }
+        )
+    )
+
+    data, stats = sync_mod.reconcile(cases, progress)
+
+    assert "dma-150" in stats.auto_promoted
+    entry = next(c for c in data["cases"] if c["case_id"] == "dma-150")
+    assert entry["status"] == "done"
+    assert entry["started_at"] == "2026-04-18"  # preserved
+
+
+def test_skipped_tc_auto_promoted_when_negatives_added(tmp_path: Path) -> None:
+    """C1 regression guard: skipped TC that gains negatives.py must promote.
+
+    Without this transition, completion criteria (count of negatives.py ==
+    count of static.py) silently drifts from the done-count in progress file.
+    """
+    cases = tmp_path / "cases"
+    cases.mkdir()
+    _make_case(cases, "yocto-150", with_negatives=True)
+    progress = tmp_path / "progress.json"
+    progress.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "generated": "2026-04-01",
+                "cases": [
+                    {
+                        "case_id": "yocto-150",
+                        "category": "yocto",
+                        "priority": 6,
+                        "status": "skipped",
+                        "started_at": None,
+                        "completed_at": None,
+                        "notes": "skip: BitBake syntax not yet scoped",
+                    }
+                ],
+            }
+        )
+    )
+
+    data, stats = sync_mod.reconcile(cases, progress)
+
+    assert "yocto-150" in stats.auto_promoted
+    entry = next(c for c in data["cases"] if c["case_id"] == "yocto-150")
+    assert entry["status"] == "done"
+    # Prior skip reason preserved, auto-promote note appended
+    assert "BitBake syntax not yet scoped" in entry["notes"]
+    assert "auto-promoted" in entry["notes"]
+
+
 def test_regression_when_negatives_removed(tmp_path: Path) -> None:
     cases = tmp_path / "cases"
     cases.mkdir()

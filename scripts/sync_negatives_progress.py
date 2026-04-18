@@ -124,7 +124,11 @@ def reconcile(
 
             # State transitions
             old_status = entry.get("status", "pending")
-            if flags["has_negatives"] and old_status in ("pending", "in-progress"):
+            if flags["has_negatives"] and old_status in (
+                "pending",
+                "in-progress",
+                "skipped",
+            ):
                 entry["status"] = "done"
                 entry["completed_at"] = entry.get("completed_at") or str(date.today())
                 note = entry.get("notes") or ""
