@@ -1,0 +1,1671 @@
+{
+  "version": 1,
+  "generated": "2026-04-19",
+  "cases": [
+    {
+      "case_id": "dma-001",
+      "category": "dma",
+      "priority": 1,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "dma-002",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-003",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-004",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-005",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-006",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-007",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-008",
+      "category": "dma",
+      "priority": 1,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "dma-009",
+      "category": "dma",
+      "priority": 1,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "dma-011",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "dma-012",
+      "category": "dma",
+      "priority": 1,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-001",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-002",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-003",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "isr-concurrency-004",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-005",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-006",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-007",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-008",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "isr-concurrency-011",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "isr-concurrency-012",
+      "category": "isr-concurrency",
+      "priority": 2,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-001",
+      "category": "threading",
+      "priority": 3,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "threading-002",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-003",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-004",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-005",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-006",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-007",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-008",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-011",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-012",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-013",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "threading-014",
+      "category": "threading",
+      "priority": 3,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-001",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "memory-opt-002",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-003",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-004",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-005",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-006",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-007",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-008",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-011",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "memory-opt-012",
+      "category": "memory-opt",
+      "priority": 4,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "adc-001",
+      "category": "adc",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "adc-002",
+      "category": "adc",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-001",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-002",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-003",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-004",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-005",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-006",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-007",
+      "category": "ble",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ble-008",
+      "category": "ble",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "boot-001",
+      "category": "boot",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "boot-002",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "boot-003",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "boot-004",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "boot-005",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "boot-006",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "boot-007",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "boot-008",
+      "category": "boot",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-001",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "device-tree-002",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-003",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-004",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-005",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-006",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-007",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "device-tree-008",
+      "category": "device-tree",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "esp-gpio-001",
+      "category": "esp-gpio",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "esp-i2c-001",
+      "category": "esp-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "esp-spi-001",
+      "category": "esp-spi",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "esp-timer-001",
+      "category": "esp-timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "esp-wifi-001",
+      "category": "esp-wifi",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "gpio-basic-001",
+      "category": "gpio-basic",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "gpio-basic-005",
+      "category": "gpio-basic",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "gpio-basic-006",
+      "category": "gpio-basic",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "kconfig-001",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "kconfig-002",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "kconfig-003",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "kconfig-004",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "kconfig-005",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "kconfig-006",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "kconfig-007",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "kconfig-008",
+      "category": "kconfig",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "linux-driver-001",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "linux-driver-002",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "linux-driver-003",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "linux-driver-004",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "linux-driver-005",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "linux-driver-006",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "linux-driver-007",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "linux-driver-008",
+      "category": "linux-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-001",
+      "category": "networking",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "networking-002",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-003",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-004",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-005",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-006",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-007",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "networking-008",
+      "category": "networking",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-001",
+      "category": "ota",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "ota-002",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-003",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-004",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-005",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-006",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-007",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-008",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "ota-011",
+      "category": "ota",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-001",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "power-mgmt-002",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-003",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-004",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-005",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-006",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-007",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "power-mgmt-008",
+      "category": "power-mgmt",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "pwm-001",
+      "category": "pwm",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "security-001",
+      "category": "security",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "security-002",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "security-003",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "security-004",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "security-005",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "security-006",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "security-007",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "security-008",
+      "category": "security",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-001",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "sensor-driver-002",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-003",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-004",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-005",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-006",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-007",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "sensor-driver-008",
+      "category": "sensor-driver",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-001",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-002",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-003",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-004",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-005",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-006",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-007",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "spi-i2c-008",
+      "category": "spi-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "stm32-freertos-001",
+      "category": "stm32-freertos",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "stm32-gpio-001",
+      "category": "stm32-gpio",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "stm32-i2c-001",
+      "category": "stm32-i2c",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "stm32-spi-001",
+      "category": "stm32-spi",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "stm32-uart-001",
+      "category": "stm32-uart",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-001",
+      "category": "storage",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "storage-002",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-003",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-004",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-005",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-006",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-007",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-008",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-012",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "storage-013",
+      "category": "storage",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "timer-001",
+      "category": "timer",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "timer-002",
+      "category": "timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "timer-003",
+      "category": "timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "timer-004",
+      "category": "timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "timer-005",
+      "category": "timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "timer-006",
+      "category": "timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "timer-007",
+      "category": "timer",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "timer-008",
+      "category": "timer",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "uart-001",
+      "category": "uart",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "uart-002",
+      "category": "uart",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-001",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-002",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-003",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-004",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-005",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "watchdog-006",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-007",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-008",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "watchdog-010",
+      "category": "watchdog",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-001",
+      "category": "yocto",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    },
+    {
+      "case_id": "yocto-002",
+      "category": "yocto",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-003",
+      "category": "yocto",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-004",
+      "category": "yocto",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-005",
+      "category": "yocto",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-006",
+      "category": "yocto",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-007",
+      "category": "yocto",
+      "priority": 6,
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "notes": null
+    },
+    {
+      "case_id": "yocto-008",
+      "category": "yocto",
+      "priority": 6,
+      "status": "done",
+      "started_at": null,
+      "completed_at": "2026-04-19",
+      "notes": "pre-existing negatives.py discovered on first sync"
+    }
+  ]
+}
