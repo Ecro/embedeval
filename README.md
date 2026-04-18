@@ -266,6 +266,12 @@ A single benchmark run generates:
 | **Feedback** | Self-correction on L0/L1 errors | `embedeval run --feedback-rounds 3` |
 | **Agent** | Multi-turn iterative refinement | `embedeval agent --max-turns 5` |
 | **Bug fix** | Diagnose + fix seeded mutations | `embedeval run --scenario bugfix` |
+| **Context Quality** | Effect of team's CLAUDE.md / system prompt | `embedeval run --context-pack ./CLAUDE.md` + `embedeval context-compare` |
+
+Context Quality Mode quantifies how much your team's implicit-context
+files actually help the LLM and how much room is left to improve them.
+See [docs/CONTEXT-QUALITY-MODE.md](docs/CONTEXT-QUALITY-MODE.md) for the
+workflow and metric interpretation.
 
 ---
 

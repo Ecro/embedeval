@@ -106,7 +106,11 @@ class TestContextFiles:
             prompt="test",
             context_files=[str(ctx_file)],
         )
-        assert response.generated_code == MOCK_C_CODE
+        # Mock now echoes the prompt prefix into a /* PROMPT_PREFIX: */ block
+        # so callers can verify what the model actually saw. The stock C body
+        # (MOCK_C_CODE) is still appended verbatim.
+        assert MOCK_C_CODE in response.generated_code
+        assert "stdio.h" in response.generated_code
 
     def test_missing_context_file_handled(self) -> None:
         response = call_model(

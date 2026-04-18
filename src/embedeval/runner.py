@@ -258,6 +258,7 @@ def _run_single_case(
     model: str,
     attempt: int,
     feedback_rounds: int,
+    context_pack: str | None = None,
 ) -> EvalResult:
     """Evaluate one case/attempt — extracted so the caller can wrap it
     in a broad try/except without duplicating the happy-path logic."""
@@ -265,6 +266,7 @@ def _run_single_case(
         model=model,
         prompt=prompt,
         context_files=context_files,
+        context_pack=context_pack,
     )
 
     result = evaluate(
@@ -304,7 +306,11 @@ def _run_single_case(
                 f"Please fix the code and output ONLY the complete"
                 f" corrected C source file."
             )
-            fb_response = call_model(model=model, prompt=feedback_prompt)
+            fb_response = call_model(
+                model=model,
+                prompt=feedback_prompt,
+                context_pack=context_pack,
+            )
             generated_code = fb_response.generated_code
             result = evaluate(
                 case_dir=case_dir,
@@ -337,6 +343,7 @@ def run_benchmark(
     include_private: bool = False,
     extra_cases_dirs: list[Path] | None = None,
     checkpoint_path: Path | None = None,
+    context_pack: str | None = None,
 ) -> list[EvalResult]:
     """Run the benchmark pipeline: discover, filter, LLM call, evaluate.
 
@@ -356,6 +363,9 @@ def run_benchmark(
             If the file exists, previously completed cases are loaded
             and skipped. Each newly completed case is appended
             immediately so the run can resume after an interruption.
+        context_pack: Optional run-wide context (team CLAUDE.md or expert
+            pack content) prepended to every LLM prompt. See
+            docs/CONTEXT-QUALITY-MODE.md.
 
     Returns:
         List of EvalResult for all case/attempt combinations.
@@ -417,6 +427,7 @@ def run_benchmark(
                         model=model,
                         attempt=attempt,
                         feedback_rounds=feedback_rounds,
+                        context_pack=context_pack,
                     )
                 except Exception as exc:  # noqa: BLE001
                     # Catch ANY per-case error (UnicodeDecodeError,

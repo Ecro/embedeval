@@ -37,6 +37,12 @@ class TrackerData(BaseModel):
     results: dict[str, dict[str, CaseResult]] = Field(default_factory=dict)
     # results[model][case_id] = CaseResult
 
+    # Context pack hash (16-char SHA256 prefix) for the most recent run that
+    # wrote into this tracker. None means runs were done without --context-pack.
+    # Used by Context Quality Mode to prevent silently mixing results from
+    # different packs into the same output_dir.
+    context_pack_hash: str | None = None
+
 
 def _case_content_hash(case_dir: Path) -> str:
     """Get a content-based hash for a case directory.
@@ -101,12 +107,23 @@ def save_tracker(tracker: TrackerData, results_dir: Path) -> None:
     logger.info("Tracker saved to %s", tracker_file)
 
 
+class ContextPackMismatchError(ValueError):
+    """Raised when a run's context_pack_hash doesn't match the tracker's.
+
+    Mixing results from different context packs into one output_dir would
+    silently invalidate Context Quality Mode comparisons (the per-category
+    pass rate would be a mix of two contexts). Use --output-dir to keep
+    runs with different packs separate.
+    """
+
+
 def update_tracker(
     tracker: TrackerData,
     results: list["EvalResult"],
     cases_dir: Path,
     model: str,
     case_dir_map: dict[str, Path] | None = None,
+    context_pack_hash: str | None = None,
 ) -> TrackerData:
     """Update tracker with new benchmark results.
 
@@ -115,7 +132,35 @@ def update_tracker(
             when cases live in multiple roots (e.g., public + private). Without
             this, private cases resolve to non-existent paths under cases_dir
             and get recorded with the empty-content hash.
+        context_pack_hash: Hash of the context pack used for this run.
+            Must match the tracker's existing hash; mismatch raises
+            ContextPackMismatchError to prevent silent run mixing.
     """
+    if tracker.context_pack_hash != context_pack_hash and (
+        tracker.context_pack_hash is not None or context_pack_hash is not None
+    ):
+        # Three failure modes, all caught here:
+        #   prev=A, new=B  → two different packs in one dir
+        #   prev=A, new=None → silent downgrade to bare in pack dir
+        #   prev=None, new=A → silent upgrade of legacy bare dir to packed
+        # All would silently invalidate Context Quality comparisons.
+        # Escape hatch only when the tracker is truly uninitialised — both
+        # results empty AND no prior hash. A tracker that *had* a hash and
+        # then had results cleared retains the hash semantically and must
+        # not be silently re-tagged.
+        if not tracker.results and tracker.context_pack_hash is None:
+            tracker.context_pack_hash = context_pack_hash
+        else:
+            raise ContextPackMismatchError(
+                f"Context pack mismatch in tracker: "
+                f"existing={tracker.context_pack_hash!r} "
+                f"new={context_pack_hash!r}. "
+                f"Use a separate --output-dir for runs with different "
+                f"(or no) context pack."
+            )
+    else:
+        tracker.context_pack_hash = context_pack_hash
+
     if model not in tracker.results:
         tracker.results[model] = {}
 

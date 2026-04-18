@@ -45,6 +45,7 @@ def call_model(
     model: str,
     prompt: str,
     context_files: list[str] | None = None,
+    context_pack: str | None = None,
     timeout: float = 300.0,
     max_retries: int = 3,
     rate_limit_delay: float = 1.0,
@@ -52,21 +53,25 @@ def call_model(
     """Call an LLM model and return generated code.
 
     Supports three modes:
-    - "mock": Returns a mock response for testing.
+    - "mock": Returns a mock response (echoes prompt-prefix into the C body so
+      callers can verify what the model actually saw — used by Context Quality
+      Mode smoke tests).
     - "claude-code://MODEL": Uses `claude -p` CLI with subscription (no API key).
       e.g. "claude-code://sonnet", "claude-code://opus", "claude-code://haiku"
     - Any other string: Uses litellm (requires API keys).
 
-    If the first response looks like prose (no C-family tokens), retry once
-    with a stronger "code only" instruction appended to the prompt. This
-    recovers non-deterministic format failures (isr-concurrency-001,
-    watchdog-010 in prior runs) without a full rerun.
-    """
-    if model == "mock":
-        return _mock_response()
+    Args:
+        context_pack: Run-wide context (e.g. team's CLAUDE.md or expert pack)
+            prepended to every prompt. Distinct from per-case `context_files`.
+            See docs/CONTEXT-QUALITY-MODE.md for usage.
 
-    context = _build_context(context_files or [])
-    full_prompt = f"{context}\n{prompt}" if context else prompt
+    If the first response looks like prose (no C-family tokens), retry once
+    with a stronger "code only" instruction appended to the prompt.
+    """
+    full_prompt = _build_full_prompt(prompt, context_files, context_pack)
+
+    if model == "mock":
+        return _mock_response(full_prompt)
 
     def _dispatch(p: str) -> LLMResponse:
         if model.startswith(CLAUDE_CODE_PREFIX):
@@ -259,15 +264,25 @@ def _call_litellm(
     raise RuntimeError(msg) from last_error
 
 
-def _mock_response() -> LLMResponse:
-    """Return a mock LLM response for testing."""
+def _mock_response(full_prompt: str = "") -> LLMResponse:
+    """Return a mock LLM response for testing.
+
+    The first 200 chars of the actual prompt that would be sent to a real
+    model are embedded as a C comment in the generated code. This lets
+    Context Quality Mode smoke tests assert that context_pack content
+    actually reaches the model layer (without burning real tokens).
+    """
+    prompt_excerpt = full_prompt.replace("*/", "*\\/")[:200] if full_prompt else ""
+    code = MOCK_C_CODE
+    if prompt_excerpt:
+        code = f"/* PROMPT_PREFIX:\n{prompt_excerpt}\n*/\n\n{MOCK_C_CODE}"
     return LLMResponse(
         model="mock",
-        generated_code=MOCK_C_CODE,
+        generated_code=code,
         token_usage=TokenUsage(
-            input_tokens=100,
+            input_tokens=max(100, len(full_prompt) // 4),
             output_tokens=50,
-            total_tokens=150,
+            total_tokens=max(150, len(full_prompt) // 4 + 50),
         ),
         cost_usd=0.0,
         duration_seconds=0.01,
@@ -310,3 +325,24 @@ def _build_context(context_files: list[str]) -> str:
         else:
             logger.warning("Context file not found: %s", file_path)
     return "\n".join(parts)
+
+
+def _build_full_prompt(
+    prompt: str,
+    context_files: list[str] | None,
+    context_pack: str | None,
+) -> str:
+    """Assemble the full prompt with optional run-wide and per-case context.
+
+    Order: context_pack (team/expert) → context_files (per-case) → prompt.
+    Run-wide context comes first so it sets the frame before task-specific
+    material; per-case context immediately precedes the task it references.
+    """
+    parts: list[str] = []
+    if context_pack and context_pack.strip():
+        parts.append(f"## Team Context\n\n{context_pack.strip()}")
+    file_ctx = _build_context(context_files or [])
+    if file_ctx:
+        parts.append(file_ctx)
+    parts.append(prompt)
+    return "\n\n".join(parts)

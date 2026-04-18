@@ -233,6 +233,19 @@ def run(
             ),
         ),
     ] = None,
+    context_pack: Annotated[
+        Optional[str],
+        typer.Option(
+            "--context-pack",
+            help=(
+                "Path to a global context file prepended to every prompt "
+                "(e.g. team's CLAUDE.md). Special value 'expert' uses the "
+                "bundled expert pack at "
+                "src/embedeval/context_packs/expert.md. See "
+                "docs/CONTEXT-QUALITY-MODE.md."
+            ),
+        ),
+    ] = None,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -244,6 +257,18 @@ def run(
 
     if scenario not in ("generation", "bugfix"):
         typer.echo(f"Unknown scenario: {scenario}. Use 'generation' or 'bugfix'.")
+        raise typer.Exit(code=1)
+
+    # Context Quality Mode is wired through the generation path only.
+    # bugfix.run_bugfix_benchmark calls call_model() without forwarding
+    # context_pack, so allowing the flag here would silently strip the pack
+    # while still recording its hash in the tracker — a data-integrity trap.
+    if scenario == "bugfix" and context_pack is not None:
+        typer.echo(
+            "Error: --context-pack is not supported for --scenario bugfix. "
+            "Use --scenario generation, or run bugfix without --context-pack.",
+            err=True,
+        )
         raise typer.Exit(code=1)
 
     from embedeval.models import CaseTier
@@ -315,6 +340,52 @@ def run(
         # Override filters to only include cases needing retest
         filters.case_ids = needs_retest
 
+    # Resolve and load context pack (D1: prepend to every prompt; D3: hash content)
+    context_pack_text: str | None = None
+    context_pack_hash: str | None = None
+    if context_pack is not None:
+        from embedeval.context_pack import (
+            ContextPackTooLargeError,
+            hash_context_pack,
+            resolve_context_pack,
+        )
+
+        try:
+            pack_path = resolve_context_pack(context_pack)
+            context_pack_text = pack_path.read_text(encoding="utf-8")
+        except FileNotFoundError as exc:
+            typer.echo(f"Error: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+        # Empty pack would hash to a stable non-null value but produce no
+        # prompt change (_build_full_prompt strips whitespace-only packs).
+        # That mismatch silently poisons the tracker for future bare runs
+        # in the same output_dir.
+        if not context_pack_text.strip():
+            typer.echo(
+                f"Error: context pack file is empty or whitespace-only: "
+                f"{pack_path}",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        try:
+            context_pack_hash = hash_context_pack(context_pack_text)
+        except ContextPackTooLargeError as exc:
+            typer.echo(
+                f"Warning: {exc}. Continuing — long packs may dilute LLM "
+                f"attention or be ignored.",
+                err=True,
+            )
+            # Hash anyway so the oversized pack is still tracked
+            import hashlib
+
+            context_pack_hash = hashlib.sha256(
+                context_pack_text.encode("utf-8")
+            ).hexdigest()[:16]
+        typer.echo(
+            f"Context pack: {pack_path.name} "
+            f"(hash={context_pack_hash}, {len(context_pack_text)} chars)"
+        )
+
     typer.echo(
         f"Running benchmark: model={model}, cases={cases_dir}, scenario={scenario}"
     )
@@ -348,6 +419,7 @@ def run(
             include_private=include_private,
             extra_cases_dirs=extra_dirs,
             checkpoint_path=checkpoint_path,
+            context_pack=context_pack_text,
         )
 
     if not results:
@@ -420,9 +492,20 @@ def run(
 
     # Update tracker after building comprehensive_results so the "prior"
     # snapshot used for merging reflects the state *before* this run.
-    tracker = update_tracker(
-        prior_tracker, results, cases_dir, model, case_dir_map=case_dir_map
-    )
+    from embedeval.test_tracker import ContextPackMismatchError
+
+    try:
+        tracker = update_tracker(
+            prior_tracker,
+            results,
+            cases_dir,
+            model,
+            case_dir_map=case_dir_map,
+            context_pack_hash=context_pack_hash,
+        )
+    except ContextPackMismatchError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
     save_tracker(tracker, output_dir)
     generate_results_doc(
         tracker,
@@ -445,6 +528,71 @@ def run(
     typer.echo(f"Tracker: {output_dir / 'test_tracker.json'}")
     if guide_path:
         typer.echo(f"Safe guide: {guide_path}")
+
+
+@app.command(name="context-compare")
+def context_compare_cmd(
+    bare: Annotated[
+        Path,
+        typer.Option("--bare", help="output_dir of the no-pack baseline run"),
+    ],
+    expert: Annotated[
+        Path,
+        typer.Option(
+            "--expert",
+            help="output_dir of the run with --context-pack expert",
+        ),
+    ],
+    team: Annotated[
+        Optional[Path],
+        typer.Option(
+            "--team", help="output_dir of the run with --context-pack <team file>"
+        ),
+    ] = None,
+    model: Annotated[
+        Optional[str],
+        typer.Option(
+            "--model",
+            help="Model to compare. Required when trackers contain multiple models.",
+        ),
+    ] = None,
+    output_json: Annotated[
+        Optional[Path],
+        typer.Option("--output-json", help="Write the comparison report to JSON"),
+    ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose logging"),
+    ] = False,
+) -> None:
+    """Compare benchmark runs across context packs (Context Quality Mode)."""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, force=True)
+
+    from embedeval.context_compare import (
+        compare_runs,
+        format_comparison_table,
+    )
+
+    try:
+        report = compare_runs(
+            bare_dir=bare,
+            expert_dir=expert,
+            team_dir=team,
+            model=model,
+        )
+    except ValueError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(format_comparison_table(report))
+
+    if output_json:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        output_json.write_text(
+            report.model_dump_json(indent=2) + "\n", encoding="utf-8"
+        )
+        typer.echo(f"\nJSON: {output_json}")
 
 
 @app.command()
