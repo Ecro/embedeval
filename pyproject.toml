@@ -49,3 +49,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.uv.build-backend]
+# Ensure non-Python data files ship with the wheel.
+source-include = ["src/embedeval/data/*.yaml"]

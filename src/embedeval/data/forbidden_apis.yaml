@@ -1,0 +1,51 @@
+# Cross-platform API contamination detector.
+#
+# Consumed by: embedeval.check_utils.check_no_cross_platform_apis
+# Also intended as authoritative source for downstream tools that need
+# the same blacklist (e.g. Hiloop shared rule pack).
+#
+# Entries ending in "(" are matched as raw substrings on stripped code.
+# Other entries are matched with word-boundary semantics via has_api_call().
+#
+# Keep this file byte-identical in meaning to the prior hardcoded dict
+# CROSS_PLATFORM_FORBIDDEN in check_utils.py.
+platforms:
+  FreeRTOS:
+    - xTaskCreate
+    - vTaskDelay
+    - xQueueSend
+    - xQueueReceive
+    - xSemaphoreTake
+    - xSemaphoreGive
+    - xTimerCreate
+    - vTaskDelete
+    - portYIELD
+  Arduino:
+    - analogRead
+    - analogWrite
+    - digitalRead
+    - digitalWrite
+    - Serial.print
+    - Serial.begin
+    - "delay("
+    - "millis("
+    - "pinMode("
+  STM32_HAL:
+    - HAL_GPIO_WritePin
+    - HAL_GPIO_ReadPin
+    - HAL_UART_Transmit
+    - HAL_SPI_Transmit
+    - HAL_I2C_Master_Transmit
+    - HAL_ADC_Start
+    - HAL_TIM_Base_Start
+  POSIX:
+    - pthread_create
+    - pthread_mutex_lock
+    - pthread_mutex_unlock
+    - sem_wait
+    - sem_post
+  Linux_Userspace:
+    - "open("
+    - "close("
+    - "ioctl("
+    - "mmap("

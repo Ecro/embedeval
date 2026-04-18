@@ -12,6 +12,7 @@ from embedeval.models import (
     EvalResult,
     ModelScore,
     OverallScore,
+    PerCheckStat,
     ReasoningScore,
     TierScore,
 )
@@ -123,6 +124,8 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
             default=1,
         )
 
+        per_check_stats = _calculate_per_check_stats(model_results)
+
         # Comparable pass@1: score on common cases only
         pass_at_1_comparable: float | None = None
         comparable_cases: int | None = None
@@ -153,10 +156,60 @@ def _calculate_model_scores(results: list[EvalResult]) -> list[ModelScore]:
                 layer_pass_rates=layer_pass_rates,
                 pass_at_1_ci=ci,
                 n_samples=samples_per_case,
+                per_check_stats=per_check_stats,
             )
         )
 
     return scores
+
+
+def _calculate_per_check_stats(
+    model_results: list[EvalResult],
+) -> list[PerCheckStat]:
+    """Aggregate per-check pass/fail across all evaluations for one model.
+
+    Walks every CheckDetail in every LayerResult, grouping by
+    (check_name, category). Emits a PerCheckStat per unique key.
+
+    Downstream consumers (Hiloop transpile evidence injection, per-check
+    dashboards) should read this field from summary.json — do not scrape
+    report.md for this data.
+    """
+    # key = (check_name, category_str)
+    totals: dict[tuple[str, str | None], int] = defaultdict(int)
+    fails: dict[tuple[str, str | None], int] = defaultdict(int)
+    failing_tcs: dict[tuple[str, str | None], set[str]] = defaultdict(set)
+
+    for result in model_results:
+        category = result.category.value if result.category else None
+        for layer in result.layers:
+            for detail in layer.details:
+                # Skip L4 mutation synthetic checks — they measure benchmark
+                # quality (did mutation get caught), not model behavior.
+                if detail.check_type == "mutation":
+                    continue
+                key = (detail.check_name, category)
+                totals[key] += 1
+                if not detail.passed:
+                    fails[key] += 1
+                    failing_tcs[key].add(result.case_id)
+
+    stats: list[PerCheckStat] = []
+    for key, total in sorted(totals.items()):
+        check_name, category = key
+        fail_count = fails.get(key, 0)
+        pass_rate = (total - fail_count) / total if total > 0 else 0.0
+        stats.append(
+            PerCheckStat(
+                check_name=check_name,
+                category=category,
+                total_runs=total,
+                fail_count=fail_count,
+                pass_rate=pass_rate,
+                failing_tc_ids=sorted(failing_tcs.get(key, set())),
+            )
+        )
+    return stats
 
 
 def _calculate_category_scores(

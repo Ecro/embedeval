@@ -187,6 +187,32 @@ class EvalResult(BaseModel):
     reasoning_types: list[ReasoningType] = Field(default_factory=list)
 
 
+class PerCheckStat(BaseModel):
+    """Per-check pass/fail aggregate across all cases for a single model.
+
+    Emitted into summary.json for external consumers (dashboards, Hiloop
+    transpile evidence injection, benchmark analysis scripts). This is
+    the authoritative check-level signal — do not re-derive by scraping
+    report.md.
+    """
+
+    check_name: str
+    category: str | None = Field(
+        default=None,
+        description="Case category where this check was observed (None if mixed)",
+    )
+    total_runs: int = Field(
+        ge=0,
+        description="Number of case-evaluations this check appeared in",
+    )
+    fail_count: int = Field(ge=0, description="Number of runs where this check failed")
+    pass_rate: float = Field(ge=0.0, le=1.0)
+    failing_tc_ids: list[str] = Field(
+        default_factory=list,
+        description="Distinct TC IDs where this check failed at least once",
+    )
+
+
 class ModelScore(BaseModel):
     """Aggregated score for a single model across all cases."""
 
@@ -213,6 +239,10 @@ class ModelScore(BaseModel):
     layer_pass_rates: dict[str, float]
     pass_at_1_ci: tuple[float, float] = (0.0, 0.0)
     n_samples: int = Field(default=1, ge=1)
+    per_check_stats: list[PerCheckStat] = Field(
+        default_factory=list,
+        description="Per-check pass/fail aggregate — see PerCheckStat",
+    )
 
 
 class CategoryScore(BaseModel):

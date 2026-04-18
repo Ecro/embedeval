@@ -5,6 +5,11 @@ and numeric extraction for static and behavioral checks.
 """
 
 import re
+from functools import lru_cache
+from importlib.resources import files
+from typing import cast
+
+import yaml
 
 
 def strip_comments(code: str) -> str:
@@ -12,6 +17,49 @@ def strip_comments(code: str) -> str:
     code = re.sub(r"/\*.*?\*/", "", code, flags=re.DOTALL)
     code = re.sub(r"//.*", "", code)
     return code
+
+
+def strip_string_literals(code: str) -> str:
+    """Remove C string and char literal contents, keeping quotes as sentinels.
+
+    Prevents substring checks from matching identifiers that only appear
+    inside log messages or format strings (e.g. printk("use k_malloc"))
+    from tripping a "no k_malloc" check.
+
+    Escape sequences are handled; the quotes themselves remain to preserve
+    offset structure.
+    """
+    # Double-quoted string literals (with escape handling)
+    code = re.sub(r'"(?:[^"\\]|\\.)*"', '""', code, flags=re.DOTALL)
+    # Single-quoted char literals
+    code = re.sub(r"'(?:[^'\\]|\\.)*'", "''", code, flags=re.DOTALL)
+    return code
+
+
+def scoped_contains(
+    code: str,
+    needle: str,
+    *,
+    scope: str = "stripped",
+) -> bool:
+    """Substring check with explicit scope discipline.
+
+    scope='stripped'  : strip comments AND string literals (default, safest).
+                        Matches identifier-level substrings only.
+    scope='code_only' : strip comments but keep string literals intact.
+                        Use when matching quoted content deliberately.
+    scope='raw'       : match anywhere — rare; inline comment must justify.
+
+    Use this helper in static.py / behavior.py instead of `needle in code`
+    to avoid matching inside comments or log-message string literals.
+    """
+    if scope == "stripped":
+        return needle in strip_string_literals(strip_comments(code))
+    if scope == "code_only":
+        return needle in strip_comments(code)
+    if scope == "raw":
+        return needle in code
+    raise ValueError(f"unknown scope {scope!r}; use 'stripped' | 'code_only' | 'raw'")
 
 
 def extract_function_body(code: str, func_name: str) -> str | None:
@@ -92,52 +140,28 @@ ZEPHYR_DEPRECATED = [
     "gpio_pin_configure(",  # without _dt suffix
 ]
 
-CROSS_PLATFORM_FORBIDDEN = {
-    "FreeRTOS": [
-        "xTaskCreate",
-        "vTaskDelay",
-        "xQueueSend",
-        "xQueueReceive",
-        "xSemaphoreTake",
-        "xSemaphoreGive",
-        "xTimerCreate",
-        "vTaskDelete",
-        "portYIELD",
-    ],
-    "Arduino": [
-        "analogRead",
-        "analogWrite",
-        "digitalRead",
-        "digitalWrite",
-        "Serial.print",
-        "Serial.begin",
-        "delay(",
-        "millis(",
-        "pinMode(",
-    ],
-    "STM32_HAL": [
-        "HAL_GPIO_WritePin",
-        "HAL_GPIO_ReadPin",
-        "HAL_UART_Transmit",
-        "HAL_SPI_Transmit",
-        "HAL_I2C_Master_Transmit",
-        "HAL_ADC_Start",
-        "HAL_TIM_Base_Start",
-    ],
-    "POSIX": [
-        "pthread_create",
-        "pthread_mutex_lock",
-        "pthread_mutex_unlock",
-        "sem_wait",
-        "sem_post",
-    ],
-    "Linux_Userspace": [
-        "open(",
-        "close(",
-        "ioctl(",
-        "mmap(",
-    ],
-}
+@lru_cache(maxsize=1)
+def _load_forbidden_apis() -> dict[str, list[str]]:
+    """Load cross-platform forbidden API blacklist from packaged YAML.
+
+    Single source of truth — downstream tools (e.g. Hiloop rule pack)
+    should consume the same YAML, not re-hardcode the list.
+    """
+    text = files("embedeval.data").joinpath("forbidden_apis.yaml").read_text()
+    data = yaml.safe_load(text)
+    platforms = data.get("platforms", {})
+    if not isinstance(platforms, dict):
+        raise ValueError("forbidden_apis.yaml: 'platforms' must be a mapping")
+    return cast(dict[str, list[str]], platforms)
+
+
+def get_cross_platform_forbidden() -> dict[str, list[str]]:
+    """Return the cross-platform forbidden API mapping.
+
+    Kept as a function (not module-level constant) so tests can clear
+    the lru_cache if they swap the data file.
+    """
+    return _load_forbidden_apis()
 
 
 def check_no_cross_platform_apis(
@@ -151,7 +175,7 @@ def check_no_cross_platform_apis(
     stripped = strip_comments(code)
     found: list[tuple[str, str]] = []
     skip = set(skip_platforms or [])
-    for platform, apis in CROSS_PLATFORM_FORBIDDEN.items():
+    for platform, apis in get_cross_platform_forbidden().items():
         if platform in skip:
             continue
         for api in apis:
