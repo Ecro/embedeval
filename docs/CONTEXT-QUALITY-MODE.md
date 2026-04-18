@@ -21,6 +21,17 @@ Two metrics fall out of the comparison:
   Gap on a category means the LLM has hit a hard limit there — context
   alone won't fix it.
 
+> **Lift can be negative — that is a real signal, not a bug.**
+> Empirical 2026-04-18 Haiku validation found cases where the expert
+> pack drops pass rate by up to 100pp on a single TC, while
+> simultaneously raising it by 100pp on another. The mechanism:
+> pack content focuses LLM attention on principle application
+> (e.g., adding `volatile`) but can distract from structural
+> correctness (e.g., setting up the actual ISR). Read per-category
+> Lift as direction, not as universal benefit. Aggregate Lift near
+> zero with high per-case variance is informative — it tells you
+> the pack helps some cases and hurts others.
+
 ## Why this matters
 
 Recent research shows that giving an LLM problem context measurably

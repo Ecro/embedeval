@@ -223,6 +223,19 @@ def has_api_call(code: str, api: str) -> bool:
     return bool(re.search(rf"\b{re.escape(base)}\s*\(", code))
 
 
+def has_any_api_call(code: str, apis: list[str]) -> bool:
+    """Check for any of several equivalent API spellings.
+
+    Many SDKs offer aliases or version-renamed APIs that are functionally
+    equivalent (e.g. Zephyr's `dma_config()` vs `dma_configure()`).
+    Checks that demand exactly one spelling produce false negatives when
+    the LLM picks the other valid form — surfaced empirically by Context
+    Quality Mode trade-off analysis (2026-04-18). Use this helper for any
+    check where multiple SDK spellings are correct.
+    """
+    return any(has_api_call(code, a) for a in apis)
+
+
 def check_qualifier_on_variable(
     code: str,
     qualifier: str,

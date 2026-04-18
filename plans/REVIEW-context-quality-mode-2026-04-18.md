@@ -278,7 +278,7 @@ source.
 
 ## ➡️ Recommendation
 
-**Status:** CHANGES_REQUESTED
+**Status:** CHANGES_REQUESTED → **APPROVED** (after P1/P2/P3 fixes + real-LLM validation, see below)
 
 The core feature (--context-pack on `run` + `context-compare`) is solid
 and well-tested for the primary use case. Two P1 bugs in secondary
@@ -288,3 +288,149 @@ are short, ≤10 lines each, with regression tests of similar size.
 Estimated time to clear P1+P2: 1-2 hours including tests.
 
 P3 items can ship in a follow-up.
+
+---
+
+## 📊 Addendum — Real-LLM Validation (2026-04-18, post-fix)
+
+### Setup
+
+- Model: `claude-code://haiku`
+- 5-TC subset from Haiku's empirically-weak categories (ensures headroom):
+  `isr-concurrency-003`, `dma-001`, `threading-007`, `memory-opt-001`,
+  `storage-001`
+- n=3 attempts per case per context
+- Bare vs expert pack comparison
+
+### Result
+
+| Category | Bare pass@1 | Expert pass@1 | Effect |
+|---|---|---|---|
+| dma | 0% | 100% | **+100pp** |
+| isr-concurrency | 100% | 0% | **−100pp** |
+| memory-opt | 0% | 0% | 0pp (Haiku hard-limit) |
+| storage | 100% | 100% | 0pp (no headroom) |
+| threading | 0% | 0% | 0pp (Haiku hard-limit) |
+| **OVERALL** | **27%** | **27%** | **0pp** |
+
+95% CI: bare `[5.9%, 67.7%]`, expert `[5.9%, 67.7%]` — **complete overlap**.
+
+### Mechanism (from generated code inspection)
+
+**dma-001 (helpful +100pp):** Expert pack's principle "DMA buffers need
+alignment" caused Haiku to add `__aligned(4)` that bare was missing.
+**Missing-piece additive effect** — pack fills a gap in the generated code.
+
+**isr-concurrency-003 (harmful −100pp):** Expert pack's "shared
+variables need volatile" caused Haiku to add `volatile int counter` but
+to simultaneously drop the proper Zephyr timer infrastructure
+(`K_TIMER_DEFINE` → main loop calls `counter_isr(NULL)` directly,
+which is not actually an ISR). **Attention-trade-off effect** —
+pack steers attention toward principle application at the cost of
+structural correctness.
+
+### Findings (new, not in original PLAN)
+
+1. **R8 confirmed empirically:** Expert pack has case-dependent sign.
+   Not uniformly positive.
+2. **R3 (over-explicit blowout) mitigated:** Overall pass rate did NOT
+   ceiling — discrimination preserved.
+3. **PLAN Phase 3 종료 조건 failed strictly:** only 1/5 categories showed
+   `expert > bare`. Root cause: both attention-trade-offs and
+   no-headroom cases are common.
+4. **Sample size insufficient:** CI overlap means even large swings
+   (±100pp per category) are indistinguishable from noise at n=3.
+
+### Implications for the feature
+
+- Context Quality Mode surfaces a *real phenomenon* — context is not
+  zero-sum. The tool works as designed.
+- Documentation should explicitly call out the trade-off (not just
+  "lift" semantics). Add `Effect` column distinction between
+  `helpful`, `no-effect`, `harmful`.
+- For publishable findings, need ~20-50 cases per category to separate
+  signal from noise. Current 5-TC smoke is directional, not statistical.
+
+### Action items added
+- [x] Document expert pack trade-off in `docs/CONTEXT-QUALITY-MODE.md`
+  ("Lift can be negative — that's a real signal, not a bug")
+- [x] Add R8 to risk log in PLAN
+- [ ] Consider per-case effect classification in future work
+  (helpful / harmful / no-effect) as a new EmbedEval output
+
+---
+
+## 📊 Addendum 2 — Trade-off Pattern Analysis (2026-04-18, N=14)
+
+### Setup
+
+10 additional headroom cases (different categories, all bare-fail per
+prior n=3 baseline) added to the previous 5-TC sample. Total N=14
+unique cases (1 case `spi-i2c-009` failed mid-run; excluded). Mock-only
+cases not relevant. Each case run with bare and expert pack, n=1 for
+this expansion.
+
+### Pattern distribution
+
+| Effect | N | % | Cases |
+|---|---|---|---|
+| HELPFUL (missing-piece additive) | 2 | 14% | `dma-001`, `memory-opt-002` |
+| HARMFUL — real attention trade-off | 1 | 7% | `isr-concurrency-003` |
+| HARMFUL — benchmark check brittleness | 1 | 7% | `dma-002` |
+| NO-EFFECT (LLM hard limit, both fail) | 7 | 50% | `dma-003`, `isr-conc-002/005`, `memory-opt-001/003`, `spi-i2c-005`, `threading-007` |
+| NO-EFFECT (already pass, no headroom) | 3 | 21% | `security-001/004`, `storage-001` |
+
+### Key finding: half of "harmful" is actually EmbedEval brittleness
+
+`dma-002` failed in expert run because the check looks for the literal
+string `dma_config(` but the expert-augmented Haiku used the
+equivalent newer API `dma_configure(`. Both APIs are valid Zephyr.
+
+This is the same class of issue called out in CLAUDE.md correction
+2026-03-29 ("Check regexes must accept API variants"). Context Quality
+Mode surfaced a new instance.
+
+### Mechanism summary
+
+1. **Expert pack helps when:** the LLM is missing an explicit pattern
+   the static check requires (alignment, stack config). Pack injects
+   the principle, LLM applies it.
+2. **Expert pack hurts when (real):** the LLM trades attention budget
+   from structural correctness toward principle application. Concrete
+   example: `isr-concurrency-003` got `volatile` correctly but lost
+   the actual ISR-via-timer setup.
+3. **Expert pack hurts when (apparent):** the LLM picks a valid
+   alternative API form that the brittle check doesn't recognize.
+   Concrete example: `dma_configure` vs `dma_config`.
+4. **Expert pack does not help (50% of cases):** when the LLM hits a
+   capability hard-limit unrelated to context (memory-opt complexity,
+   threading semantic depth). Pack content reaches the model but does
+   not unblock the failure.
+
+### Implications for the project beyond Context Quality Mode
+
+- **EmbedEval check robustness gap surfaced:** Context-induced API
+  variant adoption is not just a Context Quality Mode concern — any
+  prompt change (system_prompt edit, model swap) can flip these
+  brittle checks. Worth a follow-up sweep of static.py files for
+  similar API-name singularity.
+- **Pack effect classification deserves first-class output:** A
+  follow-up should add per-case `effect` field to `compare_runs`
+  output: `helpful` / `harmful` / `no-effect-fail` / `no-effect-pass`.
+  This converts the trade-off from a footnote in interpretation
+  guidance into a queryable property.
+- **Reachable pass-rate ceiling is bounded:** In this sample, only 3
+  of 14 cases (21%) had headroom for context to act on (helpful or
+  real-harmful). The other 79% are either capability-locked or
+  already-passing. Aggregate Lift dilutes the signal; per-case
+  effect direction is the correct granularity.
+
+### Action items added (post-analysis)
+- [ ] **EmbedEval improvement:** Add `dma_configure` as accepted variant
+  alongside `dma_config` in dma-002 static check (and audit other dma
+  cases for the same pattern).
+- [ ] **Feature follow-up:** Per-case `effect` classification in
+  `context-compare` output (helpful/harmful-real/harmful-brittle/
+  no-effect).
+- [ ] **Methodology note:** When reporting Context Quality results,
+  always quote per-case effect distribution, not just aggregate Lift.

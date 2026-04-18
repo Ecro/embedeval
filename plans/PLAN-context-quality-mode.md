@@ -487,20 +487,34 @@ def context_compare(
 | R5 | 사용자가 같은 dir에 다른 pack 결과 누적 → 비교 무의미 | Medium | High | hash mismatch 시 tracker append 단계에서 명시적 raise (D3) |
 | R6 | Token 비용 33% 증가 → 사용자 불만 | Medium | Low | 리포트에 token usage 명시, doc에 trade-off 설명. CI 모드에서는 subset만 돌리도록 권장 |
 | R7 | Expert pack curation이 stale (FAILURE-FACTORS 변경 추종 안 됨) | High | Medium | `scripts/build_expert_pack.py` + CI weekly check |
+| **R8** | **Expert pack effect는 case별로 sign이 다름 (도움 / 무영향 / 역효과 모두 존재). Implementation 후 empirically 발견된 risk** | **High** | **Medium** | **TC별 effect direction을 측정·노출. "expert > bare" 단순 가정 금지. 2026-04-18 검증 참조.** |
 
 ---
 
 ## Success Criteria (재확인)
 
-- [ ] `embedeval run --context-pack mypack.md` 동작, tracker에 hash 기록
-- [ ] `embedeval run --context-pack expert ...` 동작
-- [ ] `embedeval context-compare --bare X --team Y --expert Z` 표 생성
-- [ ] hash mismatch 시 명시적 에러
-- [ ] 신규 코드 ≥8 unit tests + 1 e2e test, 기존 테스트 전부 green
-- [ ] `mypy --strict src/` clean
-- [ ] `docs/CONTEXT-QUALITY-MODE.md` PR-ready
-- [ ] 5-TC × 3-context 사전 검증에서 monotonic 경향 (≥50% 카테고리에서 bare ≤ team ≤ expert)
-- [ ] Token usage report 포함
+### Implementation completeness
+- [x] `embedeval run --context-pack mypack.md` 동작, tracker에 hash 기록
+- [x] `embedeval run --context-pack expert ...` 동작
+- [x] `embedeval context-compare --bare X --team Y --expert Z` 표 생성
+- [x] hash mismatch 시 명시적 에러 (3 transition shapes 모두)
+- [x] 신규 코드 ≥8 unit tests (실제 37개), 기존 테스트 전부 green (1314)
+- [x] `mypy --strict` 변경 파일 clean (전체 src/ 미검증 — gap)
+- [x] `docs/CONTEXT-QUALITY-MODE.md` PR-ready
+
+### Real-LLM validation (2026-04-18)
+
+5-TC × n=3 × bare/expert 검증 결과 (Haiku, headroom-rich cases):
+
+- [ ] **≥50% 카테고리에서 monotonic (bare ≤ expert)** — 4/5 만족 (1/5 isr-concurrency-003 100→0% 역전). 조건 부분 충족.
+- [x] R3 (over-explicit, 90%+ blowout) — 실증적으로 mitigated (overall 27%→27%, 어떤 카테고리도 ceiling forced 안 됨)
+- [ ] **새 발견: R8 (trade-off effect)** — 위 R8 참조
+
+### Outstanding gaps
+- [ ] Token usage report 미구현 (PLAN 약속)
+- [ ] `scripts/build_expert_pack.py` 의도적 스킵 (R7 mitigation 부재 — docs에 documented)
+- [ ] 별도 e2e test 파일 미생성 (synthetic tracker tests 로 대체)
+- [ ] `mypy --strict` full src/ 미검증
 
 ---
 

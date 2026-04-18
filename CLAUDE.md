@@ -123,6 +123,8 @@ Platform-specific: `yocto`, `linux-driver`, `memory-opt`
 ## Learned Corrections
 
 ### 2026
+- 2026-04-18: [embedeval] Context pack "harmful" effects are 2-class — real attention trade-off vs benchmark check brittleness. N=14 Haiku trade-off analysis: 1/2 harmful cases were dma_config vs dma_configure (valid API variants the check rejects), not actual capability degradation. Always inspect generated code before concluding pack hurt; check brittleness can masquerade as pack failure. See REVIEW-context-quality-mode Addendum 2.
+- 2026-04-18: [embedeval] Context pack effect on LLM is NOT uniformly positive — empirical Haiku 5-TC × n=3 showed cases with +100pp, −100pp, and 0pp swings (mechanism: pack adds missing principles in some cases, distracts attention from structural correctness in others). Don't assume "expert > bare" in docs/UX; surface per-case effect direction explicitly. R8 in PLAN-context-quality-mode.md.
 - 2026-04-18: [embedeval] Pydantic v2 plain `@property` is NOT serialized by `model_dump_json()` — use `@computed_field` + `@property` for derived fields exposed in JSON output. Plain `@property` works in code but silently drops from JSON, breaking CI integrations.
 - 2026-04-18: [embedeval] When adding an optional CLI flag (e.g. `--context-pack`), audit ALL scenario branches AND every other subcommand for plumbing gaps. `run --scenario bugfix` and `agent` both silently dropped the flag in initial PR; fix is to either thread it through or reject the combination at the CLI boundary, never accept-and-ignore.
 - 2026-03-30: [embedeval] L1/L2 must skip for non-compilable cases (no CMakeLists.txt) — kconfig/device-tree/boot/yocto generate config fragments, not C code

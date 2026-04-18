@@ -1,5 +1,6 @@
 """Static analysis checks for DMA peripheral-to-memory transfer."""
 
+from embedeval.check_utils import has_any_api_call
 from embedeval.models import CheckDetail
 
 
@@ -43,13 +44,18 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 4: dma_config() API called
-    has_dma_config_call = "dma_config(" in generated_code
+    # Check 4: dma_config() or dma_configure() API called
+    # Both are valid Zephyr API spellings; accept either.
+    # 2026-04-18: dma_configure variant added after Context Quality Mode
+    # surfaced false negative on expert-pack runs that picked the newer form.
+    has_dma_config_call = has_any_api_call(
+        generated_code, ["dma_config", "dma_configure"]
+    )
     details.append(
         CheckDetail(
             check_name="dma_config_called",
             passed=has_dma_config_call,
-            expected="dma_config() called",
+            expected="dma_config() or dma_configure() called",
             actual="present" if has_dma_config_call else "missing",
             check_type="exact_match",
         )

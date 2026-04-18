@@ -5,9 +5,36 @@ from embedeval.check_utils import (
     check_cleanup_reverse_order,
     check_qualifier_on_variable,
     check_return_after_error,
+    has_any_api_call,
     has_api_call,
     has_word,
 )
+
+
+class TestHasAnyApiCall:
+    """Check for one of several equivalent API spellings."""
+
+    def test_first_alternative_matches(self) -> None:
+        assert has_any_api_call(
+            "ret = dma_config(dev, ch, &cfg);", ["dma_config", "dma_configure"]
+        )
+
+    def test_second_alternative_matches(self) -> None:
+        """Real case from Context Quality Mode trade-off analysis (2026-04-18):
+        Haiku with expert pack used dma_configure() instead of dma_config(),
+        which is functionally equivalent but failed the older brittle check."""
+        assert has_any_api_call(
+            "ret = dma_configure(dev, ch, &cfg);",
+            ["dma_config", "dma_configure"],
+        )
+
+    def test_neither_alternative_misses(self) -> None:
+        assert not has_any_api_call(
+            "ret = dma_setup(dev, ch);", ["dma_config", "dma_configure"]
+        )
+
+    def test_empty_list_returns_false(self) -> None:
+        assert not has_any_api_call("anything", [])
 
 
 class TestHasWord:
