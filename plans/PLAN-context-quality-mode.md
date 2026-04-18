@@ -510,11 +510,15 @@ def context_compare(
 - [x] R3 (over-explicit, 90%+ blowout) — 실증적으로 mitigated (overall 27%→27%, 어떤 카테고리도 ceiling forced 안 됨)
 - [ ] **새 발견: R8 (trade-off effect)** — 위 R8 참조
 
-### Outstanding gaps
-- [ ] Token usage report 미구현 (PLAN 약속)
-- [ ] `scripts/build_expert_pack.py` 의도적 스킵 (R7 mitigation 부재 — docs에 documented)
-- [ ] 별도 e2e test 파일 미생성 (synthetic tracker tests 로 대체)
-- [ ] `mypy --strict` full src/ 미검증
+### Outstanding gaps (all closed 2026-04-19)
+- [x] **Token usage report** — Closed by commit `7a255e8` (Phase A). `RunSummary.input_tokens`/`output_tokens`/`cost_usd` summed from `CaseResult` aggregates; table footer shows `+NN% input vs bare` delta.
+- [x] **`scripts/build_expert_pack.py`** (R7 mitigation) — Closed by commit `7a255e8` (Phase C). Drift detector parses FAILURE-FACTORS.md, emits `expert-coverage.md`, CI gates on drift. Intentionally NOT a generator to preserve R3 mitigation (principles, not APIs).
+- [x] **Separate e2e test file** — Closed by commit `ab067fd` (Phase E). `tests/test_context_quality_mode_e2e.py` drives full CLI pipeline: 3x `embedeval run` (bare/team/expert) → 3 trackers → `context-compare --output-json` → schema validation. Runs in ~9s on mock + uart category.
+- [x] **`mypy --strict` full src/** — Verified clean 2026-04-19 (commit `be08371`). Note: `strict = true` is already the project-wide default in `pyproject.toml` and CI has been enforcing it via `uv run mypy src/` since before this PLAN. The "gap" was a false alarm on our tracking. What WAS drifting: `ruff format --check src/` on 5 files (fixed in `be08371`).
+
+### R8 follow-up (per-case effect measurement)
+- [x] **Per-case effect classification** — Closed by PLAN-per-case-effect-classification (commit `d7d054f`). `context-compare` now emits per-case effect (`helpful`/`harmful`/`no-effect-*`) both in the table (`H/Hm/F/P` column) and in JSON (`per_case[]`), with `--include-team-effect` opt-in for the bare→team dimension.
+- [x] **Harmful sub-classification** — Closed by commit `7a255e8` (Phase B). New `embedeval harmful-inspect` CLI classifies each harmful case using the `failed_at_layer` heuristic (L0→brittleness, L1+→real).
 
 ---
 

@@ -16,6 +16,8 @@ The first version focused on producing a benchmark with **n=3 reproducible resul
 - pass@k (unbiased Chen et al. 2021) + Wilson 95% CI
 - n=3 baseline runs published with stability analysis
 - `--scenario bugfix`, `--feedback-rounds`, `--retest-only`, `agent` mode
+- **Context Quality Mode** — `embedeval run --context-pack` + `embedeval context-compare`. Measures how much a team's CLAUDE.md / system prompt actually helps the LLM via per-category Lift (team − bare) and Gap (expert − team). Includes per-case effect classification (`H/Hm/F/P`), token/cost footprint, and a `harmful-inspect` sub-command for triaging regressions (see [`docs/CONTEXT-QUALITY-MODE.md`](docs/CONTEXT-QUALITY-MODE.md)).
+- **Expert pack drift CI** — `scripts/build_expert_pack.py --check` gates every PR: a new High-strength factor added to [`docs/LLM-EMBEDDED-FAILURE-FACTORS.md`](docs/LLM-EMBEDDED-FAILURE-FACTORS.md) forces a deliberate decision about whether the bundled expert pack needs a matching principle.
 
 ---
 
@@ -36,6 +38,7 @@ The first version focused on producing a benchmark with **n=3 reproducible resul
 - **Tech report / arXiv preprint.** A 4-6 page tech report is on the wishlist if the community finds the methodology worth citing.
 - **Cost-vs-performance scoring.** Add per-model `$/case` and `tokens/case` columns so practitioners can pick on the Pareto frontier.
 - **Sensitivity expansion.** Run the existing prompt sensitivity suite at `--sample 100 --variants 5` and publish per-category robustness numbers.
+- **`embedeval context-diagnose`** — Factor-level context-coverage feedback. Input: team + expert trackers. Output: "your CLAUDE.md is weak on categories D and E; add principles for D1, D2, D5, E1, E3." Sits on top of Context Quality Mode. Draft plan: [`plans/PLAN-context-diagnose.md`](plans/PLAN-context-diagnose.md).
 
 ---
 
@@ -85,4 +88,4 @@ These are not on the roadmap — but PRs that change our minds are welcome.
 - [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) — current methodology
 - [`docs/LLM-EMBEDDED-CONSIDERATIONS.md`](docs/LLM-EMBEDDED-CONSIDERATIONS.md) — research findings driving the roadmap
 
-Last updated: 2026-04-16
+Last updated: 2026-04-19

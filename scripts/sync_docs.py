@@ -215,6 +215,15 @@ def update_readme(stats: dict) -> bool:
         content,
     )
 
+    # Update top-of-file tests badge (shields.io). Drift was the main
+    # offender — the badge sat at 1277 while the actual suite grew to
+    # 1300+. Keep it pinned to count_tests().
+    content = re.sub(
+        r"!\[Tests\]\(https://img\.shields\.io/badge/tests-\d+-green\)",
+        f"![Tests](https://img.shields.io/badge/tests-{n_tests}-green)",
+        content,
+    )
+
     if content != original:
         README.write_text(content, encoding="utf-8")
         print(f"  Updated README.md")

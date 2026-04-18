@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
 [![Cases](https://img.shields.io/badge/cases-233-orange)]()
-[![Tests](https://img.shields.io/badge/tests-1277-green)]()
+[![Tests](https://img.shields.io/badge/tests-1374-green)]()
 
 **LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 
@@ -267,11 +267,15 @@ A single benchmark run generates:
 | **Agent** | Multi-turn iterative refinement | `embedeval agent --max-turns 5` |
 | **Bug fix** | Diagnose + fix seeded mutations | `embedeval run --scenario bugfix` |
 | **Context Quality** | Effect of team's CLAUDE.md / system prompt | `embedeval run --context-pack ./CLAUDE.md` + `embedeval context-compare` |
+| **Harmful-case triage** | Distinguish real regressions from check brittleness | `embedeval harmful-inspect --bare X --expert Y` |
 
 Context Quality Mode quantifies how much your team's implicit-context
 files actually help the LLM and how much room is left to improve them.
-See [docs/CONTEXT-QUALITY-MODE.md](docs/CONTEXT-QUALITY-MODE.md) for the
-workflow and metric interpretation.
+`context-compare` reports per-case effect (`H/Hm/F/P`) and token cost;
+`harmful-inspect` sub-classifies harmful cases by failure layer so you
+know whether to edit the pack (L1+ = likely real) or the static checks
+(L0 = likely brittleness). See [docs/CONTEXT-QUALITY-MODE.md](docs/CONTEXT-QUALITY-MODE.md)
+for the workflow and metric interpretation.
 
 ---
 
@@ -313,7 +317,7 @@ cases/isr-concurrency-003/
 
 ```
 embedeval/
-├── src/embedeval/           # Core library (19 modules)
+├── src/embedeval/           # Core library (21 modules)
 │   ├── cli.py               # Typer CLI entry point
 │   ├── runner.py            # Case discovery, filtering, benchmark orchestration
 │   ├── llm_client.py        # LiteLLM + claude-code:// + mock providers
