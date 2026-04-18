@@ -24,6 +24,9 @@ def _build_tracker(
     pack_hash: str | None,
     results: dict[str, dict[str, bool]],
     attempts: int = 1,
+    input_tokens: int = 0,
+    output_tokens: int = 0,
+    cost_usd: float = 0.0,
 ) -> TrackerData:
     """Create a tracker. results = {model: {case_id: passed}}."""
     now = datetime.now(tz=timezone.utc).isoformat()
@@ -37,6 +40,9 @@ def _build_tracker(
                 case_git_hash="x",
                 tested_at=now,
                 attempts=attempts,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cost_usd=cost_usd,
             )
             for cid, passed in case_map.items()
         }
@@ -514,6 +520,72 @@ def test_compare_runs_include_team_effect_requires_team_dir(
             expert_dir=expert_dir,
             include_team_effect=True,
         )
+
+
+def test_run_summary_sums_tokens_and_cost(tmp_path: Path) -> None:
+    """RunSummary.input_tokens / output_tokens / cost_usd must equal
+    the sum of CaseResult aggregates for the model in that tracker."""
+    bare = _build_tracker(
+        None,
+        {"mock": {"x-001": False, "x-002": True}},
+        input_tokens=100,
+        output_tokens=200,
+        cost_usd=0.001,
+    )
+    expert = _build_tracker(
+        "exp",
+        {"mock": {"x-001": True, "x-002": True}},
+        input_tokens=1_000,
+        output_tokens=300,
+        cost_usd=0.005,
+    )
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    labels = {r.label: r for r in report.runs}
+    # Two cases × per-case aggregate
+    assert labels["bare"].input_tokens == 200
+    assert labels["bare"].output_tokens == 400
+    assert labels["bare"].cost_usd == pytest.approx(0.002)
+    assert labels["expert"].input_tokens == 2_000
+    assert labels["expert"].cost_usd == pytest.approx(0.010)
+
+
+def test_table_shows_token_footer_when_nonzero(tmp_path: Path) -> None:
+    """Token footer should appear only when at least one run has
+    non-zero token or cost usage (suppresses noise for mock-only
+    smoke tests where every run is zero)."""
+    bare_zero = _build_tracker(None, {"mock": {"x-001": False}})
+    expert_zero = _build_tracker("exp", {"mock": {"x-001": True}})
+    zb = _seed_dir(tmp_path, "bare0", bare_zero)
+    ze = _seed_dir(tmp_path, "expert0", expert_zero)
+    text_zero = format_comparison_table(
+        compare_runs(bare_dir=zb, expert_dir=ze)
+    )
+    assert "Total tokens used" not in text_zero
+
+    bare = _build_tracker(
+        None, {"mock": {"x-001": False}}, input_tokens=100
+    )
+    expert = _build_tracker(
+        "exp",
+        {"mock": {"x-001": True}},
+        input_tokens=200,
+        output_tokens=50,
+        cost_usd=0.01,
+    )
+    bare_dir = _seed_dir(tmp_path, "bare1", bare)
+    expert_dir = _seed_dir(tmp_path, "expert1", expert)
+    text = format_comparison_table(
+        compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+    )
+    assert "Total tokens used" in text
+    # Cost is right-aligned in a 7-char field, so "0.01" appears padded;
+    # assert on the value itself, not the full "$0.01" prefix-adjacent.
+    assert "0.01" in text
+    # bare had 100 input, expert had 200 → +100% input vs bare delta shown
+    assert "+100% input vs bare" in text
 
 
 def test_table_rows_all_have_same_width(tmp_path: Path) -> None:

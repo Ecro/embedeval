@@ -612,6 +612,72 @@ def context_compare_cmd(
         typer.echo(f"\nJSON: {output_json}")
 
 
+@app.command(name="harmful-inspect")
+def harmful_inspect_cmd(
+    bare: Annotated[
+        Path,
+        typer.Option("--bare", help="output_dir of the no-pack baseline run"),
+    ],
+    expert: Annotated[
+        Path,
+        typer.Option(
+            "--expert",
+            help="output_dir of the run whose pack may have regressed cases",
+        ),
+    ],
+    model: Annotated[
+        Optional[str],
+        typer.Option(
+            "--model",
+            help="Model to inspect. Required when trackers contain multiple models.",
+        ),
+    ] = None,
+    output_json: Annotated[
+        Optional[Path],
+        typer.Option(
+            "--output-json",
+            help="Write per-case classifications to JSON",
+        ),
+    ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose logging"),
+    ] = False,
+) -> None:
+    """Classify harmful cases (bare pass → expert fail) as likely
+    brittleness or likely real regression, using L0-L4 failure layer
+    heuristics. Answers "should I edit the pack or the checks?".
+    """
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, force=True)
+
+    from embedeval.harmful_inspect import (
+        format_harmful_table,
+        inspect_harmful,
+    )
+
+    try:
+        cases = inspect_harmful(bare_dir=bare, expert_dir=expert, model=model)
+    except ValueError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(format_harmful_table(cases))
+
+    if output_json:
+        import json as _json
+
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        output_json.write_text(
+            _json.dumps(
+                [hc.model_dump(mode="json") for hc in cases], indent=2
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        typer.echo(f"\nJSON: {output_json}")
+
+
 @app.command()
 def validate(
     cases_dir: Annotated[

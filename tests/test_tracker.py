@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from embedeval.models import EvalResult, LayerResult, TokenUsage
 from embedeval.test_tracker import (
     TrackerData,
@@ -208,6 +210,46 @@ def test_update_tracker_counts_attempts_per_case(tmp_path: Path):
     assert cr2.attempts == 1
     # Last attempt's pass status wins (pre-existing behavior)
     assert cr1.passed is True
+
+
+def test_update_tracker_sums_tokens_and_cost_across_attempts(tmp_path: Path):
+    """Token and cost aggregates must SUM across all attempts in the
+    batch. The benchmark pays for every attempt, not just the last one,
+    so context-compare's "Total tokens used" footer reports the true
+    spend — not the final attempt's tokens only."""
+    cases_dir = tmp_path / "cases"
+    cases_dir.mkdir()
+    _make_case_dir(cases_dir, "c-001", "content")
+
+    # Helper to overwrite token usage / cost after _make_result
+    from embedeval.models import TokenUsage
+
+    def _result_with_tokens(
+        case_id: str, in_tok: int, out_tok: int, cost: float
+    ):
+        r = _make_result(case_id, passed=True)
+        r.token_usage = TokenUsage(
+            input_tokens=in_tok,
+            output_tokens=out_tok,
+            total_tokens=in_tok + out_tok,
+        )
+        r.cost_usd = cost
+        return r
+
+    results = [
+        _result_with_tokens("c-001", 100, 50, 0.001),
+        _result_with_tokens("c-001", 200, 75, 0.003),
+        _result_with_tokens("c-001", 150, 60, 0.002),
+    ]
+
+    tracker = TrackerData()
+    tracker = update_tracker(tracker, results, cases_dir, "test-model")
+
+    cr = tracker.results["test-model"]["c-001"]
+    assert cr.input_tokens == 450  # 100 + 200 + 150
+    assert cr.output_tokens == 185  # 50 + 75 + 60
+    assert cr.cost_usd == pytest.approx(0.006)  # 0.001 + 0.003 + 0.002
+    assert cr.attempts == 3
 
 
 def test_update_tracker_mixed_public_and_private(tmp_path: Path):

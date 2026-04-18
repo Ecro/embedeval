@@ -137,8 +137,42 @@ look identical in the counts but require different fixes:
    `dma_configure`). Fix is in `cases/<case>/checks/static.py`, not the
    pack.
 
-Always inspect `runs/expert/<case>/generated.py` for each `Hm` case
-before concluding the pack is at fault.
+Use `embedeval harmful-inspect` to sub-classify each harmful case
+automatically, using the layer at which the expert run failed:
+
+```bash
+embedeval harmful-inspect --bare runs/bare --expert runs/expert \
+    --output-json runs/harmful.json
+```
+
+Sample output:
+
+```
+Harmful cases: 3 total
+  likely-brittleness: 2  (inspect cases/*/checks/static.py)
+  likely-real:        1  (edit the context pack)
+  uncertain:          0  (manual inspection)
+
+  Case                          L   Classification        Failed checks
+  ---------------------------------------------------------------------
+  dma-002                       L0  likely-brittleness    check_dma_config_api
+  dma-007                       L0  likely-brittleness    check_alignment_macro
+  isr-concurrency-003           L1  likely-real           compile_zephyr
+```
+
+The heuristic uses the failure layer:
+
+| Layer | Name | Classification | Why |
+|-------|------|----------------|-----|
+| L0 | Static (regex) | likely brittleness | regex rejects valid API variants |
+| L1 | Compile | likely real | code doesn't compile |
+| L2 | Runtime | likely real | runtime divergence |
+| L3 | Behavioral (regex on output) | uncertain | could be reworded log or real change |
+| L4 | Mutation | likely real | mutation meta-check caught it |
+
+`likely-real` cases point at the pack; `likely-brittleness` cases point
+at `cases/<case>/checks/static.py`. `uncertain` cases need a manual
+diff of `runs/bare/<case>/generated.py` vs `runs/expert/<case>/generated.py`.
 
 ### JSON output
 
@@ -244,6 +278,28 @@ embedded engineering principles. Design choices:
 If the expert pack pulls every category to 95%+, it's too explicit —
 file an issue and we'll generalize it further.
 
+### Coverage drift check
+
+`scripts/build_expert_pack.py` is a drift detector, not a generator:
+it parses the factor tables in `LLM-EMBEDDED-FAILURE-FACTORS.md` and
+writes `src/embedeval/context_packs/expert-coverage.md`, a
+machine-generated reference listing every factor by category and
+strength. CI runs `--check` and fails if the checked-in coverage file
+is out of sync.
+
+When a PR adds a new High-strength factor to FAILURE-FACTORS, the CI
+gate forces a deliberate decision:
+
+```bash
+uv run python scripts/build_expert_pack.py
+# Review the diff, then update expert.md if the new factor lacks
+# principle coverage. Commit both files together.
+```
+
+The script does NOT rewrite `expert.md` itself — principle-level
+curation stays human, and the coverage reference just makes drift
+visible.
+
 ## Tracker safety
 
 `embedeval run --context-pack` records a 16-char SHA256 hash of the
@@ -315,6 +371,23 @@ A pack of ~1000 tokens prepended to every prompt adds ~1000 input
 tokens × N cases × M attempts. For a 233-case run with 3 attempts on
 Sonnet, that's roughly +0.7M input tokens. Use small subsets when
 iterating on context, full runs only at known-good checkpoints.
+
+`context-compare` now reports this footprint directly, aggregated from
+`CaseResult` totals in each tracker. The footer appears only when at
+least one run recorded non-zero usage (mock-only smoke tests stay
+clean):
+
+```
+  Total tokens used:
+    bare    in=   15,000  out=   5,200  total=   20,200  $  0.08
+    team    in=   28,000  out=   5,400  total=   33,400  $  0.14  +87% input vs bare
+    expert  in=   31,000  out=   5,500  total=   36,500  $  0.16  +107% input vs bare
+```
+
+The `+NN% input vs bare` delta is the direct cost of prepending the
+pack on every prompt — use this to tune the pack length vs Lift gain
+trade-off. `cost_usd` is whatever `litellm.cost_per_completion`
+returned at run time; `mock` and CLI-mode runs report `$0.00`.
 
 ## See also
 

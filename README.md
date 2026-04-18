@@ -313,7 +313,7 @@ cases/isr-concurrency-003/
 
 ```
 embedeval/
-├── src/embedeval/           # Core library (18 modules)
+├── src/embedeval/           # Core library (19 modules)
 │   ├── cli.py               # Typer CLI entry point
 │   ├── runner.py            # Case discovery, filtering, benchmark orchestration
 │   ├── llm_client.py        # LiteLLM + claude-code:// + mock providers

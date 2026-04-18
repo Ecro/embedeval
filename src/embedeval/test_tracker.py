@@ -38,6 +38,14 @@ class CaseResult(BaseModel):
     # RunSummary.max_attempts so users aren't misled when comparing
     # n>1 runs. Default 1 keeps older trackers valid on load.
     attempts: int = 1
+    # Cumulative token and cost aggregates across all attempts in the
+    # most recent update_tracker batch for this case. Context-compare
+    # sums these into RunSummary to surface the token/cost footprint of
+    # different context packs (a 1.5k-token pack × 233 TCs = noticeable
+    # spend). Defaults 0/0/0.0 keep older trackers valid on load.
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
 
 
 class TrackerData(BaseModel):
@@ -182,8 +190,24 @@ def update_tracker(
     # invocation's batch size, not a cumulative lifetime total. See
     # CaseResult.attempts for the full semantics.
     attempts_per_case: dict[str, int] = {}
+    input_tokens_per_case: dict[str, int] = {}
+    output_tokens_per_case: dict[str, int] = {}
+    cost_usd_per_case: dict[str, float] = {}
     for r in results:
         attempts_per_case[r.case_id] = attempts_per_case.get(r.case_id, 0) + 1
+        # Token/cost roll up every attempt for the case. The benchmark
+        # pays for all attempts, not just the last one, so SUM not LAST.
+        input_tokens_per_case[r.case_id] = (
+            input_tokens_per_case.get(r.case_id, 0)
+            + r.token_usage.input_tokens
+        )
+        output_tokens_per_case[r.case_id] = (
+            output_tokens_per_case.get(r.case_id, 0)
+            + r.token_usage.output_tokens
+        )
+        cost_usd_per_case[r.case_id] = (
+            cost_usd_per_case.get(r.case_id, 0.0) + r.cost_usd
+        )
 
     for r in results:
         if case_dir_map and r.case_id in case_dir_map:
@@ -216,6 +240,9 @@ def update_tracker(
             case_git_hash=content_hash,
             tested_at=now,
             attempts=attempts_per_case.get(r.case_id, 1),
+            input_tokens=input_tokens_per_case.get(r.case_id, 0),
+            output_tokens=output_tokens_per_case.get(r.case_id, 0),
+            cost_usd=cost_usd_per_case.get(r.case_id, 0.0),
         )
 
     return tracker

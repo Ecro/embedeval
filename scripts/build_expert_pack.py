@@ -1,0 +1,245 @@
+"""Drift detector for docs/LLM-EMBEDDED-FAILURE-FACTORS.md → expert.md.
+
+Why this is NOT a direct generator: `expert.md` is intentionally
+abstract (principles, not API names) so that EmbedEval's discriminating
+power is preserved. Auto-generating from FAILURE-FACTORS would
+re-introduce specific APIs from the failure tables and push every
+score toward 100% (see PLAN-context-quality-mode R3).
+
+What this script does instead:
+
+1. Parses the factor tables in FAILURE-FACTORS.md (sections A–F).
+2. Emits `src/embedeval/context_packs/expert-coverage.md` — a
+   machine-generated reference listing all factors by category and
+   strength, suitable for humans to review against expert.md.
+3. Exits non-zero when the generated file differs from the checked-in
+   copy, letting CI catch FAILURE-FACTORS changes that haven't been
+   reflected in the expert pack yet.
+
+Usage:
+    python scripts/build_expert_pack.py            # regenerate + exit 0 if clean
+    python scripts/build_expert_pack.py --check    # CI gate (exit 1 on drift)
+    python scripts/build_expert_pack.py --write    # force write (for local edits)
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+FACTORS_DOC = ROOT / "docs" / "LLM-EMBEDDED-FAILURE-FACTORS.md"
+COVERAGE_OUT = ROOT / "src" / "embedeval" / "context_packs" / "expert-coverage.md"
+
+
+@dataclass(frozen=True)
+class Factor:
+    """One row parsed from a category factor table.
+
+    `factor_id` is the A1/B3/... identifier. `strength` is the literal
+    token ("High"/"Med"/"Low") and `evidence` is likewise verbatim — no
+    normalization so a typo in the source doc surfaces as drift.
+    """
+
+    factor_id: str
+    name: str
+    strength: str
+    evidence: str
+    description: str
+
+
+@dataclass(frozen=True)
+class Category:
+    """A. Hardware Awareness Gap / B. Temporal ... etc."""
+
+    letter: str  # "A"
+    title: str  # "Hardware Awareness Gap"
+    factors: tuple[Factor, ...]
+
+
+# Matches a category header like "## A. Hardware Awareness Gap"
+_CATEGORY_RE = re.compile(r"^##\s+([A-F])\.\s+(.+?)\s*$")
+# Matches a factor row like "| A1 | Register / MMIO access | Med | Research | ... |"
+# Five fields between pipes, the first being the A1/B3/... id.
+_ROW_RE = re.compile(
+    r"^\|\s*([A-F]\d+)\s*\|\s*(.+?)\s*\|\s*(High|Med|Low)\s*\|"
+    r"\s*(Empirical|Research|Theoretical)\s*\|\s*(.+?)\s*\|\s*$"
+)
+
+
+def parse_factors(markdown: str) -> list[Category]:
+    """Walk the doc section-by-section, pulling factor rows out of each
+    A–F table. Stops at the first `## ` header that is not A–F (e.g.
+    "## Summary Statistics") so later markdown tables don't poison the
+    output.
+    """
+    lines = markdown.splitlines()
+    categories: list[Category] = []
+    current_letter: str | None = None
+    current_title: str | None = None
+    current_rows: list[Factor] = []
+
+    def _flush() -> None:
+        nonlocal current_letter, current_title, current_rows
+        if current_letter and current_title:
+            categories.append(
+                Category(
+                    letter=current_letter,
+                    title=current_title,
+                    factors=tuple(current_rows),
+                )
+            )
+        current_letter = None
+        current_title = None
+        current_rows = []
+
+    for line in lines:
+        # Any top-level section flushes the current category; the
+        # factor tables are only inside A–F sections, so a "## Summary
+        # Statistics" ends the scan.
+        if line.startswith("## ") and not line.startswith("### "):
+            cat_match = _CATEGORY_RE.match(line)
+            _flush()
+            if cat_match:
+                current_letter = cat_match.group(1)
+                current_title = cat_match.group(2).strip()
+            continue
+        if current_letter is None:
+            continue
+        row = _ROW_RE.match(line)
+        if row:
+            fid, name, strength, evidence, desc = row.groups()
+            current_rows.append(
+                Factor(
+                    factor_id=fid,
+                    name=name.strip(),
+                    strength=strength,
+                    evidence=evidence,
+                    description=desc.strip(),
+                )
+            )
+    _flush()
+    return categories
+
+
+def render_coverage(categories: list[Category]) -> str:
+    """Render the coverage report — deterministic, stable across runs.
+
+    The purpose is drift visibility: each category lists all factors in
+    the order they appear in FAILURE-FACTORS.md, annotated with
+    strength and evidence. A human reviewer cross-references this
+    against expert.md to decide whether a new High-strength factor
+    needs a new principle paragraph.
+    """
+    lines: list[str] = []
+    lines.append("# Expert Pack Coverage Reference")
+    lines.append("")
+    lines.append(
+        "Machine-generated by `scripts/build_expert_pack.py` from "
+        "`docs/LLM-EMBEDDED-FAILURE-FACTORS.md`. **Do not edit by hand**"
+        " — run the script."
+    )
+    lines.append("")
+    lines.append(
+        "Purpose: humans reviewing `src/embedeval/context_packs/expert.md` "
+        "can scan this file to see whether every High-strength factor is "
+        "represented (as a principle, not an API) in the curated pack."
+    )
+    lines.append("")
+    total = sum(len(c.factors) for c in categories)
+    high = sum(
+        1 for c in categories for f in c.factors if f.strength == "High"
+    )
+    lines.append(
+        f"**Factors:** {total} total across {len(categories)} categories "
+        f"({high} High-strength — the must-cover set)"
+    )
+    lines.append("")
+    for cat in categories:
+        lines.append(f"## {cat.letter}. {cat.title}")
+        lines.append("")
+        lines.append("| # | Factor | Strength | Evidence |")
+        lines.append("|---|--------|----------|----------|")
+        for f in cat.factors:
+            lines.append(
+                f"| {f.factor_id} | {f.name} | {f.strength} | {f.evidence} |"
+            )
+        lines.append("")
+        high_in_cat = [f for f in cat.factors if f.strength == "High"]
+        if high_in_cat:
+            lines.append(
+                "**High-strength (must be represented in expert.md):** "
+                + ", ".join(f.factor_id for f in high_in_cat)
+            )
+            lines.append("")
+    return "\n".join(lines) + "\n"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="CI mode: exit 1 if the checked-in file differs from the "
+        "regenerated output. Does not write.",
+    )
+    parser.add_argument(
+        "--write",
+        action="store_true",
+        help="Force-write the coverage file even when it matches.",
+    )
+    args = parser.parse_args(argv)
+
+    markdown = FACTORS_DOC.read_text(encoding="utf-8")
+    categories = parse_factors(markdown)
+    if not categories:
+        print(
+            "ERROR: no A–F category sections parsed from "
+            f"{FACTORS_DOC.relative_to(ROOT)} — doc structure may have changed",
+            file=sys.stderr,
+        )
+        return 2
+
+    rendered = render_coverage(categories)
+    out_path = COVERAGE_OUT  # re-read so monkeypatched tests see the swap
+    existing = (
+        out_path.read_text(encoding="utf-8") if out_path.is_file() else ""
+    )
+
+    def _display(p: Path) -> str:
+        try:
+            return str(p.relative_to(ROOT))
+        except ValueError:
+            return str(p)
+
+    if args.check:
+        if rendered != existing:
+            print(
+                "DRIFT: expert-coverage.md is out of sync with "
+                "LLM-EMBEDDED-FAILURE-FACTORS.md.\n"
+                "Run `python scripts/build_expert_pack.py` locally, "
+                "verify the diff, then commit the regenerated file.",
+                file=sys.stderr,
+            )
+            return 1
+        print(f"OK: {_display(out_path)} is in sync.")
+        return 0
+
+    if rendered == existing and not args.write:
+        print(f"OK: {_display(out_path)} already up to date.")
+        return 0
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(rendered, encoding="utf-8")
+    print(f"Wrote {_display(out_path)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

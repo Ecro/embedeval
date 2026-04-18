@@ -141,6 +141,14 @@ class RunSummary(BaseModel):
     # attempt run; >1 signals per-case `passed` values are last-attempt
     # only.
     max_attempts: int = 1
+    # Aggregate token and cost footprint for this run (sum of all
+    # CaseResult.input_tokens / output_tokens / cost_usd). Used by the
+    # "Total tokens used" comparison footer so users see the cost delta
+    # of prepending a context pack (~1k-token pack × 233 cases is ~1M
+    # extra input tokens per run).
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
 
 
 class ContextComparison(BaseModel):
@@ -420,6 +428,9 @@ def _summarize_run(label: str, tracker: TrackerData, model: str) -> RunSummary:
     n = len(cases)
     passed = sum(1 for c in cases.values() if c.passed)
     max_attempts = max((c.attempts for c in cases.values()), default=1)
+    input_tokens = sum(c.input_tokens for c in cases.values())
+    output_tokens = sum(c.output_tokens for c in cases.values())
+    cost_usd = sum(c.cost_usd for c in cases.values())
     return RunSummary(
         label=label,
         pack_hash=tracker.context_pack_hash,
@@ -427,6 +438,9 @@ def _summarize_run(label: str, tracker: TrackerData, model: str) -> RunSummary:
         n_cases=n,
         pass_rate=passed / n if n else 0.0,
         max_attempts=max_attempts,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        cost_usd=cost_usd,
     )
 
 
@@ -568,6 +582,36 @@ def format_comparison_table(report: ContextComparison) -> str:
             f"{_fmt_pp(o.gap):>7}  "
             f"{o_effects:>{effect_width}}"
         )
+
+    # Token / cost footer — only emit if any run actually recorded
+    # non-zero usage (older trackers and mock-only smoke tests report
+    # all zeros, where the section would be noise).
+    any_tokens = any(
+        r.input_tokens or r.output_tokens or r.cost_usd > 0
+        for r in report.runs
+    )
+    if any_tokens:
+        lines.append("")
+        lines.append("  Total tokens used:")
+        baseline_in = next(
+            (r.input_tokens for r in report.runs if r.label == "bare"),
+            0,
+        )
+        for r in report.runs:
+            total = r.input_tokens + r.output_tokens
+            delta = ""
+            if (
+                baseline_in > 0
+                and r.label != "bare"
+                and r.input_tokens > baseline_in
+            ):
+                pct = (r.input_tokens - baseline_in) / baseline_in * 100
+                delta = f"  +{pct:.0f}% input vs bare"
+            lines.append(
+                f"    {r.label:<6}  in={r.input_tokens:>9,}  "
+                f"out={r.output_tokens:>8,}  total={total:>9,}  "
+                f"${r.cost_usd:>7.2f}{delta}"
+            )
 
     lines.append("")
     lines.append(
