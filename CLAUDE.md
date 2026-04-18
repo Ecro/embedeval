@@ -123,6 +123,8 @@ Platform-specific: `yocto`, `linux-driver`, `memory-opt`
 ## Learned Corrections
 
 ### 2026
+- 2026-04-18: [embedeval] Pydantic v2 plain `@property` is NOT serialized by `model_dump_json()` — use `@computed_field` + `@property` for derived fields exposed in JSON output. Plain `@property` works in code but silently drops from JSON, breaking CI integrations.
+- 2026-04-18: [embedeval] When adding an optional CLI flag (e.g. `--context-pack`), audit ALL scenario branches AND every other subcommand for plumbing gaps. `run --scenario bugfix` and `agent` both silently dropped the flag in initial PR; fix is to either thread it through or reject the combination at the CLI boundary, never accept-and-ignore.
 - 2026-03-30: [embedeval] L1/L2 must skip for non-compilable cases (no CMakeLists.txt) — kconfig/device-tree/boot/yocto generate config fragments, not C code
 - 2026-03-30: [embedeval] L4 mutation lambdas must not hardcode literal values from reference — LLM may use #define macros instead
 - 2026-03-30: [embedeval] Build error logs: extract `error:` lines first, then tail — raw truncation loses the actual compiler diagnostics
