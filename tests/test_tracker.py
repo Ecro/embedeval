@@ -182,6 +182,34 @@ def test_case_content_hash_ignores_pycache(tmp_path: Path):
     assert h_before == h_after
 
 
+def test_update_tracker_counts_attempts_per_case(tmp_path: Path):
+    """Multiple EvalResults for the same case_id should collapse into a
+    single CaseResult whose `attempts` equals the count. Context-compare
+    surfaces this so users aren't misled by last-attempt-only effects."""
+    cases_dir = tmp_path / "cases"
+    cases_dir.mkdir()
+    _make_case_dir(cases_dir, "c-001", "content")
+    _make_case_dir(cases_dir, "c-002", "content")
+
+    # Simulate 3 attempts for c-001, 1 attempt for c-002
+    results = [
+        _make_result("c-001", passed=False),
+        _make_result("c-001", passed=False),
+        _make_result("c-001", passed=True),
+        _make_result("c-002", passed=True),
+    ]
+
+    tracker = TrackerData()
+    tracker = update_tracker(tracker, results, cases_dir, "test-model")
+
+    cr1 = tracker.results["test-model"]["c-001"]
+    cr2 = tracker.results["test-model"]["c-002"]
+    assert cr1.attempts == 3
+    assert cr2.attempts == 1
+    # Last attempt's pass status wins (pre-existing behavior)
+    assert cr1.passed is True
+
+
 def test_update_tracker_mixed_public_and_private(tmp_path: Path):
     """Both a public case and a private case in one update call get
     non-empty, distinct hashes."""

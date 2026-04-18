@@ -6,7 +6,10 @@ from pathlib import Path
 import pytest
 
 from embedeval.context_compare import (
+    CaseEffect,
     CategoryComparison,
+    PerCaseComparison,
+    classify_effect,
     compare_runs,
     format_comparison_table,
 )
@@ -20,6 +23,7 @@ from embedeval.test_tracker import (
 def _build_tracker(
     pack_hash: str | None,
     results: dict[str, dict[str, bool]],
+    attempts: int = 1,
 ) -> TrackerData:
     """Create a tracker. results = {model: {case_id: passed}}."""
     now = datetime.now(tz=timezone.utc).isoformat()
@@ -32,6 +36,7 @@ def _build_tracker(
                 passed=passed,
                 case_git_hash="x",
                 tested_at=now,
+                attempts=attempts,
             )
             for cid, passed in case_map.items()
         }
@@ -264,3 +269,294 @@ def test_compare_warns_when_only_mock_available(
         compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
     assert "mock" in caplog.text.lower()
     assert "meaningless" in caplog.text.lower()
+
+
+# ---------------------------------------------------------------------------
+# Per-case effect classification
+# ---------------------------------------------------------------------------
+
+
+class TestClassifyEffect:
+    def test_bare_fail_packed_pass_is_helpful(self) -> None:
+        assert classify_effect(False, True) == CaseEffect.HELPFUL
+
+    def test_bare_pass_packed_fail_is_harmful(self) -> None:
+        assert classify_effect(True, False) == CaseEffect.HARMFUL
+
+    def test_both_fail_is_no_effect_fail(self) -> None:
+        assert classify_effect(False, False) == CaseEffect.NO_EFFECT_FAIL
+
+    def test_both_pass_is_no_effect_pass(self) -> None:
+        assert classify_effect(True, True) == CaseEffect.NO_EFFECT_PASS
+
+
+def test_case_effect_serializes_as_string_value() -> None:
+    """CaseEffect(str, Enum): JSON value must be 'helpful' string, not
+    0 or '<CaseEffect.HELPFUL: 'helpful'>'. model_dump_json relies on
+    the str mixin."""
+    import json
+
+    pc = PerCaseComparison(
+        case_id="x-001",
+        category="x",
+        bare_to_expert_effect=CaseEffect.HELPFUL,
+    )
+    payload = json.loads(pc.model_dump_json())
+    assert payload["bare_to_expert_effect"] == "helpful"
+
+
+def test_compare_runs_includes_per_case(tmp_path: Path) -> None:
+    """compare_runs should populate per_case for every case present
+    in at least one tracker."""
+    bare = _build_tracker(
+        None,
+        {"mock": {"isr-001": False, "isr-002": True, "dma-001": False}},
+    )
+    expert = _build_tracker(
+        "exp",
+        {"mock": {"isr-001": True, "isr-002": False, "dma-001": False}},
+    )
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    assert len(report.per_case) == 3
+    by_id = {pc.case_id: pc for pc in report.per_case}
+    assert by_id["isr-001"].bare_to_expert_effect == CaseEffect.HELPFUL
+    assert by_id["isr-002"].bare_to_expert_effect == CaseEffect.HARMFUL
+    assert by_id["dma-001"].bare_to_expert_effect == CaseEffect.NO_EFFECT_FAIL
+    # team not provided → bare_to_team_effect stays None
+    for pc in report.per_case:
+        assert pc.bare_to_team_effect is None
+
+
+def test_effect_counts_per_category(tmp_path: Path) -> None:
+    """CategoryComparison.effect_counts aggregates bare→expert effects
+    within the category, excluding cases missing on either side."""
+    bare = _build_tracker(
+        None,
+        {
+            "mock": {
+                "isr-001": False,  # will be helpful
+                "isr-002": True,  # will be harmful
+                "isr-003": False,  # no-effect-fail
+                "isr-004": True,  # no-effect-pass
+            }
+        },
+    )
+    expert = _build_tracker(
+        "exp",
+        {
+            "mock": {
+                "isr-001": True,
+                "isr-002": False,
+                "isr-003": False,
+                "isr-004": True,
+            }
+        },
+    )
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    isr = next(c for c in report.per_category if c.category == "isr")
+    assert isr.effect_counts == {
+        "helpful": 1,
+        "harmful": 1,
+        "no-effect-fail": 1,
+        "no-effect-pass": 1,
+    }
+    # OVERALL mirrors per-category when only one category exists
+    assert report.overall.effect_counts == isr.effect_counts
+
+
+def test_per_case_handles_missing_in_one_dir(tmp_path: Path) -> None:
+    """Mixed case sets: case only in bare → effect is None, and it's
+    excluded from effect_counts sums (sum < n_cases is expected)."""
+    bare = _build_tracker(
+        None,
+        {"mock": {"isr-001": False, "isr-002": False}},
+    )
+    expert = _build_tracker("exp", {"mock": {"isr-001": True}})
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    by_id = {pc.case_id: pc for pc in report.per_case}
+    assert by_id["isr-001"].bare_to_expert_effect == CaseEffect.HELPFUL
+    # isr-002 has no expert data → effect is None
+    assert by_id["isr-002"].expert_passed is None
+    assert by_id["isr-002"].bare_to_expert_effect is None
+    # effect_counts sums to 1 (isr-001 only), not n_cases=2
+    isr = next(c for c in report.per_category if c.category == "isr")
+    assert sum(isr.effect_counts.values()) == 1
+    assert isr.effect_counts["helpful"] == 1
+
+
+def test_team_effect_opt_in_default_none(tmp_path: Path) -> None:
+    """D1: bare_to_team_effect stays None unless include_team_effect=True."""
+    bare = _build_tracker(None, {"mock": {"x-001": False}})
+    team = _build_tracker("team", {"mock": {"x-001": True}})
+    expert = _build_tracker("exp", {"mock": {"x-001": True}})
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    team_dir = _seed_dir(tmp_path, "team", team)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+
+    # Default (opt-out)
+    report = compare_runs(
+        bare_dir=bare_dir, team_dir=team_dir, expert_dir=expert_dir
+    )
+    assert report.per_case[0].bare_to_team_effect is None
+
+    # Opt-in
+    report2 = compare_runs(
+        bare_dir=bare_dir,
+        team_dir=team_dir,
+        expert_dir=expert_dir,
+        include_team_effect=True,
+    )
+    assert report2.per_case[0].bare_to_team_effect == CaseEffect.HELPFUL
+
+
+def test_table_renders_effect_column(tmp_path: Path) -> None:
+    """Table must show 'H/Hm/F/P' column header and counts in rows."""
+    bare = _build_tracker(
+        None,
+        {"mock": {"isr-001": False, "isr-002": True}},
+    )
+    expert = _build_tracker(
+        "exp", {"mock": {"isr-001": True, "isr-002": False}}
+    )
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    text = format_comparison_table(
+        compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+    )
+    assert "H/Hm/F/P" in text  # header abbreviation
+    assert "1H/1Hm/0F/0P" in text  # one helpful + one harmful case
+    # Footer explanation present
+    assert "helpful" in text.lower() and "harmful" in text.lower()
+
+
+def test_max_attempts_surfaced_in_run_summary(tmp_path: Path) -> None:
+    """D3: n>1 attempts appear in RunSummary.max_attempts and the table
+    footer warns that effect is last-attempt only."""
+    bare = _build_tracker(
+        None, {"mock": {"x-001": False}}, attempts=3
+    )
+    expert = _build_tracker("exp", {"mock": {"x-001": True}}, attempts=3)
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    assert all(r.max_attempts == 3 for r in report.runs)
+    text = format_comparison_table(report)
+    assert "attempts_max=3" in text
+    assert "last-attempt" in text
+
+
+def test_json_export_includes_per_case_and_effect_counts(
+    tmp_path: Path,
+) -> None:
+    """JSON output must carry the new per_case list and per-category
+    effect_counts. Backward compat: existing lift/gap keys still there."""
+    import json
+
+    bare = _build_tracker(None, {"mock": {"x-001": False, "x-002": True}})
+    expert = _build_tracker(
+        "exp", {"mock": {"x-001": True, "x-002": False}}
+    )
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    payload = json.loads(report.model_dump_json())
+    assert "per_case" in payload
+    assert len(payload["per_case"]) == 2
+    cat = payload["per_category"][0]
+    assert "effect_counts" in cat
+    assert cat["effect_counts"]["helpful"] == 1
+    assert cat["effect_counts"]["harmful"] == 1
+    # Backward compat
+    assert "lift" in cat and "gap" in cat
+    # Top-level per_case has effect string values
+    assert {
+        pc["bare_to_expert_effect"] for pc in payload["per_case"]
+    } == {"helpful", "harmful"}
+
+
+def test_compare_runs_without_team_still_has_attempts(tmp_path: Path) -> None:
+    """Sanity: attempts flow from tracker → RunSummary even in a
+    bare/expert-only compare (no team tracker)."""
+    bare = _build_tracker(None, {"mock": {"x-001": False}}, attempts=2)
+    expert = _build_tracker("exp", {"mock": {"x-001": True}})
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+
+    labels_to_attempts = {r.label: r.max_attempts for r in report.runs}
+    assert labels_to_attempts == {"bare": 2, "expert": 1}
+
+
+def test_compare_runs_include_team_effect_requires_team_dir(
+    tmp_path: Path,
+) -> None:
+    """W2 regression: Python API must reject include_team_effect=True
+    without team_dir (CLI already does; mirror at the library layer so
+    notebook/CI callers don't silently get misleading None effects)."""
+    bare = _build_tracker(None, {"mock": {"x-001": False}})
+    expert = _build_tracker("exp", {"mock": {"x-001": True}})
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    with pytest.raises(ValueError, match="team_dir"):
+        compare_runs(
+            bare_dir=bare_dir,
+            expert_dir=expert_dir,
+            include_team_effect=True,
+        )
+
+
+def test_table_rows_all_have_same_width(tmp_path: Path) -> None:
+    """W1 regression: data rows, header, and separator must share width
+    so the effect column doesn't misalign when buckets hit 100+ cases.
+    Builds a synthetic category with counts wider than 99 to exercise
+    the worst-case render path (100H/100Hm/100F/100P = 20 chars)."""
+    bare_cases: dict[str, bool] = {}
+    expert_cases: dict[str, bool] = {}
+    # 100 helpful + 100 harmful + 100 both-fail + 100 both-pass = 400
+    for i in range(100):
+        cid = f"isr-{i:04d}"
+        bare_cases[cid] = False
+        expert_cases[cid] = True  # helpful
+    for i in range(100, 200):
+        cid = f"isr-{i:04d}"
+        bare_cases[cid] = True
+        expert_cases[cid] = False  # harmful
+    for i in range(200, 300):
+        cid = f"isr-{i:04d}"
+        bare_cases[cid] = False
+        expert_cases[cid] = False  # no-effect-fail
+    for i in range(300, 400):
+        cid = f"isr-{i:04d}"
+        bare_cases[cid] = True
+        expert_cases[cid] = True  # no-effect-pass
+
+    bare = _build_tracker(None, {"mock": bare_cases})
+    expert = _build_tracker("exp", {"mock": expert_cases})
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+    report = compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+    text = format_comparison_table(report)
+
+    # Extract the tabular region (lines between the two separator lines)
+    lines = text.splitlines()
+    seps = [i for i, ln in enumerate(lines) if ln.strip().startswith("--")]
+    assert len(seps) >= 2, f"expected 2 separators, got {seps}"
+    body = lines[seps[0]: seps[1] + 1]
+    widths = {len(ln) for ln in body}
+    assert len(widths) == 1, (
+        f"column alignment broken: body line widths = {widths}\n"
+        + "\n".join(body)
+    )
+    # Worst-case render is actually present so we know we exercised it
+    assert "100H/100Hm/100F/100P" in text

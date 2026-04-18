@@ -28,6 +28,16 @@ class CaseResult(BaseModel):
     case_git_hash: str  # git hash of the case directory at test time
     tested_at: str  # ISO timestamp
     pass_at_1: float = 0.0  # for multi-attempt
+    # Number of attempts observed in the MOST RECENT update_tracker call
+    # for this case (per-batch, not a cumulative lifetime total — a
+    # retest that passes attempts=1 overwrites a prior attempts=3). The
+    # current runner always calls update_tracker once per run with all
+    # attempts for that run, so this is effectively "attempts in the
+    # freshest benchmark invocation". `passed` reflects only the LAST
+    # attempt; context-compare surfaces attempts via
+    # RunSummary.max_attempts so users aren't misled when comparing
+    # n>1 runs. Default 1 keeps older trackers valid on load.
+    attempts: int = 1
 
 
 class TrackerData(BaseModel):
@@ -166,6 +176,15 @@ def update_tracker(
 
     now = datetime.now(tz=timezone.utc).isoformat()
 
+    # `results` contains one entry per (case, attempt); count attempts
+    # per case within THIS call only. A subsequent update_tracker call
+    # for the same case overwrites, so attempts reflects the freshest
+    # invocation's batch size, not a cumulative lifetime total. See
+    # CaseResult.attempts for the full semantics.
+    attempts_per_case: dict[str, int] = {}
+    for r in results:
+        attempts_per_case[r.case_id] = attempts_per_case.get(r.case_id, 0) + 1
+
     for r in results:
         if case_dir_map and r.case_id in case_dir_map:
             case_dir = case_dir_map[r.case_id]
@@ -196,6 +215,7 @@ def update_tracker(
             failed_checks=failed_checks,
             case_git_hash=content_hash,
             tested_at=now,
+            attempts=attempts_per_case.get(r.case_id, 1),
         )
 
     return tracker

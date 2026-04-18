@@ -559,6 +559,16 @@ def context_compare_cmd(
         Optional[Path],
         typer.Option("--output-json", help="Write the comparison report to JSON"),
     ] = None,
+    include_team_effect: Annotated[
+        bool,
+        typer.Option(
+            "--include-team-effect",
+            help=(
+                "Also classify bare→team per-case effect in JSON output. "
+                "Default off — bare→expert is the dominant question."
+            ),
+        ),
+    ] = False,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -573,12 +583,20 @@ def context_compare_cmd(
         format_comparison_table,
     )
 
+    if include_team_effect and team is None:
+        typer.echo(
+            "Error: --include-team-effect requires --team",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
     try:
         report = compare_runs(
             bare_dir=bare,
             expert_dir=expert,
             team_dir=team,
             model=model,
+            include_team_effect=include_team_effect,
         )
     except ValueError as exc:
         typer.echo(f"Error: {exc}", err=True)
