@@ -108,6 +108,16 @@ class TestHashContextPack:
         with pytest.raises(ContextPackTooLargeError):
             hash_context_pack("x" * (MAX_PACK_CHARS + 1))
 
+    def test_canonical_and_raw_hash_agree(self) -> None:
+        """F4 regression: hash_context_pack and the _hash_raw fallback used
+        by cli.py for oversized packs must produce the same hash for the
+        same content. Drift between the two would cause spurious tracker
+        mismatch errors after the user accepts the oversized-pack warning."""
+        from embedeval.context_pack import _hash_raw
+
+        content = "any rule\nanother rule\n"
+        assert hash_context_pack(content) == _hash_raw(content)
+
 
 class TestResolveContextPack:
     def test_expert_keyword_resolves_to_bundled(self) -> None:

@@ -68,6 +68,18 @@ def resolve_context_pack(identifier: str) -> Path:
     return path
 
 
+def _hash_raw(content: str) -> str:
+    """Compute the canonical 16-char SHA256 prefix without size checking.
+
+    Single source of truth for the hash format. Called by hash_context_pack
+    after the size guard, and directly by CLI when the size guard is
+    intentionally bypassed (e.g. user accepted the oversized-pack warning).
+    Keeping this in one place prevents the cli.py fallback from drifting
+    out of sync with the canonical algorithm.
+    """
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
+
+
 def hash_context_pack(content: str) -> str:
     """Return a 16-char SHA256 prefix of the pack content.
 
@@ -80,4 +92,4 @@ def hash_context_pack(content: str) -> str:
             f"Context pack is {len(content)} chars, soft limit "
             f"{MAX_PACK_CHARS}. Excess content tends to dilute LLM attention."
         )
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
+    return _hash_raw(content)

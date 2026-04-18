@@ -247,3 +247,20 @@ def test_compare_warns_on_case_count_mismatch(
         compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
     assert "Case count mismatch" in caplog.text
     assert "bare=3" in caplog.text and "expert=1" in caplog.text
+
+
+def test_compare_warns_when_only_mock_available(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    """F6 regression: mock model is context-independent, so any compare
+    that resolves to mock will report ~0 lift/gap and look like a real
+    null result. Surface the meaningless comparison explicitly."""
+    bare = _build_tracker(None, {"mock": {"isr-001": False}})
+    expert = _build_tracker("exp", {"mock": {"isr-001": True}})
+    bare_dir = _seed_dir(tmp_path, "bare", bare)
+    expert_dir = _seed_dir(tmp_path, "expert", expert)
+
+    with caplog.at_level("WARNING"):
+        compare_runs(bare_dir=bare_dir, expert_dir=expert_dir)
+    assert "mock" in caplog.text.lower()
+    assert "meaningless" in caplog.text.lower()

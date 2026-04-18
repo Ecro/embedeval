@@ -106,8 +106,16 @@ def _resolve_model(tracker: TrackerData, requested: str | None) -> str:
     only one in the tracker; error if ambiguous."""
     available = sorted(m for m in tracker.results.keys() if m != "mock")
     if not available:
-        # Fall back to including mock so smoke tests can compare
+        # Fall back to including mock so smoke tests can compare. But mock
+        # is context-independent (returns the same code regardless of the
+        # pack), so any lift/gap will be ~0 and indistinguishable from a
+        # real zero-lift result. Surface that explicitly.
         available = sorted(tracker.results.keys())
+        if "mock" in available:
+            logger.warning(
+                "Only mock model found in tracker; mock ignores context "
+                "packs, so lift and gap values will be meaningless."
+            )
     if requested:
         if requested not in tracker.results:
             raise ValueError(

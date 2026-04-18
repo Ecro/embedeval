@@ -28,6 +28,7 @@ def evaluate_agent(
     prompt: str,
     max_turns: int = 5,
     timeout: float = 300.0,
+    context_pack: str | None = None,
 ) -> AgentResult:
     """Evaluate a case using multi-turn agent with error feedback.
 
@@ -41,6 +42,9 @@ def evaluate_agent(
         prompt: Original task prompt.
         max_turns: Maximum number of LLM turns (default 5).
         timeout: Per-call timeout in seconds.
+        context_pack: Optional run-wide context (e.g. team CLAUDE.md or
+            expert pack content) prepended to every LLM call across all
+            turns. See docs/CONTEXT-QUALITY-MODE.md.
 
     Returns:
         AgentResult with pass/fail status, turns used, and per-turn history.
@@ -63,7 +67,12 @@ def evaluate_agent(
             full_prompt = prompt
 
         # Generate code
-        llm_response = call_model(model=model, prompt=full_prompt, timeout=timeout)
+        llm_response = call_model(
+            model=model,
+            prompt=full_prompt,
+            context_pack=context_pack,
+            timeout=timeout,
+        )
         generated_code = llm_response.generated_code
 
         # Evaluate

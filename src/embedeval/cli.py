@@ -375,12 +375,11 @@ def run(
                 f"attention or be ignored.",
                 err=True,
             )
-            # Hash anyway so the oversized pack is still tracked
-            import hashlib
+            # Bypass the size guard but reuse the canonical hash impl
+            # so cli.py and context_pack.py can't drift apart.
+            from embedeval.context_pack import _hash_raw
 
-            context_pack_hash = hashlib.sha256(
-                context_pack_text.encode("utf-8")
-            ).hexdigest()[:16]
+            context_pack_hash = _hash_raw(context_pack_text)
         typer.echo(
             f"Context pack: {pack_path.name} "
             f"(hash={context_pack_hash}, {len(context_pack_text)} chars)"
@@ -835,6 +834,17 @@ def agent(
         Optional[list[str]],
         typer.Option("--category", "-c", help="Filter by category (repeatable)"),
     ] = None,
+    context_pack: Annotated[
+        Optional[str],
+        typer.Option(
+            "--context-pack",
+            help=(
+                "Run-wide context prepended to every turn. Path to a file, "
+                "or 'expert' for the bundled pack. "
+                "See docs/CONTEXT-QUALITY-MODE.md."
+            ),
+        ),
+    ] = None,
     verbose: Annotated[
         bool,
         typer.Option("--verbose", "-v", help="Enable verbose logging"),
@@ -846,6 +856,30 @@ def agent(
 
     from embedeval.agent import evaluate_agent
     from embedeval.runner import Filters, discover_cases, filter_cases
+
+    # Agent mode does not write to a tracker, so no hash-mismatch
+    # enforcement is needed; just resolve and load the pack content.
+    context_pack_text: str | None = None
+    if context_pack is not None:
+        from embedeval.context_pack import resolve_context_pack
+
+        try:
+            pack_path = resolve_context_pack(context_pack)
+            context_pack_text = pack_path.read_text(encoding="utf-8")
+        except FileNotFoundError as exc:
+            typer.echo(f"Error: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+        if not context_pack_text.strip():
+            typer.echo(
+                f"Error: context pack file is empty or whitespace-only: "
+                f"{pack_path}",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        typer.echo(
+            f"Context pack: {pack_path.name} "
+            f"({len(context_pack_text)} chars)"
+        )
 
     cases = discover_cases(cases_dir)
     filters = Filters()
@@ -872,6 +906,7 @@ def agent(
             model=model,
             prompt=prompt,
             max_turns=max_turns,
+            context_pack=context_pack_text,
         )
         status = "PASS" if result.passed else "FAIL"
         turns_info = f"turn {result.turns_used}/{result.max_turns}"
