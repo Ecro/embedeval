@@ -49,3 +49,6 @@ Thumbs.db
 
 # Launch / marketing copy — local only, not for the public repo
 LAUNCH-COPY.md
+
+# MCP ephemeral session artifacts
+.playwright-mcp/
