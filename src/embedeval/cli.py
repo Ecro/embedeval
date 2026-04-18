@@ -362,8 +362,7 @@ def run(
         # in the same output_dir.
         if not context_pack_text.strip():
             typer.echo(
-                f"Error: context pack file is empty or whitespace-only: "
-                f"{pack_path}",
+                f"Error: context pack file is empty or whitespace-only: {pack_path}",
                 err=True,
             )
             raise typer.Exit(code=1)
@@ -669,10 +668,7 @@ def harmful_inspect_cmd(
 
         output_json.parent.mkdir(parents=True, exist_ok=True)
         output_json.write_text(
-            _json.dumps(
-                [hc.model_dump(mode="json") for hc in cases], indent=2
-            )
-            + "\n",
+            _json.dumps([hc.model_dump(mode="json") for hc in cases], indent=2) + "\n",
             encoding="utf-8",
         )
         typer.echo(f"\nJSON: {output_json}")
@@ -955,15 +951,11 @@ def agent(
             raise typer.Exit(code=1) from exc
         if not context_pack_text.strip():
             typer.echo(
-                f"Error: context pack file is empty or whitespace-only: "
-                f"{pack_path}",
+                f"Error: context pack file is empty or whitespace-only: {pack_path}",
                 err=True,
             )
             raise typer.Exit(code=1)
-        typer.echo(
-            f"Context pack: {pack_path.name} "
-            f"({len(context_pack_text)} chars)"
-        )
+        typer.echo(f"Context pack: {pack_path.name} ({len(context_pack_text)} chars)")
 
     cases = discover_cases(cases_dir)
     filters = Filters()

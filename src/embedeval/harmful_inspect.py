@@ -97,8 +97,7 @@ def classify_harmful(
     if failed_at_layer == 0:
         return (
             HarmfulClassification.LIKELY_BRITTLENESS,
-            "L0 (static) failure: regex-based checks often reject "
-            "valid API variants",
+            "L0 (static) failure: regex-based checks often reject valid API variants",
             "inspect cases/<case>/checks/static.py — may need to "
             "accept additional API variants via check_utils helpers",
         )
@@ -162,9 +161,7 @@ def inspect_harmful(
     if not expert_tracker.results:
         raise ValueError(f"No tracker results in expert dir: {expert_dir}")
 
-    chosen_model = _resolve_model(
-        bare_tracker, expert_tracker, requested=model
-    )
+    chosen_model = _resolve_model(bare_tracker, expert_tracker, requested=model)
 
     bare_cases = bare_tracker.results.get(chosen_model, {})
     expert_cases = expert_tracker.results.get(chosen_model, {})
@@ -199,10 +196,7 @@ def _resolve_model(
 ) -> str:
     """Pick the model to inspect. Requires the same model be present in
     both trackers; errors if the bare and expert dirs don't share one."""
-    shared = (
-        set(bare_tracker.results.keys())
-        & set(expert_tracker.results.keys())
-    )
+    shared = set(bare_tracker.results.keys()) & set(expert_tracker.results.keys())
     if not shared:
         raise ValueError(
             "No model is present in both bare and expert trackers; "
@@ -224,8 +218,7 @@ def _resolve_model(
     if not non_mock and "mock" in shared:
         return "mock"
     raise ValueError(
-        f"Multiple models shared ({sorted(shared)}); "
-        f"pass --model to disambiguate."
+        f"Multiple models shared ({sorted(shared)}); pass --model to disambiguate."
     )
 
 
@@ -247,19 +240,12 @@ def format_harmful_table(cases: list[HarmfulCase]) -> str:
         f"(inspect cases/*/checks/static.py)"
     )
     lines.append(
-        f"  likely-real:        {counts['likely-real']}  "
-        f"(edit the context pack)"
+        f"  likely-real:        {counts['likely-real']}  (edit the context pack)"
     )
-    lines.append(
-        f"  uncertain:          {counts['uncertain']}  "
-        f"(manual inspection)"
-    )
+    lines.append(f"  uncertain:          {counts['uncertain']}  (manual inspection)")
     lines.append("")
 
-    header = (
-        f"  {'Case':<28} {'L':>2}  {'Classification':<20}  "
-        f"Failed checks"
-    )
+    header = f"  {'Case':<28} {'L':>2}  {'Classification':<20}  Failed checks"
     lines.append(header)
     lines.append("  " + "-" * (len(header) - 2))
     for hc in cases:
@@ -268,7 +254,6 @@ def format_harmful_table(cases: list[HarmfulCase]) -> str:
         if len(hc.failed_checks) > 3:
             checks += f" (+{len(hc.failed_checks) - 3})"
         lines.append(
-            f"  {hc.case_id:<28} {layer:>2}  "
-            f"{hc.classification.value:<20}  {checks}"
+            f"  {hc.case_id:<28} {layer:>2}  {hc.classification.value:<20}  {checks}"
         )
     return "\n".join(lines)

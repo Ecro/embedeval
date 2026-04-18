@@ -62,8 +62,7 @@ def resolve_context_pack(identifier: str) -> Path:
     path = Path(identifier).expanduser()
     if not path.is_file():
         raise FileNotFoundError(
-            f"Context pack file not found: {path} "
-            f"(use 'expert' for the bundled pack)"
+            f"Context pack file not found: {path} (use 'expert' for the bundled pack)"
         )
     return path
 

@@ -198,12 +198,10 @@ def update_tracker(
         # Token/cost roll up every attempt for the case. The benchmark
         # pays for all attempts, not just the last one, so SUM not LAST.
         input_tokens_per_case[r.case_id] = (
-            input_tokens_per_case.get(r.case_id, 0)
-            + r.token_usage.input_tokens
+            input_tokens_per_case.get(r.case_id, 0) + r.token_usage.input_tokens
         )
         output_tokens_per_case[r.case_id] = (
-            output_tokens_per_case.get(r.case_id, 0)
-            + r.token_usage.output_tokens
+            output_tokens_per_case.get(r.case_id, 0) + r.token_usage.output_tokens
         )
         cost_usd_per_case[r.case_id] = (
             cost_usd_per_case.get(r.case_id, 0.0) + r.cost_usd

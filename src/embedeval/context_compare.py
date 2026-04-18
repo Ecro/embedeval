@@ -205,8 +205,7 @@ def _resolve_model(tracker: TrackerData, requested: str | None) -> str:
     if requested:
         if requested not in tracker.results:
             raise ValueError(
-                f"Model {requested!r} not found in tracker. "
-                f"Available: {available}"
+                f"Model {requested!r} not found in tracker. Available: {available}"
             )
         return requested
     if len(available) == 1:
@@ -307,9 +306,7 @@ def compare_runs(
         # Silent no-op here would mislead programmatic callers: the
         # CLI rejects the same combination (cli.py), so enforce the
         # guard at the API layer too for notebooks/CI scripts.
-        raise ValueError(
-            "include_team_effect=True requires team_dir to be provided"
-        )
+        raise ValueError("include_team_effect=True requires team_dir to be provided")
     bare_tracker = load_tracker(bare_dir)
     expert_tracker = load_tracker(expert_dir)
     team_tracker = load_tracker(team_dir) if team_dir else None
@@ -341,9 +338,7 @@ def compare_runs(
 
     bare_rates = _per_category_pass_rates(bare_tracker, chosen)
     expert_rates = _per_category_pass_rates(expert_tracker, chosen)
-    team_rates = (
-        _per_category_pass_rates(team_tracker, chosen) if team_tracker else {}
-    )
+    team_rates = _per_category_pass_rates(team_tracker, chosen) if team_tracker else {}
 
     # Warn (don't fail) if the runs covered different case sets — the OVERALL
     # micro-average then mixes denominators silently. Acceptable when the
@@ -355,19 +350,19 @@ def compare_runs(
         logger.warning(
             "Case count mismatch: bare=%d cases, expert=%d cases. "
             "OVERALL lift/gap is computed over different case sets.",
-            bare_n, expert_n,
+            bare_n,
+            expert_n,
         )
     if team_rates:
         team_n = sum(n for _, n in team_rates.values())
         if team_n != bare_n:
             logger.warning(
                 "Case count mismatch: bare=%d cases, team=%d cases.",
-                bare_n, team_n,
+                bare_n,
+                team_n,
             )
 
-    all_categories = sorted(
-        set(bare_rates) | set(expert_rates) | set(team_rates)
-    )
+    all_categories = sorted(set(bare_rates) | set(expert_rates) | set(team_rates))
 
     per_case = _build_per_case(
         bare_tracker,
@@ -490,9 +485,7 @@ def _fmt_effects(counts: dict[str, int]) -> str:
 def format_comparison_table(report: ContextComparison) -> str:
     """Render a human-readable comparison table for stdout."""
     lines: list[str] = []
-    lines.append(
-        f"Context Quality Comparison (model: {report.model})"
-    )
+    lines.append(f"Context Quality Comparison (model: {report.model})")
     lines.append("")
     for run in report.runs:
         hash_str = run.pack_hash or "<none>"
@@ -587,8 +580,7 @@ def format_comparison_table(report: ContextComparison) -> str:
     # non-zero usage (older trackers and mock-only smoke tests report
     # all zeros, where the section would be noise).
     any_tokens = any(
-        r.input_tokens or r.output_tokens or r.cost_usd > 0
-        for r in report.runs
+        r.input_tokens or r.output_tokens or r.cost_usd > 0 for r in report.runs
     )
     if any_tokens:
         lines.append("")
@@ -600,11 +592,7 @@ def format_comparison_table(report: ContextComparison) -> str:
         for r in report.runs:
             total = r.input_tokens + r.output_tokens
             delta = ""
-            if (
-                baseline_in > 0
-                and r.label != "bare"
-                and r.input_tokens > baseline_in
-            ):
+            if baseline_in > 0 and r.label != "bare" and r.input_tokens > baseline_in:
                 pct = (r.input_tokens - baseline_in) / baseline_in * 100
                 delta = f"  +{pct:.0f}% input vs bare"
             lines.append(
@@ -614,15 +602,10 @@ def format_comparison_table(report: ContextComparison) -> str:
             )
 
     lines.append("")
+    lines.append("  Lift = team − bare  (effect of team's context pack)")
+    lines.append("  Gap  = expert − team  (room to improve toward expert pack)")
     lines.append(
-        "  Lift = team − bare  (effect of team's context pack)"
-    )
-    lines.append(
-        "  Gap  = expert − team  (room to improve toward expert pack)"
-    )
-    lines.append(
-        "  Gap < 5pp on a category → likely an LLM hard-limit, "
-        "not a context problem."
+        "  Gap < 5pp on a category → likely an LLM hard-limit, not a context problem."
     )
     lines.append(
         "  Effect (bare → expert): H=helpful (F→T), Hm=harmful (T→F), "
