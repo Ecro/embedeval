@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Annotated, Optional
 
 import typer
 
+from embedeval.context_diagnose import DEFAULT_GAP_THRESHOLD_PP
 from embedeval.models import CaseCategory, DifficultyTier, Visibility
 
 if TYPE_CHECKING:
@@ -607,6 +608,86 @@ def context_compare_cmd(
         output_json.parent.mkdir(parents=True, exist_ok=True)
         output_json.write_text(
             report.model_dump_json(indent=2) + "\n", encoding="utf-8"
+        )
+        typer.echo(f"\nJSON: {output_json}")
+
+
+@app.command(name="context-diagnose")
+def context_diagnose_cmd(
+    team: Annotated[
+        Path,
+        typer.Option("--team", help="output_dir of the team's CLAUDE.md run"),
+    ],
+    expert: Annotated[
+        Path,
+        typer.Option(
+            "--expert",
+            help="output_dir of the run with --context-pack expert",
+        ),
+    ],
+    model: Annotated[
+        Optional[str],
+        typer.Option(
+            "--model",
+            help="Model to diagnose. Required when trackers contain multiple models.",
+        ),
+    ] = None,
+    gap_threshold: Annotated[
+        float,
+        typer.Option(
+            "--gap-threshold",
+            help=(
+                "Percentage-point gap above which a category is flagged "
+                "as needing CLAUDE.md coverage."
+            ),
+        ),
+    ] = DEFAULT_GAP_THRESHOLD_PP,
+    output_json: Annotated[
+        Optional[Path],
+        typer.Option(
+            "--output-json",
+            help="Write the full CoverageDiagnosis payload to JSON",
+        ),
+    ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose logging"),
+    ] = False,
+) -> None:
+    """Diagnose which FAILURE-FACTORS categories the team's CLAUDE.md
+    fails to cover, comparing against the expert pack's ceiling. Lists
+    High-strength factor IDs per flagged category as action pointers.
+    """
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG, force=True)
+    else:
+        # Ensure `logger.warning` from context_diagnose surfaces on
+        # stderr even without --verbose; otherwise the unmapped-check
+        # warning is silently dropped in the default WARNING config.
+        logging.basicConfig(level=logging.WARNING, force=True)
+
+    from embedeval.context_diagnose import (
+        diagnose_coverage,
+        format_diagnosis,
+    )
+
+    try:
+        diagnosis = diagnose_coverage(
+            team_dir=team,
+            expert_dir=expert,
+            model=model,
+            gap_threshold_pp=gap_threshold,
+        )
+    except ValueError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(format_diagnosis(diagnosis))
+
+    if output_json:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        output_json.write_text(
+            diagnosis.model_dump_json(indent=2) + "\n", encoding="utf-8"
         )
         typer.echo(f"\nJSON: {output_json}")
 

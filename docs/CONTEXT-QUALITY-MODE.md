@@ -237,6 +237,122 @@ For publication-quality effect distributions across multi-attempt runs,
 pre-aggregate with `scripts/aggregate_n_runs.py` and feed the resulting
 single-attempt-equivalent trackers into `context-compare`.
 
+## Diagnosing context coverage gaps
+
+Lift and Gap tell you *that* your CLAUDE.md is below the expert ceiling.
+They don't tell you *which* embedded principles to add. `context-diagnose`
+closes that loop by rolling every failed check up to its FAILURE-FACTORS
+category and listing the High-strength factor IDs to encode in CLAUDE.md.
+
+```bash
+embedeval context-diagnose --team runs/team --expert runs/expert \
+    --output-json runs/diagnosis.json
+```
+
+Sample output:
+
+```
+Context Coverage Diagnosis (model: claude-code://sonnet)
+
+  Gap threshold: 10pp  (categories above this need CLAUDE.md improvement)
+
+  Category                                    Team Expert     Gap   High factors to cover
+  ---------------------------------------------------------------------------------------
+  D. Memory Model & Concurrency                53%     7%   +46pp   D1, D2, D4, D5
+  E. Error Handling & Safety Patterns          38%    12%   +26pp   E1, E2, E3, E4, E7
+  B. Temporal & Real-Time Constraints          20%    10%   +10pp   (within threshold)
+  A. Hardware Awareness Gap                    18%    15%    +3pp   (within threshold)
+  C. Memory & Resource Constraints             12%    10%    +2pp   (within threshold)
+  F. Toolchain, SDK & Platform Knowledge        8%     7%    +1pp   (within threshold)
+
+  To improve coverage:
+    D. Memory Model & Concurrency → add principles for factors D1, D2, D4, D5
+       See docs/LLM-EMBEDDED-FAILURE-FACTORS.md#d-memory-model--concurrency
+    E. Error Handling & Safety Patterns → add principles for factors E1, E2, E3, E4, E7
+       See docs/LLM-EMBEDDED-FAILURE-FACTORS.md#e-error-handling--safety-patterns
+```
+
+### Workflow
+
+The intended usage pattern is a loop:
+
+1. Run `embedeval context-compare` to get Lift/Gap.
+2. If Gap > 5pp, run `embedeval context-diagnose` to see which
+   categories drive the Gap and which factor IDs belong in the team
+   pack.
+3. Edit CLAUDE.md with one principle paragraph per listed factor —
+   phrased as the principle (not the API), following `expert.md` as
+   the style reference.
+4. Rerun `embedeval run --context-pack team/CLAUDE.md --output-dir runs/team`
+   and re-diagnose. Repeat until the remaining Gap is below the
+   `--gap-threshold` (default 10pp) across all categories.
+
+### Flags
+
+| Flag | Default | Purpose |
+|------|---------|---------|
+| `--team` | required | `output_dir` of the run with the team's CLAUDE.md |
+| `--expert` | required | `output_dir` of the run with `--context-pack expert` |
+| `--model` | auto-resolve | Required when both trackers carry multiple models |
+| `--gap-threshold` | `10.0` (pp) | Categories with `gap > threshold` are flagged |
+| `--output-json` | none | Writes the full `CoverageDiagnosis` payload |
+
+### JSON schema
+
+`--output-json` emits a `CoverageDiagnosis` payload suitable for CI
+regression gates (for example: "alert when any category's `gap`
+exceeds yesterday's value"):
+
+```json
+{
+  "model": "claude-code://sonnet",
+  "gap_threshold": 0.10,
+  "per_category": [
+    {
+      "category": "D",
+      "category_title": "Memory Model & Concurrency",
+      "team_failed_checks": ["memory_barrier_present", "volatile_error_flag"],
+      "expert_failed_checks": [],
+      "team_failed_occurrences": 18,
+      "expert_failed_occurrences": 2,
+      "total_check_occurrences": 34,
+      "team_failure_rate": 0.53,
+      "expert_failure_rate": 0.06,
+      "gap": 0.47,
+      "needs_coverage": true,
+      "high_strength_factors": ["D1", "D2", "D4", "D5"],
+      "factor_names": {
+        "D1": "`volatile` misuse",
+        "D2": "Memory barriers & fences",
+        "D4": "Race conditions",
+        "D5": "ISR context restrictions"
+      }
+    }
+  ],
+  "unmapped_checks": []
+}
+```
+
+### Unmapped checks
+
+When `cases/*/checks/static.py` introduces a new check before
+`docs/LLM-EMBEDDED-FAILURE-FACTORS.md` is updated to include it in a
+category's `**EmbedEval checks mapped:**` line, diagnosis continues —
+the new check lands in `unmapped_checks` and `logger.warning` surfaces
+the list. The fix is to add the new check name to the appropriate
+category's mapping line in FAILURE-FACTORS.md.
+
+### Why category-level, not factor-level
+
+The `**EmbedEval checks mapped:**` lines group checks by category, not
+by factor. Factor-level diagnosis would require hand-curating ~100
+check-to-factor mappings and paying the drift cost every time a new
+check is added. Category-level is zero-curation (the mapping line is
+parsed directly) and already tells the user which factor IDs to add —
+surfacing all High-strength factors in each flagged category as the
+action pointer. Factor-level is deferred to v2 if users report the
+category grain is too coarse.
+
 ## How `--context-pack` works
 
 The pack content is prepended to every prompt sent to the LLM, ahead of

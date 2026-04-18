@@ -25,104 +25,37 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import re
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-FACTORS_DOC = ROOT / "docs" / "LLM-EMBEDDED-FAILURE-FACTORS.md"
-COVERAGE_OUT = ROOT / "src" / "embedeval" / "context_packs" / "expert-coverage.md"
+# The factor-table parser lives in the package so both this script and
+# the `embedeval context-diagnose` command share a single source of
+# truth. Tests that monkey-patch FACTORS_DOC need to reach through the
+# module attribute, so we import the name rather than re-exporting.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-
-@dataclass(frozen=True)
-class Factor:
-    """One row parsed from a category factor table.
-
-    `factor_id` is the A1/B3/... identifier. `strength` is the literal
-    token ("High"/"Med"/"Low") and `evidence` is likewise verbatim — no
-    normalization so a typo in the source doc surfaces as drift.
-    """
-
-    factor_id: str
-    name: str
-    strength: str
-    evidence: str
-    description: str
-
-
-@dataclass(frozen=True)
-class Category:
-    """A. Hardware Awareness Gap / B. Temporal ... etc."""
-
-    letter: str  # "A"
-    title: str  # "Hardware Awareness Gap"
-    factors: tuple[Factor, ...]
-
-
-# Matches a category header like "## A. Hardware Awareness Gap"
-_CATEGORY_RE = re.compile(r"^##\s+([A-F])\.\s+(.+?)\s*$")
-# Matches a factor row like "| A1 | Register / MMIO access | Med | Research | ... |"
-# Five fields between pipes, the first being the A1/B3/... id.
-_ROW_RE = re.compile(
-    r"^\|\s*([A-F]\d+)\s*\|\s*(.+?)\s*\|\s*(High|Med|Low)\s*\|"
-    r"\s*(Empirical|Research|Theoretical)\s*\|\s*(.+?)\s*\|\s*$"
+from embedeval.failure_factors import (  # noqa: E402
+    FACTORS_DOC,
+    Category,
+    Factor,
+    parse_factors,
 )
 
+ROOT = Path(__file__).resolve().parent.parent
+COVERAGE_OUT = ROOT / "src" / "embedeval" / "context_packs" / "expert-coverage.md"
 
-def parse_factors(markdown: str) -> list[Category]:
-    """Walk the doc section-by-section, pulling factor rows out of each
-    A–F table. Stops at the first `## ` header that is not A–F (e.g.
-    "## Summary Statistics") so later markdown tables don't poison the
-    output.
-    """
-    lines = markdown.splitlines()
-    categories: list[Category] = []
-    current_letter: str | None = None
-    current_title: str | None = None
-    current_rows: list[Factor] = []
-
-    def _flush() -> None:
-        nonlocal current_letter, current_title, current_rows
-        if current_letter and current_title:
-            categories.append(
-                Category(
-                    letter=current_letter,
-                    title=current_title,
-                    factors=tuple(current_rows),
-                )
-            )
-        current_letter = None
-        current_title = None
-        current_rows = []
-
-    for line in lines:
-        # Any top-level section flushes the current category; the
-        # factor tables are only inside A–F sections, so a "## Summary
-        # Statistics" ends the scan.
-        if line.startswith("## ") and not line.startswith("### "):
-            cat_match = _CATEGORY_RE.match(line)
-            _flush()
-            if cat_match:
-                current_letter = cat_match.group(1)
-                current_title = cat_match.group(2).strip()
-            continue
-        if current_letter is None:
-            continue
-        row = _ROW_RE.match(line)
-        if row:
-            fid, name, strength, evidence, desc = row.groups()
-            current_rows.append(
-                Factor(
-                    factor_id=fid,
-                    name=name.strip(),
-                    strength=strength,
-                    evidence=evidence,
-                    description=desc.strip(),
-                )
-            )
-    _flush()
-    return categories
+# Re-export so existing tests that do `bep.Factor` / `bep.Category` /
+# `bep.FACTORS_DOC` / `bep.parse_factors` keep working after the
+# parser moved to src/embedeval/failure_factors.py.
+__all__ = [
+    "Category",
+    "Factor",
+    "FACTORS_DOC",
+    "COVERAGE_OUT",
+    "parse_factors",
+    "render_coverage",
+    "main",
+]
 
 
 def render_coverage(categories: list[Category]) -> str:
@@ -150,9 +83,7 @@ def render_coverage(categories: list[Category]) -> str:
     )
     lines.append("")
     total = sum(len(c.factors) for c in categories)
-    high = sum(
-        1 for c in categories for f in c.factors if f.strength == "High"
-    )
+    high = sum(1 for c in categories for f in c.factors if f.strength == "High")
     lines.append(
         f"**Factors:** {total} total across {len(categories)} categories "
         f"({high} High-strength — the must-cover set)"
@@ -164,9 +95,7 @@ def render_coverage(categories: list[Category]) -> str:
         lines.append("| # | Factor | Strength | Evidence |")
         lines.append("|---|--------|----------|----------|")
         for f in cat.factors:
-            lines.append(
-                f"| {f.factor_id} | {f.name} | {f.strength} | {f.evidence} |"
-            )
+            lines.append(f"| {f.factor_id} | {f.name} | {f.strength} | {f.evidence} |")
         lines.append("")
         high_in_cat = [f for f in cat.factors if f.strength == "High"]
         if high_in_cat:
@@ -196,21 +125,23 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    markdown = FACTORS_DOC.read_text(encoding="utf-8")
+    # Re-read FACTORS_DOC via this module's attribute so tests that
+    # monkey-patch `build_expert_pack.FACTORS_DOC` still override the
+    # path even though the default value was imported from the package.
+    markdown = _current("FACTORS_DOC").read_text(encoding="utf-8")
     categories = parse_factors(markdown)
     if not categories:
+        rel = _current("FACTORS_DOC").relative_to(ROOT)
         print(
-            "ERROR: no A–F category sections parsed from "
-            f"{FACTORS_DOC.relative_to(ROOT)} — doc structure may have changed",
+            f"ERROR: no A–F category sections parsed from {rel} "
+            "— doc structure may have changed",
             file=sys.stderr,
         )
         return 2
 
     rendered = render_coverage(categories)
-    out_path = COVERAGE_OUT  # re-read so monkeypatched tests see the swap
-    existing = (
-        out_path.read_text(encoding="utf-8") if out_path.is_file() else ""
-    )
+    out_path = _current("COVERAGE_OUT")  # re-read so monkeypatched tests see the swap
+    existing = out_path.read_text(encoding="utf-8") if out_path.is_file() else ""
 
     def _display(p: Path) -> str:
         try:
@@ -239,6 +170,14 @@ def main(argv: list[str] | None = None) -> int:
     out_path.write_text(rendered, encoding="utf-8")
     print(f"Wrote {_display(out_path)}")
     return 0
+
+
+def _current(name: str) -> Path:
+    """Look up a module-level Path attribute at call time rather than
+    import time. Tests monkeypatch `bep.FACTORS_DOC` / `bep.COVERAGE_OUT`
+    after import; binding the reference through this shim keeps the
+    override visible to `main`."""
+    return globals()[name]
 
 
 if __name__ == "__main__":

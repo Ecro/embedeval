@@ -242,6 +242,66 @@ class TestContextQualityModeE2E:
         assert result.exit_code != 0
         assert "Context pack mismatch" in result.output or "mismatch" in result.output
 
+    def test_context_diagnose_cli_produces_json_with_full_schema(
+        self,
+        _mock_docker: object,
+        tmp_path: Path,
+        team_pack: Path,
+    ) -> None:
+        """The full JSON payload from `context-diagnose --output-json`
+        must carry every CoverageDiagnosis field downstream consumers
+        rely on (per_category CategoryDiagnosis, unmapped_checks, etc.).
+        Validates schema, not content — mock is context-independent."""
+        bare, team, expert = self._run_all_three(tmp_path, team_pack)
+        del bare  # diagnose ignores bare; keep self._run_all_three intact
+        out_json = tmp_path / "diagnose.json"
+        result = cli.invoke(
+            app,
+            [
+                "context-diagnose",
+                "--team",
+                str(team),
+                "--expert",
+                str(expert),
+                "--output-json",
+                str(out_json),
+            ],
+        )
+        assert result.exit_code == 0, result.output
+        assert out_json.is_file()
+
+        payload = json.loads(out_json.read_text(encoding="utf-8"))
+
+        # Top-level shape
+        assert set(payload.keys()) >= {
+            "model",
+            "gap_threshold",
+            "per_category",
+            "unmapped_checks",
+        }
+        assert payload["model"] == "mock"
+        # Default --gap-threshold is 10pp → stored as 0.10 fraction
+        assert payload["gap_threshold"] == 0.10
+
+        # Every per_category entry must carry the full CategoryDiagnosis
+        # schema — this is what CI consumers key off.
+        for cd in payload["per_category"]:
+            assert set(cd.keys()) >= {
+                "category",
+                "category_title",
+                "team_failed_checks",
+                "expert_failed_checks",
+                "team_failed_occurrences",
+                "expert_failed_occurrences",
+                "total_check_occurrences",
+                "team_failure_rate",
+                "expert_failure_rate",
+                "gap",
+                "needs_coverage",
+                "high_strength_factors",
+                "factor_names",
+            }
+
     def test_include_team_effect_opt_in_roundtrip(
         self,
         _mock_docker: object,
