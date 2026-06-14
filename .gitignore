@@ -69,3 +69,6 @@ LAUNCH-COPY.md
 
 # Claude Code local config (agents, settings)
 .claude/
+
+# Extracted vendor SDK (large, local only — not part of the repo)
+sdk/
