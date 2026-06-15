@@ -157,3 +157,16 @@ def _stm32_env_available() -> bool:
     return os.environ.get("STM32_HAL_PATH") is not None and _get_build_mode() != "skip"
 
 
+def _is_nxp_case(case_dir: Path) -> bool:
+    """Return True if this case targets NXP MCUXpresso bare-metal."""
+    from embedeval.models import EvalPlatform
+
+    meta = _load_case_meta(case_dir)
+    return meta is not None and meta.platform == EvalPlatform.NXP_BARE_METAL
+
+
+def _nxp_env_available() -> bool:
+    """Check if NXP build environment is available."""
+    return os.environ.get("NXP_SDK_PATH") is not None and _get_build_mode() != "skip"
+
+

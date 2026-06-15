@@ -20,7 +20,9 @@ from embedeval.evaluator.support import (
     _is_esp_idf_case,
     _is_l1_skipped,
     _is_l2_skipped,
+    _is_nxp_case,
     _is_stm32_case,
+    _nxp_env_available,
     _stm32_env_available,
 )
 from embedeval.models import CheckDetail, LayerResult
@@ -42,6 +44,9 @@ def _run_compile_gate(
     """Layer 1: Compile gate — dispatches to ESP-IDF, STM32, or Zephyr path."""
     if _is_esp_idf_case(case_dir):
         return _run_compile_esp_idf(case_dir, generated_code, timeout)
+
+    if _is_nxp_case(case_dir):
+        return _run_compile_nxp(case_dir, generated_code, timeout)
 
     if _is_stm32_case(case_dir):
         return _run_compile_stm32(case_dir, generated_code, timeout)
@@ -663,5 +668,142 @@ def _run_compile_stm32(
                 passed=False,
                 details=[],
                 error=f"STM32 build timed out after {timeout}s",
+                duration_seconds=timeout,
+            )
+
+
+# Per-family compile settings for NXP MCUXpresso bare-metal cases.
+# Include dirs are relative to NXP_SDK_PATH (root holding the cloned SDK repos).
+# Family is selected by case-id prefix, not metadata: both families share
+# platform: nxp_bare_metal, so only the id distinguishes MCXC144 from RT1170.
+# Non-obvious paths (do not "simplify"):
+#   - MCXC fsl_clock.h lives under MCXC444/drivers (MCXC144 reuses the 444 clock driver)
+#   - RT GPIO is the i.MX "igpio" variant, not the Kinetis "gpio" driver
+#   - RT eDMA is the legacy "edma" driver, not "edma4"
+_NXP_MCXC = {
+    "mcpu": "cortex-m0plus",
+    "cpu_define": "CPU_MCXC144VFM",
+    "includes": [
+        "mcx/MCXC/MCXC144",
+        "mcx/MCXC/periph2",
+        "mcx/MCXC/MCXC444/drivers",
+        "mcuxsdk-core/drivers/common",
+        "mcuxsdk-core/drivers/port",
+        "mcuxsdk-core/drivers/gpio",
+        "mcuxsdk-core/drivers/uart",
+        "mcuxsdk-core/drivers/pit",
+        "mcuxsdk-core/drivers/i2c",
+        "mcuxsdk-core/drivers/spi",
+        "mcuxsdk-core/drivers/flash",
+        "mcuxsdk-core/drivers/cop",
+        "cmsis/CMSIS/Core/Include",
+    ],
+}
+
+_NXP_RT = {
+    "mcpu": "cortex-m7",
+    "cpu_define": "CPU_MIMXRT1176DVMAA_cm7",
+    "includes": [
+        "rt/RT1170/MIMXRT1176",
+        "rt/RT1170/periph",
+        "rt/RT1170/MIMXRT1176/drivers",
+        "mcuxsdk-core/drivers/common",
+        "mcuxsdk-core/drivers/igpio",
+        "mcuxsdk-core/drivers/lpi2c",
+        "mcuxsdk-core/drivers/lpspi",
+        "mcuxsdk-core/drivers/lpuart",
+        "mcuxsdk-core/drivers/gpt",
+        "mcuxsdk-core/drivers/sai",
+        "mcuxsdk-core/drivers/rtwdog",
+        "mcuxsdk-core/drivers/edma",
+        "cmsis/CMSIS/Core/Include",
+    ],
+}
+
+
+def _nxp_family_settings(case_dir: Path) -> dict:
+    """Select MCXC144 or RT1170 compile settings from the case-id prefix."""
+    case_id = case_dir.name
+    if case_id.startswith("nxp-mcxc-"):
+        return _NXP_MCXC
+    # nxp-rt-* and nxp-rt1170-* both target the RT1170 Cortex-M7
+    return _NXP_RT
+
+
+def _run_compile_nxp(
+    case_dir: Path, generated_code: str, timeout: float
+) -> LayerResult:
+    """Layer 1: NXP MCUXpresso compilation via arm-none-eabi-gcc."""
+    if not _nxp_env_available():
+        logger.info("NXP toolchain not available, skipping compile gate (pass)")
+        return LayerResult(
+            layer=1,
+            name="compile_gate",
+            passed=True,
+            details=[
+                CheckDetail(
+                    check_name="nxp_available",
+                    passed=True,
+                    expected="NXP_SDK_PATH set",
+                    actual="skipped (NXP toolchain not available)",
+                    check_type="environment",
+                )
+            ],
+            error=None,
+            duration_seconds=0.0,
+        )
+
+    sdk_path = os.environ["NXP_SDK_PATH"]
+    settings = _nxp_family_settings(case_dir)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        src_file = Path(tmpdir) / "main.c"
+        src_file.write_text(generated_code, encoding="utf-8")
+
+        cmd = [
+            "arm-none-eabi-gcc",
+            "-c",
+            f"-mcpu={settings['mcpu']}",
+            "-mthumb",
+            f"-D{settings['cpu_define']}",
+        ]
+        for rel in settings["includes"]:
+            cmd.append(f"-I{sdk_path}/{rel}")
+        cmd += ["-Wall", "-o", "/dev/null", str(src_file)]
+
+        try:
+            start = time.monotonic()
+            result = _ev.subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                cwd=tmpdir,
+            )
+            elapsed = time.monotonic() - start
+            passed = result.returncode == 0
+            return LayerResult(
+                layer=1,
+                name="compile_gate",
+                passed=passed,
+                details=[
+                    CheckDetail(
+                        check_name="nxp_gcc",
+                        passed=passed,
+                        expected="exit code 0",
+                        actual=f"exit code {result.returncode}",
+                        check_type="compile",
+                    )
+                ],
+                error=result.stderr if not passed else None,
+                duration_seconds=elapsed,
+            )
+        except _ev.subprocess.TimeoutExpired:
+            return LayerResult(
+                layer=1,
+                name="compile_gate",
+                passed=False,
+                details=[],
+                error=f"NXP build timed out after {timeout}s",
                 duration_seconds=timeout,
             )

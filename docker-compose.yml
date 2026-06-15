@@ -12,6 +12,17 @@ services:
       - BSIM_OUT_PATH=/opt/bsim
       - EMBEDEVAL_ENABLE_BUILD=1
 
+  embedeval-nxp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.nxp
+    volumes:
+      - ./cases:/app/cases:ro
+      - ./results:/app/results
+    environment:
+      - NXP_SDK_PATH=/opt/nxp-sdk
+      - EMBEDEVAL_ENABLE_BUILD=1
+
   worker:
     build:
       context: .

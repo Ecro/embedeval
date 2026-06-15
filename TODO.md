@@ -299,12 +299,28 @@ Foundation items still open — not blocking Phase 2-6 but needed for L1 compile
 - [x] Write first reference case `nxp-mcxc-i2c-001` end-to-end and verify it passes validate.
 - [ ] **Define `cases/SDK_LAYOUT_NXP.yaml`** — NXP SDK structure, following the pattern
   of the upstream `cases/SDK_LAYOUT.yaml`.
-- [ ] **Docker image for NXP compile check (L1):**
-  - Base: `debian:bookworm-slim`
-  - Install: `arm-none-eabi-gcc`, `arm-none-eabi-newlib`
-  - Add: MCUXpresso SDK headers (CMSIS + fsl_* drivers for MCXC144)
-  - Target: compile a minimal bare-metal main.c with `-mcpu=cortex-m0plus -mthumb`
-  - Dockerfile at `Dockerfile.nxp`
+- [x] **Docker image for NXP compile check (L1):** `docker/Dockerfile.nxp` (base `ubuntu:26.04`).
+  Installs `arm-none-eabi-gcc`, shallow-clones the 3 public MCUXpresso repos
+  (`mcuxsdk-core`, `mcux-devices-mcx`, `mcux-devices-rt`) + CMSIS_5. Compile gate wired in
+  `_run_compile_nxp` (`src/embedeval/evaluator/build.py`), dispatched per case-id prefix
+  (`nxp-mcxc-*` → Cortex-M0+, `nxp-rt*` → Cortex-M7). Validated: 21/28 reference cases
+  compile clean; the remaining 7 are genuine reference bugs (see below).
+
+## NXP reference solutions that fail L1 compile (found by the new gate)
+
+These reference `main.c` files use API names / device symbols that do not exist in the
+MCUXpresso SDK for the target part. They are reference bugs, not gate bugs — fix in
+dedicated per-case commits, then re-run `embedeval validate`.
+
+- [ ] `nxp-mcxc-flash-001`, `nxp-mcxc-flash-002`: `FLASH_EraseSector` →
+  SDK API is `FLASH_EraseSectorNonBlocking` (in `fsl_ftfx_flash.h`).
+- [ ] `nxp-mcxc-timer-001`, `nxp-mcxc-uart-001`: `kCLOCK_Uart0` undeclared on MCXC144
+  (only `kCLOCK_Uart2` exists).
+- [ ] `nxp-mcxc-uart-002`: `UART0` undeclared on MCXC144 (use `UART2`).
+- [ ] `nxp-rt1170-audio-001`: `IOMUXC_GPIO_AD_17_SAI1_RX_DATA00` does not exist
+  (compiler suggests `IOMUXC_GPIO_AD_20_SAI1_RX_DATA00` — pick the correct pin mux).
+- [ ] `nxp-rt1170-lpspi-001`: `IOMUXC_GPIO_AD_30_LPSPI1_SDO` does not exist
+  (pick the correct LPSPI1 SDO pin mux).
 
 ---
 

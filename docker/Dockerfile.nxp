@@ -1,0 +1,39 @@
+FROM ubuntu:26.04
+
+# Install ARM toolchain + git (needed for shallow-cloning the SDK repos)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc-arm-none-eabi \
+    libnewlib-arm-none-eabi \
+    git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# MCUXpresso SDK is split across 3 public GitHub repos (no login required):
+#   1. mcuxsdk-core      — peripheral drivers (drivers/<periph>/fsl_*.h)
+#   2. mcux-devices-mcx  — MCXC144 device pack (Cortex-M0+)
+#   3. mcux-devices-rt   — RT1170/MIMXRT1176 device pack (Cortex-M7)
+# CMSIS core headers (core_cm0plus.h, core_cm7.h) ship with arm-none-eabi-gcc
+# but we clone CMSIS_5 too, matching the STM32 image, for a stable include path.
+# Shallow clones keep the image lean vs. a full `west` manifest checkout.
+# Note: the three NXP repos are large (~180M+115M+109M) — the image is sizeable.
+RUN git clone --depth 1 https://github.com/nxp-mcuxpresso/mcuxsdk-core /opt/nxp-sdk/mcuxsdk-core && \
+    git clone --depth 1 https://github.com/nxp-mcuxpresso/mcux-devices-mcx /opt/nxp-sdk/mcx && \
+    git clone --depth 1 https://github.com/nxp-mcuxpresso/mcux-devices-rt /opt/nxp-sdk/rt && \
+    git clone --depth 1 -b 5.9.0 https://github.com/ARM-software/CMSIS_5 /opt/nxp-sdk/cmsis && \
+    rm -rf /opt/nxp-sdk/*/.git
+
+# Install Python tooling
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /app
+
+# COPY src/ before uv sync so the local embedeval package is present for the build
+COPY pyproject.toml .python-version uv.lock README.md ./
+COPY src/ ./src/
+RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
+
+COPY . .
+
+ENV NXP_SDK_PATH=/opt/nxp-sdk
+ENV EMBEDEVAL_ENABLE_BUILD=1
+
+ENTRYPOINT ["uv", "run", "embedeval"]
