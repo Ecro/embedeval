@@ -20,6 +20,26 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
+# Resolve case dirs through the shared walker so this script understands the
+# 2-level SDK-bucket layout (cases/<sdk>/<case-id>/) instead of assuming a flat
+# cases/<case-id>/ path. Without this, every lookup misses and the script
+# silently verifies 0 cases while reporting "all OK" (a false all-clear).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+from embedeval.runner import iter_case_dirs  # noqa: E402
+
+
+def build_case_map(roots: list[Path]) -> dict[str, Path]:
+    """Map case_id -> case dir across one or more roots (public + private).
+
+    Later roots win on a case_id collision, matching the runner's own
+    last-writer-wins behavior for shadowed ids.
+    """
+    case_map: dict[str, Path] = {}
+    for root in roots:
+        for case_dir in iter_case_dirs(root):
+            case_map[case_dir.name] = case_dir
+    return case_map
+
 
 def load_check_module(case_dir: Path, module_name: str) -> ModuleType | None:
     """Load a check module from the case's checks/ directory."""
@@ -61,17 +81,22 @@ def run_checks(case_dir: Path, code: str, module_name: str) -> list[dict] | None
         ]
     except Exception as exc:
         print(
-            f"  WARNING: Check raised exception for {case_dir.name}/{module_name}: {exc}",
+            f"  WARNING: Check raised exception for "
+            f"{case_dir.name}/{module_name}: {exc}",
             file=sys.stderr,
         )
         return None
 
 
 def verify_run(
-    run_dir: Path, cases_dir: Path, category: str | None = None, verbose: bool = False
+    run_dir: Path,
+    case_map: dict[str, Path],
+    category: str | None = None,
+    verbose: bool = False,
 ) -> dict:
     """Verify all results in a benchmark run directory.
 
+    ``case_map`` maps case_id -> case dir (built via :func:`build_case_map`).
     Returns summary dict with counts and issue lists.
     """
     details_dir = run_dir / "details"
@@ -94,8 +119,8 @@ def verify_run(
         if category and not case_id.startswith(category):
             continue
 
-        case_dir = cases_dir / case_id
-        if not case_dir.is_dir():
+        case_dir = case_map.get(case_id)
+        if case_dir is None or not case_dir.is_dir():
             if verbose:
                 print(f"  SKIP {case_id}: case dir not found")
             continue
@@ -197,7 +222,8 @@ def verify_run(
                             issues["reference_failures"].append(issue)
                             case_has_issue = True
                             print(
-                                f"  FALSE NEGATIVE {case_id} L{layer_idx}/{rd['check_name']}: "
+                                f"  FALSE NEGATIVE {case_id} "
+                                f"L{layer_idx}/{rd['check_name']}: "
                                 f"reference solution FAILS — check script bug!"
                             )
                             if verbose:
@@ -231,6 +257,13 @@ def main():
         "--cases", type=Path, default=Path("cases"), help="Path to cases directory"
     )
     parser.add_argument(
+        "--private-cases",
+        type=Path,
+        default=None,
+        help="Path to private cases directory (held-out set), if the run "
+        "included --include-private",
+    )
+    parser.add_argument(
         "--category",
         "-c",
         type=str,
@@ -245,13 +278,25 @@ def main():
     )
     args = parser.parse_args()
 
+    roots = [args.cases]
+    if args.private_cases is not None:
+        roots.append(args.private_cases)
+    case_map = build_case_map(roots)
+
     print(f"Verifying results in: {args.run_dir}")
-    print(f"Cases directory: {args.cases}")
+    print(f"Cases directories: {', '.join(str(r) for r in roots)}")
+    print(f"Resolved {len(case_map)} case dirs")
     if args.category:
         print(f"Category filter: {args.category}")
+    if not case_map:
+        print(
+            "ERROR: 0 case dirs resolved — check --cases/--private-cases paths",
+            file=sys.stderr,
+        )
+        return 2
     print()
 
-    result = verify_run(args.run_dir, args.cases, args.category, args.verbose)
+    result = verify_run(args.run_dir, case_map, args.category, args.verbose)
 
     stats = result["stats"]
     issues = result["issues"]
@@ -291,11 +336,18 @@ def main():
         for i in issues["l1_skip_cases"]:
             print(f"  - {i['case_id']}: {i['reason']}")
         print()
-        print(
-            f"L1/L2 evaluation coverage: {stats['total'] - stats['l1_skipped']}/{stats['total']} "
-            f"({(stats['total'] - stats['l1_skipped']) / max(stats['total'], 1) * 100:.0f}%)"
-        )
+        covered = stats["total"] - stats["l1_skipped"]
+        pct = covered / max(stats["total"], 1) * 100
+        print(f"L1/L2 evaluation coverage: {covered}/{stats['total']} ({pct:.0f}%)")
         print()
+
+    if stats["total"] == 0:
+        print(
+            "WARNING: 0 cases were actually verified — case dirs did not match "
+            "any run detail. This is NOT a clean result; check the layout/paths.",
+            file=sys.stderr,
+        )
+        return 2
 
     if not issues["reference_failures"] and not issues["discrepancies"]:
         print("All results verified — no false results detected.")
