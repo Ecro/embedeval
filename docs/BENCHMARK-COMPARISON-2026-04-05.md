@@ -431,3 +431,40 @@ It did **not** cover the 3 Phase A1 Docker-build cases (`isr-concurrency-007`, `
 | Always fail | 71 | 60 | -11 |
 
 > The 95% confidence intervals do not overlap — the performance gap between Haiku 4.5 and Sonnet 4.6 on embedded firmware tasks is statistically significant at p<0.05. Sonnet solves 44 more cases consistently and has half the flaky-case count.
+
+---
+
+## 10. Sonnet 5 vs Sonnet 4.6 (2026-07-19, n=3)
+
+**Model:** `claude-code://claude-sonnet-5` · **Cases:** 263 unique (219 public + 48 private, 4 public↔private case_id collisions dedupe 267→263) · **n=3, `--include-private`, real Docker L1/L2 compile.**
+
+### 10.1 Sonnet 5 n=3 aggregate
+
+| Run | pass@1 | passed | total |
+|-----|--------|--------|-------|
+| n1 | 66.7% | 176 | 263 |
+| n2 | 66.9% | 176 | 263 |
+| n3 | 67.3% | 177 | 263 |
+
+- Mean pass@1: **67.0%** · stdev **0.29%p** (most stable model measured to date) · 95% CI (Wilson, pooled 789) **[63.7%, 70.2%]**
+- Case stability: 82.1% (216/263) · Full report: [BENCHMARK-n3-sonnet5.md](BENCHMARK-n3-sonnet5.md)
+
+### 10.2 Pure model improvement — intersection of 232 common cases (majority-vote)
+
+| Model | pass@1 (majority) | passed / total |
+|-------|-------------------|----------------|
+| Sonnet 4.6 | **68.1%** | 158 / 232 |
+| Sonnet 5 | **67.2%** | 156 / 232 |
+| **Delta** | **−0.9%p** | −2 cases |
+
+> **Sonnet 5 is not an improvement over Sonnet 4.6 on embedded firmware.** The −0.9%p delta is statistically tied — it sits inside 4.6's own run-to-run range (66.1–70.4%) and well within the 95% CIs. Only the common 232 cases are compared, isolating model capability from the case-set change (233→263). New-only Phase B/C Linux cases (31, no 4.6 baseline) scored 71.0% absolute.
+
+### 10.3 Churn: 18 improved / 20 regressed (net −2)
+
+Roughly balanced two-way churn rather than a uniform shift. Spot-check of regressions shows a **mix of genuine capability misses and flakiness** — e.g. `timer-001` (Sonnet 5 dropped `volatile` on a shared counter — a real implicit-safety miss, per §Implicit-vs-Explicit) and `kconfig-002` (missing required Kconfig) are genuine; `memory-opt-006` is flaky (both models fail in some runs). Full per-category improved/regressed lists: [BENCHMARK-DELTA-sonnet5-vs-sonnet46.md](BENCHMARK-DELTA-sonnet5-vs-sonnet46.md).
+
+### 10.4 Methodology caveats
+
+- **Docker image rebuild required.** The `embedeval-zephyr:latest` compile image had vanished from the host; a first n1 attempt produced 75 spurious L1 "image not found" env-failures (bad 52.5% pass@1). After `docker build -t embedeval-zephyr:latest .` the L1 env-error count was **0**, making Sonnet 5's real-compile results directly comparable to 4.6's real-compile 66.1% n1. The reported numbers are all from the post-rebuild clean run.
+- **Data hygiene:** 4 case_ids (`linux-driver-009/010`, `yocto-009/010`) collide between public and private repos and silently shadow (263 unique, not 267). Pre-existing since Phase B/C; a private-repo rename is the fix.
+- **`verify_results.py` cross-check could not run** — it resolves `cases/<id>` flat and is broken for the 2-level SDK-bucket layout (verifies 0 cases, false all-clear). Regressions were spot-checked manually instead.
