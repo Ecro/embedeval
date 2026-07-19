@@ -3,12 +3,12 @@
 [![CI](https://github.com/Ecro/embedeval/actions/workflows/ci.yml/badge.svg)](https://github.com/Ecro/embedeval/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
-[![Cases](https://img.shields.io/badge/cases-233-orange)]()
-[![Tests](https://img.shields.io/badge/tests-1421-green)]()
+[![Cases](https://img.shields.io/badge/cases-267-orange)]()
+[![Tests](https://img.shields.io/badge/tests-1425-green)]()
 
 **LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 
-EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, FreeRTOS, Linux kernel drivers, and Yocto recipes across 233 test cases (185 public + 48 private held-out).
+EmbedEval measures whether LLMs possess the **implicit domain knowledge** to write safe embedded C code. It covers Zephyr RTOS, ESP-IDF, STM32 HAL, FreeRTOS, Linux kernel drivers, and Yocto recipes across 267 test cases (219 public + 48 private held-out).
 
 ![pass@1 heatmap by category](assets/launch/heatmap.png)
 
@@ -42,21 +42,24 @@ What an embedded engineer knows (not in prompt):
 
 ## Leaderboard
 
-n=3 aggregate across 233 cases (185 public + 48 private, 2026-04-12):
+n=3 aggregate pass@1 means:
 
-| Model | pass@1 (n=3 mean) | 95% CI | Stability | Weakest Category | Strongest |
-|-------|-------------------|--------|-----------|------------------|-----------|
-| **Sonnet 4.6** | **68.0%** | [64.4%, 71.3%] | 87.1% | isr-concurrency (23%), dma (31%), threading (33%) | adc, device-tree, pwm (100%) |
-| Haiku 4.5 | 56.9% | [53.2%, 60.6%] | 73.0% | dma (8%), isr-concurrency (38%), memory-opt (33%) | boot, device-tree, pwm (100%) |
+| Model | pass@1 (n=3 mean) | 95% CI | Stability | Weakest Category | Strongest | Cases |
+|-------|-------------------|--------|-----------|------------------|-----------|-------|
+| **Sonnet 5** | **67.0%** | [63.7%, 70.2%] | 82.1% | dma (31%), isr-concurrency (41%), threading (49%) | boot, adc, pwm (100%) | 263 (2026-07-19) |
+| **Sonnet 4.6** | **68.0%** | [64.4%, 71.3%] | 87.1% | isr-concurrency (23%), dma (31%), threading (33%) | adc, device-tree, pwm (100%) | 233 (2026-04-12) |
+| Haiku 4.5 | 56.9% | [53.2%, 60.6%] | 73.0% | dma (8%), isr-concurrency (38%), memory-opt (33%) | boot, device-tree, pwm (100%) | 233 (2026-04-12) |
 
-**Model gap:** 11.1%p overall (CIs don't overlap — statistically significant). Sonnet stability: 87.1% vs Haiku 73.0%.
+**Sonnet 5 vs Sonnet 4.6 — no measurable improvement.** On the 232 cases common to both runs (isolating model change from the case-set growth), majority-vote pass@1 is 68.1% → 67.2% = **−0.9%p**: statistically tied, inside 4.6's own 66.1–70.4% run range. Sonnet 5 is the most *stable* model measured (stdev 0.29%p) but not more capable on embedded firmware; the weakest categories (dma, isr-concurrency, threading) are unchanged.
 
-See detailed comparison: [`docs/BENCHMARK-COMPARISON-2026-04-05.md`](docs/BENCHMARK-COMPARISON-2026-04-05.md)
+**Sonnet vs Haiku:** 11.1%p overall (CIs don't overlap — statistically significant).
+
+See detailed comparison: [`docs/BENCHMARK-COMPARISON-2026-04-05.md`](docs/BENCHMARK-COMPARISON-2026-04-05.md) (§10 = Sonnet 5) · delta report: [`docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md`](docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md)
 See analysis & conclusions: [`docs/LLM-EMBEDDED-CONSIDERATIONS.md`](docs/LLM-EMBEDDED-CONSIDERATIONS.md)
 
 ### Category Heatmap
 
-All 23 categories (233 cases, n=3 run, 2026-04-12):
+All 23 categories (Sonnet 4.6 vs Haiku, 233 cases, n=3 run, 2026-04-12). Sonnet 5's per-category profile tracks 4.6 closely — same weakest three (dma, isr-concurrency, threading):
 
 ```
 Category          Sonnet   Haiku    Gap      What it tests
@@ -334,7 +337,7 @@ embedeval/
 │   ├── failure_taxonomy.py  # Automated failure classification (8 patterns)
 │   ├── safety_guide.py      # Risk-tier safety guide generation
 │   └── test_tracker.py      # Incremental retest tracking
-├── cases/                   # 185 public test cases
+├── cases/                   # 219 public test cases
 ├── tests/                   # 1277 pytest tests
 ├── docs/
 │   ├── METHODOLOGY.md                    # Full benchmark methodology + architecture diagrams

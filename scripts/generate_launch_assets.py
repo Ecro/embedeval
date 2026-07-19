@@ -32,37 +32,39 @@ OUT.mkdir(parents=True, exist_ok=True)
 # Data (sync with results/LEADERBOARD.md, n=3 baseline 2026-04-12/13)
 # ---------------------------------------------------------------------------
 
+# Per-category pass@1 (%). Columns: Sonnet 5 (n=3, 2026-07-19), Sonnet 4.6
+# (n=3, 2026-04-12), Haiku 4.5 (n=3, 2026-04-12). Sonnet 5 is computed over the
+# grown 263-case set, so its category denominators differ from the 4.6/Haiku
+# 233-case run (see docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md).
 CATEGORIES = [
-    ("adc", 100, 50),
-    ("ble", 82, 45),
-    ("boot", 90, 100),
-    ("device-tree", 100, 100),
-    ("dma", 31, 8),
-    ("gpio-basic", 67, 83),
-    ("isr-concurrency", 23, 38),
-    ("kconfig", 90, 60),
-    ("linux-driver", 70, 70),
-    ("memory-opt", 67, 33),
-    # NOTE: stale after Phase C-2 expansion (2026-04-19) — networking
-    # category grew 10 → 15 TCs (added networking-kernel-001..005).
-    # Refresh after the pending Phase C-2 benchmark run completes;
-    # see docs/BENCHMARK-networking-kernel-phase-c.md.
-    ("networking", 75, 75),
-    ("ota", 67, 58),
-    ("power-mgmt", 75, 67),
-    ("pwm", 100, 100),
-    ("security", 50, 70),
-    ("sensor-driver", 75, 67),
-    ("spi-i2c", 79, 64),
-    ("storage", 54, 31),
-    ("threading", 33, 33),
-    ("timer", 83, 50),
-    ("uart", 33, 67),
-    ("watchdog", 90, 60),
-    ("yocto", 80, 70),
+    ("adc", 100, 100, 50),
+    ("ble", 73, 82, 45),
+    ("boot", 100, 90, 100),
+    ("device-tree", 97, 100, 100),
+    ("dma", 31, 31, 8),
+    ("gpio-basic", 83, 67, 83),
+    ("isr-concurrency", 41, 23, 38),
+    ("kconfig", 70, 90, 60),
+    ("linux-driver", 69, 70, 70),
+    ("memory-opt", 56, 67, 33),
+    ("networking", 59, 75, 75),
+    ("ota", 67, 67, 58),
+    ("power-mgmt", 83, 75, 67),
+    ("pwm", 100, 100, 100),
+    ("security", 53, 50, 70),
+    ("sensor-driver", 67, 75, 67),
+    ("spi-i2c", 83, 79, 64),
+    ("storage", 51, 54, 31),
+    ("threading", 49, 33, 33),
+    ("timer", 78, 83, 50),
+    ("uart", 67, 33, 67),
+    ("watchdog", 77, 90, 60),
+    ("yocto", 64, 80, 70),
 ]
 
 # n=3 pooled
+SONNET5_MEAN = 67.0
+SONNET5_CI = (63.7, 70.2)
 SONNET_MEAN = 68.0
 SONNET_CI = (64.4, 71.3)
 HAIKU_MEAN = 56.9
@@ -98,11 +100,12 @@ def _setup_style() -> None:
 
 def heatmap() -> None:
     cats = [row[0] for row in CATEGORIES]
-    sonnet = [row[1] for row in CATEGORIES]
-    haiku = [row[2] for row in CATEGORIES]
-    matrix = np.array([sonnet, haiku])
+    sonnet5 = [row[1] for row in CATEGORIES]
+    sonnet46 = [row[2] for row in CATEGORIES]
+    haiku = [row[3] for row in CATEGORIES]
+    matrix = np.array([sonnet5, sonnet46, haiku])
 
-    fig, ax = plt.subplots(figsize=(16, 3.6))
+    fig, ax = plt.subplots(figsize=(16, 4.6))
     im = ax.imshow(
         matrix,
         cmap="RdYlGn",
@@ -112,8 +115,8 @@ def heatmap() -> None:
     )
     ax.set_xticks(range(len(cats)))
     ax.set_xticklabels(cats, rotation=45, ha="right")
-    ax.set_yticks([0, 1])
-    ax.set_yticklabels(["Sonnet 4.6", "Haiku 4.5"])
+    ax.set_yticks([0, 1, 2])
+    ax.set_yticklabels(["Sonnet 5", "Sonnet 4.6", "Haiku 4.5"])
 
     # Annotate each cell
     for y in range(matrix.shape[0]):
@@ -134,7 +137,8 @@ def heatmap() -> None:
     cbar = plt.colorbar(im, ax=ax, fraction=0.025, pad=0.02)
     cbar.set_label("pass@1 (%)", rotation=270, labelpad=15)
     ax.set_title(
-        "EmbedEval pass@1 by category — n=3 last run (2026-04-12)",
+        "EmbedEval pass@1 by category — n=3 "
+        "(Sonnet 5 2026-07-19; Sonnet 4.6 / Haiku 2026-04-12)",
         fontsize=13,
         pad=12,
     )
@@ -152,7 +156,10 @@ def heatmap() -> None:
 def implicit_gap() -> None:
     fig, ax = plt.subplots(figsize=(8, 5))
     bars = ax.bar(
-        ["Explicit prompt\n(includes safety hints)", "Implicit prompt\n(domain knowledge required)"],
+        [
+            "Explicit prompt\n(includes safety hints)",
+            "Implicit prompt\n(domain knowledge required)",
+        ],
         [EXPLICIT_PASS, IMPLICIT_PASS],
         color=["#2ecc71", "#e67e22"],
         width=0.55,
@@ -198,7 +205,8 @@ def implicit_gap() -> None:
     ax.text(
         0.5,
         -0.18,
-        "Most coding benchmarks include safety hints by accident → overestimate LLM capability",
+        "Most coding benchmarks include safety hints by accident "
+        "→ overestimate LLM capability",
         transform=ax.transAxes,
         ha="center",
         fontsize=9,
@@ -313,14 +321,22 @@ def architecture() -> None:
 
 
 def model_comparison() -> None:
-    models = ["Sonnet 4.6", "Haiku 4.5"]
-    means = [SONNET_MEAN, HAIKU_MEAN]
-    ci_low = [SONNET_MEAN - SONNET_CI[0], HAIKU_MEAN - HAIKU_CI[0]]
-    ci_high = [SONNET_CI[1] - SONNET_MEAN, HAIKU_CI[1] - HAIKU_MEAN]
-    colors = ["#2980b9", "#16a085"]
+    models = ["Sonnet 5", "Sonnet 4.6", "Haiku 4.5"]
+    means = [SONNET5_MEAN, SONNET_MEAN, HAIKU_MEAN]
+    ci_low = [
+        SONNET5_MEAN - SONNET5_CI[0],
+        SONNET_MEAN - SONNET_CI[0],
+        HAIKU_MEAN - HAIKU_CI[0],
+    ]
+    ci_high = [
+        SONNET5_CI[1] - SONNET5_MEAN,
+        SONNET_CI[1] - SONNET_MEAN,
+        HAIKU_CI[1] - HAIKU_MEAN,
+    ]
+    colors = ["#8e44ad", "#2980b9", "#16a085"]
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-    bars = ax.bar(models, means, color=colors, width=0.45)
+    fig, ax = plt.subplots(figsize=(9, 5))
+    bars = ax.bar(models, means, color=colors, width=0.5)
     ax.errorbar(
         models,
         means,
@@ -333,12 +349,14 @@ def model_comparison() -> None:
     ax.set_ylim(0, 100)
     ax.set_ylabel("pass@1 % (n=3 mean)", fontsize=12)
     ax.set_title(
-        "EmbedEval n=3 baseline — 95% Wilson CI (pooled 699 trials)",
+        "EmbedEval n=3 — Sonnet 5 ties Sonnet 4.6, both clear of Haiku",
         fontsize=13,
         pad=12,
     )
 
-    for bar, value, lo, hi in zip(bars, means, [SONNET_CI[0], HAIKU_CI[0]], [SONNET_CI[1], HAIKU_CI[1]]):
+    lo_his = [SONNET5_CI, SONNET_CI, HAIKU_CI]
+    for bar, value, ci in zip(bars, means, lo_his):
+        lo, hi = ci
         ax.text(
             bar.get_x() + bar.get_width() / 2,
             value + 4,
@@ -361,10 +379,11 @@ def model_comparison() -> None:
     ax.text(
         0.5,
         -0.15,
-        "CIs do not overlap — gap is statistically significant (p<0.05)",
+        "Sonnet 5 ≈ Sonnet 4.6 (−0.9%p on 232 common cases, CIs overlap); "
+        "both clear Haiku (CIs don't overlap, p<0.05)",
         transform=ax.transAxes,
         ha="center",
-        fontsize=9,
+        fontsize=8.5,
         color="#7f8c8d",
         style="italic",
     )
@@ -401,28 +420,32 @@ def twitter_card() -> None:
 
     # Left panel: model comparison
     ax1 = fig.add_axes([0.06, 0.15, 0.4, 0.6])
+    m_labels = ["Sonnet 5", "Sonnet 4.6", "Haiku 4.5"]
+    m_means = [SONNET5_MEAN, SONNET_MEAN, HAIKU_MEAN]
+    m_cis = [SONNET5_CI, SONNET_CI, HAIKU_CI]
     bars = ax1.bar(
-        ["Sonnet 4.6", "Haiku 4.5"],
-        [SONNET_MEAN, HAIKU_MEAN],
-        color=["#2980b9", "#16a085"],
-        width=0.5,
+        m_labels,
+        m_means,
+        color=["#8e44ad", "#2980b9", "#16a085"],
+        width=0.55,
     )
     ax1.set_ylim(0, 100)
     ax1.set_ylabel("pass@1 % (n=3)", fontsize=11)
-    ax1.set_title("n=3 baseline + 95% CI", fontsize=12)
+    ax1.set_title("n=3 mean + 95% CI", fontsize=12)
+    ax1.tick_params(axis="x", labelsize=9)
     ax1.errorbar(
-        ["Sonnet 4.6", "Haiku 4.5"],
-        [SONNET_MEAN, HAIKU_MEAN],
+        m_labels,
+        m_means,
         yerr=[
-            [SONNET_MEAN - SONNET_CI[0], HAIKU_MEAN - HAIKU_CI[0]],
-            [SONNET_CI[1] - SONNET_MEAN, HAIKU_CI[1] - HAIKU_MEAN],
+            [mean - ci[0] for mean, ci in zip(m_means, m_cis)],
+            [ci[1] - mean for mean, ci in zip(m_means, m_cis)],
         ],
         fmt="none",
         ecolor="#2c3e50",
         elinewidth=2,
         capsize=8,
     )
-    for bar, value in zip(bars, [SONNET_MEAN, HAIKU_MEAN]):
+    for bar, value in zip(bars, m_means):
         ax1.text(
             bar.get_x() + bar.get_width() / 2,
             value + 4,
@@ -476,7 +499,9 @@ def twitter_card() -> None:
         color="#3498db",
     )
 
-    plt.savefig(OUT / "twitter-card.png", dpi=100, bbox_inches="tight", facecolor="white")
+    plt.savefig(
+        OUT / "twitter-card.png", dpi=100, bbox_inches="tight", facecolor="white"
+    )
     plt.close()
 
 

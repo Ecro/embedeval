@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Annotated, Optional
 
 import typer
 
+from embedeval import __version__
 from embedeval.context_diagnose import DEFAULT_GAP_THRESHOLD_PP
 from embedeval.models import CaseCategory, DifficultyTier, EvalResult, Sdk, Visibility
 
@@ -160,7 +161,7 @@ def main(
         logging.basicConfig(level=logging.WARNING)
 
     if ctx.invoked_subcommand is None:
-        typer.echo("EmbedEval v0.1.0 — use --help for commands")
+        typer.echo(f"EmbedEval v{__version__} — use --help for commands")
 
 
 @app.command()

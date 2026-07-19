@@ -16,7 +16,7 @@ def strip_ansi(text: str) -> str:
 
 
 def test_version() -> None:
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.2.0"
 
 
 class TestMainCommand:
@@ -30,7 +30,7 @@ class TestMainCommand:
     def test_no_args_shows_version(self) -> None:
         result = runner.invoke(app, [])
         assert result.exit_code == 0
-        assert "v0.1.0" in result.output
+        assert "v0.2.0" in result.output
 
 
 class TestRunCommand:

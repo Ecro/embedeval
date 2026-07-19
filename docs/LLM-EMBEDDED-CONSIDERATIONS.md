@@ -2,6 +2,7 @@
 
 **Date:** 2026-04-13
 **Based on:** EmbedEval benchmark data (Haiku 4.5 vs Sonnet 4.6, **233 cases** = 185 public + 48 private, **n=3 aggregate** pass@1 means). Model 95% CIs do not overlap (Haiku [53.2%, 60.6%] vs Sonnet [64.4%, 71.3%]), so the Sonnet–Haiku gap is statistically distinguishable from run noise.
+**Update 2026-07-19 (Sonnet 5, n=3, 263 cases):** mean pass@1 **67.0%** — **statistically tied with Sonnet 4.6** (intersection of 232 common cases: 68.1% → 67.2%, **−0.9%p**, inside 4.6's own run range). A model generation newer than 4.6 delivered **no measurable gain on embedded firmware**; the weakest categories (dma, isr-concurrency, threading) are unchanged. This is the central caution of this document made concrete: general-model progress does not automatically transfer to embedded's implicit-safety demands. See [`BENCHMARK-COMPARISON-2026-04-05.md`](BENCHMARK-COMPARISON-2026-04-05.md) §10.
 **Test Results:** See companion document [`BENCHMARK-COMPARISON-2026-04-05.md`](BENCHMARK-COMPARISON-2026-04-05.md) (includes n=3 section)
 **Full Factor Taxonomy:** [`LLM-EMBEDDED-FAILURE-FACTORS.md`](./LLM-EMBEDDED-FAILURE-FACTORS.md) (42 code factors + 19 non-code factors)
 **Token Scaling Economics:** [`LLM-EMBEDDED-TOKEN-SCALING.md`](./LLM-EMBEDDED-TOKEN-SCALING.md) — why infinite tokens aren't enough for embedded
