@@ -443,7 +443,7 @@ If EmbedEval is useful for your work, please cite:
   author = {{EmbedEval Contributors}},
   year   = {2026},
   url    = {https://github.com/Ecro/embedeval},
-  note   = {Open benchmark with 233 cases across Zephyr, ESP-IDF, STM32 HAL,
+  note   = {Open benchmark with 267 cases across Zephyr, ESP-IDF, STM32 HAL,
             FreeRTOS, Linux kernel drivers, and Yocto. Measures the implicit
             knowledge gap in LLM-generated embedded code.}
 }
