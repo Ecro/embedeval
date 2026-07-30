@@ -16,6 +16,8 @@ Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://
 
 [Live leaderboard](https://huggingface.co/spaces/ecro/embedeval) · [Methodology](https://github.com/Ecro/embedeval/blob/main/docs/METHODOLOGY.md) · [Roadmap](https://github.com/Ecro/embedeval/blob/main/ROADMAP.md) · [Contribute](https://github.com/Ecro/embedeval/blob/main/docs/CONTRIBUTING.md)
 
+Result write-ups are published on [EdgeLog](https://edgelog.dev/), the maintainer's embedded and edge engineering blog: [what the firmware benchmark actually measured](https://edgelog.dev/blog/llm-firmware-benchmark/).
+
 ---
 
 ## Key Insight: The Implicit Knowledge Gap
