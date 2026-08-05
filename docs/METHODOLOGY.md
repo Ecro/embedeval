@@ -409,11 +409,14 @@ those L3 heuristics can mislead the leaderboard.
 A check that "passes" generated code that contains a seeded bug is a *check
 defect*, not an LLM merit. L4 surfaces these defects so they can be fixed.
 
-**Implementation.** 30 cases ship `checks/negatives.py` with `must_fail`
-mutations (62 mutations total in the v0.1 release). Each mutation is a small
-edit to the reference solution (drop `volatile`, swap lock order, remove a
-header, etc.) targeting a specific check. The evaluator:
-1. Applies the mutation to the reference solution.
+**Implementation.** Cases ship `checks/negatives.py` with `must_fail`
+mutations (see the Negatives row in the coverage table above for current
+counts). Each mutation is a small edit — drop `volatile`, swap lock order,
+remove a header, etc. — targeting a specific check. Mutations are authored
+against the reference solution, but the evaluator applies them to the
+**model's generated code** for the case under evaluation, so L4 measures
+check discrimination on the same artifact the leaderboard scored:
+1. Applies the mutation to the generated code (`evaluator.py:_run_mutant_checks`).
 2. Runs the same L0+L3 checks on the mutated code.
 3. Verifies that the targeted check fires.
 4. Records each (mutation, check) pair as `pass` (check fired) or `fail`
@@ -427,9 +430,9 @@ results are summarized at the *benchmark* level, not the *model* level.
 **Why this matters for the leaderboard.** When a model passes a case, L4
 tells the reader whether that pass is *trustworthy* (the L3 check was
 mutation-tested and held up) or *provisional* (no L4 mutation defends it
-yet). The current 30-case L4 coverage skews toward the categories with the
-weakest pass rates, where check defects would be most consequential. v0.2
-expands L4 to all categories.
+yet). L4 coverage skews toward the categories with the weakest pass rates,
+where check defects would be most consequential; it does not yet span every
+category.
 
 **Skip conditions.** If a mutation does not change the generated code
 (structurally different from the reference), that single mutation is
