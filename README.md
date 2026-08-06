@@ -16,7 +16,15 @@ Unlike [HumanEval](https://github.com/openai/human-eval) or [SWE-bench](https://
 
 [Live leaderboard](https://huggingface.co/spaces/ecro/embedeval) · [Methodology](https://github.com/Ecro/embedeval/blob/main/docs/METHODOLOGY.md) · [Roadmap](https://github.com/Ecro/embedeval/blob/main/ROADMAP.md) · [Contribute](https://github.com/Ecro/embedeval/blob/main/docs/CONTRIBUTING.md)
 
-Result write-ups are published on [EdgeLog](https://edgelog.dev/), the maintainer's embedded and edge engineering blog: [what the firmware benchmark actually measured](https://edgelog.dev/blog/llm-firmware-benchmark/).
+Result write-ups are published on [EdgeLog][edgelog], the maintainer's embedded and edge engineering blog. Start with [what the firmware benchmark actually measured][benchmark].
+
+<!-- Reference-style on purpose. Inline links put the URL next to a closing
+     paren, and crawlers that read this file raw (not the rendered page) grab
+     the punctuation too, then request /blog/<slug>/). Reference definitions
+     end at a newline, so there is nothing to over-grab. -->
+
+[edgelog]: https://edgelog.dev/
+[benchmark]: https://edgelog.dev/blog/llm-firmware-benchmark/
 
 ---
 
