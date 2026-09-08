@@ -250,6 +250,19 @@ def _yaml_value(content: str, key: str) -> str | None:
 def main() -> None:
     print("Syncing documentation with live statistics...")
 
+    if not PRIVATE_CASES_DIR.is_dir() and "--allow-missing-private" not in sys.argv:
+        print(
+            f"Error: private cases not found at {PRIVATE_CASES_DIR}.\n"
+            "  Every case-count section would be rewritten to public-only "
+            "numbers (total 267 -> 219, private 48 -> 0) and that regression\n"
+            "  would land in METHODOLOGY.md/README.md unnoticed. Clone\n"
+            "  git@github.com:Ecro/embedeval-private.git next to this repo, or\n"
+            "  pass --allow-missing-private if public-only counts are what you\n"
+            "  actually want.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
     stats = count_cases()
     n_tests = count_tests()
 
