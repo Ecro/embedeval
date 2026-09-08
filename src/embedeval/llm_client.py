@@ -6,6 +6,7 @@ import re
 import subprocess
 import time
 from pathlib import Path
+from typing import NamedTuple
 
 import litellm
 from litellm.exceptions import (
@@ -114,18 +115,78 @@ def _looks_like_prose(text: str) -> bool:
     return not any(m in text for m in code_markers)
 
 
+class _ClaudeCodeResult(NamedTuple):
+    """Parsed `claude -p --output-format json` payload."""
+
+    text: str
+    input_tokens: int
+    output_tokens: int
+    cost_usd: float
+    is_error: bool
+
+
+def _parse_claude_code_json(stdout: str) -> _ClaudeCodeResult:
+    """Extract the result entry from `claude -p --output-format json` output.
+
+    Current CLI versions emit a single result *object*; older ones emitted a
+    *list* of events. Both shapes are accepted — iterating the dict form as if
+    it were an event list yields bare key strings and blows up on `.get`,
+    which silently turned every case into FAIL@L0 (2026-09-08 opus5 run).
+
+    Unparseable output falls back to raw stdout so `call_model`'s prose-retry
+    still sees something to work with.
+    """
+    try:
+        payload = json.loads(stdout)
+    except (json.JSONDecodeError, TypeError) as exc:
+        logger.warning("Failed to parse claude -p JSON output: %s", exc)
+        return _ClaudeCodeResult(stdout, 0, 0, 0.0, False)
+
+    events = payload if isinstance(payload, list) else [payload]
+    for event in events:
+        if not isinstance(event, dict) or event.get("type") != "result":
+            continue
+        usage = event.get("usage") or {}
+        # Cache writes bill as input too: counting only input_tokens +
+        # cache_read reports ~0 for the first call of a run, when the whole
+        # system prompt is a cache write.
+        input_tokens = (
+            usage.get("input_tokens", 0)
+            + usage.get("cache_read_input_tokens", 0)
+            + usage.get("cache_creation_input_tokens", 0)
+        )
+        subtype = event.get("subtype")
+        return _ClaudeCodeResult(
+            text=event.get("result") or "",
+            input_tokens=input_tokens,
+            output_tokens=usage.get("output_tokens", 0),
+            cost_usd=event.get("total_cost_usd") or 0.0,
+            is_error=bool(event.get("is_error")) or subtype not in (None, "success"),
+        )
+
+    logger.warning("claude -p JSON output carried no result entry")
+    return _ClaudeCodeResult(stdout, 0, 0, 0.0, False)
+
+
 def _call_claude_code(
     model: str,
     prompt: str,
     timeout: float,
     max_retries: int = 2,
 ) -> LLMResponse:
-    """Call Claude via `claude -p` CLI (uses subscription, no API key)."""
+    """Call Claude via `claude -p` CLI (uses subscription, no API key).
+
+    Retries on timeout, non-zero exit, and error results (rate limits and
+    transient API errors surface as one of those) — a 200+ case run would
+    otherwise record a hard FAIL@L0 for a hiccup that a second call fixes.
+    """
     claude_model = model.removeprefix(CLAUDE_CODE_PREFIX)
 
     cmd = ["claude", "-p", "--output-format", "json"]
     if claude_model:
         cmd.extend(["--model", claude_model])
+
+    last_failure = "no attempt made"
 
     for attempt in range(1, max_retries + 1):
         logger.info(
@@ -144,7 +205,6 @@ def _call_claude_code(
                 text=True,
                 timeout=timeout,
             )
-            break  # success — exit retry loop
         except subprocess.TimeoutExpired as exc:
             if attempt < max_retries:
                 logger.warning("claude -p timed out (attempt %d), retrying...", attempt)
@@ -153,47 +213,31 @@ def _call_claude_code(
                 f"claude -p timed out after {timeout}s ({max_retries} attempts)"
             ) from exc
 
-    elapsed = time.monotonic() - start
+        elapsed = time.monotonic() - start
 
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"claude -p failed (exit {result.returncode}): {result.stderr}"
-        )
-
-    # Parse JSON output — find the result entry
-    text_content = ""
-    input_tokens = 0
-    output_tokens = 0
-    cost_usd = 0.0
-
-    try:
-        events = json.loads(result.stdout)
-        for event in events:
-            if event.get("type") == "result":
-                text_content = event.get("result", "")
-                cost_usd = event.get("total_cost_usd", 0.0)
-                usage = event.get("usage", {})
-                input_tokens = usage.get("input_tokens", 0) + usage.get(
-                    "cache_read_input_tokens", 0
+        if result.returncode != 0:
+            last_failure = f"exit {result.returncode}: {result.stderr}"
+        else:
+            parsed = _parse_claude_code_json(result.stdout)
+            if not parsed.is_error:
+                return LLMResponse(
+                    model=model,
+                    generated_code=_extract_code(parsed.text),
+                    token_usage=TokenUsage(
+                        input_tokens=parsed.input_tokens,
+                        output_tokens=parsed.output_tokens,
+                        total_tokens=parsed.input_tokens + parsed.output_tokens,
+                    ),
+                    cost_usd=parsed.cost_usd,
+                    duration_seconds=elapsed,
                 )
-                output_tokens = usage.get("output_tokens", 0)
-                break
-    except (json.JSONDecodeError, TypeError, KeyError) as exc:
-        logger.warning("Failed to parse claude -p JSON output: %s", exc)
-        # Fall back to raw stdout
-        text_content = result.stdout
+            last_failure = f"error result: {parsed.text[:500]}"
 
-    return LLMResponse(
-        model=model,
-        generated_code=_extract_code(text_content),
-        token_usage=TokenUsage(
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            total_tokens=input_tokens + output_tokens,
-        ),
-        cost_usd=cost_usd,
-        duration_seconds=elapsed,
-    )
+        if attempt < max_retries:
+            logger.warning("claude -p failed (%s), retrying...", last_failure)
+            continue
+
+    raise RuntimeError(f"claude -p failed after {max_retries} attempts: {last_failure}")
 
 
 def _call_litellm(

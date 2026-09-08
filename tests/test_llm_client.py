@@ -1,13 +1,17 @@
 """Tests for EmbedEval LLM client."""
 
+import json
+import subprocess
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from embedeval.llm_client import (
     MOCK_C_CODE,
+    _call_claude_code,
     _extract_code,
     _looks_like_prose,
+    _parse_claude_code_json,
     call_model,
 )
 
@@ -92,6 +96,149 @@ class TestRetryLogic:
         response.usage.prompt_tokens = 50
         response.usage.completion_tokens = 20
         return response
+
+
+class TestClaudeCodeJsonParsing:
+    """Tests for `claude -p --output-format json` payload parsing.
+
+    Regression guard for the 2026-09-08 opus5 run, where the CLI's single
+    result object was iterated as if it were a list of events — every case
+    died with `'str' object has no attribute 'get'` and scored FAIL@L0.
+    """
+
+    @staticmethod
+    def _result_event(**overrides: object) -> dict:
+        event = {
+            "type": "result",
+            "subtype": "success",
+            "is_error": False,
+            "result": "```c\nint main(void) { return 0; }\n```",
+            "total_cost_usd": 0.14,
+            "usage": {
+                "input_tokens": 2,
+                "cache_read_input_tokens": 1000,
+                "cache_creation_input_tokens": 22042,
+                "output_tokens": 476,
+            },
+        }
+        event.update(overrides)
+        return event
+
+    def test_single_object_form(self) -> None:
+        parsed = _parse_claude_code_json(json.dumps(self._result_event()))
+        assert "int main(void)" in parsed.text
+        assert parsed.output_tokens == 476
+        assert parsed.input_tokens == 2 + 1000 + 22042
+        assert parsed.cost_usd == 0.14
+        assert parsed.is_error is False
+
+    def test_legacy_event_list_form(self) -> None:
+        events = [{"type": "system", "subtype": "init"}, self._result_event()]
+        parsed = _parse_claude_code_json(json.dumps(events))
+        assert "int main(void)" in parsed.text
+        assert parsed.output_tokens == 476
+
+    def test_error_result_flagged(self) -> None:
+        payload = self._result_event(
+            is_error=True,
+            subtype="error_during_execution",
+            result="API Error: overloaded",
+        )
+        parsed = _parse_claude_code_json(json.dumps(payload))
+        assert parsed.is_error is True
+
+    def test_missing_usage_defaults_to_zero(self) -> None:
+        payload = self._result_event()
+        del payload["usage"]
+        del payload["total_cost_usd"]
+        parsed = _parse_claude_code_json(json.dumps(payload))
+        assert parsed.input_tokens == 0
+        assert parsed.output_tokens == 0
+        assert parsed.cost_usd == 0.0
+
+    def test_malformed_json_falls_back_to_raw_stdout(self) -> None:
+        parsed = _parse_claude_code_json("not json at all")
+        assert parsed.text == "not json at all"
+        assert parsed.is_error is False
+
+    def test_no_result_entry_falls_back_to_raw_stdout(self) -> None:
+        raw = json.dumps([{"type": "system", "subtype": "init"}])
+        parsed = _parse_claude_code_json(raw)
+        assert parsed.text == raw
+
+
+class TestClaudeCodeCall:
+    """Tests for the `claude -p` subprocess wrapper."""
+
+    @staticmethod
+    def _completed(stdout: str, returncode: int = 0) -> MagicMock:
+        proc = MagicMock()
+        proc.returncode = returncode
+        proc.stdout = stdout
+        proc.stderr = ""
+        return proc
+
+    @staticmethod
+    def _ok_stdout() -> str:
+        return json.dumps(
+            {
+                "type": "result",
+                "subtype": "success",
+                "is_error": False,
+                "result": "```c\nint main(void) { return 0; }\n```",
+                "total_cost_usd": 0.2,
+                "usage": {"input_tokens": 10, "output_tokens": 20},
+            }
+        )
+
+    @patch("embedeval.llm_client.subprocess.run")
+    def test_happy_path_object_output(self, mock_run: MagicMock) -> None:
+        mock_run.return_value = self._completed(self._ok_stdout())
+
+        response = _call_claude_code(
+            "claude-code://claude-opus-5", "prompt", timeout=30.0
+        )
+        assert response.generated_code == "int main(void) { return 0; }"
+        assert response.token_usage.total_tokens == 30
+        assert response.cost_usd == 0.2
+        assert mock_run.call_count == 1
+        assert "--model" in mock_run.call_args.args[0]
+        assert "claude-opus-5" in mock_run.call_args.args[0]
+
+    @patch("embedeval.llm_client.subprocess.run")
+    def test_retries_then_succeeds_on_nonzero_exit(self, mock_run: MagicMock) -> None:
+        mock_run.side_effect = [
+            self._completed("", returncode=1),
+            self._completed(self._ok_stdout()),
+        ]
+
+        response = _call_claude_code("claude-code://sonnet", "prompt", timeout=30.0)
+        assert "int main(void)" in response.generated_code
+        assert mock_run.call_count == 2
+
+    @patch("embedeval.llm_client.subprocess.run")
+    def test_raises_after_repeated_error_results(self, mock_run: MagicMock) -> None:
+        err = json.dumps(
+            {
+                "type": "result",
+                "subtype": "error_during_execution",
+                "is_error": True,
+                "result": "API Error: overloaded",
+            }
+        )
+        mock_run.return_value = self._completed(err)
+
+        with pytest.raises(RuntimeError, match="failed after 2 attempts"):
+            _call_claude_code("claude-code://sonnet", "prompt", timeout=30.0)
+        assert mock_run.call_count == 2
+
+    @patch("embedeval.llm_client.subprocess.run")
+    def test_raises_after_repeated_timeouts(self, mock_run: MagicMock) -> None:
+        mock_run.side_effect = subprocess.TimeoutExpired(cmd="claude", timeout=30.0)
+
+        with pytest.raises(RuntimeError, match="timed out"):
+            _call_claude_code("claude-code://sonnet", "prompt", timeout=30.0)
+        assert mock_run.call_count == 2
 
 
 class TestContextFiles:
