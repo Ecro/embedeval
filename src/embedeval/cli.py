@@ -311,7 +311,6 @@ def run(
 
     from embedeval.models import CaseTier
     from embedeval.runner import Filters, run_benchmark
-    from embedeval.scorer import score as score_results
 
     filters = Filters()
     if category:
@@ -465,10 +464,70 @@ def run(
         typer.echo("No results generated.")
         raise typer.Exit(code=1)
 
+    from embedeval.test_tracker import ContextPackMismatchError
+
+    try:
+        json_path, leaderboard_path, run_dir, guide_path = publish_run_results(
+            results=results,
+            model=model,
+            cases_dir=cases_dir,
+            output_dir=output_dir,
+            case_dir_map=case_dir_map,
+            private_cases=private_cases,
+            run_id=run_id,
+            scenario=scenario,
+            temperature=temperature,
+            attempts=attempts,
+            context_pack_hash=context_pack_hash,
+        )
+    except ContextPackMismatchError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    # Clean checkpoint — run succeeded, all data is persisted.
+    if checkpoint_path.is_file():
+        checkpoint_path.unlink()
+        logger.info("Checkpoint removed: %s", checkpoint_path)
+
+    typer.echo(f"Results: {json_path}")
+    typer.echo(f"Leaderboard: {leaderboard_path}")
+    typer.echo(f"Detailed: {run_dir}/")
+    typer.echo(f"Tracker: {output_dir / 'test_tracker.json'}")
+    if guide_path:
+        typer.echo(f"Safe guide: {guide_path}")
+
+
+def publish_run_results(
+    *,
+    results: list["EvalResult"],
+    model: str,
+    cases_dir: Path,
+    output_dir: Path,
+    case_dir_map: dict[str, Path],
+    private_cases: Path | None = None,
+    run_id: str | None = None,
+    scenario: str = "generation",
+    temperature: float = 0.0,
+    attempts: int = 1,
+    context_pack_hash: str | None = None,
+) -> tuple[Path, Path, Path, Path | None]:
+    """Score `results` and write every published artifact for a run.
+
+    Shared by `run` and scripts/rescore_run.py so a re-scored run lands in the
+    same shape as a freshly generated one: per-model results JSON, leaderboard,
+    run archive, per-check metrics, failure report, tracker, TEST_RESULTS.md
+    and the safe guide.
+
+    Returns (json_path, leaderboard_path, run_dir, guide_path).
+    Raises ContextPackMismatchError if the tracker was built with a different
+    context pack than this run.
+    """
     # Merge with tracker history so the leaderboard/safe-guide reflect the
     # comprehensive per-model state, not just this run's (possibly partial)
     # slice. --retest-only runs would otherwise clobber LEADERBOARD.md
     # with the 3-case view.
+    from embedeval.runner import discover_cases as _discover
+    from embedeval.scorer import score as score_results
     from embedeval.test_tracker import (
         generate_results_doc,
         load_tracker,
@@ -548,20 +607,14 @@ def run(
 
     # Update tracker after building comprehensive_results so the "prior"
     # snapshot used for merging reflects the state *before* this run.
-    from embedeval.test_tracker import ContextPackMismatchError
-
-    try:
-        tracker = update_tracker(
-            prior_tracker,
-            results,
-            cases_dir,
-            model,
-            case_dir_map=case_dir_map,
-            context_pack_hash=context_pack_hash,
-        )
-    except ContextPackMismatchError as exc:
-        typer.echo(f"Error: {exc}", err=True)
-        raise typer.Exit(code=1) from exc
+    tracker = update_tracker(
+        prior_tracker,
+        results,
+        cases_dir,
+        model,
+        case_dir_map=case_dir_map,
+        context_pack_hash=context_pack_hash,
+    )
     save_tracker(tracker, output_dir)
     generate_results_doc(
         tracker,
@@ -573,17 +626,7 @@ def run(
     # Generate safe guide from all available runs
     guide_path = generate_safe_guide(output_dir)
 
-    # Clean checkpoint — run succeeded, all data is persisted.
-    if checkpoint_path.is_file():
-        checkpoint_path.unlink()
-        logger.info("Checkpoint removed: %s", checkpoint_path)
-
-    typer.echo(f"Results: {json_path}")
-    typer.echo(f"Leaderboard: {leaderboard_path}")
-    typer.echo(f"Detailed: {run_dir}/")
-    typer.echo(f"Tracker: {output_dir / 'test_tracker.json'}")
-    if guide_path:
-        typer.echo(f"Safe guide: {guide_path}")
+    return json_path, leaderboard_path, run_dir, guide_path
 
 
 @app.command(name="context-compare")
