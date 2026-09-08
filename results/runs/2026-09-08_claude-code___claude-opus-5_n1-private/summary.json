@@ -21615,5 +21615,11 @@
   "scenario": "generation",
   "temperature": 0.0,
   "n_samples_per_case": 1,
-  "n_runs": 1
+  "n_runs": 1,
+  "run_timestamp": "2026-09-08",
+  "model": "claude-code://claude-opus-5",
+  "total_results": 267,
+  "passed": 165,
+  "failed": 102,
+  "run_id": "n1-private"
 }

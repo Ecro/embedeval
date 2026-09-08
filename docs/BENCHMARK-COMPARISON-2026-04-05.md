@@ -468,3 +468,67 @@ Roughly balanced two-way churn rather than a uniform shift. Spot-check of regres
 - **Docker image rebuild required.** The `embedeval-zephyr:latest` compile image had vanished from the host; a first n1 attempt produced 75 spurious L1 "image not found" env-failures (bad 52.5% pass@1). After `docker build -t embedeval-zephyr:latest .` the L1 env-error count was **0**, making Sonnet 5's real-compile results directly comparable to 4.6's real-compile 66.1% n1. The reported numbers are all from the post-rebuild clean run.
 - **Data hygiene (fixed):** 4 case_ids (`linux-driver-009/010`, `yocto-009/010`) collided between public and private repos and silently shadowed (263 unique, not 267). Fixed 2026-07-19 — the private duplicates were renumbered (`→ linux-driver-017/018`, `yocto-013/014`); the set is now 267 unique. The numbers in this section are from the pre-fix run and thus measured only one of each colliding pair (immaterial to the −0.9%p intersection delta).
 - **`verify_results.py` cross-check (fixed + clean):** the tool was initially broken for the 2-level SDK-bucket layout (verified 0 cases, false all-clear). Fixed 2026-07-19 to resolve case dirs via `iter_case_dirs` + `--private-cases`. Re-ran it against the Sonnet 5 n3 archive: **263 cases verified, 0 reference-failures / 0 discrepancies** — no check-script bug inflates or deflates the 67%.
+
+---
+
+## 11. Opus 5 (2026-09-08, n=1, full 267-case set)
+
+Opus 5 was first run on the 219 public cases only (2026-09-08, 63.0%). The 48
+private held-out cases were added the same day, giving the first full-set Opus 5
+number. Same host, same `embedeval-zephyr:latest` image,
+`EMBEDEVAL_ENABLE_BUILD=docker` for both slices.
+
+### 11.1 Opus 5 n=1 result
+
+| Slice | pass@1 | passed / total |
+|-------|--------|----------------|
+| Public | 63.0% | 138 / 219 |
+| Private (held-out) | 56.2% | 27 / 48 |
+| **Full set** | **61.8%** | **165 / 267** |
+
+- 95% CI (Wilson, n=267): **[55.8%, 67.4%]** · quality pass@1 (L0+L3 only): **75.3%**
+- Cross-benchmark: HumanEval 96.3% → EmbedEval 61.8% = **−34.5%p Embed Gap**, the
+  widest of any model measured. The gap between general coding and embedded
+  firmware widens rather than closes with the stronger general-purpose model.
+- Archives: `results/runs/2026-09-08_claude-code___claude-opus-5_n1/`
+  (public slice) and `..._n1-private/` (private slice + merged 267-case summary).
+- `scripts/verify_results.py` on the merged archive: **267 cases verified,
+  0 reference-failures / 0 discrepancies.**
+
+### 11.2 Opus 5 vs Sonnet 5 — intersection of 263 common cases (majority-vote)
+
+| Model | pass@1 (majority) | passed / total |
+|-------|-------------------|----------------|
+| Sonnet 5 (n=3) | **67.7%** | 178 / 263 |
+| Opus 5 (n=1) | **61.2%** | 161 / 263 |
+| **Delta** | **−6.5%p** | −17 cases |
+
+Churn: 15 improved, 32 regressed. Full per-category lists and caveats:
+[BENCHMARK-DELTA-opus5-vs-sonnet5.md](BENCHMARK-DELTA-opus5-vs-sonnet5.md).
+
+### 11.3 Why the −6.5%p is an upper bound on the real gap
+
+- **n=1 vs n=3.** A single Opus 5 run absorbs the full flakiness of the case
+  set. Sonnet 5's own runs spanned 66.9–67.3% and Haiku's spanned 55.4–58.4%;
+  the −6.5%p exceeds that spread but has not been shown to survive n=3.
+- **L3 check brittleness disproportionately hits Opus 5.** Spot-checking 8
+  cases where Opus 5 fails `static_heuristic` and Sonnet 5 passes found **0 real
+  code defects** — all 8 were check artifacts. Two recurring causes: ordering
+  checks that call `generated_code.find(...)` on raw text *including comments*
+  (a model that documents the API in a header comment fails an ordering check
+  it actually satisfies), and checks demanding one literal idiom over an
+  equivalent (`atomic_t`/`atomic_set` vs `volatile`; `#define` constants vs
+  literal digits). Opus 5 comments its code more heavily than Sonnet 5, so it
+  is structurally more exposed to the first. The `ota` cluster (7 of the 32
+  regressions) is the clearest instance.
+- **Action item:** the affected checks need `scope='code_only'` before Opus 5's
+  L3 rate is quotable against other models. Tracked in the 2026-09-08 entries
+  of `CLAUDE.md`.
+
+### 11.4 What is genuinely comparable
+
+L0/L1/L2 are unaffected by the comment-scanning artifact. `compile_gate` on the
+private set is in family: Opus 5 failed L1 on 11 of 48; Sonnet 5's three runs
+failed on 10, 14 and 11 of the same set — so the private set's high L1 failure
+rate is a property of the cases (board-specific Zephyr builds), not environment
+drift.

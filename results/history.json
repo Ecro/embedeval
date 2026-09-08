@@ -270,5 +270,13 @@
     "passed": 138,
     "failed": 81,
     "pass_at_1": 0.6301369863013698
+  },
+  {
+    "timestamp": "2026-09-08",
+    "model": "claude-code://claude-opus-5",
+    "total": 267,
+    "passed": 165,
+    "failed": 102,
+    "pass_at_1": 0.6179775280898876
   }
 ]

@@ -7,10 +7,10 @@
 
 | Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |
 |-------|---------------|------------------|--------|--------|--------|---------|-------|---------|
-| claude-code://claude-opus-5 | 63.0% | 74.0% | [56.4%, 69.1%] | 63.0% | 138 | 162 | 219 | n=1 |
-| claude-code://claude-sonnet-5 | 68.9% | 78.5% | [62.5%, 74.7%] | 68.9% | 151 | 172 | 219 | n=1 |
-| claude-code://haiku | 59.8% | 72.0% | [52.7%, 66.5%] | 59.8% | 113 | 136 | 189 | n=1 |
-| claude-code://sonnet | 70.9% | 83.6% | [64.1%, 76.9%] | 70.9% | 134 | 158 | 189 | n=1 |
+| claude-code://claude-opus-5 | 61.8% | 75.3% | [55.8%, 67.4%] | 61.8% | 165 | 201 | 267 | n=1 |
+| claude-code://claude-sonnet-5 | 67.3% | 79.5% | [61.4%, 72.7%] | 67.3% | 177 | 209 | 263 | n=1 |
+| claude-code://haiku | 57.1% | 71.7% | [50.7%, 63.3%] | 57.1% | 133 | 167 | 233 | n=1 |
+| claude-code://sonnet | 67.4% | 82.8% | [61.1%, 73.1%] | 67.4% | 157 | 193 | 233 | n=1 |
 
 *pass@1 (full) = all layers must pass. pass@1 (quality) = L0+L3 only (code quality, ignoring build/runtime).*
 
@@ -18,289 +18,289 @@
 
 | Tier | pass@1 | Passed | Total |
 |------|--------|--------|-------|
-| Sanity (not scored) | 66.7% | 2 | 3 |
-| Core | 70.6% | 77 | 109 |
-| Challenge | 55.1% | 59 | 107 |
-| Sanity (not scored) | 66.7% | 2 | 3 |
-| Core | 72.5% | 79 | 109 |
-| Challenge | 65.4% | 70 | 107 |
-| Sanity (not scored) | 33.3% | 1 | 3 |
-| Core | 67.3% | 66 | 98 |
-| Challenge | 52.3% | 46 | 88 |
-| Sanity (not scored) | 66.7% | 2 | 3 |
-| Core | 76.5% | 75 | 98 |
-| Challenge | 64.8% | 57 | 88 |
+| Sanity (not scored) | 75.0% | 3 | 4 |
+| Core | 66.7% | 90 | 135 |
+| Challenge | 56.2% | 72 | 128 |
+| Sanity (not scored) | 75.0% | 3 | 4 |
+| Core | 69.2% | 92 | 133 |
+| Challenge | 65.1% | 82 | 126 |
+| Sanity (not scored) | 50.0% | 2 | 4 |
+| Core | 63.1% | 77 | 122 |
+| Challenge | 50.5% | 54 | 107 |
+| Sanity (not scored) | 75.0% | 3 | 4 |
+| Core | 71.3% | 87 | 122 |
+| Challenge | 62.6% | 67 | 107 |
 
 ## Reasoning Type Breakdown
 
 | Reasoning Type | pass@1 | Cases | LLM Reliability |
 |----------------|--------|-------|-----------------|
-| L1 API Recall | 66.1% | 192 | Expert review required |
-| L2 Rule Application | 68.6% | 140 | Expert review required |
-| L3 Cross-Domain | 48.1% | 52 | Expert review required |
-| L4 System Reasoning | 60.7% | 117 | Expert review required |
-| L1 API Recall | 74.0% | 192 | Review recommended |
-| L2 Rule Application | 72.1% | 140 | Review recommended |
-| L3 Cross-Domain | 50.0% | 52 | Expert review required |
-| L4 System Reasoning | 63.2% | 117 | Expert review required |
-| L1 API Recall | 62.6% | 171 | Expert review required |
-| L2 Rule Application | 66.4% | 110 | Expert review required |
-| L3 Cross-Domain | 36.1% | 36 | Expert review required |
-| L4 System Reasoning | 62.5% | 96 | Expert review required |
-| L1 API Recall | 75.4% | 171 | Review recommended |
-| L2 Rule Application | 76.4% | 110 | Review recommended |
-| L3 Cross-Domain | 47.2% | 36 | Expert review required |
-| L4 System Reasoning | 66.7% | 96 | Expert review required |
+| L1 API Recall | 64.2% | 240 | Expert review required |
+| L2 Rule Application | 68.1% | 166 | Expert review required |
+| L3 Cross-Domain | 48.2% | 56 | Expert review required |
+| L4 System Reasoning | 59.4% | 138 | Expert review required |
+| L1 API Recall | 71.2% | 236 | Review recommended |
+| L2 Rule Application | 71.6% | 162 | Review recommended |
+| L3 Cross-Domain | 51.8% | 56 | Expert review required |
+| L4 System Reasoning | 62.0% | 137 | Expert review required |
+| L1 API Recall | 59.1% | 215 | Expert review required |
+| L2 Rule Application | 65.9% | 132 | Expert review required |
+| L3 Cross-Domain | 37.5% | 40 | Expert review required |
+| L4 System Reasoning | 58.6% | 116 | Expert review required |
+| L1 API Recall | 70.7% | 215 | Review recommended |
+| L2 Rule Application | 73.5% | 132 | Review recommended |
+| L3 Cross-Domain | 47.5% | 40 | Expert review required |
+| L4 System Reasoning | 62.9% | 116 | Expert review required |
 
 ## SDK Breakdown
 
 | SDK | pass@1 | Passed | Total | Notes |
 |-----|--------|--------|-------|-------|
-| zephyr | 63.3% | 100 | 158 |  |
+| zephyr | 60.9% | 117 | 192 |  |
+| embedded-linux | 67.3% | 37 | 55 |  |
+| freertos | 100.0% | 2 | 2 | thin bucket (n<8) |
+| esp-idf | 60.0% | 6 | 10 |  |
+| stm32-hal | 37.5% | 3 | 8 |  |
+| zephyr | 67.7% | 130 | 192 |  |
 | embedded-linux | 64.7% | 33 | 51 |  |
-| freertos | 100.0% | 1 | 1 | thin bucket (n<8) |
-| esp-idf | 60.0% | 3 | 5 | thin bucket (n<8) |
-| stm32-hal | 25.0% | 1 | 4 | thin bucket (n<8) |
-| zephyr | 70.9% | 112 | 158 |  |
-| embedded-linux | 64.7% | 33 | 51 |  |
-| freertos | 100.0% | 1 | 1 | thin bucket (n<8) |
-| esp-idf | 80.0% | 4 | 5 | thin bucket (n<8) |
-| stm32-hal | 25.0% | 1 | 4 | thin bucket (n<8) |
-| zephyr | 58.2% | 92 | 158 |  |
+| freertos | 100.0% | 2 | 2 | thin bucket (n<8) |
+| esp-idf | 80.0% | 8 | 10 |  |
+| stm32-hal | 50.0% | 4 | 8 |  |
+| zephyr | 56.8% | 109 | 192 |  |
 | embedded-linux | 71.4% | 15 | 21 |  |
-| freertos | 0.0% | 0 | 1 | thin bucket (n<8) |
-| esp-idf | 80.0% | 4 | 5 | thin bucket (n<8) |
-| stm32-hal | 50.0% | 2 | 4 | thin bucket (n<8) |
-| zephyr | 70.9% | 112 | 158 |  |
+| freertos | 50.0% | 1 | 2 | thin bucket (n<8) |
+| esp-idf | 60.0% | 6 | 10 |  |
+| stm32-hal | 25.0% | 2 | 8 |  |
+| zephyr | 68.2% | 131 | 192 |  |
 | embedded-linux | 76.2% | 16 | 21 |  |
-| freertos | 0.0% | 0 | 1 | thin bucket (n<8) |
-| esp-idf | 100.0% | 5 | 5 | thin bucket (n<8) |
-| stm32-hal | 25.0% | 1 | 4 | thin bucket (n<8) |
+| freertos | 0.0% | 0 | 2 | thin bucket (n<8) |
+| esp-idf | 60.0% | 6 | 10 |  |
+| stm32-hal | 50.0% | 4 | 8 |  |
 
 ## Category Results
 
 | Category | pass@1 | Passed | Total | Status |
 |----------|--------|--------|-------|--------|
 | adc | 50.0% | 1 | 2 | PARTIAL |
-| ble | 75.0% | 6 | 8 | PARTIAL |
-| boot | 100.0% | 11 | 11 | PASS |
-| device-tree | 100.0% | 8 | 8 | PASS |
-| dma | 45.5% | 5 | 11 | FAIL |
-| gpio-basic | 100.0% | 5 | 5 | PASS |
-| isr-concurrency | 20.0% | 2 | 10 | FAIL |
-| kconfig | 87.5% | 7 | 8 | PASS |
-| linux-driver | 68.8% | 11 | 16 | PARTIAL |
+| ble | 63.6% | 7 | 11 | PARTIAL |
+| boot | 100.0% | 13 | 13 | PASS |
+| device-tree | 100.0% | 10 | 10 | PASS |
+| dma | 38.5% | 5 | 13 | FAIL |
+| gpio-basic | 83.3% | 5 | 6 | PASS |
+| isr-concurrency | 30.8% | 4 | 13 | FAIL |
+| kconfig | 80.0% | 8 | 10 | PASS |
+| linux-driver | 72.2% | 13 | 18 | PARTIAL |
 | linux-userspace | 50.0% | 4 | 8 | PARTIAL |
-| memory-opt | 50.0% | 5 | 10 | PARTIAL |
-| networking | 53.3% | 8 | 15 | PARTIAL |
-| ota | 40.0% | 6 | 15 | FAIL |
-| power-mgmt | 75.0% | 6 | 8 | PARTIAL |
+| memory-opt | 58.3% | 7 | 12 | PARTIAL |
+| networking | 52.9% | 9 | 17 | PARTIAL |
+| ota | 44.4% | 8 | 18 | FAIL |
+| power-mgmt | 66.7% | 8 | 12 | PARTIAL |
 | pwm | 100.0% | 1 | 1 | PASS |
-| security | 37.5% | 3 | 8 | FAIL |
-| sensor-driver | 100.0% | 8 | 8 | PASS |
-| spi-i2c | 75.0% | 9 | 12 | PARTIAL |
-| storage | 40.0% | 4 | 10 | FAIL |
-| threading | 38.5% | 5 | 13 | FAIL |
-| timer | 66.7% | 6 | 9 | PARTIAL |
-| uart | 50.0% | 1 | 2 | PARTIAL |
-| watchdog | 77.8% | 7 | 9 | PARTIAL |
-| yocto | 75.0% | 9 | 12 | PARTIAL |
+| security | 40.0% | 4 | 10 | FAIL |
+| sensor-driver | 75.0% | 9 | 12 | PARTIAL |
+| spi-i2c | 71.4% | 10 | 14 | PARTIAL |
+| storage | 46.2% | 6 | 13 | FAIL |
+| threading | 40.0% | 6 | 15 | FAIL |
+| timer | 66.7% | 8 | 12 | PARTIAL |
+| uart | 33.3% | 1 | 3 | FAIL |
+| watchdog | 70.0% | 7 | 10 | PARTIAL |
+| yocto | 78.6% | 11 | 14 | PARTIAL |
 | adc | 100.0% | 2 | 2 | PASS |
-| ble | 87.5% | 7 | 8 | PASS |
-| boot | 100.0% | 11 | 11 | PASS |
-| device-tree | 100.0% | 8 | 8 | PASS |
-| dma | 36.4% | 4 | 11 | FAIL |
-| gpio-basic | 100.0% | 5 | 5 | PASS |
-| isr-concurrency | 30.0% | 3 | 10 | FAIL |
-| kconfig | 75.0% | 6 | 8 | PARTIAL |
+| ble | 72.7% | 8 | 11 | PARTIAL |
+| boot | 100.0% | 13 | 13 | PASS |
+| device-tree | 100.0% | 10 | 10 | PASS |
+| dma | 38.5% | 5 | 13 | FAIL |
+| gpio-basic | 83.3% | 5 | 6 | PASS |
+| isr-concurrency | 38.5% | 5 | 13 | FAIL |
+| kconfig | 70.0% | 7 | 10 | PARTIAL |
 | linux-driver | 68.8% | 11 | 16 | PARTIAL |
 | linux-userspace | 75.0% | 6 | 8 | PARTIAL |
-| memory-opt | 40.0% | 4 | 10 | FAIL |
-| networking | 60.0% | 9 | 15 | PARTIAL |
-| ota | 60.0% | 9 | 15 | PARTIAL |
-| power-mgmt | 100.0% | 8 | 8 | PASS |
+| memory-opt | 50.0% | 6 | 12 | PARTIAL |
+| networking | 58.8% | 10 | 17 | PARTIAL |
+| ota | 61.1% | 11 | 18 | PARTIAL |
+| power-mgmt | 83.3% | 10 | 12 | PASS |
 | pwm | 100.0% | 1 | 1 | PASS |
-| security | 50.0% | 4 | 8 | PARTIAL |
-| sensor-driver | 87.5% | 7 | 8 | PASS |
-| spi-i2c | 83.3% | 10 | 12 | PASS |
-| storage | 50.0% | 5 | 10 | PARTIAL |
-| threading | 53.8% | 7 | 13 | PARTIAL |
-| timer | 77.8% | 7 | 9 | PARTIAL |
-| uart | 100.0% | 2 | 2 | PASS |
-| watchdog | 88.9% | 8 | 9 | PASS |
+| security | 60.0% | 6 | 10 | PARTIAL |
+| sensor-driver | 66.7% | 8 | 12 | PARTIAL |
+| spi-i2c | 78.6% | 11 | 14 | PARTIAL |
+| storage | 53.8% | 7 | 13 | PARTIAL |
+| threading | 53.3% | 8 | 15 | PARTIAL |
+| timer | 83.3% | 10 | 12 | PASS |
+| uart | 66.7% | 2 | 3 | PARTIAL |
+| watchdog | 80.0% | 8 | 10 | PASS |
 | yocto | 58.3% | 7 | 12 | PARTIAL |
 | adc | 50.0% | 1 | 2 | PARTIAL |
-| ble | 50.0% | 4 | 8 | PARTIAL |
-| boot | 100.0% | 8 | 8 | PASS |
-| device-tree | 100.0% | 8 | 8 | PASS |
-| dma | 9.1% | 1 | 11 | FAIL |
-| gpio-basic | 100.0% | 5 | 5 | PASS |
-| isr-concurrency | 30.0% | 3 | 10 | FAIL |
-| kconfig | 62.5% | 5 | 8 | PARTIAL |
+| ble | 45.5% | 5 | 11 | FAIL |
+| boot | 100.0% | 10 | 10 | PASS |
+| device-tree | 100.0% | 10 | 10 | PASS |
+| dma | 7.7% | 1 | 13 | FAIL |
+| gpio-basic | 83.3% | 5 | 6 | PASS |
+| isr-concurrency | 38.5% | 5 | 13 | FAIL |
+| kconfig | 60.0% | 6 | 10 | PARTIAL |
 | linux-driver | 70.0% | 7 | 10 | PARTIAL |
-| memory-opt | 20.0% | 2 | 10 | FAIL |
-| networking | 80.0% | 8 | 10 | PASS |
-| ota | 77.8% | 7 | 9 | PARTIAL |
-| power-mgmt | 87.5% | 7 | 8 | PASS |
+| memory-opt | 33.3% | 4 | 12 | FAIL |
+| networking | 75.0% | 9 | 12 | PARTIAL |
+| ota | 58.3% | 7 | 12 | PARTIAL |
+| power-mgmt | 66.7% | 8 | 12 | PARTIAL |
 | pwm | 100.0% | 1 | 1 | PASS |
-| security | 62.5% | 5 | 8 | PARTIAL |
-| sensor-driver | 100.0% | 8 | 8 | PASS |
-| spi-i2c | 66.7% | 8 | 12 | PARTIAL |
-| storage | 20.0% | 2 | 10 | FAIL |
-| threading | 30.8% | 4 | 13 | FAIL |
-| timer | 44.4% | 4 | 9 | FAIL |
-| uart | 100.0% | 2 | 2 | PASS |
-| watchdog | 66.7% | 6 | 9 | PARTIAL |
+| security | 70.0% | 7 | 10 | PARTIAL |
+| sensor-driver | 66.7% | 8 | 12 | PARTIAL |
+| spi-i2c | 64.3% | 9 | 14 | PARTIAL |
+| storage | 30.8% | 4 | 13 | FAIL |
+| threading | 33.3% | 5 | 15 | FAIL |
+| timer | 50.0% | 6 | 12 | PARTIAL |
+| uart | 66.7% | 2 | 3 | PARTIAL |
+| watchdog | 60.0% | 6 | 10 | PARTIAL |
 | yocto | 70.0% | 7 | 10 | PARTIAL |
 | adc | 100.0% | 2 | 2 | PASS |
-| ble | 100.0% | 8 | 8 | PASS |
-| boot | 87.5% | 7 | 8 | PASS |
-| device-tree | 100.0% | 8 | 8 | PASS |
-| dma | 27.3% | 3 | 11 | FAIL |
-| gpio-basic | 80.0% | 4 | 5 | PASS |
-| isr-concurrency | 20.0% | 2 | 10 | FAIL |
-| kconfig | 87.5% | 7 | 8 | PASS |
+| ble | 81.8% | 9 | 11 | PASS |
+| boot | 90.0% | 9 | 10 | PASS |
+| device-tree | 100.0% | 10 | 10 | PASS |
+| dma | 30.8% | 4 | 13 | FAIL |
+| gpio-basic | 66.7% | 4 | 6 | PARTIAL |
+| isr-concurrency | 23.1% | 3 | 13 | FAIL |
+| kconfig | 90.0% | 9 | 10 | PASS |
 | linux-driver | 70.0% | 7 | 10 | PARTIAL |
-| memory-opt | 60.0% | 6 | 10 | PARTIAL |
-| networking | 80.0% | 8 | 10 | PASS |
-| ota | 77.8% | 7 | 9 | PARTIAL |
-| power-mgmt | 87.5% | 7 | 8 | PASS |
+| memory-opt | 66.7% | 8 | 12 | PARTIAL |
+| networking | 75.0% | 9 | 12 | PARTIAL |
+| ota | 66.7% | 8 | 12 | PARTIAL |
+| power-mgmt | 75.0% | 9 | 12 | PARTIAL |
 | pwm | 100.0% | 1 | 1 | PASS |
-| security | 37.5% | 3 | 8 | FAIL |
-| sensor-driver | 100.0% | 8 | 8 | PASS |
-| spi-i2c | 83.3% | 10 | 12 | PASS |
-| storage | 60.0% | 6 | 10 | PARTIAL |
-| threading | 30.8% | 4 | 13 | FAIL |
-| timer | 88.9% | 8 | 9 | PASS |
-| uart | 50.0% | 1 | 2 | PARTIAL |
-| watchdog | 100.0% | 9 | 9 | PASS |
+| security | 50.0% | 5 | 10 | PARTIAL |
+| sensor-driver | 75.0% | 9 | 12 | PARTIAL |
+| spi-i2c | 78.6% | 11 | 14 | PARTIAL |
+| storage | 53.8% | 7 | 13 | PARTIAL |
+| threading | 33.3% | 5 | 15 | FAIL |
+| timer | 83.3% | 10 | 12 | PASS |
+| uart | 33.3% | 1 | 3 | FAIL |
+| watchdog | 90.0% | 9 | 10 | PASS |
 | yocto | 80.0% | 8 | 10 | PASS |
 
 ## Layer Pass Rate Heatmap
 
 | Model| L0 Static| L1 Build| L2 Runtime| L3 Heuristic| L4 Mutation| |
 |-------|----------|----------|----------|----------|----------||
-| claude-code://claude-opus-5| 95%| 98%| 90%| 75%| 96%| |
-| claude-code://claude-sonnet-5| 92%| 99%| 91%| 83%| 100%| |
-| claude-code://haiku| 83%| 92%| 92%| 84%| 100%| |
-| claude-code://sonnet| 95%| 98%| 89%| 86%| 100%| |
+| claude-code://claude-opus-5| 94%| 94%| 91%| 76%| 100%| |
+| claude-code://claude-sonnet-5| 92%| 94%| 92%| 84%| 100%| |
+| claude-code://haiku| 82%| 88%| 93%| 85%| 100%| |
+| claude-code://sonnet| 94%| 93%| 90%| 85%| 100%| |
 
 ## Failure Distribution
 
 | Layer | Failures | % of Total |
 |-------|----------|-----------|
 | L0 Static | 0.4 | 22% |
-| L1 Build | 0.1 | 8% |
-| L2 Runtime | 0.4 | 23% |
-| L3 Heuristic | 0.7 | 44% |
-| L4 Mutation | 0.0 | 3% |
+| L1 Build | 0.3 | 18% |
+| L2 Runtime | 0.3 | 19% |
+| L3 Heuristic | 0.7 | 41% |
+| L4 Mutation | 0.0 | 0% |
 
 ## Category Breakdown
 
 | Category | Pass@1 | Cases |
 |----------|--------|-------|
 | adc | 50% | 2 |
-| ble | 75% | 8 |
-| boot | 100% | 11 |
-| device-tree | 100% | 8 |
-| dma | 45% | 11 |
-| gpio-basic | 100% | 5 |
-| isr-concurrency | 20% | 10 |
-| kconfig | 88% | 8 |
-| linux-driver | 69% | 16 |
+| ble | 64% | 11 |
+| boot | 100% | 13 |
+| device-tree | 100% | 10 |
+| dma | 38% | 13 |
+| gpio-basic | 83% | 6 |
+| isr-concurrency | 31% | 13 |
+| kconfig | 80% | 10 |
+| linux-driver | 72% | 18 |
 | linux-userspace | 50% | 8 |
-| memory-opt | 50% | 10 |
-| networking | 53% | 15 |
-| ota | 40% | 15 |
-| power-mgmt | 75% | 8 |
+| memory-opt | 58% | 12 |
+| networking | 53% | 17 |
+| ota | 44% | 18 |
+| power-mgmt | 67% | 12 |
 | pwm | 100% | 1 |
-| security | 38% | 8 |
-| sensor-driver | 100% | 8 |
-| spi-i2c | 75% | 12 |
-| storage | 40% | 10 |
-| threading | 38% | 13 |
-| timer | 67% | 9 |
-| uart | 50% | 2 |
-| watchdog | 78% | 9 |
-| yocto | 75% | 12 |
+| security | 40% | 10 |
+| sensor-driver | 75% | 12 |
+| spi-i2c | 71% | 14 |
+| storage | 46% | 13 |
+| threading | 40% | 15 |
+| timer | 67% | 12 |
+| uart | 33% | 3 |
+| watchdog | 70% | 10 |
+| yocto | 79% | 14 |
 | adc | 100% | 2 |
-| ble | 88% | 8 |
-| boot | 100% | 11 |
-| device-tree | 100% | 8 |
-| dma | 36% | 11 |
-| gpio-basic | 100% | 5 |
-| isr-concurrency | 30% | 10 |
-| kconfig | 75% | 8 |
+| ble | 73% | 11 |
+| boot | 100% | 13 |
+| device-tree | 100% | 10 |
+| dma | 38% | 13 |
+| gpio-basic | 83% | 6 |
+| isr-concurrency | 38% | 13 |
+| kconfig | 70% | 10 |
 | linux-driver | 69% | 16 |
 | linux-userspace | 75% | 8 |
-| memory-opt | 40% | 10 |
-| networking | 60% | 15 |
-| ota | 60% | 15 |
-| power-mgmt | 100% | 8 |
+| memory-opt | 50% | 12 |
+| networking | 59% | 17 |
+| ota | 61% | 18 |
+| power-mgmt | 83% | 12 |
 | pwm | 100% | 1 |
-| security | 50% | 8 |
-| sensor-driver | 88% | 8 |
-| spi-i2c | 83% | 12 |
-| storage | 50% | 10 |
-| threading | 54% | 13 |
-| timer | 78% | 9 |
-| uart | 100% | 2 |
-| watchdog | 89% | 9 |
+| security | 60% | 10 |
+| sensor-driver | 67% | 12 |
+| spi-i2c | 79% | 14 |
+| storage | 54% | 13 |
+| threading | 53% | 15 |
+| timer | 83% | 12 |
+| uart | 67% | 3 |
+| watchdog | 80% | 10 |
 | yocto | 58% | 12 |
 | adc | 50% | 2 |
-| ble | 50% | 8 |
-| boot | 100% | 8 |
-| device-tree | 100% | 8 |
-| dma | 9% | 11 |
-| gpio-basic | 100% | 5 |
-| isr-concurrency | 30% | 10 |
-| kconfig | 62% | 8 |
+| ble | 45% | 11 |
+| boot | 100% | 10 |
+| device-tree | 100% | 10 |
+| dma | 8% | 13 |
+| gpio-basic | 83% | 6 |
+| isr-concurrency | 38% | 13 |
+| kconfig | 60% | 10 |
 | linux-driver | 70% | 10 |
-| memory-opt | 20% | 10 |
-| networking | 80% | 10 |
-| ota | 78% | 9 |
-| power-mgmt | 88% | 8 |
+| memory-opt | 33% | 12 |
+| networking | 75% | 12 |
+| ota | 58% | 12 |
+| power-mgmt | 67% | 12 |
 | pwm | 100% | 1 |
-| security | 62% | 8 |
-| sensor-driver | 100% | 8 |
-| spi-i2c | 67% | 12 |
-| storage | 20% | 10 |
-| threading | 31% | 13 |
-| timer | 44% | 9 |
-| uart | 100% | 2 |
-| watchdog | 67% | 9 |
+| security | 70% | 10 |
+| sensor-driver | 67% | 12 |
+| spi-i2c | 64% | 14 |
+| storage | 31% | 13 |
+| threading | 33% | 15 |
+| timer | 50% | 12 |
+| uart | 67% | 3 |
+| watchdog | 60% | 10 |
 | yocto | 70% | 10 |
 | adc | 100% | 2 |
-| ble | 100% | 8 |
-| boot | 88% | 8 |
-| device-tree | 100% | 8 |
-| dma | 27% | 11 |
-| gpio-basic | 80% | 5 |
-| isr-concurrency | 20% | 10 |
-| kconfig | 88% | 8 |
+| ble | 82% | 11 |
+| boot | 90% | 10 |
+| device-tree | 100% | 10 |
+| dma | 31% | 13 |
+| gpio-basic | 67% | 6 |
+| isr-concurrency | 23% | 13 |
+| kconfig | 90% | 10 |
 | linux-driver | 70% | 10 |
-| memory-opt | 60% | 10 |
-| networking | 80% | 10 |
-| ota | 78% | 9 |
-| power-mgmt | 88% | 8 |
+| memory-opt | 67% | 12 |
+| networking | 75% | 12 |
+| ota | 67% | 12 |
+| power-mgmt | 75% | 12 |
 | pwm | 100% | 1 |
-| security | 38% | 8 |
-| sensor-driver | 100% | 8 |
-| spi-i2c | 83% | 12 |
-| storage | 60% | 10 |
-| threading | 31% | 13 |
-| timer | 89% | 9 |
-| uart | 50% | 2 |
-| watchdog | 100% | 9 |
+| security | 50% | 10 |
+| sensor-driver | 75% | 12 |
+| spi-i2c | 79% | 14 |
+| storage | 54% | 13 |
+| threading | 33% | 15 |
+| timer | 83% | 12 |
+| uart | 33% | 3 |
+| watchdog | 90% | 10 |
 | yocto | 80% | 10 |
 
 ## Cross-Benchmark Comparison
 
 | Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |
 |-------|-----------|-----------|------------------|---------------------|-----------|
-| claude-code://claude-opus-5 | 96.3% | 77.1% | 63.0% | 74.0% | -33.3%p |
-| claude-code://claude-sonnet-5 | 93.7% | 72.2% | 68.9% | 78.5% | -24.8%p |
-| claude-code://haiku | 84.0% | 48.2% | 59.8% | 72.0% | -24.2%p |
-| claude-code://sonnet | 93.7% | 72.2% | 70.9% | 83.6% | -22.8%p |
+| claude-code://claude-opus-5 | 96.3% | 77.1% | 61.8% | 75.3% | -34.5%p |
+| claude-code://claude-sonnet-5 | 93.7% | 72.2% | 67.3% | 79.5% | -26.4%p |
+| claude-code://haiku | 84.0% | 48.2% | 57.1% | 71.7% | -26.9%p |
+| claude-code://sonnet | 93.7% | 72.2% | 67.4% | 82.8% | -26.3%p |
 
 *Embed Gap = EmbedEval pass@1 - HumanEval. Negative = harder than general coding.*

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
 [![Cases](https://img.shields.io/badge/cases-267-orange)]()
-[![Tests](https://img.shields.io/badge/tests-1463-green)]()
+[![Tests](https://img.shields.io/badge/tests-1467-green)]()
 
 **LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 
@@ -52,24 +52,27 @@ What an embedded engineer knows (not in prompt):
 
 ## Leaderboard
 
-n=3 aggregate pass@1 means:
+Aggregate pass@1 over the full public + private held-out case set:
 
-| Model | pass@1 (n=3 mean) | 95% CI | Stability | Weakest Category | Strongest | Cases |
-|-------|-------------------|--------|-----------|------------------|-----------|-------|
-| **Sonnet 5** | **67.0%** | [63.7%, 70.2%] | 82.1% | dma (31%), isr-concurrency (41%), threading (49%) | boot, adc, pwm (100%) | 263 (2026-07-19) |
-| **Sonnet 4.6** | **68.0%** | [64.4%, 71.3%] | 87.1% | isr-concurrency (23%), dma (31%), threading (33%) | adc, device-tree, pwm (100%) | 233 (2026-04-12) |
-| Haiku 4.5 | 56.9% | [53.2%, 60.6%] | 73.0% | dma (8%), isr-concurrency (38%), memory-opt (33%) | boot, device-tree, pwm (100%) | 233 (2026-04-12) |
+| Model | pass@1 | Samples | 95% CI | Stability | Weakest Category | Strongest | Cases |
+|-------|--------|---------|--------|-----------|------------------|-----------|-------|
+| **Sonnet 4.6** | **68.0%** | n=3 mean | [64.4%, 71.3%] | 87.1% | isr-concurrency (23%), dma (31%), threading (33%) | adc, device-tree, pwm (100%) | 233 (2026-04-12) |
+| **Sonnet 5** | **67.0%** | n=3 mean | [63.7%, 70.2%] | 82.1% | dma (31%), isr-concurrency (41%), threading (49%) | boot, adc, pwm (100%) | 263 (2026-07-19) |
+| **Opus 5** | **61.8%** | n=1 | [55.8%, 67.4%] | — | isr-concurrency (31%), dma (38%), threading (40%) | boot, device-tree, pwm (100%) | 267 (2026-09-08) |
+| Haiku 4.5 | 56.9% | n=3 mean | [53.2%, 60.6%] | 73.0% | dma (8%), isr-concurrency (38%), memory-opt (33%) | boot, device-tree, pwm (100%) | 233 (2026-04-12) |
 
 **Sonnet 5 vs Sonnet 4.6 — no measurable improvement.** On the 232 cases common to both runs (isolating model change from the case-set growth), majority-vote pass@1 is 68.1% → 67.2% = **−0.9%p**: statistically tied, inside 4.6's own 66.1–70.4% run range. Sonnet 5 is the most *stable* model measured (stdev 0.29%p) but not more capable on embedded firmware; the weakest categories (dma, isr-concurrency, threading) are unchanged.
 
+**Opus 5 does not top this benchmark — and the gap is partly measurement, not capability.** On the 263 cases common to both, Opus 5 scores 61.2% against Sonnet 5's 67.7% (−6.5%p). Two things qualify that number. Opus 5 is **n=1**, so it carries the full run-to-run flakiness the n=3 models average out. More importantly, spot-checking 8 cases where Opus 5 fails L3 and Sonnet 5 passes found **zero real code defects** — every one was a brittle check (ordering checks that scan comments as if they were code, or checks demanding one literal idiom over an equivalent). Opus 5 comments its code more heavily, which is exactly what those checks punish. Treat L3 pass rates as non-comparable across models until the failures are inspected; see the caveats in the delta report.
+
 **Sonnet vs Haiku:** 11.1%p overall (CIs don't overlap — statistically significant).
 
-See detailed comparison: [`docs/BENCHMARK-COMPARISON-2026-04-05.md`](docs/BENCHMARK-COMPARISON-2026-04-05.md) (§10 = Sonnet 5) · delta report: [`docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md`](docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md)
+See detailed comparison: [`docs/BENCHMARK-COMPARISON-2026-04-05.md`](docs/BENCHMARK-COMPARISON-2026-04-05.md) (§10 = Sonnet 5, §11 = Opus 5) · delta reports: [`docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md`](docs/BENCHMARK-DELTA-sonnet5-vs-sonnet46.md) · [`docs/BENCHMARK-DELTA-opus5-vs-sonnet5.md`](docs/BENCHMARK-DELTA-opus5-vs-sonnet5.md)
 See analysis & conclusions: [`docs/LLM-EMBEDDED-CONSIDERATIONS.md`](docs/LLM-EMBEDDED-CONSIDERATIONS.md)
 
 ### Category Heatmap
 
-All 23 categories (Sonnet 4.6 vs Haiku, 233 cases, n=3 run, 2026-04-12). Sonnet 5's per-category profile tracks 4.6 closely — same weakest three (dma, isr-concurrency, threading):
+All 23 categories (Sonnet 4.6 vs Haiku, 233 cases, n=3 run, 2026-04-12). The later models track the same shape: Sonnet 5 and Opus 5 share the weakest three (dma, isr-concurrency, threading) and the strongest (boot, device-tree, pwm). Opus 5's largest category deficits vs Sonnet 5 are ota (44% vs 67%) and security (40% vs 53%) — see §11.3 of the comparison doc before reading those as capability:
 
 ```
 Category          Sonnet   Haiku    Gap      What it tests
