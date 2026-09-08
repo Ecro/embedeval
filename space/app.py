@@ -230,7 +230,7 @@ the safety patterns the model should derive.
 - Statistical baseline: n=3 with Wilson 95% confidence intervals
   (Opus 5 is n=1 so far — its confidence interval is correspondingly wider)
 
-[GitHub](https://github.com/Ecro/embedeval) · [Methodology](https://github.com/Ecro/embedeval/blob/main/docs/METHODOLOGY.md) · [n=3 Reports](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-COMPARISON-2026-04-05.md)
+[GitHub](https://github.com/Ecro/embedeval) · [Methodology](https://github.com/Ecro/embedeval/blob/main/docs/METHODOLOGY.md) · [Reports](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-COMPARISON-2026-04-05.md)
 """
 
 KEY_INSIGHT_MD = """

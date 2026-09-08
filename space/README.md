@@ -26,6 +26,6 @@ Interactive leaderboard for EmbedEval, a benchmark that measures whether LLMs po
 
 - GitHub: https://github.com/Ecro/embedeval
 - Methodology: https://github.com/Ecro/embedeval/blob/main/docs/METHODOLOGY.md
-- n=3 reports: [Haiku](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-n3-haiku.md), [Sonnet](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-n3-sonnet.md)
+- Reports: [Sonnet 4.6 n=3](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-n3-sonnet.md), [Sonnet 5 n=3](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-n3-sonnet5.md), [Haiku 4.5 n=3](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-n3-haiku.md), [Opus 5 vs Sonnet 5 delta](https://github.com/Ecro/embedeval/blob/main/docs/BENCHMARK-DELTA-opus5-vs-sonnet5.md)
 
 This Space is a static view of the canonical results published with each release. To run EmbedEval against a new model, see the upstream README.
