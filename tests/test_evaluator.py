@@ -1,14 +1,19 @@
 """Tests for EmbedEval evaluator."""
 
+import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+import yaml
 
 from embedeval.evaluator import (
+    _alias_native_sim_overlay,
+    _get_build_board,
     _get_build_mode,
     _is_l1_skipped,
     _is_l2_skipped,
+    _is_native_sim_board,
     _load_negatives,
     _prepare_build_dir,
     _run_mutant_checks,
@@ -326,6 +331,150 @@ class TestGetBuildMode:
     def test_docker_case_insensitive(self) -> None:
         with patch.dict("os.environ", {"EMBEDEVAL_ENABLE_BUILD": "DOCKER"}):
             assert _get_build_mode() == "docker"
+
+
+class TestGetBuildBoard:
+    """Tests for board resolution and the native_sim host override.
+
+    Regression guard for the 2026-09-08 opus5 run: on an aarch64 host the
+    32-bit `native_sim` target fails CMake configure, so 53 cases failed L1
+    for host-architecture reasons rather than code defects.
+    """
+
+    @staticmethod
+    def _case(tmp_path: Path, board: str | None) -> Path:
+        case_dir = tmp_path / "case-board"
+        case_dir.mkdir()
+        meta = {
+            "id": "case-board",
+            "category": "gpio-basic",
+            "difficulty": "easy",
+            "title": "Board test",
+            "description": "Board resolution test case",
+            "tags": ["zephyr"],
+            "platform": "native_sim",
+            "sdk": "zephyr",
+            "sdk_version": "4.1.0",
+            "estimated_tokens": 100,
+        }
+        if board is not None:
+            meta["build_board"] = board
+        (case_dir / "metadata.yaml").write_text(yaml.safe_dump(meta), encoding="utf-8")
+        return case_dir
+
+    def test_defaults_to_native_sim(self, tmp_path: Path) -> None:
+        case_dir = self._case(tmp_path, None)
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_build_board(case_dir) == "native_sim"
+
+    def test_override_applies_to_default(self, tmp_path: Path) -> None:
+        case_dir = self._case(tmp_path, None)
+        with patch.dict(
+            "os.environ", {"EMBEDEVAL_NATIVE_SIM_BOARD": "native_sim/native/64"}
+        ):
+            assert _get_build_board(case_dir) == "native_sim/native/64"
+
+    def test_override_applies_to_explicit_native_sim(self, tmp_path: Path) -> None:
+        case_dir = self._case(tmp_path, "native_sim")
+        with patch.dict(
+            "os.environ", {"EMBEDEVAL_NATIVE_SIM_BOARD": "native_sim/native/64"}
+        ):
+            assert _get_build_board(case_dir) == "native_sim/native/64"
+
+    def test_override_leaves_other_boards_alone(self, tmp_path: Path) -> None:
+        case_dir = self._case(tmp_path, "nrf52840dk/nrf52840")
+        with patch.dict(
+            "os.environ", {"EMBEDEVAL_NATIVE_SIM_BOARD": "native_sim/native/64"}
+        ):
+            assert _get_build_board(case_dir) == "nrf52840dk/nrf52840"
+
+    def test_empty_override_falls_back_to_native_sim(self, tmp_path: Path) -> None:
+        case_dir = self._case(tmp_path, None)
+        with patch.dict("os.environ", {"EMBEDEVAL_NATIVE_SIM_BOARD": ""}):
+            assert _get_build_board(case_dir) == "native_sim"
+
+
+class TestIsNativeSimBoard:
+    """Tests for which boards L2 considers host-executable.
+
+    Regression guard for the 2026-09-08 opus5 run: a bare
+    `board != "native_sim"` test treated the remapped native_sim/native/64 as
+    a hardware target, auto-passing L2 for ~60 cases.
+    """
+
+    def test_plain_native_sim(self) -> None:
+        assert _is_native_sim_board("native_sim") is True
+
+    def test_qualified_native_sim(self) -> None:
+        assert _is_native_sim_board("native_sim/native/64") is True
+
+    def test_hardware_board(self) -> None:
+        assert _is_native_sim_board("nrf52840dk/nrf52840") is False
+
+    def test_lookalike_board_not_matched(self) -> None:
+        assert _is_native_sim_board("native_sim_extra") is False
+
+
+class TestNativeSimOverlayAlias:
+    """Tests for aliasing native_sim overlays onto qualified board variants.
+
+    Without the alias, remapping the board to native_sim/native/64 silently
+    drops `boards/native_sim.overlay` — the DT nodes a case needs (dma0, wdt)
+    disappear and L1 fails on undeclared device ordinals (2026-09-08).
+    """
+
+    @staticmethod
+    def _boards_dir(tmp_path: Path, *names: str) -> Path:
+        boards = tmp_path / "boards"
+        boards.mkdir()
+        for name in names:
+            (boards / name).write_text("/ { dma0: dma@0 {}; };", encoding="utf-8")
+        return boards
+
+    def test_alias_created_for_qualified_board(self, tmp_path: Path) -> None:
+        boards = self._boards_dir(tmp_path, "native_sim.overlay")
+        _alias_native_sim_overlay(boards, "native_sim/native/64")
+        assert (boards / "native_sim_native_64.overlay").is_file()
+
+    def test_no_alias_for_plain_native_sim(self, tmp_path: Path) -> None:
+        boards = self._boards_dir(tmp_path, "native_sim.overlay")
+        _alias_native_sim_overlay(boards, "native_sim")
+        assert list(p.name for p in boards.iterdir()) == ["native_sim.overlay"]
+
+    def test_no_alias_for_hardware_board(self, tmp_path: Path) -> None:
+        boards = self._boards_dir(tmp_path, "native_sim.overlay")
+        _alias_native_sim_overlay(boards, "nrf52840dk/nrf52840")
+        assert not (boards / "nrf52840dk_nrf52840.overlay").exists()
+
+    def test_existing_alias_not_overwritten(self, tmp_path: Path) -> None:
+        boards = self._boards_dir(tmp_path, "native_sim.overlay")
+        alias = boards / "native_sim_native_64.overlay"
+        alias.write_text("// hand-written", encoding="utf-8")
+        _alias_native_sim_overlay(boards, "native_sim/native/64")
+        assert alias.read_text(encoding="utf-8") == "// hand-written"
+
+    def test_missing_source_overlay_is_noop(self, tmp_path: Path) -> None:
+        boards = self._boards_dir(tmp_path)
+        _alias_native_sim_overlay(boards, "native_sim/native/64")
+        assert list(boards.iterdir()) == []
+
+    def test_prepare_build_dir_applies_alias(self, tmp_path: Path) -> None:
+        case_dir = tmp_path / "case-overlay"
+        case_dir.mkdir()
+        (case_dir / "CMakeLists.txt").write_text("cmake", encoding="utf-8")
+        (case_dir / "boards").mkdir()
+        (case_dir / "boards" / "native_sim.overlay").write_text("/ {};")
+
+        with patch.dict(
+            "os.environ", {"EMBEDEVAL_NATIVE_SIM_BOARD": "native_sim/native/64"}
+        ):
+            build_dir = _prepare_build_dir(case_dir, "int main(void) { return 0; }")
+        try:
+            assert (build_dir / "boards" / "native_sim_native_64.overlay").is_file()
+            # Case dir itself must stay untouched
+            assert not (case_dir / "boards" / "native_sim_native_64.overlay").exists()
+        finally:
+            shutil.rmtree(build_dir)
 
 
 class TestPrepareBuildDir:

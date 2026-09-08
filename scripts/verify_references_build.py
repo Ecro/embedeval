@@ -25,15 +25,24 @@ from pathlib import Path
 
 
 def get_build_board(case_dir: Path) -> str:
-    """Read build_board from metadata.yaml, default to native_sim."""
+    """Read build_board from metadata.yaml, default to native_sim.
+
+    Honors EMBEDEVAL_NATIVE_SIM_BOARD the same way evaluator._get_build_board
+    does, so this script and L1 agree on which board a case builds for (hosts
+    without a 32-bit toolchain need native_sim/native/64).
+    """
+    board = "native_sim"
     metadata_path = case_dir / "metadata.yaml"
     if metadata_path.is_file():
         for line in metadata_path.read_text(encoding="utf-8").splitlines():
             if line.startswith("build_board:"):
-                board = line.split(":", 1)[1].strip()
-                if board:
-                    return board
-    return "native_sim"
+                value = line.split(":", 1)[1].strip()
+                if value:
+                    board = value
+                break
+    if board == "native_sim":
+        return os.environ.get("EMBEDEVAL_NATIVE_SIM_BOARD") or "native_sim"
+    return board
 
 
 def get_docker_image() -> str:
@@ -76,7 +85,7 @@ def find_reference_code(case_dir: Path) -> str | None:
     return None
 
 
-def prepare_build_dir(case_dir: Path, code: str) -> Path:
+def prepare_build_dir(case_dir: Path, code: str, board: str = "native_sim") -> Path:
     """Prepare a temporary build directory (mirrors evaluator._prepare_build_dir)."""
     tmpdir = Path(tempfile.mkdtemp(prefix="embedeval_refbuild_"))
 
@@ -92,6 +101,13 @@ def prepare_build_dir(case_dir: Path, code: str) -> Path:
     boards_dir = case_dir / "boards"
     if boards_dir.is_dir():
         shutil.copytree(boards_dir, tmpdir / "boards")
+        # Qualified native_sim variants look for boards/native_sim_native_64.overlay;
+        # alias the case's native_sim overlay so its DT nodes still apply.
+        if board.startswith("native_sim/"):
+            source = tmpdir / "boards" / "native_sim.overlay"
+            alias = tmpdir / "boards" / f"{board.replace('/', '_')}.overlay"
+            if source.is_file() and not alias.exists():
+                shutil.copy2(source, alias)
 
     src_dir = tmpdir / "src"
     src_dir.mkdir(parents=True, exist_ok=True)
@@ -107,7 +123,7 @@ def build_reference_docker(
     timeout: float = 120.0,
 ) -> dict:
     """Build reference solution in Docker. Returns result dict."""
-    tmpdir = prepare_build_dir(case_dir, code)
+    tmpdir = prepare_build_dir(case_dir, code, board)
     try:
         start = time.monotonic()
         cmd = [

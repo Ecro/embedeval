@@ -355,6 +355,23 @@ def _run_compile_gate(
     return _run_compile_local(case_dir, generated_code, timeout, build_dir)
 
 
+def _alias_native_sim_overlay(boards_dir: Path, board: str) -> None:
+    """Make a case's native_sim overlay visible to a qualified native_sim board.
+
+    Zephyr resolves board overlays as `boards/<board with / as _>.overlay`, so a
+    case shipping `boards/native_sim.overlay` gets no overlay at all once
+    EMBEDEVAL_NATIVE_SIM_BOARD remaps the board to native_sim/native/64: the DT
+    nodes the case relies on (dma0, wdt, sensors) vanish and L1 fails on
+    undeclared device ordinals instead of on the generated code.
+    """
+    if not board.startswith("native_sim/"):
+        return
+    source = boards_dir / "native_sim.overlay"
+    alias = boards_dir / f"{board.replace('/', '_')}.overlay"
+    if source.is_file() and not alias.exists():
+        shutil.copy2(source, alias)
+
+
 def _prepare_build_dir(case_dir: Path, generated_code: str) -> Path:
     """Prepare a temporary build directory with case files + generated code.
 
@@ -378,6 +395,7 @@ def _prepare_build_dir(case_dir: Path, generated_code: str) -> Path:
     boards_dir = case_dir / "boards"
     if boards_dir.is_dir():
         shutil.copytree(boards_dir, tmpdir / "boards")
+        _alias_native_sim_overlay(tmpdir / "boards", _get_build_board(case_dir))
 
     # Write generated code
     src_dir = tmpdir / "src"
@@ -617,9 +635,9 @@ def _run_runtime(
             duration_seconds=0.0,
         )
 
-    # Only native_sim can be executed without hardware
+    # Only native_sim (including qualified variants) executes without hardware
     board = _get_build_board(case_dir)
-    if board != "native_sim":
+    if not _is_native_sim_board(board):
         logger.info("Board %s requires hardware, skipping runtime (pass)", board)
         return LayerResult(
             layer=2,
@@ -996,8 +1014,40 @@ def _get_build_board(case_dir: Path) -> str:
     """Read build_board from metadata.yaml, default to native_sim."""
     meta = _load_case_meta(case_dir)
     if meta is not None and meta.build_board:
-        return meta.build_board
-    return "native_sim"
+        return _resolve_native_sim_board(meta.build_board)
+    return _resolve_native_sim_board("native_sim")
+
+
+def _is_native_sim_board(board: str) -> bool:
+    """True for native_sim and its qualified variants (native_sim/native/64).
+
+    Only these execute on the host, so L2 runs for them and auto-passes for
+    hardware targets. The qualified form has to count: once
+    EMBEDEVAL_NATIVE_SIM_BOARD remaps the plain name, a bare `!=
+    "native_sim"` test classifies every remapped case as hardware and
+    auto-passes L2 — the 2026-09-08 opus5 run recorded 0 runtime failures
+    where claude-sonnet-5 had 18.
+    """
+    return board == "native_sim" or board.startswith("native_sim/")
+
+
+def _resolve_native_sim_board(board: str) -> str:
+    """Map plain `native_sim` to the host-appropriate variant.
+
+    `native_sim` is Zephyr's 32-bit POSIX target and cannot be configured on a
+    host without a 32-bit toolchain — aarch64 Zephyr CI images ship none, so
+    CMake aborts with "target native_sim/native/64 instead" before a single
+    line of the generated code is compiled. Every native_sim case then fails
+    L1 for reasons that have nothing to do with the model (2026-09-08 opus5
+    run: 53 such failures). Set
+    EMBEDEVAL_NATIVE_SIM_BOARD=native_sim/native/64 on such hosts.
+
+    Only the bare `native_sim` default is remapped; cases pinning a specific
+    board (nrf52840dk/nrf52840, esp32, ...) are left untouched.
+    """
+    if board != "native_sim":
+        return board
+    return os.environ.get("EMBEDEVAL_NATIVE_SIM_BOARD") or "native_sim"
 
 
 def _esp_idf_env_available() -> bool:
