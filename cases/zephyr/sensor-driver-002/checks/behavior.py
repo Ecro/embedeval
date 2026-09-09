@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: device_is_ready before sensor_trigger_set
     # (LLM failure: setting trigger on an unconfirmed-ready device)
-    ready_pos = generated_code.find("device_is_ready")
-    trigger_pos = generated_code.find("sensor_trigger_set")
+    ready_pos = find_in_code(generated_code, "device_is_ready")
+    trigger_pos = find_in_code(generated_code, "sensor_trigger_set")
     details.append(
         CheckDetail(
             check_name="ready_before_trigger_set",
@@ -50,7 +51,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: Error handling on sensor_trigger_set
-    trigger_set_pos = generated_code.find("sensor_trigger_set")
+    trigger_set_pos = find_in_code(generated_code, "sensor_trigger_set")
     has_trigger_err = trigger_set_pos != -1 and (
         "< 0" in generated_code[trigger_set_pos:trigger_set_pos + 200]
         or "!= 0" in generated_code[trigger_set_pos:trigger_set_pos + 200]

@@ -4,6 +4,7 @@ import re
 
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -26,8 +27,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: First check before lock (fast path)
     # Pattern: if (initialized) return ... before k_mutex_lock
-    first_check_pos = generated_code.find("initialized")
-    lock_pos = generated_code.find("k_mutex_lock")
+    first_check_pos = find_in_code(generated_code, "initialized")
+    lock_pos = find_in_code(generated_code, "k_mutex_lock")
     has_fast_path = first_check_pos != -1 and lock_pos != -1 and first_check_pos < lock_pos
     details.append(
         CheckDetail(

@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,8 +14,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: device_is_ready() called before SPI operations
     has_ready = scoped_contains(generated_code, 'device_is_ready', scope='code_only')
-    transceive_pos = generated_code.find("spi_transceive")
-    ready_pos = generated_code.find("device_is_ready")
+    transceive_pos = find_in_code(generated_code, "spi_transceive")
+    ready_pos = find_in_code(generated_code, "device_is_ready")
     order_ok = (
         has_ready
         and ready_pos != -1

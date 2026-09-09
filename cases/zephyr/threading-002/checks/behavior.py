@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -97,9 +98,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 6: k_sleep is NOT between mutex lock and unlock (starvation bug)
-    lock_pos = generated_code.find("k_mutex_lock")
-    unlock_pos = generated_code.find("k_mutex_unlock")
-    sleep_pos = generated_code.find("k_sleep")
+    lock_pos = find_in_code(generated_code, "k_mutex_lock")
+    unlock_pos = find_in_code(generated_code, "k_mutex_unlock")
+    sleep_pos = find_in_code(generated_code, "k_sleep")
     sleep_inside_mutex = (lock_pos != -1 and unlock_pos != -1 and sleep_pos != -1 and
                           lock_pos < sleep_pos < unlock_pos)
     details.append(

@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -89,8 +90,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 7: device_is_ready must appear before i2c_target_register (ordering)
-    pos_ready = generated_code.find("device_is_ready")
-    pos_register = generated_code.find("i2c_target_register")
+    pos_ready = find_in_code(generated_code, "device_is_ready")
+    pos_register = find_in_code(generated_code, "i2c_target_register")
     ready_before_register = (
         pos_ready != -1 and pos_register != -1 and pos_ready < pos_register
     )

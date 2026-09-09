@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -30,8 +31,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Verify phase (dfu_target_done) before reboot
     # (LLM failure: rebooting without calling dfu_target_done)
-    done_pos = generated_code.find("dfu_target_done")
-    reboot_pos = generated_code.find("sys_reboot")
+    done_pos = find_in_code(generated_code, "dfu_target_done")
+    reboot_pos = find_in_code(generated_code, "sys_reboot")
     details.append(
         CheckDetail(
             check_name="verify_before_reboot",
@@ -45,8 +46,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 3: Self-test before confirmation
     # (LLM failure: calling boot_write_img_confirmed without self-test)
     has_self_test = scoped_contains(generated_code, 'self_test', scope='code_only') or scoped_contains(generated_code, 'selftest', scope='code_only')
-    self_test_pos = generated_code.find("self_test")
-    confirm_pos = generated_code.find("boot_write_img_confirmed")
+    self_test_pos = find_in_code(generated_code, "self_test")
+    confirm_pos = find_in_code(generated_code, "boot_write_img_confirmed")
     details.append(
         CheckDetail(
             check_name="self_test_before_confirm",
@@ -59,8 +60,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Rollback path (boot_is_img_confirmed check before writing confirm)
     # (LLM failure: confirming unconditionally, no rollback possible)
-    check_pos = generated_code.find("boot_is_img_confirmed")
-    write_pos = generated_code.find("boot_write_img_confirmed")
+    check_pos = find_in_code(generated_code, "boot_is_img_confirmed")
+    write_pos = find_in_code(generated_code, "boot_write_img_confirmed")
     details.append(
         CheckDetail(
             check_name="check_before_confirm",

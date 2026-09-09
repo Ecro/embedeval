@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Check confirmed BEFORE writing confirm
     # (LLM failure: unconditionally confirming without checking)
-    check_pos = generated_code.find("boot_is_img_confirmed")
-    write_pos = generated_code.find("boot_write_img_confirmed")
+    check_pos = find_in_code(generated_code, "boot_is_img_confirmed")
+    write_pos = find_in_code(generated_code, "boot_write_img_confirmed")
     details.append(
         CheckDetail(
             check_name="check_before_confirm",
@@ -29,11 +30,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     self_test_patterns = ["self_test()", "selftest()", "run_self_test", "app_validate", "validate_firmware"]
     self_test_pos = -1
     for p in self_test_patterns:
-        pos = generated_code.find(p)
+        pos = find_in_code(generated_code, p)
         if pos != -1:
             self_test_pos = pos
             break
-    confirm_pos = generated_code.find("boot_write_img_confirmed")
+    confirm_pos = find_in_code(generated_code, "boot_write_img_confirmed")
     test_before_confirm = (
         self_test_pos != -1
         and confirm_pos != -1

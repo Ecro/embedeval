@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -50,8 +51,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: dma_config before dma_start
-    config_pos = generated_code.find("dma_config(")
-    start_pos = generated_code.find("dma_start(")
+    config_pos = find_in_code(generated_code, "dma_config(")
+    start_pos = find_in_code(generated_code, "dma_start(")
     order_ok = config_pos != -1 and start_pos != -1 and config_pos < start_pos
     details.append(
         CheckDetail(

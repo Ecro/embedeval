@@ -10,6 +10,7 @@ from embedeval.check_utils import (
     scoped_contains,
     strip_comments,
 )
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -18,8 +19,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: fetch before get (mandatory ordering)
     # (LLM failure: calling channel_get without fetch)
-    fetch_pos = generated_code.find("sensor_sample_fetch")
-    get_pos = generated_code.find("sensor_channel_get")
+    fetch_pos = find_in_code(generated_code, "sensor_sample_fetch")
+    get_pos = find_in_code(generated_code, "sensor_channel_get")
     details.append(
         CheckDetail(
             check_name="fetch_before_get",

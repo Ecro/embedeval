@@ -9,6 +9,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -18,10 +19,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     stripped = strip_comments(generated_code)
 
     # Check 1: init before hash compute (correct ordering)
-    init_pos = generated_code.find("psa_crypto_init")
-    hash_pos = generated_code.find("psa_hash_compute")
+    init_pos = find_in_code(generated_code, "psa_crypto_init")
+    hash_pos = find_in_code(generated_code, "psa_hash_compute")
     if hash_pos == -1:
-        hash_pos = generated_code.find("psa_hash_setup")
+        hash_pos = find_in_code(generated_code, "psa_hash_setup")
     details.append(
         CheckDetail(
             check_name="init_before_hash",

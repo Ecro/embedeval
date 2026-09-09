@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: dma_reload() called inside the callback
     # Heuristic: dma_reload appears in the same function scope as the callback signature
-    callback_pos = generated_code.find("dma_callback")
-    reload_pos = generated_code.find("dma_reload")
+    callback_pos = find_in_code(generated_code, "dma_callback")
+    reload_pos = find_in_code(generated_code, "dma_reload")
     reload_in_callback = (
         callback_pos != -1
         and reload_pos != -1

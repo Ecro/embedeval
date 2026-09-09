@@ -1,8 +1,12 @@
 """Behavioral checks for multi-thread watchdog monitoring application."""
 
+import re
+
 from embedeval.models import CheckDetail
+from embedeval.check_utils import strip_comments
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +15,21 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: All 3 thread flags set before wdt_feed (supervisor checks all)
     # Heuristic: atomic_get or atomic_set count >= 3 (one per thread)
-    atomic_set_count = generated_code.count("atomic_set")
-    all_threads_report = atomic_set_count >= 3
+    stripped_code = strip_comments(generated_code)
+    atomic_set_count = stripped_code.count("atomic_set")
+    # One shared worker entry that atomic_set()s the flag handed to it reports
+    # for all three threads; counting atomic_set sites demanded three copies of
+    # the same function and failed the factored form.
+    flags = set(re.findall(r"atomic_t\s+(\w+)", stripped_code))
+    thread_flag_args = set(
+        re.findall(r"K_THREAD_DEFINE\s*\([^;]*?&(\w+)", stripped_code, re.DOTALL)
+    ) | set(
+        re.findall(r"k_thread_create\s*\([^;]*?&(\w+)", stripped_code, re.DOTALL)
+    )
+    flags_reported_by_threads = flags & thread_flag_args
+    all_threads_report = atomic_set_count >= 3 or (
+        atomic_set_count >= 1 and len(flags_reported_by_threads) >= 3
+    )
     details.append(
         CheckDetail(
             check_name="all_threads_set_flags",
@@ -25,10 +42,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: wdt_feed called only after checking all flags (supervisor feeds)
     # Heuristic: wdt_feed appears after atomic_get/atomic_clear in code
-    wdt_feed_pos = generated_code.find("wdt_feed")
+    wdt_feed_pos = find_in_code(generated_code, "wdt_feed")
     atomic_check_pos = max(
-        generated_code.find("atomic_get"),
-        generated_code.find("atomic_clear"),
+        find_in_code(generated_code, "atomic_get"),
+        find_in_code(generated_code, "atomic_clear"),
     )
     feed_after_check = wdt_feed_pos != -1 and atomic_check_pos != -1 and atomic_check_pos < wdt_feed_pos
     details.append(

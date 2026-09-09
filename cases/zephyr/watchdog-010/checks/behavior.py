@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -14,13 +15,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 1: NVS read before watchdog setup (ordering)
     nvs_read_pos = -1
     for pattern in ["nvs_read", "settings_runtime_get", "settings_load"]:
-        pos = generated_code.find(pattern)
+        pos = find_in_code(generated_code, pattern)
         if pos != -1:
             nvs_read_pos = pos
             break
 
-    wdt_setup_pos = generated_code.find("wdt_setup")
-    wdt_install_pos = generated_code.find("wdt_install_timeout")
+    wdt_setup_pos = find_in_code(generated_code, "wdt_setup")
+    wdt_install_pos = find_in_code(generated_code, "wdt_install_timeout")
     wdt_pos = min(
         p for p in [wdt_setup_pos, wdt_install_pos] if p != -1
     ) if any(p != -1 for p in [wdt_setup_pos, wdt_install_pos]) else -1

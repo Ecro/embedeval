@@ -2,6 +2,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -18,7 +19,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     ))
 
     # Check 2: esp_timer_create error checked
-    create_pos = generated_code.find("esp_timer_create(")
+    create_pos = find_in_code(generated_code, "esp_timer_create(")
     post_create = generated_code[create_pos:create_pos + 300] if create_pos != -1 else ""
     has_create_check = "ESP_OK" in post_create or "!= ESP_OK" in post_create or "ret" in post_create
     details.append(CheckDetail(
@@ -30,7 +31,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     ))
 
     # Check 3: esp_timer_start_periodic error checked
-    start_pos = generated_code.find("esp_timer_start_periodic")
+    start_pos = find_in_code(generated_code, "esp_timer_start_periodic")
     post_start = generated_code[start_pos:start_pos + 300] if start_pos != -1 else ""
     has_start_check = "ESP_OK" in post_start or "!= ESP_OK" in post_start or "ret" in post_start
     details.append(CheckDetail(

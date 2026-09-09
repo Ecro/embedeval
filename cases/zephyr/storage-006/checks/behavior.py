@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,8 +11,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: flash_erase before flash_write (mandatory for flash)
-    erase_pos = generated_code.find("flash_erase")
-    write_pos = generated_code.find("flash_write")
+    erase_pos = find_in_code(generated_code, "flash_erase")
+    write_pos = find_in_code(generated_code, "flash_write")
     erase_before_write = erase_pos != -1 and write_pos != -1 and erase_pos < write_pos
     details.append(
         CheckDetail(

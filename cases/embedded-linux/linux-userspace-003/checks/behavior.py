@@ -102,8 +102,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # 5. StartLimitBurst + StartLimitIntervalSec paired — if one exists
     # without the other, ratelimit is undefined.
-    burst = systemd_unit_section_has(generated_code, "Service", "StartLimitBurst")
+    # Since systemd v229 the start rate limiter lives in [Unit]; systemd 250
+    # ignores these keys under [Service]. Demanding [Service] rewarded a unit
+    # file that silently has no rate limit at all, so accept either section
+    # and prefer [Unit].
+    burst = systemd_unit_section_has(
+        generated_code, "Unit", "StartLimitBurst"
+    ) or systemd_unit_section_has(generated_code, "Service", "StartLimitBurst")
     interval = systemd_unit_section_has(
+        generated_code, "Unit", "StartLimitIntervalSec"
+    ) or systemd_unit_section_has(
         generated_code, "Service", "StartLimitIntervalSec"
     )
     both_or_neither = (burst is None) == (interval is None)

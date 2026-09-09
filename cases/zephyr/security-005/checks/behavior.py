@@ -8,6 +8,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def _extract_psa_error_blocks(code: str) -> list[str]:
@@ -37,8 +38,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     stripped = strip_comments(generated_code)
 
     # Check 1: init before ps_set (correct ordering)
-    init_pos = generated_code.find("psa_crypto_init")
-    set_pos = generated_code.find("psa_ps_set")
+    init_pos = find_in_code(generated_code, "psa_crypto_init")
+    set_pos = find_in_code(generated_code, "psa_ps_set")
     details.append(
         CheckDetail(
             check_name="init_before_ps_set",
@@ -50,7 +51,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: ps_set before ps_get (must store before retrieve)
-    get_pos = generated_code.find("psa_ps_get")
+    get_pos = find_in_code(generated_code, "psa_ps_get")
     details.append(
         CheckDetail(
             check_name="ps_set_before_ps_get",

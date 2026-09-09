@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis, strip_comments
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -27,7 +28,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: heap allocation checked for NULL
     # (LLM failure: k_heap_alloc returns NULL on failure, not error code)
-    heap_alloc_pos = generated_code.find("k_heap_alloc")
+    heap_alloc_pos = find_in_code(generated_code, "k_heap_alloc")
     has_null_check = scoped_contains(generated_code, '!ptr', scope='code_only') or scoped_contains(generated_code, '== NULL', scope='code_only') or scoped_contains(generated_code, '!= NULL', scope='code_only')
     details.append(
         CheckDetail(

@@ -3,6 +3,7 @@
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.models import CheckDetail
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 _BLE_HALLUCINATED_APIS = [
     "BLEDevice.connect",
@@ -42,8 +43,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: bt_enable before bt_conn_cb_register / advertising
-    enable_pos = generated_code.find("bt_enable")
-    adv_pos = generated_code.find("bt_le_adv_start")
+    enable_pos = find_in_code(generated_code, "bt_enable")
+    adv_pos = find_in_code(generated_code, "bt_le_adv_start")
     enable_before_adv = enable_pos != -1 and adv_pos != -1 and enable_pos < adv_pos
     details.append(
         CheckDetail(
@@ -71,7 +72,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: bt_conn_cb_register AFTER bt_enable (common LLM failure: register before enable)
-    register_pos = generated_code.find("bt_conn_cb_register")
+    register_pos = find_in_code(generated_code, "bt_conn_cb_register")
     if register_pos == -1:
         # BT_CONN_CB_DEFINE is static registration, order doesn't matter
         register_order_ok = scoped_contains(generated_code, 'BT_CONN_CB_DEFINE', scope='code_only')
@@ -118,7 +119,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 7: bt_enable error checked
-    enable_idx = generated_code.find("bt_enable")
+    enable_idx = find_in_code(generated_code, "bt_enable")
     post_enable = generated_code[enable_idx:enable_idx + 100] if enable_idx != -1 else ""
     has_enable_check = enable_idx != -1 and (
         "if (err" in post_enable or "if (ret" in post_enable

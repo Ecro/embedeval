@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,7 +14,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: RESUME before use, SUSPEND after use (correct ordering)
     # Check global ordering: first RESUME must appear before last SUSPEND
-    resume_pos = generated_code.find("PM_DEVICE_ACTION_RESUME")
+    resume_pos = find_in_code(generated_code, "PM_DEVICE_ACTION_RESUME")
     suspend_pos = generated_code.rfind("PM_DEVICE_ACTION_SUSPEND")
     correct_order = resume_pos != -1 and suspend_pos != -1 and resume_pos < suspend_pos
     details.append(

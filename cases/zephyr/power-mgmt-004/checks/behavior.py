@@ -3,8 +3,11 @@
 import re
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import strip_string_literals
+from embedeval.check_utils import strip_comments
 from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,8 +16,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: pm_device_runtime_enable called before get/put
     # (LLM failure: calling get/put without enabling runtime PM first)
-    enable_pos = generated_code.find("pm_device_runtime_enable")
-    get_pos = generated_code.find("pm_device_runtime_get")
+    enable_pos = find_in_code(generated_code, "pm_device_runtime_enable")
+    get_pos = find_in_code(generated_code, "pm_device_runtime_get")
     enable_before_get = enable_pos >= 0 and get_pos >= 0 and enable_pos < get_pos
     details.append(
         CheckDetail(
@@ -28,8 +31,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Every get is paired with a put (no reference leak)
     # (LLM failure: calling get without put — device never suspends)
-    get_count = generated_code.count("pm_device_runtime_get")
-    put_count = generated_code.count("pm_device_runtime_put")
+    # Count real call sites: printk("pm_device_runtime_get failed") and
+    # explanatory comments inflated the get side and made balanced code look
+    # like a reference leak.
+    call_text = strip_string_literals(strip_comments(generated_code))
+    get_count = len(re.findall(r"pm_device_runtime_get\s*\(", call_text))
+    put_count = len(re.findall(r"pm_device_runtime_put\s*\(", call_text))
     get_put_balanced = get_count > 0 and put_count >= get_count
     details.append(
         CheckDetail(

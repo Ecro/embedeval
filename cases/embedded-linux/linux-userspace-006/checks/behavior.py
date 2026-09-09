@@ -9,6 +9,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import expand_string_defines
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -16,10 +17,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     stripped = strip_comments(generated_code)
 
     # 1. Opens /dev/spidev0.0 with O_RDWR.
+    # `#define SPI_DEVICE "/dev/spidev0.0"` + open(SPI_DEVICE, O_RDWR) is the
+    # same call; inline string macros before matching the literal.
+    expanded = expand_string_defines(stripped)
     has_open_rdwr = bool(
         re.search(
             r'open\s*\(\s*"/dev/spidev0\.0"\s*,\s*O_RDWR\b',
-            stripped,
+            expanded,
         )
     )
     details.append(

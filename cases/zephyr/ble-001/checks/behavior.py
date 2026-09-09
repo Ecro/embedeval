@@ -5,6 +5,7 @@ import re
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.models import CheckDetail
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 # BLE-specific cross-platform hallucination patterns (not in check_utils)
 _BLE_HALLUCINATED_APIS = [
@@ -46,8 +47,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: bt_enable before bt_le_adv_start (ordering by source position)
-    enable_pos = generated_code.find("bt_enable")
-    adv_pos = generated_code.find("bt_le_adv_start")
+    enable_pos = find_in_code(generated_code, "bt_enable")
+    adv_pos = find_in_code(generated_code, "bt_le_adv_start")
     order_ok = enable_pos != -1 and adv_pos != -1 and enable_pos < adv_pos
     details.append(
         CheckDetail(
@@ -118,7 +119,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 7: Error handling for bt_enable (scoped: check within 200 chars after bt_enable)
-    bt_enable_pos = generated_code.find("bt_enable")
+    bt_enable_pos = find_in_code(generated_code, "bt_enable")
     if bt_enable_pos != -1:
         window = generated_code[bt_enable_pos:bt_enable_pos + 200]
         has_err_check = bool(re.search(r'if\s*\(\s*(?:err|ret|rc)\b', window))

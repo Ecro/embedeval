@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -12,11 +13,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 1: Clock enabled BEFORE GPIO init (ordering critical)
     rcc_pos = -1
     for token in ["__HAL_RCC_GPIOD_CLK_ENABLE", "__HAL_RCC_GPIOA_CLK_ENABLE", "__HAL_RCC_GPIO"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             rcc_pos = pos if rcc_pos == -1 else min(rcc_pos, pos)
 
-    gpio_init_pos = generated_code.find("HAL_GPIO_Init")
+    gpio_init_pos = find_in_code(generated_code, "HAL_GPIO_Init")
     clock_before_init = rcc_pos != -1 and gpio_init_pos != -1 and rcc_pos < gpio_init_pos
     details.append(
         CheckDetail(
@@ -48,8 +49,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: NVIC priority set before enabling IRQ
-    set_prio_pos = generated_code.find("HAL_NVIC_SetPriority")
-    enable_irq_pos = generated_code.find("HAL_NVIC_EnableIRQ")
+    set_prio_pos = find_in_code(generated_code, "HAL_NVIC_SetPriority")
+    enable_irq_pos = find_in_code(generated_code, "HAL_NVIC_EnableIRQ")
     nvic_order_ok = (
         set_prio_pos != -1
         and enable_irq_pos != -1

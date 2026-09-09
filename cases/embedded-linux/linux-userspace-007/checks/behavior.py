@@ -18,6 +18,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import expand_string_defines
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -87,10 +88,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # 5. Bus name request with com.embedeval.Example.
+    # Naming the bus/interface once via `#define SERVICE_NAME "..."` is
+    # equivalent to inlining the literal; expand string macros first.
+    expanded = expand_string_defines(stripped)
     has_correct_name = bool(
         re.search(
             r'sd_bus_request_name\s*\([^,]+,\s*"com\.embedeval\.Example"',
-            stripped,
+            expanded,
         )
     )
     details.append(
@@ -157,7 +161,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
     # Simpler: grep the call block for the interface string directly.
     vtable_block = re.search(
-        r"sd_bus_add_object_vtable\s*\([^;]+;", stripped, re.DOTALL
+        r"sd_bus_add_object_vtable\s*\([^;]+;", expanded, re.DOTALL
     )
     has_interface = bool(vtable_block) and (
         '"com.embedeval.Example"' in vtable_block.group(0)

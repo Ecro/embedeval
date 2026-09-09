@@ -19,6 +19,76 @@ def strip_comments(code: str) -> str:
     return code
 
 
+def blank_comments(code: str) -> str:
+    """Blank out C comment bodies with spaces, preserving every offset.
+
+    Unlike :func:`strip_comments`, the result has the same length as the input,
+    so an index found in it is still valid in the original code — checks that
+    slice a window around a match (``code[pos : pos + 300]``) keep working.
+    Newlines survive, so line numbers are preserved too.
+    """
+
+    def _blank(match: "re.Match[str]") -> str:
+        return re.sub(r"\S", " ", match.group(0))
+
+    code = re.sub(r"/\*.*?\*/", _blank, code, flags=re.DOTALL)
+    return re.sub(r"//[^\n]*", _blank, code)
+
+
+def find_in_code(code: str, needle: str) -> int:
+    """Index of ``needle`` in ``code``, ignoring matches inside C comments.
+
+    Drop-in replacement for ``code.find(needle)`` in ordering checks. A model
+    that documents an API in a header comment ("Unless the firmware calls
+    boot_write_img_confirmed(), ...") must not be judged as *calling* it there:
+    on raw text that comment lands before the real call and inverts every
+    position comparison. The 2026-09-08 opus5 run lost 8 cases to exactly this
+    (ota-001/004/006/008, power-mgmt-004, security-005, networking-005,
+    ota-005) while a model that wrote the same code with fewer comments passed.
+
+    Offsets stay valid in ``code`` itself (see :func:`blank_comments`), so
+    existing call sites that slice a window from the returned index are safe.
+
+    BitBake recipes use ``#`` comments and embed ``file://`` URIs that C
+    comment handling would mangle; use :func:`find_in_yocto` there.
+    """
+    return blank_comments(code).find(needle)
+
+
+def expand_string_defines(code: str) -> str:
+    """Inline ``#define NAME "value"`` macros at their use sites.
+
+    Checks that demand a literal string argument (``open("/dev/spidev0.0"``,
+    ``sd_bus_request_name(bus, "com.embedeval.Example"``) otherwise reject the
+    equivalent — and more maintainable — macro form that names the constant
+    once. Run this before matching such a literal.
+
+    Only object-like macros whose body is a single string literal are
+    substituted; function-like macros and numeric ones are left alone
+    (:func:`resolve_define` covers the numeric case).
+    """
+    defines = dict(re.findall(r'#define\s+(\w+)\s+("(?:[^"\\]|\\.)*")', code))
+    if not defines:
+        return code
+    # Longest names first so a macro that prefixes another isn't clobbered.
+    pattern = re.compile(
+        r"\b("
+        + "|".join(sorted(map(re.escape, defines), key=len, reverse=True))
+        + r")\b"
+    )
+    return pattern.sub(lambda m: defines[m.group(1)], code)
+
+
+def find_in_yocto(text: str, needle: str) -> int:
+    """Index of ``needle`` in recipe ``text``, ignoring ``#`` comments.
+
+    Yocto counterpart of :func:`find_in_code` — keeps ``file://`` style URIs
+    intact (see :func:`strip_yocto_comments`). Comment removal shifts offsets,
+    so use the result for presence and ordering only, not for slicing ``text``.
+    """
+    return strip_yocto_comments(text).find(needle)
+
+
 def strip_string_literals(code: str) -> str:
     """Remove C string and char literal contents, keeping quotes as sentinels.
 
@@ -86,6 +156,52 @@ def extract_function_body(code: str, func_name: str) -> str | None:
         if depth == 0:
             return code[start:i]
     return None
+
+
+def function_bodies(code: str) -> list[tuple[str, str]]:
+    """Return ``(name, body)`` for every brace-matched function definition.
+
+    Comments are blanked first so a commented-out signature never opens a
+    phantom body. Bodies exclude the outer braces.
+    """
+    blanked = blank_comments(code)
+    signature = re.compile(
+        r"^[A-Za-z_][\w \t\*]*?\b(\w+)\s*\([^;{]*?\)\s*\{",
+        re.MULTILINE | re.DOTALL,
+    )
+    bodies: list[tuple[str, str]] = []
+    for match in signature.finditer(blanked):
+        start = match.end()
+        depth = 1
+        for i in range(start, len(blanked)):
+            if blanked[i] == "{":
+                depth += 1
+            elif blanked[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    bodies.append((match.group(1), blanked[start:i]))
+                    break
+    return bodies
+
+
+def ordered_in_same_function(code: str, first: str, second: str) -> bool:
+    """True when some function calls ``first`` and then ``second`` after it.
+
+    Ordering checks that compare whole-file offsets break the moment a model
+    factors code into helpers: a re-arm helper defined above ``main`` puts
+    ``uart_rx_enable`` before the ``uart_callback_set`` that main runs first,
+    and a helper that appends CoAP options sits above the ``coap_packet_init``
+    call site. What the constraint actually means is "inside the setup path,
+    first comes before second", which is a per-function question.
+
+    Callers that must also accept the fully factored shape (``first`` and
+    ``second`` in *different* functions, where text says nothing about order)
+    should OR this with their own presence check.
+    """
+    return any(
+        first in body and second in body and body.find(first) < body.find(second)
+        for _name, body in function_bodies(code)
+    )
 
 
 def find_isr_bodies(code: str) -> list[str]:

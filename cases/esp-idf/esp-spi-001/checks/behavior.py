@@ -2,13 +2,14 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: spi_bus_initialize error checked
-    init_pos = generated_code.find("spi_bus_initialize")
+    init_pos = find_in_code(generated_code, "spi_bus_initialize")
     post_init = generated_code[init_pos:init_pos + 300] if init_pos != -1 else ""
     has_init_check = "ESP_OK" in post_init or "!= ESP_OK" in post_init or "ret" in post_init
     details.append(CheckDetail(
@@ -40,7 +41,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     ))
 
     # Check 4: spi_device_transmit error checked
-    tx_pos = generated_code.find("spi_device_transmit")
+    tx_pos = find_in_code(generated_code, "spi_device_transmit")
     post_tx = generated_code[tx_pos:tx_pos + 300] if tx_pos != -1 else ""
     has_tx_check = "ESP_OK" in post_tx or "!= ESP_OK" in post_tx or "ret" in post_tx
     details.append(CheckDetail(

@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,10 +12,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: WHO_AM_I read BEFORE any data register read
     # (LLM failure: init reads data register or skips WHO_AM_I entirely)
-    who_am_i_pos = generated_code.find("WHO_AM_I")
-    data_reg_pos = generated_code.find("DATA_REG")
+    who_am_i_pos = find_in_code(generated_code, "WHO_AM_I")
+    data_reg_pos = find_in_code(generated_code, "DATA_REG")
     if data_reg_pos == -1:
-        data_reg_pos = generated_code.find("0x28")
+        data_reg_pos = find_in_code(generated_code, "0x28")
     details.append(
         CheckDetail(
             check_name="who_am_i_before_data_read",

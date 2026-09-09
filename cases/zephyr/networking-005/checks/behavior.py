@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,8 +11,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: TLS credential registered BEFORE socket connect
-    cred_pos = generated_code.find("tls_credential_add")
-    connect_pos = generated_code.find("zsock_connect")
+    cred_pos = find_in_code(generated_code, "tls_credential_add")
+    connect_pos = find_in_code(generated_code, "zsock_connect")
     cred_before_connect = (
         cred_pos != -1 and connect_pos != -1 and cred_pos < connect_pos
     )

@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,8 +14,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: task_wdt_init called before task_wdt_add (correct ordering)
     # AI failure: calling task_wdt_add before task_wdt_init
-    init_pos = generated_code.find("task_wdt_init")
-    add_pos = generated_code.find("task_wdt_add")
+    init_pos = find_in_code(generated_code, "task_wdt_init")
+    add_pos = find_in_code(generated_code, "task_wdt_add")
     init_before_add = init_pos != -1 and add_pos != -1 and init_pos < add_pos
     details.append(
         CheckDetail(

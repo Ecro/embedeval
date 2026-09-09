@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -31,8 +32,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: k_sleep called BEFORE thread_analyzer_print (threads must run first)
     # (LLM failure: calling thread_analyzer_print immediately at boot = all zeros)
-    sleep_pos = generated_code.find("k_sleep")
-    analyzer_pos = generated_code.find("thread_analyzer_print")
+    sleep_pos = find_in_code(generated_code, "k_sleep")
+    analyzer_pos = find_in_code(generated_code, "thread_analyzer_print")
     called_after_sleep = (
         sleep_pos != -1 and analyzer_pos != -1 and sleep_pos < analyzer_pos
     )

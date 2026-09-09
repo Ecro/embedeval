@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -17,12 +18,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         or scoped_contains(generated_code, 'gpio_is_ready', scope='code_only')
     )
     i2c_api_pos = max(
-        generated_code.find("i2c_reg_read"),
-        generated_code.find("i2c_read"),
-        generated_code.find("i2c_write_read"),
-        generated_code.find("i2c_transfer"),
+        find_in_code(generated_code, "i2c_reg_read"),
+        find_in_code(generated_code, "i2c_read"),
+        find_in_code(generated_code, "i2c_write_read"),
+        find_in_code(generated_code, "i2c_transfer"),
     )
-    ready_pos = generated_code.find("device_is_ready")
+    ready_pos = find_in_code(generated_code, "device_is_ready")
     order_ok = (
         has_ready and ready_pos != -1
         and i2c_api_pos != -1 and ready_pos < i2c_api_pos

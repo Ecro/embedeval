@@ -4,6 +4,44 @@ All notable changes to EmbedEval are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Benchmark results
+
+- **Opus 5 re-scored on the 219-case public slice after the L3 check fixes
+  below: 63.0% → 73.1% pass@1** (quality 84.0%), on identical generations.
+  `results/LEADERBOARD.md` still shows the pre-fix 267-case run (61.8%) — the
+  private held-out cases are not available on every machine, and re-publishing
+  without them would drop 48 cases from every row. Folding the fixes in needs a
+  `scripts/rescore_run.py` pass where both the private cases and the run's
+  `details/` directory exist; see `docs/CHECK-QUALITY-AUDIT-2026-09.md`.
+
+### Fixed
+
+- **L3 checks scored coding style, not correctness** — 22 cases recovered after
+  fixing four defect classes (comment-as-call ordering across 97 files, literal
+  idioms rejecting `atomic_t`/`#define`/`k_msleep`, whole-file offsets breaking
+  on helper extraction, and two checks that were factually wrong — systemd
+  `StartLimit*` belongs in `[Unit]`, not `[Service]`). References still 219/219,
+  mutation oracle still 77/77, 0 pass→fail regressions. Two checks got stricter.
+  See `docs/CHECK-QUALITY-AUDIT-2026-09.md`.
+- **`claude -p --output-format json` parsing** — the CLI returns a single result
+  object, not a list of events; the mismatch silently scored every case FAIL@L0.
+- **aarch64 hosts could not run L1/L2** — 32-bit `native_sim` fails CMake
+  configure; `EMBEDEVAL_NATIVE_SIM_BOARD=native_sim/native/64` plus board-overlay
+  aliasing fixes it, and L2 no longer treats the qualified board as hardware
+  (which auto-passed runtime for ~60 cases).
+- **`scripts/sync_docs.py`** aborts instead of silently rewriting case counts to
+  public-only when `../embedeval-private` is missing.
+
+### Added
+
+- `scripts/rescore_run.py` — replay an archived run's stored generations through
+  the current evaluator (no API spend) when a check or environment fix
+  invalidates layer results but not the generations.
+- `check_utils`: `blank_comments`, `find_in_code`, `find_in_yocto`,
+  `expand_string_defines`, `function_bodies`, `ordered_in_same_function`.
+
 ## [0.2.0] — 2026-07-19
 
 ### Benchmark results

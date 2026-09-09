@@ -1,8 +1,10 @@
 """Behavioral checks for UART async API with DMA application."""
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import ordered_in_same_function
 from embedeval.check_utils import check_no_cross_platform_apis, extract_numeric
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -47,9 +49,14 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: callback registered before uart_rx_enable
-    cb_pos = generated_code.find("uart_callback_set")
-    rx_pos = generated_code.find("uart_rx_enable")
-    order_ok = cb_pos != -1 and rx_pos != -1 and cb_pos < rx_pos
+    # A re-arm helper defined above main() puts uart_rx_enable earlier in the
+    # file than the uart_callback_set that actually runs first, so compare
+    # within the function that does the setup.
+    cb_pos = find_in_code(generated_code, "uart_callback_set")
+    rx_pos = find_in_code(generated_code, "uart_rx_enable")
+    order_ok = ordered_in_same_function(
+        generated_code, "uart_callback_set", "uart_rx_enable"
+    ) or (cb_pos != -1 and rx_pos != -1 and cb_pos < rx_pos)
     details.append(
         CheckDetail(
             check_name="callback_before_rx_enable",

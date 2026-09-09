@@ -9,6 +9,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -40,8 +41,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: CA cert registered before client cert (logical ordering)
-    ca_pos = generated_code.find("TLS_CREDENTIAL_CA_CERTIFICATE")
-    client_cert_pos = generated_code.find("TLS_CREDENTIAL_SERVER_CERTIFICATE")
+    ca_pos = find_in_code(generated_code, "TLS_CREDENTIAL_CA_CERTIFICATE")
+    client_cert_pos = find_in_code(generated_code, "TLS_CREDENTIAL_SERVER_CERTIFICATE")
     ca_before_client = ca_pos != -1 and client_cert_pos != -1 and ca_pos < client_cert_pos
     details.append(
         CheckDetail(

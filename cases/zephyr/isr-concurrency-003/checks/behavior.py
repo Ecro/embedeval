@@ -10,6 +10,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -194,8 +195,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check: no blocking calls between spinlock lock and unlock
-    lock_pos = generated_code.find("k_spin_lock")
-    unlock_pos = generated_code.find("k_spin_unlock")
+    lock_pos = find_in_code(generated_code, "k_spin_lock")
+    unlock_pos = find_in_code(generated_code, "k_spin_unlock")
     blocking_in_critical = False
     if lock_pos != -1 and unlock_pos != -1 and lock_pos < unlock_pos:
         critical = generated_code[lock_pos:unlock_pos]

@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,7 +12,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Reads bank header before comparing versions
     # (LLM failure: hardcoding version, not reading from flash)
-    header_pos = generated_code.find("boot_read_bank_header")
+    header_pos = find_in_code(generated_code, "boot_read_bank_header")
     details.append(
         CheckDetail(
             check_name="reads_bank_header",
@@ -105,7 +106,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # (LLM failure: accessing header struct fields even when read fails)
     header_err_pos = -1
     if scoped_contains(generated_code, 'boot_read_bank_header', scope='code_only'):
-        header_call_pos = generated_code.find("boot_read_bank_header")
+        header_call_pos = find_in_code(generated_code, "boot_read_bank_header")
         # Look for error check near the header call (within 300 chars)
         nearby = generated_code[header_call_pos:header_call_pos + 300]
         if "< 0" in nearby or "!= 0" in nearby or "ret" in nearby:

@@ -2,14 +2,15 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: NVS initialized before WiFi (nvs_flash_init appears before esp_wifi_init)
-    nvs_pos = generated_code.find("nvs_flash_init")
-    wifi_pos = generated_code.find("esp_wifi_init")
+    nvs_pos = find_in_code(generated_code, "nvs_flash_init")
+    wifi_pos = find_in_code(generated_code, "esp_wifi_init")
     nvs_before_wifi = nvs_pos != -1 and (wifi_pos == -1 or nvs_pos < wifi_pos)
     details.append(CheckDetail(
         check_name="nvs_initialized_before_wifi",

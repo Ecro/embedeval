@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -26,8 +27,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: fs_mkfs after failed mount (correct recovery ordering)
-    mount_pos = generated_code.find("fs_mount")
-    mkfs_pos = generated_code.find("fs_mkfs")
+    mount_pos = find_in_code(generated_code, "fs_mount")
+    mkfs_pos = find_in_code(generated_code, "fs_mkfs")
     mkfs_after_mount = mkfs_pos != -1 and mount_pos != -1 and mount_pos < mkfs_pos
     details.append(
         CheckDetail(

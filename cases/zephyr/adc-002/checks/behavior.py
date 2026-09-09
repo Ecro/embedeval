@@ -3,8 +3,10 @@
 import re
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import has_sleep_call
 from embedeval.check_utils import check_no_cross_platform_apis, extract_numeric
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -12,8 +14,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: adc_channel_setup called before adc_read (correct ordering)
-    setup_pos = generated_code.find("adc_channel_setup")
-    read_pos = generated_code.find("adc_read")
+    setup_pos = find_in_code(generated_code, "adc_channel_setup")
+    read_pos = find_in_code(generated_code, "adc_read")
     order_ok = setup_pos != -1 and read_pos != -1 and setup_pos < read_pos
     details.append(
         CheckDetail(
@@ -40,7 +42,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: Oversampling configured before read (setup struct before adc_read)
-    oversamp_pos = generated_code.find("oversampling")
+    oversamp_pos = find_in_code(generated_code, "oversampling")
     oversamp_before_read = oversamp_pos != -1 and read_pos != -1 and oversamp_pos < read_pos
     details.append(
         CheckDetail(
@@ -79,7 +81,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 6: Reads in a loop with sleep (not single shot)
     has_loop = scoped_contains(generated_code, 'while', scope='code_only') or scoped_contains(generated_code, 'for', scope='code_only')
-    has_sleep = scoped_contains(generated_code, 'k_sleep', scope='code_only')
+    # k_msleep/k_usleep are the same API family — requiring the bare
+    # k_sleep spelling failed correct periodic-read code.
+    has_sleep = has_sleep_call(generated_code)
     details.append(
         CheckDetail(
             check_name="periodic_read_with_sleep",

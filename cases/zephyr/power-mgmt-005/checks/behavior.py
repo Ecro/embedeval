@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -29,13 +30,39 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Suspend called for all three devices
     # (LLM failure: suspending only two of the three devices)
-    suspend_call_count = generated_code.count("PM_DEVICE_ACTION_SUSPEND")
-    has_suspend_all = suspend_call_count >= 3
+    # Three explicit calls and one loop over a three-device table are equally
+    # correct; counting SUSPEND tokens punished the table form, which is the
+    # better factoring. The table branch still requires three entries AND a
+    # loop bound that covers them, so "suspend only two" stays detectable.
+    stripped = strip_comments(generated_code)
+    # Count actual suspend *calls*: a bare token count also counts the
+    # `case PM_DEVICE_ACTION_SUSPEND:` label in the device's pm_action
+    # handler, which inflated every submission by one and let a
+    # two-device suspend reach the >= 3 threshold.
+    suspend_call_count = len(
+        re.findall(
+            r"pm_device_action_run\s*\([^;]*PM_DEVICE_ACTION_SUSPEND", stripped
+        )
+    )
+    table = re.search(r"\[\s*\w*\s*\]\s*=\s*\{([^}]*)\}", stripped)
+    table_entries = (
+        len(re.findall(r"\bdev_[a-zA-Z]\b", table.group(1))) if table else 0
+    )
+    loop_covers_table = bool(
+        re.search(
+            r"for\s*\([^;]*;\s*\w+\s*<\s*"
+            r"(?:ARRAY_SIZE\s*\([^)]*\)|[A-Za-z_]\w*|[3-9]|\d{2,})\s*;",
+            stripped,
+        )
+    )
+    has_suspend_all = suspend_call_count >= 3 or (
+        suspend_call_count >= 1 and table_entries >= 3 and loop_covers_table
+    )
     details.append(
         CheckDetail(
             check_name="all_three_devices_suspended",
             passed=has_suspend_all,
-            expected="PM_DEVICE_ACTION_SUSPEND used >= 3 times (one per device)",
+            expected="All three devices suspended (three calls, or a loop over a three-device table)",
             actual=f"suspend_uses={suspend_call_count}",
             check_type="constraint",
         )

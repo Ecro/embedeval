@@ -1,8 +1,10 @@
 """Behavioral checks for CoAP client GET request."""
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import function_bodies
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -39,9 +41,18 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: coap_packet_init called before append_option (ordering)
-    init_pos = generated_code.find("coap_packet_init")
-    opt_pos = generated_code.find("coap_packet_append_option")
-    order_ok = init_pos != -1 and opt_pos != -1 and init_pos < opt_pos
+    init_pos = find_in_code(generated_code, "coap_packet_init(")
+    opt_pos = find_in_code(generated_code, "coap_packet_append_option(")
+    # An option-appending helper defined above the init call site is correct —
+    # it cannot run before the caller inits the packet. So the order is only
+    # judged where it is actually observable: inside a single function.
+    appends_before_init = any(
+        "coap_packet_init" in body
+        and "coap_packet_append_option" in body
+        and body.find("coap_packet_append_option") < body.find("coap_packet_init")
+        for _name, body in function_bodies(generated_code)
+    )
+    order_ok = init_pos != -1 and opt_pos != -1 and not appends_before_init
     details.append(
         CheckDetail(
             check_name="init_before_append_option",

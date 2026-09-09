@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -24,8 +25,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Device ready check BEFORE Mem_Read (ordering)
-    ready_pos = generated_code.find("HAL_I2C_IsDeviceReady")
-    mem_read_pos = generated_code.find("HAL_I2C_Mem_Read")
+    ready_pos = find_in_code(generated_code, "HAL_I2C_IsDeviceReady")
+    mem_read_pos = find_in_code(generated_code, "HAL_I2C_Mem_Read")
     ready_before_read = (
         ready_pos != -1 and mem_read_pos != -1 and ready_pos < mem_read_pos
     )
@@ -101,10 +102,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # (HAL MspInit callback pattern guarantees clock is enabled before use)
     clk_pos = -1
     for token in ["__HAL_RCC_I2C1_CLK_ENABLE", "__HAL_RCC_I2C"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             clk_pos = pos if clk_pos == -1 else min(clk_pos, pos)
-    i2c_init_pos = generated_code.find("HAL_I2C_Init")
+    i2c_init_pos = find_in_code(generated_code, "HAL_I2C_Init")
     clock_before_init = clk_pos != -1 and i2c_init_pos != -1
     details.append(
         CheckDetail(

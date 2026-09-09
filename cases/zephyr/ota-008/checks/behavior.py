@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,10 +12,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Timer/deadline started AFTER detecting unconfirmed image
     # (LLM failure: no deadline set, or set unconditionally before the check)
-    confirmed_pos = generated_code.find("boot_is_img_confirmed")
-    deadline_pos = generated_code.find("deadline")
+    confirmed_pos = find_in_code(generated_code, "boot_is_img_confirmed")
+    deadline_pos = find_in_code(generated_code, "deadline")
     if deadline_pos == -1:
-        deadline_pos = generated_code.find("k_uptime_get")
+        deadline_pos = find_in_code(generated_code, "k_uptime_get")
     details.append(
         CheckDetail(
             check_name="timer_started_after_detection",
@@ -28,7 +29,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: sys_reboot called on timeout — not just printk
     # (LLM failure: printing "timeout" but not actually resetting — MCUboot never rolls back)
-    reboot_pos = generated_code.find("sys_reboot")
+    reboot_pos = find_in_code(generated_code, "sys_reboot")
     timeout_ref_pos = generated_code.lower().find("timeout")
     details.append(
         CheckDetail(
@@ -66,8 +67,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: self_test called before boot_write_img_confirmed
     # (LLM failure: confirming immediately on boot without any self-test)
-    self_test_pos = generated_code.find("self_test")
-    write_pos = generated_code.find("boot_write_img_confirmed")
+    self_test_pos = find_in_code(generated_code, "self_test")
+    write_pos = find_in_code(generated_code, "boot_write_img_confirmed")
     details.append(
         CheckDetail(
             check_name="self_test_before_confirm",

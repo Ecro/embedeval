@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -63,7 +64,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Producer sleeps before giving semaphore (simulates event production delay)
     # (LLM failure: give called in tight loop with no sleep)
-    give_pos = generated_code.find("k_sem_give")
+    give_pos = find_in_code(generated_code, "k_sem_give")
     producer_sleeps = False
     if give_pos >= 0:
         # Look for k_sleep within 400 chars before give

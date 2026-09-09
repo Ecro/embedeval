@@ -8,6 +8,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def _extract_psa_error_blocks(code: str) -> list[str]:
@@ -37,8 +38,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     stripped = strip_comments(generated_code)
 
     # Check 1: init before mac_sign_setup (correct ordering)
-    init_pos = generated_code.find("psa_crypto_init")
-    setup_pos = generated_code.find("psa_mac_sign_setup")
+    init_pos = find_in_code(generated_code, "psa_crypto_init")
+    setup_pos = find_in_code(generated_code, "psa_mac_sign_setup")
     init_before_setup = init_pos != -1 and setup_pos != -1 and init_pos < setup_pos
     details.append(
         CheckDetail(
@@ -51,8 +52,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: setup -> update -> finish ordering
-    update_pos = generated_code.find("psa_mac_update")
-    finish_pos = generated_code.find("psa_mac_sign_finish")
+    update_pos = find_in_code(generated_code, "psa_mac_update")
+    finish_pos = find_in_code(generated_code, "psa_mac_sign_finish")
     correct_order = (
         setup_pos != -1
         and update_pos != -1

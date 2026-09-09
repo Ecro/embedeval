@@ -8,6 +8,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def _extract_psa_error_blocks(code: str) -> list[str]:
@@ -37,8 +38,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     stripped = strip_comments(generated_code)
 
     # Check 1: init before import (correct ordering)
-    init_pos = generated_code.find("psa_crypto_init")
-    import_pos = generated_code.find("psa_import_key")
+    init_pos = find_in_code(generated_code, "psa_crypto_init")
+    import_pos = find_in_code(generated_code, "psa_import_key")
     details.append(
         CheckDetail(
             check_name="init_before_import",

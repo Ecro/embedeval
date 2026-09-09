@@ -9,6 +9,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -100,6 +101,23 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         "unregister_chrdev_region" in block or "cdev_del" in block
         for block in error_blocks
     )
+    # Canonical kernel style is `if (ret) goto err_cdev_del;` with the cleanup
+    # under labels at the end of the function — the cleanup is then in no error
+    # block at all. Accept it when an error branch jumps to a label whose body
+    # does the unwinding.
+    code_only = strip_comments(generated_code)
+    for label in set(re.findall(r"goto\s+(\w+)\s*;", code_only)):
+        section = re.search(
+            rf"^{re.escape(label)}\s*:(.*?)(?=^\w+\s*:|\Z)",
+            code_only,
+            re.MULTILINE | re.DOTALL,
+        )
+        if section and (
+            "cdev_del" in section.group(1)
+            or "unregister_chrdev_region" in section.group(1)
+        ):
+            error_path_cleanup = True
+            break
     details.append(
         CheckDetail(
             check_name="init_error_path_cleanup",

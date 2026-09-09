@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: sensor_attr_set called before sensor_sample_fetch
     # (LLM failure: reading data before configuring the sensor)
-    attr_pos = generated_code.find("sensor_attr_set")
-    fetch_pos = generated_code.find("sensor_sample_fetch")
+    attr_pos = find_in_code(generated_code, "sensor_attr_set")
+    fetch_pos = find_in_code(generated_code, "sensor_sample_fetch")
     details.append(
         CheckDetail(
             check_name="attr_set_before_fetch",
@@ -68,7 +69,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: device_is_ready before anything
-    ready_pos = generated_code.find("device_is_ready")
+    ready_pos = find_in_code(generated_code, "device_is_ready")
     details.append(
         CheckDetail(
             check_name="device_ready_before_attr",

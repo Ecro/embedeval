@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -12,9 +13,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 1: All LED pins configured as output before the main loop
     # (AI failure: calling gpio_pin_set_dt on unconfigured pins)
     has_output_config = scoped_contains(generated_code, 'GPIO_OUTPUT', scope='code_only')
-    config_pos = generated_code.find("gpio_pin_configure")
-    set_pos = generated_code.find("gpio_pin_set_dt")
-    toggle_pos = generated_code.find("gpio_pin_toggle_dt")
+    config_pos = find_in_code(generated_code, "gpio_pin_configure")
+    set_pos = find_in_code(generated_code, "gpio_pin_set_dt")
+    toggle_pos = find_in_code(generated_code, "gpio_pin_toggle_dt")
     first_drive_pos = min(
         p for p in [set_pos, toggle_pos] if p != -1
     ) if any(p != -1 for p in [set_pos, toggle_pos]) else -1

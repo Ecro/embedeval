@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -43,7 +44,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: memcmp or field-by-field verification before primary write
-    memcmp_pos = generated_code.find("memcmp")
+    memcmp_pos = find_in_code(generated_code, "memcmp")
     # Also accept field-by-field comparison (e.g., read_back.field != expected)
     if memcmp_pos == -1:
         field_cmp = bool(re.search(
@@ -119,7 +120,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # are only executed after main calls them (after nvs_mount).
     main_pos = -1
     for main_pattern in ["int main(", "void main(", "int main(void", "void main(void"]:
-        pos = generated_code.find(main_pattern)
+        pos = find_in_code(generated_code, main_pattern)
         if pos != -1:
             main_pos = pos
             break

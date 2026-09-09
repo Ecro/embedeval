@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,9 +11,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: fs_mount before fs_open (correct ordering)
-    mount_pos = generated_code.find("fs_mount")
-    open_pos = generated_code.find("fs_open")
-    write_pos = generated_code.find("fs_write")
+    mount_pos = find_in_code(generated_code, "fs_mount")
+    open_pos = find_in_code(generated_code, "fs_open")
+    write_pos = find_in_code(generated_code, "fs_write")
     mount_first = (
         mount_pos != -1
         and open_pos != -1
@@ -31,7 +32,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: write before read (write-then-verify pattern)
-    read_pos = generated_code.find("fs_read")
+    read_pos = find_in_code(generated_code, "fs_read")
     write_before_read = (
         write_pos != -1 and read_pos != -1 and write_pos < read_pos
     )
@@ -58,7 +59,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: fs_close called (resource cleanup)
-    close_pos = generated_code.find("fs_close")
+    close_pos = find_in_code(generated_code, "fs_close")
     has_close = close_pos != -1
     details.append(
         CheckDetail(

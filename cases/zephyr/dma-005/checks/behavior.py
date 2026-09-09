@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,8 +11,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: Cache flush on source before DMA start
-    flush_pos = generated_code.find("sys_cache_data_flush_range")
-    start_pos = generated_code.find("dma_start(")
+    flush_pos = find_in_code(generated_code, "sys_cache_data_flush_range")
+    start_pos = find_in_code(generated_code, "dma_start(")
     flush_before_start = (
         flush_pos != -1
         and start_pos != -1
@@ -29,7 +30,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Cache invalidate on destination before DMA start (pre-invalidate)
     # Find the FIRST occurrence of invd_range; it should appear before dma_start
-    invd_pos_first = generated_code.find("sys_cache_data_invd_range")
+    invd_pos_first = find_in_code(generated_code, "sys_cache_data_invd_range")
     pre_invd_ok = (
         invd_pos_first != -1
         and start_pos != -1
@@ -47,7 +48,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: Cache invalidate on destination AFTER DMA completes (post-invalidate)
     # There should be a second invd_range call after the semaphore take
-    sem_take_pos = generated_code.find("k_sem_take")
+    sem_take_pos = find_in_code(generated_code, "k_sem_take")
     invd_pos_second = generated_code.rfind("sys_cache_data_invd_range")
     post_invd_ok = (
         invd_pos_second != -1
@@ -65,7 +66,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: dma_config before dma_start
-    config_pos = generated_code.find("dma_config(")
+    config_pos = find_in_code(generated_code, "dma_config(")
     order_ok = config_pos != -1 and start_pos != -1 and config_pos < start_pos
     details.append(
         CheckDetail(

@@ -151,6 +151,24 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         if sleep_patterns
         else False
     )
+    # A named period driving an absolute deadline rate-limits writes exactly
+    # like an inline K_MSEC(10000): `#define SAMPLE_PERIOD_MS 10000` +
+    # `deadline += SAMPLE_PERIOD_MS; k_sleep(K_TIMEOUT_ABS_MS(deadline))`.
+    # Requiring a literal rejected drift-free scheduling, the better pattern.
+    timing_lines = "\n".join(
+        line
+        for line in stripped.splitlines()
+        if re.search(r"sleep|deadline", line, re.IGNORECASE)
+    )
+    for name, value in re.findall(
+        r"#define\s+(\w*(?:PERIOD|INTERVAL|DELAY)\w*)\s+(\d+)",
+        stripped,
+        re.IGNORECASE,
+    ):
+        threshold = 1000 if name.upper().endswith("_MS") else 1
+        if int(value) >= threshold and re.search(rf"\b{re.escape(name)}\b", timing_lines):
+            has_rate_limit = True
+            break
     # Also accept batch/buffer patterns
     has_batch = bool(
         re.search(

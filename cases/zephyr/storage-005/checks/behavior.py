@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,9 +11,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: nvs_mount before write/delete (correct ordering)
-    mount_pos = generated_code.find("nvs_mount")
-    write_pos = generated_code.find("nvs_write")
-    delete_pos = generated_code.find("nvs_delete")
+    mount_pos = find_in_code(generated_code, "nvs_mount")
+    write_pos = find_in_code(generated_code, "nvs_write")
+    delete_pos = find_in_code(generated_code, "nvs_delete")
     mount_first = (
         mount_pos != -1
         and write_pos != -1
@@ -31,7 +32,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: nvs_calc_free_space called after writes
-    free_pos = generated_code.find("nvs_calc_free_space")
+    free_pos = find_in_code(generated_code, "nvs_calc_free_space")
     free_after_write = (
         free_pos != -1 and write_pos != -1 and write_pos < free_pos
     )

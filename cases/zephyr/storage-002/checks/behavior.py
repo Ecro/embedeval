@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,9 +11,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: settings_subsys_init before save/load (correct ordering)
-    init_pos = generated_code.find("settings_subsys_init")
-    save_pos = generated_code.find("settings_save_one")
-    load_pos = generated_code.find("settings_load(")
+    init_pos = find_in_code(generated_code, "settings_subsys_init")
+    save_pos = find_in_code(generated_code, "settings_save_one")
+    load_pos = find_in_code(generated_code, "settings_load(")
     init_first = (
         init_pos != -1
         and save_pos != -1
@@ -31,7 +32,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: settings_register before settings_load
-    register_pos = generated_code.find("settings_register")
+    register_pos = find_in_code(generated_code, "settings_register")
     register_before_load = (
         register_pos != -1 and load_pos != -1 and register_pos < load_pos
     )

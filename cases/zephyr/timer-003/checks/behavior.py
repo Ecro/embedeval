@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,8 +14,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: counter_start called before counter_set_channel_alarm
     # AI failure: setting alarm before starting counter
-    start_pos = generated_code.find("counter_start")
-    alarm_pos = generated_code.find("counter_set_channel_alarm")
+    start_pos = find_in_code(generated_code, "counter_start")
+    alarm_pos = find_in_code(generated_code, "counter_set_channel_alarm")
     start_before_alarm = (
         start_pos != -1 and alarm_pos != -1 and start_pos < alarm_pos
     )
@@ -66,8 +67,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: device_is_ready called before counter operations
-    ready_pos = generated_code.find("device_is_ready")
-    start_pos2 = generated_code.find("counter_start")
+    ready_pos = find_in_code(generated_code, "device_is_ready")
+    start_pos2 = find_in_code(generated_code, "counter_start")
     ready_before_start = (
         ready_pos != -1 and start_pos2 != -1 and ready_pos < start_pos2
     )

@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,8 +11,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: wdt_install_timeout before wdt_setup (correct order)
-    install_pos = generated_code.find("wdt_install_timeout")
-    setup_pos = generated_code.find("wdt_setup")
+    install_pos = find_in_code(generated_code, "wdt_install_timeout")
+    setup_pos = find_in_code(generated_code, "wdt_setup")
     order_ok = install_pos != -1 and setup_pos != -1 and install_pos < setup_pos
     details.append(
         CheckDetail(
@@ -24,7 +25,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: wdt_setup before wdt_feed (can't feed before setup)
-    feed_pos = generated_code.find("wdt_feed")
+    feed_pos = find_in_code(generated_code, "wdt_feed")
     setup_before_feed = setup_pos != -1 and feed_pos != -1 and setup_pos < feed_pos
     details.append(
         CheckDetail(

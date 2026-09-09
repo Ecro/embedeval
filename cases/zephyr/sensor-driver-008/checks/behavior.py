@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -45,7 +46,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 3: compute_orientation called AFTER both fetches
     # (LLM failure: computing orientation before fetching gyro data)
-    orientation_pos = generated_code.find("compute_orientation")
+    orientation_pos = find_in_code(generated_code, "compute_orientation")
     if orientation_pos == -1:
         orientation_pos = generated_code.lower().find("pitch")
     last_fetch_pos = generated_code.rfind("sensor_sample_fetch")

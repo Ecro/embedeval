@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -93,7 +94,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 6: Period passed as nanoseconds to pwm_set_dt (not 0 or 1 which are wrong)
     # Heuristic: the literal 0 as period would be invalid; check that a non-trivial period is used
-    pwm_set_pos = generated_code.find("pwm_set_dt")
+    pwm_set_pos = find_in_code(generated_code, "pwm_set_dt")
     has_nonzero_period = pwm_set_pos != -1 and scoped_contains(generated_code, 'pwm_set_dt(&', scope='code_only')
     details.append(
         CheckDetail(

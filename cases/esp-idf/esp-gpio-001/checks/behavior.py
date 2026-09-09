@@ -2,6 +2,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -9,7 +10,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Error handling on gpio_config
     # Search for the function call form "gpio_config(" to skip the struct type "gpio_config_t"
-    config_pos = generated_code.find("gpio_config(")
+    config_pos = find_in_code(generated_code, "gpio_config(")
     post_config = generated_code[config_pos:config_pos + 200] if config_pos != -1 else ""
     has_error_check = "ESP_OK" in post_config or "!= ESP_OK" in post_config or "ret" in post_config
     details.append(CheckDetail(

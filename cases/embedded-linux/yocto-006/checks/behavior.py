@@ -3,6 +3,7 @@
 import re
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import yocto_contains
 from embedeval.check_utils import scoped_contains
 
 
@@ -12,10 +13,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: No manual git apply or patch in do_compile
     # (LLM hallucination: Yocto handles patches automatically via SRC_URI)
-    has_git_apply = scoped_contains(generated_code, 'git apply', scope='raw')
+    # Strip #-comments (URI-safe): a recipe that documents "patches are applied
+    # by do_patch() -- never invoke git apply here" was failing its own advice.
+    has_git_apply = yocto_contains(generated_code, 'git apply')
     has_patch_cmd = (
-        scoped_contains(generated_code, 'patch -p', scope='raw')
-        or scoped_contains(generated_code, 'patch -i', scope='raw')
+        yocto_contains(generated_code, 'patch -p')
+        or yocto_contains(generated_code, 'patch -i')
     )
     details.append(
         CheckDetail(

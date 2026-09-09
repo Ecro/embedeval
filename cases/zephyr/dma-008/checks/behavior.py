@@ -5,11 +5,61 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
+from embedeval.check_utils import strip_comments
+
+
+_ERROR_FLAG_DECL = re.compile(
+    r"(?P<qualifiers>(?:static\s+|volatile\s+)*)"
+    r"(?P<type>atomic_t|_Atomic\s+\w+|(?:unsigned\s+|signed\s+)?"
+    r"(?:int|long|short|char|bool|uint\d+_t|int\d+_t))\s+"
+    r"(?P<name>\w*(?:error|err)\w*)\s*(?:=|;|\[)",
+)
+
+
+def _find_error_flag(code_only: str) -> "re.Match[str] | None":
+    """Locate the declaration of the DMA error flag.
+
+    Matches the *declaration* rather than any ``*err*`` token so the
+    ``error_callback_dis`` field of ``struct dma_config`` is not mistaken for
+    the flag, and covers both storage choices: ``volatile int dma_error_flag``
+    and ``atomic_t dma_error``.
+    """
+    return _ERROR_FLAG_DECL.search(code_only)
+
+
+def _branch_after(code: str, start: int) -> str:
+    """Return the branch body that begins at ``start``.
+
+    Handles both ``{ ... }`` blocks and braceless single statements — a
+    ``if (flag) return -EIO;`` guard is as much a return path as a braced one,
+    and searching for the next ``{`` would wander into an unrelated block.
+    """
+    semicolon = code.find(";", start)
+    open_brace = code.find("{", start)
+    if open_brace == -1 or (semicolon != -1 and semicolon < open_brace):
+        return code[start : semicolon + 1] if semicolon != -1 else code[start:]
+    depth = 0
+    for i in range(open_brace, len(code)):
+        if code[i] == "{":
+            depth += 1
+        elif code[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return code[open_brace : i + 1]
+    return code[open_brace:]
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
     """Validate DMA error handling behavioral properties and domain invariants."""
     details: list[CheckDetail] = []
+    # Comment-free view: the checks below reason about declarations, call order
+    # and branch bodies, none of which should be satisfiable from prose.
+    code_only = strip_comments(generated_code)
+    flag_decl = _find_error_flag(code_only)
+    error_flag_name = flag_decl.group("name") if flag_decl else None
+    flag_is_atomic = bool(flag_decl) and "atomic" in flag_decl.group("type")
+    flag_is_volatile = bool(flag_decl) and "volatile" in flag_decl.group("qualifiers")
 
     # Check 1: Callback inspects the status parameter (status != 0 check)
     has_status_check = (
@@ -28,28 +78,27 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         )
     )
 
-    # Check 2: volatile applied specifically to the error flag/status variable (not any variable).
-    # Reject code where volatile appears only on a buffer/struct while the flag itself is plain int.
-    # Accept variable names like: dma_error_flag, error_flag, dma_error_status, error_status
-    has_volatile_flag = bool(re.search(
-        r'volatile\s+\w*int\w*\s+\w*(?:error|err)\w*',
-        generated_code,
-    )) or bool(re.search(
-        r'\w*(?:error|err)\w*\b.*volatile',
-        generated_code,
-    ))
+    # Check 2: the error flag itself must survive compiler optimisation and the
+    # callback/thread race — `volatile` or `atomic_t` on the *flag* (not on some
+    # buffer next to it). atomic_t is the stronger choice: volatile alone gives
+    # no atomicity, so rejecting it punished the more correct answer.
+    has_volatile_flag = flag_is_volatile or flag_is_atomic
     details.append(
         CheckDetail(
             check_name="error_flag_is_volatile",
             passed=has_volatile_flag,
-            expected="Error flag declared as volatile to prevent compiler optimization",
-            actual="present" if has_volatile_flag else "missing volatile on error flag — may be optimized away",
+            expected="Error flag declared volatile or atomic_t (not a plain int)",
+            actual=(
+                f"{flag_decl.group('type')} {error_flag_name}"
+                if has_volatile_flag
+                else "missing volatile/atomic on error flag — may be optimized away"
+            ),
             check_type="constraint",
         )
     )
 
     # Check 3: dma_stop called on error (in callback or after)
-    dma_stop_pos = generated_code.find("dma_stop(")
+    dma_stop_pos = find_in_code(generated_code, "dma_stop(")
     has_dma_stop = dma_stop_pos != -1
     details.append(
         CheckDetail(
@@ -63,13 +112,11 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Error flag checked after semaphore wait in main
     # Use rfind to find the LAST usage of the error flag (the check in main, not the declaration)
-    sem_pos = generated_code.find("k_sem_take")
-    # Detect error flag/status variable name flexibly
-    _eflag_match = re.search(r'\b(\w*(?:error|err)_?(?:flag|status)\w*)\s*[;=]', generated_code)
-    error_flag_name = _eflag_match.group(1) if _eflag_match else None
+    sem_pos = code_only.find("k_sem_take")
     if error_flag_name:
-        # Find the last occurrence (the check in main, after k_sem_take)
-        error_flag_last_pos = generated_code.rfind(error_flag_name)
+        # Last occurrence = the read in main (atomic_get(&flag) counts), not the
+        # declaration.
+        error_flag_last_pos = code_only.rfind(error_flag_name)
     else:
         error_flag_last_pos = -1
     error_checked_after_wait = (
@@ -117,8 +164,17 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         status_check_match = re.search(r'if\s*\(\s*status|if\s*\(status', cb_body)
         if status_check_match:
             after_status_check = cb_body[status_check_match.start():status_check_match.start() + 200]
+            # Recording the error can be an assignment or an atomic store —
+            # `atomic_set(&dma_error, status)` propagates it exactly like
+            # `dma_error_flag = 1`, and requiring `=` failed the atomic form.
+            flag_pattern = re.escape(error_flag_name) if error_flag_name else r"\w*(?:error|err)\w*"
             flag_set_in_error = bool(
                 re.search(r'(?:dma_error\w*|error_flag|error_status)\s*=\s*(?!\s*0\b)', after_status_check)
+            ) or bool(
+                re.search(
+                    rf"atomic_(?:set|or|add|inc)\s*\(\s*&?{flag_pattern}",
+                    after_status_check,
+                )
             )
             actual_cb_msg = (
                 "error flag set within status check branch"
@@ -145,17 +201,24 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # LLM failure: reads the flag and prints a message but never returns on error,
     # allowing execution to proceed as if the DMA completed successfully.
     # Find error flag check in main — use the detected variable name
-    error_check_pos = -1
-    if error_flag_name:
-        error_check_pos = generated_code.find(f"if ({error_flag_name}")
-    if error_check_pos == -1:
-        error_check_pos = generated_code.find("if (dma_error_flag")
-    if error_check_pos == -1:
-        error_check_pos = generated_code.find("if (error_flag")
+    # The guard may test the flag directly (`if (dma_error_flag != 0)`) or a
+    # local snapshot of it (`err = atomic_get(&dma_error); if (err != 0)`).
+    # Either way the *branch body* must leave — a `return 0;` at the end of main
+    # is not error handling.
     error_causes_return = False
-    if error_check_pos != -1:
-        post_check = generated_code[error_check_pos:error_check_pos + 200]
-        error_causes_return = "return" in post_check
+    if error_flag_name:
+        tail = code_only[sem_pos:] if sem_pos != -1 else code_only
+        snapshots = set(
+            re.findall(rf"(\w+)\s*=[^;]*\b{re.escape(error_flag_name)}\b", tail)
+        )
+        guarded_names = {error_flag_name} | snapshots
+        for guard in re.finditer(r"if\s*\(([^)]*)\)", tail):
+            if not any(re.search(rf"\b{re.escape(n)}\b", guard.group(1)) for n in guarded_names):
+                continue
+            branch = _branch_after(tail, guard.end())
+            if "return" in branch or "goto" in branch:
+                error_causes_return = True
+                break
     details.append(
         CheckDetail(
             check_name="error_flag_causes_return",
@@ -168,17 +231,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 8: Error flag read AFTER k_sem_take (not before synchronization)
     # LLM failure: reading error flag before waiting for DMA completion semaphore
-    sem_take_pos = generated_code.rfind("k_sem_take")
+    sem_take_pos = code_only.rfind("k_sem_take")
     # Reuse the already-detected error flag variable name
     error_flag_name_c7 = error_flag_name
     if error_flag_name_c7 and sem_take_pos != -1:
-        # Find an 'if' referencing the error flag that comes after the last k_sem_take
-        tail = generated_code[sem_take_pos:]
-        error_check_in_tail = bool(
-            re.search(
-                r'if\s*\(\s*' + re.escape(error_flag_name_c7),
-                tail
-            )
+        # The flag must be read after the wait and that read must feed a branch.
+        # Matching only `if (flag` missed `err = atomic_get(&flag); if (err)`.
+        tail = code_only[sem_take_pos:]
+        flag_read = tail.find(error_flag_name_c7)
+        error_check_in_tail = flag_read != -1 and bool(
+            re.search(r"if\s*\(", tail[flag_read:])
         )
         actual_order_msg = (
             "correct: error flag checked after k_sem_take"

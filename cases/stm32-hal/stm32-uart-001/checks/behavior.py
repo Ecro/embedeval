@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -49,7 +50,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Receive re-armed in callback (critical: _IT is one-shot, must re-arm)
     # LLM failure: calls Receive_IT once in main but never re-arms in callback
-    callback_start = generated_code.find("HAL_UART_RxCpltCallback")
+    callback_start = find_in_code(generated_code, "HAL_UART_RxCpltCallback")
     rearm_in_callback = False
     if callback_start != -1:
         # Look for Receive_IT after the callback definition
@@ -80,10 +81,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 6: Clock enable before HAL_UART_Init (ordering)
     clk_pos = -1
     for token in ["__HAL_RCC_USART2_CLK_ENABLE", "__HAL_RCC_UART"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             clk_pos = pos if clk_pos == -1 else min(clk_pos, pos)
-    uart_init_pos = generated_code.find("HAL_UART_Init")
+    uart_init_pos = find_in_code(generated_code, "HAL_UART_Init")
     clock_before_init = clk_pos != -1 and uart_init_pos != -1 and clk_pos < uart_init_pos
     details.append(
         CheckDetail(

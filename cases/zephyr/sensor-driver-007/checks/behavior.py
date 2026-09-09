@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,12 +12,12 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Watermark checked BEFORE burst read
     # (LLM failure: reading a fixed number of samples without checking watermark)
-    watermark_pos = generated_code.find("watermark")
+    watermark_pos = find_in_code(generated_code, "watermark")
     if watermark_pos == -1:
         watermark_pos = generated_code.lower().find("watermark")
-    burst_pos = generated_code.find("burst_read")
+    burst_pos = find_in_code(generated_code, "burst_read")
     if burst_pos == -1:
-        burst_pos = generated_code.find("sensor_sample_fetch")
+        burst_pos = find_in_code(generated_code, "sensor_sample_fetch")
     details.append(
         CheckDetail(
             check_name="watermark_before_burst_read",

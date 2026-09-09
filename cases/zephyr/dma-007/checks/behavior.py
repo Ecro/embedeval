@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -31,7 +32,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 2: Both channels configured before either is started
     # All dma_config calls should appear before dma_start calls
     last_config_pos = generated_code.rfind("dma_config(")
-    first_start_pos = generated_code.find("dma_start(")
+    first_start_pos = find_in_code(generated_code, "dma_start(")
     configs_before_starts = (
         last_config_pos != -1
         and first_start_pos != -1

@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis, check_return_after_error
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,8 +14,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Hash computed BEFORE dfu_target_write (the critical ordering rule)
     # (LLM failure: writing to flash first, then verifying — too late!)
-    hash_pos = generated_code.find("psa_hash_compute")
-    write_pos = generated_code.find("dfu_target_write")
+    hash_pos = find_in_code(generated_code, "psa_hash_compute")
+    write_pos = find_in_code(generated_code, "dfu_target_write")
     details.append(
         CheckDetail(
             check_name="hash_before_flash_write",
@@ -28,7 +29,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: Hash comparison present BEFORE dfu_target_write
     # (LLM failure: computing hash but not comparing before writing)
-    memcmp_pos = generated_code.find("memcmp")
+    memcmp_pos = find_in_code(generated_code, "memcmp")
     details.append(
         CheckDetail(
             check_name="hash_comparison_before_write",

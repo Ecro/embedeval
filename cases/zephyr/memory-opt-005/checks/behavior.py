@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: k_mem_domain_init called before k_mem_domain_add_partition
     # (LLM failure: calling add_partition on uninitialized domain = kernel assertion)
-    init_pos = generated_code.find("k_mem_domain_init")
-    add_part_pos = generated_code.find("k_mem_domain_add_partition")
+    init_pos = find_in_code(generated_code, "k_mem_domain_init")
+    add_part_pos = find_in_code(generated_code, "k_mem_domain_add_partition")
     init_before_add = (
         init_pos != -1 and add_part_pos != -1 and init_pos < add_part_pos
     )
@@ -28,8 +29,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: k_mem_domain_add_thread called after k_thread_create
     # (LLM failure: domain assigned before thread exists)
-    thread_create_pos = generated_code.find("k_thread_create")
-    add_thread_pos = generated_code.find("k_mem_domain_add_thread")
+    thread_create_pos = find_in_code(generated_code, "k_thread_create")
+    add_thread_pos = find_in_code(generated_code, "k_mem_domain_add_thread")
     thread_then_domain = (
         thread_create_pos != -1
         and add_thread_pos != -1

@@ -4,6 +4,7 @@ import re
 
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis, extract_numeric, resolve_define
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -105,13 +106,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 6: Queue created before tasks start using it
     queue_create_pos = -1
     for token in ["xQueueCreate", "osMessageQueueNew"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             queue_create_pos = pos if queue_create_pos == -1 else min(queue_create_pos, pos)
 
     task_create_pos = -1
     for token in ["xTaskCreate", "osThreadNew"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             task_create_pos = pos if task_create_pos == -1 else min(task_create_pos, pos)
 

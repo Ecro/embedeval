@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -26,8 +27,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 2: uart_poll_in return value checked (only echo on success)
     # AI failure pattern: calling uart_poll_out unconditionally without checking return
-    poll_in_pos = generated_code.find("uart_poll_in")
-    poll_out_pos = generated_code.find("uart_poll_out")
+    poll_in_pos = find_in_code(generated_code, "uart_poll_in")
+    poll_out_pos = find_in_code(generated_code, "uart_poll_out")
     # Check that poll_in result is used in a conditional (== 0, != -1, >= 0, etc.)
     has_conditional_echo = (
         poll_in_pos != -1

@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -12,8 +13,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: Write enable command present AND ordered before write operation
-    wren_pos = max(generated_code.find("WREN"), generated_code.lower().find("write_enable"))
-    write_pos = max(generated_code.find("spi_write"), generated_code.find("spi_transceive"))
+    wren_pos = max(find_in_code(generated_code, "WREN"), generated_code.lower().find("write_enable"))
+    write_pos = max(find_in_code(generated_code, "spi_write"), find_in_code(generated_code, "spi_transceive"))
     has_wren_before = wren_pos != -1 and (write_pos == -1 or wren_pos < write_pos)
     details.append(
         CheckDetail(

@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,13 +14,13 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Pattern: GPIO_PIN_RESET before HAL_SPI_Transmit/TransmitReceive
     cs_low_pos = -1
     for token in ["GPIO_PIN_RESET", "GPIO_PIN_Reset"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             cs_low_pos = pos if cs_low_pos == -1 else min(cs_low_pos, pos)
 
     spi_tx_pos = -1
     for token in ["HAL_SPI_Transmit", "HAL_SPI_TransmitReceive"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             spi_tx_pos = pos if spi_tx_pos == -1 else min(spi_tx_pos, pos)
 
@@ -83,10 +84,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 5: Clock enable before HAL_SPI_Init
     clk_pos = -1
     for token in ["__HAL_RCC_SPI1_CLK_ENABLE", "__HAL_RCC_SPI"]:
-        pos = generated_code.find(token)
+        pos = find_in_code(generated_code, token)
         if pos != -1:
             clk_pos = pos if clk_pos == -1 else min(clk_pos, pos)
-    spi_init_pos = generated_code.find("HAL_SPI_Init")
+    spi_init_pos = find_in_code(generated_code, "HAL_SPI_Init")
     clock_before_init = clk_pos != -1 and spi_init_pos != -1 and clk_pos < spi_init_pos
     details.append(
         CheckDetail(

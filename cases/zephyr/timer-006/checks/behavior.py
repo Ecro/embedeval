@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis, extract_function_body, strip_comments
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -12,8 +13,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: counter_start before alarm setup
-    start_pos = generated_code.find("counter_start")
-    alarm_pos = generated_code.find("counter_set_channel_alarm")
+    start_pos = find_in_code(generated_code, "counter_start")
+    alarm_pos = find_in_code(generated_code, "counter_set_channel_alarm")
     order_ok = start_pos != -1 and alarm_pos != -1 and start_pos < alarm_pos
     details.append(
         CheckDetail(

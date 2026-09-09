@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis, check_return_after_error
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,8 +12,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: init before write (mandatory ordering)
     # (LLM failure: calling dfu_target_write without prior init)
-    init_pos = generated_code.find("dfu_target_init")
-    write_pos = generated_code.find("dfu_target_write")
+    init_pos = find_in_code(generated_code, "dfu_target_init")
+    write_pos = find_in_code(generated_code, "dfu_target_write")
     details.append(
         CheckDetail(
             check_name="init_before_write",
@@ -26,7 +27,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     # Check 2: done() called after all writes
     # (LLM failure: omitting dfu_target_done entirely)
     write_pos2 = generated_code.rfind("dfu_target_write")
-    done_pos = generated_code.find("dfu_target_done")
+    done_pos = find_in_code(generated_code, "dfu_target_done")
     details.append(
         CheckDetail(
             check_name="done_after_write",
@@ -65,8 +66,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Reboot called after done(true)
-    done_true_pos = generated_code.find("dfu_target_done(true)")
-    reboot_pos = generated_code.find("sys_reboot")
+    done_true_pos = find_in_code(generated_code, "dfu_target_done(true)")
+    reboot_pos = find_in_code(generated_code, "sys_reboot")
     details.append(
         CheckDetail(
             check_name="reboot_after_done",

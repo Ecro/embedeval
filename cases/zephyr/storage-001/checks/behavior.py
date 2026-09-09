@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -10,9 +11,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     details: list[CheckDetail] = []
 
     # Check 1: mount before write/read (correct ordering)
-    mount_pos = generated_code.find("nvs_mount")
-    write_pos = generated_code.find("nvs_write")
-    read_pos = generated_code.find("nvs_read")
+    mount_pos = find_in_code(generated_code, "nvs_mount")
+    write_pos = find_in_code(generated_code, "nvs_write")
+    read_pos = find_in_code(generated_code, "nvs_read")
     mount_first = (
         mount_pos != -1
         and write_pos != -1

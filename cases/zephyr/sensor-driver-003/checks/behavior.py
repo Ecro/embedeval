@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis, has_sleep_call
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -43,8 +44,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: fetch before any channel_get (correct ordering)
-    fetch_pos = generated_code.find("sensor_sample_fetch")
-    get_x_pos = generated_code.find("SENSOR_CHAN_ACCEL_X")
+    fetch_pos = find_in_code(generated_code, "sensor_sample_fetch")
+    get_x_pos = find_in_code(generated_code, "SENSOR_CHAN_ACCEL_X")
     details.append(
         CheckDetail(
             check_name="fetch_before_channel_get",

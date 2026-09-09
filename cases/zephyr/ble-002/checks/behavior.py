@@ -3,6 +3,7 @@
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.models import CheckDetail
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 _BLE_HALLUCINATED_APIS = [
     "BLEDevice.connect",
@@ -42,8 +43,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: bt_enable before bt_le_scan_start (common LLM failure: scan without init)
-    enable_pos = generated_code.find("bt_enable")
-    scan_pos = generated_code.find("bt_le_scan_start")
+    enable_pos = find_in_code(generated_code, "bt_enable")
+    scan_pos = find_in_code(generated_code, "bt_le_scan_start")
     order_ok = enable_pos != -1 and scan_pos != -1 and enable_pos < scan_pos
     details.append(
         CheckDetail(
@@ -59,8 +60,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     has_callback_arg = (
         scoped_contains(generated_code, 'bt_le_scan_start', scope='code_only')
         and "NULL" not in generated_code[
-            generated_code.find("bt_le_scan_start"):
-            generated_code.find("bt_le_scan_start") + 60
+            find_in_code(generated_code, "bt_le_scan_start"):
+            find_in_code(generated_code, "bt_le_scan_start") + 60
         ]
     )
     details.append(
@@ -86,7 +87,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: bt_enable error checked (strict: must check return near call site)
-    enable_idx = generated_code.find("bt_enable")
+    enable_idx = find_in_code(generated_code, "bt_enable")
     post_enable = generated_code[enable_idx:enable_idx + 100] if enable_idx != -1 else ""
     has_enable_check = enable_idx != -1 and (
         "if (err" in post_enable or "if (ret" in post_enable or "if (err)" in post_enable
@@ -102,7 +103,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 6: Scan start error checked
-    scan_idx = generated_code.find("bt_le_scan_start")
+    scan_idx = find_in_code(generated_code, "bt_le_scan_start")
     post_scan = generated_code[scan_idx:scan_idx + 100] if scan_idx != -1 else ""
     has_scan_check = scan_idx != -1 and (
         "if (err" in post_scan or "if (ret" in post_scan or "if (err)" in post_scan

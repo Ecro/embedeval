@@ -8,6 +8,7 @@ from embedeval.check_utils import (
     strip_comments,
 )
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def _extract_psa_error_blocks(code: str) -> list[str]:
@@ -38,9 +39,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Correct HKDF input ordering: SALT before SECRET before INFO
     # LLM failure: wrong order causes PSA_ERROR_BAD_STATE at runtime
-    salt_pos = generated_code.find("PSA_KEY_DERIVATION_INPUT_SALT")
-    secret_pos = generated_code.find("PSA_KEY_DERIVATION_INPUT_SECRET")
-    info_pos = generated_code.find("PSA_KEY_DERIVATION_INPUT_INFO")
+    salt_pos = find_in_code(generated_code, "PSA_KEY_DERIVATION_INPUT_SALT")
+    secret_pos = find_in_code(generated_code, "PSA_KEY_DERIVATION_INPUT_SECRET")
+    info_pos = find_in_code(generated_code, "PSA_KEY_DERIVATION_INPUT_INFO")
     correct_order = (
         salt_pos != -1 and secret_pos != -1 and info_pos != -1
         and salt_pos < secret_pos < info_pos
@@ -68,7 +69,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: setup called before inputs (operation initialized)
-    setup_pos = generated_code.find("psa_key_derivation_setup")
+    setup_pos = find_in_code(generated_code, "psa_key_derivation_setup")
     details.append(
         CheckDetail(
             check_name="setup_before_inputs",
@@ -80,7 +81,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 4: output_bytes appears before the FINAL abort call
-    output_pos = generated_code.find("psa_key_derivation_output_bytes")
+    output_pos = find_in_code(generated_code, "psa_key_derivation_output_bytes")
     last_abort_pos = generated_code.rfind("psa_key_derivation_abort")
     details.append(
         CheckDetail(

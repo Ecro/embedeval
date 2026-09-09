@@ -5,6 +5,7 @@ runtime on native_sim). Behavior file exists for framework symmetry.
 """
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -12,10 +13,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Flag write should come AFTER data write in the producer.
     # LLM failure: sets flag first, then writes data.
-    data_pos = generated_code.find("shared_value")
+    data_pos = find_in_code(generated_code, "shared_value")
     flag_set_pos = -1
     for m in [" = 1", "=1", " = true"]:
-        idx = generated_code.find(f"ready_flag{m}")
+        idx = find_in_code(generated_code, f"ready_flag{m}")
         if idx != -1 and (flag_set_pos == -1 or idx < flag_set_pos):
             flag_set_pos = idx
 
@@ -24,7 +25,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     if data_pos != -1 and flag_set_pos != -1:
         # Find the FIRST write to shared_value (assignment, not declaration)
         for m in ["shared_value ="]:
-            first_write = generated_code.find(m)
+            first_write = find_in_code(generated_code, m)
             if first_write != -1:
                 correct_order = first_write < flag_set_pos
                 break

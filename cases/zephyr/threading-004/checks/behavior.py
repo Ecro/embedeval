@@ -6,6 +6,7 @@ from collections import Counter
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -62,7 +63,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     has_lock = scoped_contains(generated_code, 'k_mutex_lock', scope='code_only')
     has_sleep_after_lock = False
     if has_lock:
-        lock_pos = generated_code.find("k_mutex_lock")
+        lock_pos = find_in_code(generated_code, "k_mutex_lock")
         after_lock = generated_code[lock_pos:lock_pos + 500]
         has_sleep_after_lock = "k_sleep" in after_lock
     details.append(

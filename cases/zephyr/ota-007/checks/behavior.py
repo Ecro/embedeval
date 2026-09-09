@@ -3,6 +3,7 @@
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -11,10 +12,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Total size known before the download loop
     # (LLM failure: computing or discovering total size inside the loop)
-    total_def_pos = generated_code.find("TOTAL_IMAGE_SIZE")
+    total_def_pos = find_in_code(generated_code, "TOTAL_IMAGE_SIZE")
     if total_def_pos == -1:
-        total_def_pos = generated_code.find("total_size")
-    loop_pos = generated_code.find("for (") if scoped_contains(generated_code, 'for (', scope='code_only') else generated_code.find("while (")
+        total_def_pos = find_in_code(generated_code, "total_size")
+    loop_pos = find_in_code(generated_code, "for (") if scoped_contains(generated_code, 'for (', scope='code_only') else find_in_code(generated_code, "while (")
     details.append(
         CheckDetail(
             check_name="total_size_known_before_loop",
@@ -79,7 +80,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: dfu_target_done called after all chunks written
-    done_pos = generated_code.find("dfu_target_done")
+    done_pos = find_in_code(generated_code, "dfu_target_done")
     details.append(
         CheckDetail(
             check_name="dfu_done_after_loop",
@@ -110,7 +111,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
         scoped_contains(generated_code, 'dfu_target_write', scope='code_only')
         and (scoped_contains(generated_code, '< 0', scope='code_only') or scoped_contains(generated_code, '!= 0', scope='code_only'))
         and loop_pos != -1
-        and generated_code.find("dfu_target_write") > loop_pos
+        and find_in_code(generated_code, "dfu_target_write") > loop_pos
     )
     details.append(
         CheckDetail(

@@ -3,6 +3,7 @@
 from embedeval.check_utils import check_no_cross_platform_apis, has_error_check
 from embedeval.models import CheckDetail
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -25,9 +26,9 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: Channel setup called before read (AI failure: calling adc_read without setup)
-    setup_pos = generated_code.find("adc_channel_setup")
+    setup_pos = find_in_code(generated_code, "adc_channel_setup")
     read_pos = min(
-        (generated_code.find(p) for p in ["adc_read_dt", "adc_read"] if generated_code.find(p) != -1),
+        (find_in_code(generated_code, p) for p in ["adc_read_dt", "adc_read"] if find_in_code(generated_code, p) != -1),
         default=-1,
     )
     channel_setup_before_read = setup_pos != -1 and read_pos != -1 and setup_pos < read_pos

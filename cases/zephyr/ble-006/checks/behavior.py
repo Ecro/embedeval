@@ -1,8 +1,12 @@
 """Behavioral checks for BLE secure OTA / DFU service."""
 
+import re
+
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.models import CheckDetail
+from embedeval.check_utils import extract_function_body
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 _BLE_HALLUCINATED_APIS = [
     "BLEDevice.connect",
@@ -42,8 +46,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 2: bt_enable before bt_le_adv_start (ordering)
-    enable_pos = generated_code.find("bt_enable")
-    adv_pos = generated_code.find("bt_le_adv_start")
+    enable_pos = find_in_code(generated_code, "bt_enable")
+    adv_pos = find_in_code(generated_code, "bt_le_adv_start")
     enable_before_adv = enable_pos != -1 and adv_pos != -1 and enable_pos < adv_pos
     details.append(
         CheckDetail(
@@ -56,10 +60,10 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: bt_conn_set_security called in connected callback (not main)
-    connected_pos = generated_code.find("void connected")
+    connected_pos = find_in_code(generated_code, "void connected")
     if connected_pos == -1:
-        connected_pos = generated_code.find(".connected")
-    set_sec_pos = generated_code.find("bt_conn_set_security")
+        connected_pos = find_in_code(generated_code, ".connected")
+    set_sec_pos = find_in_code(generated_code, "bt_conn_set_security")
     security_in_connected = (
         set_sec_pos != -1
         and connected_pos != -1
@@ -133,14 +137,25 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 8: is_authenticated reset to false on disconnect
     # LLM failure: authenticates once and never resets on disconnect
-    disconnected_pos = generated_code.find("void disconnected")
+    disconnected_pos = find_in_code(generated_code, "void disconnected")
     if disconnected_pos == -1:
-        disconnected_pos = generated_code.find(".disconnected")
-    auth_reset_in_disconnect = (
-        disconnected_pos != -1
-        and ("is_authenticated = false" in generated_code[disconnected_pos:]
-             or "authenticated = false" in generated_code[disconnected_pos:])
+        disconnected_pos = find_in_code(generated_code, ".disconnected")
+    def _clears_auth(text: str) -> bool:
+        return "is_authenticated = false" in text or "authenticated = false" in text
+
+    auth_reset_in_disconnect = disconnected_pos != -1 and _clears_auth(
+        generated_code[disconnected_pos:]
     )
+    if not auth_reset_in_disconnect:
+        # The reset is just as valid one call deep — `disconnected()` calling a
+        # `dfu_session_reset()` that clears the flag was reading as "never
+        # resets". Follow the calls the disconnect handler makes.
+        body = extract_function_body(generated_code, "disconnected") or ""
+        for callee in set(re.findall(r"\b(\w+)\s*\(", body)):
+            callee_body = extract_function_body(generated_code, callee)
+            if callee_body and _clears_auth(callee_body):
+                auth_reset_in_disconnect = True
+                break
     details.append(
         CheckDetail(
             check_name="auth_state_reset_on_disconnect",
@@ -152,7 +167,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 9: bt_enable error checked
-    enable_idx = generated_code.find("bt_enable")
+    enable_idx = find_in_code(generated_code, "bt_enable")
     post_enable = generated_code[enable_idx:enable_idx + 100] if enable_idx != -1 else ""
     has_enable_check = enable_idx != -1 and (
         "if (err" in post_enable or "if (ret" in post_enable

@@ -1,8 +1,11 @@
 """Behavioral checks for high-resolution cycle-count timing application."""
 
 from embedeval.models import CheckDetail
+from embedeval.check_utils import has_sleep_call
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
+from embedeval.check_utils import strip_comments
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -35,8 +38,8 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 3: Conversion from cycles to nanoseconds present
-    ns_pos = generated_code.find("k_cyc_to_ns_floor64")
-    cycle_pos = generated_code.find("k_cycle_get_32")
+    ns_pos = find_in_code(generated_code, "k_cyc_to_ns_floor64")
+    cycle_pos = find_in_code(generated_code, "k_cycle_get_32")
     order_ok = cycle_pos != -1 and ns_pos != -1 and cycle_pos < ns_pos
     details.append(
         CheckDetail(
@@ -50,7 +53,16 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 4: Bounded loop (not infinite — 10 iterations)
     import re
-    has_bounded_loop = bool(re.search(r"for\s*\(\s*int\s+\w+\s*=\s*0\s*;\s*\w+\s*<\s*\d+", generated_code))
+    # A counted for loop is bounded whether the limit is inlined (`i < 10`) or
+    # named (`i < MEASUREMENT_COUNT`); only `for (;;)` / `while (1)` are not.
+    # Requiring a literal digit here failed correct code that #defines the count.
+    has_bounded_loop = bool(
+        re.search(
+            r"for\s*\(\s*(?:int|unsigned|size_t|uint\d+_t)?\s*\w+\s*=\s*0\s*;"
+            r"\s*\w+\s*<=?\s*\w+",
+            strip_comments(generated_code),
+        )
+    )
     details.append(
         CheckDetail(
             check_name="bounded_loop",
@@ -62,7 +74,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
     )
 
     # Check 5: Sleep between measurements (not tight loop)
-    has_sleep = scoped_contains(generated_code, 'k_sleep', scope='code_only')
+    has_sleep = has_sleep_call(generated_code)
     details.append(
         CheckDetail(
             check_name="sleep_between_measurements",

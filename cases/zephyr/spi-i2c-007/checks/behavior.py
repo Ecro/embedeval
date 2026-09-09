@@ -5,6 +5,7 @@ import re
 from embedeval.models import CheckDetail
 from embedeval.check_utils import check_no_cross_platform_apis
 from embedeval.check_utils import scoped_contains
+from embedeval.check_utils import find_in_code
 
 
 def run_checks(generated_code: str) -> list[CheckDetail]:
@@ -13,7 +14,7 @@ def run_checks(generated_code: str) -> list[CheckDetail]:
 
     # Check 1: Both TX and RX buf_sets provided to spi_transceive
     # Must pass both tx_bufs and rx_bufs (not NULL for either)
-    transceive_pos = generated_code.find("spi_transceive")
+    transceive_pos = find_in_code(generated_code, "spi_transceive")
     has_tx_bufs = scoped_contains(generated_code, 'tx_bufs', scope='code_only') or scoped_contains(generated_code, 'tx_buf_set', scope='code_only')
     has_rx_bufs = scoped_contains(generated_code, 'rx_bufs', scope='code_only') or scoped_contains(generated_code, 'rx_buf_set', scope='code_only')
     both_populated = has_tx_bufs and has_rx_bufs
