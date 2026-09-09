@@ -135,11 +135,22 @@ solution does not build in this environment** — no model can pass them:
 | ble-009/010, gpio-basic-010, networking-009, power-mgmt-009, storage-009, isr-concurrency-009 | link failure |
 
 Only 16 of the 28 compilable private cases have a building reference
-(`scripts/verify_references_build.py --cases ../embedeval-private/cases`). Four
-L1 failures are genuine: isr-concurrency-004, isr-concurrency-006,
-isr-concurrency-011, threading-012. The same 12 cases penalise every model, so
-they do not change the ranking, but the private slice should not be read as a
-capability number until they are fixed or marked `l1_skip`.
+(`scripts/verify_references_build.py --cases ../embedeval-private/cases`), and
+**all 12** of Opus 5's private-slice L1 failures are exactly those cases — it
+made no genuine compile error in the held-out set. The same 12 penalise every
+model, so they do not change the ranking, but the private slice should not be
+read as a capability number until they are fixed or marked `l1_skip`.
+
+Opus 5's four genuine compile failures are all in the **public** slice —
+isr-concurrency-004/006/011 and threading-012, whose references build fine here
+(10/10 isr-concurrency and 12/12 threading references OK). threading-012 fails
+with `undefined reference to __device_dts_ord_19`: the code references a
+devicetree node that its own overlay does not define.
+
+An earlier revision of this document attributed those four to the private slice.
+They came from tracker-merged stubs in a partial-run archive (the same stub
+problem described below), not from private cases; the corrected attribution is
+above.
 
 ## Remaining L3 failures (24)
 

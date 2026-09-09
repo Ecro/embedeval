@@ -17,8 +17,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **12 of the 48 private cases cannot be passed by any model in this
   environment** — their reference solutions do not build (nrf52840dk DT aliases
   absent, `zephyr/dfu/dfu_target.h` missing, link failures). Only 16 of 28
-  compilable private cases have a building reference, so the private slice is a
-  case-health number as much as a capability number.
+  compilable private cases have a building reference, and all 12 of Opus 5's
+  private-slice L1 failures are exactly those cases, so the private slice is a
+  case-health number as much as a capability number. Opus 5's four genuine
+  compile failures are all public: isr-concurrency-004/006/011, threading-012.
 
 ### Fixed
 
