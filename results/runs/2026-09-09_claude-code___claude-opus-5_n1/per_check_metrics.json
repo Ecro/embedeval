@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "run_id": "n1",
-  "generated": "2026-09-09T00:14:39Z",
+  "generated": "2026-09-09T04:30:25Z",
   "rows": [
     {
       "case_id": "ble-008",
@@ -34,6 +34,24 @@
       "case_id": "ble-008",
       "category": "ble",
       "check_name": "discovery_after_connected",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "west_build_docker",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -130,9 +148,27 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "ext0_wakeup_level_low",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "esp-wifi-001",
       "category": "networking",
       "check_name": "nvs_initialized_before_wifi",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "west_build_docker",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -196,6 +232,15 @@
       "case_id": "isr-concurrency-008",
       "category": "isr-concurrency",
       "check_name": "output_validation",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "west_build_docker",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -310,6 +355,15 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "networking-kernel-002",
       "category": "networking",
       "check_name": "exit_cancels_work_then_purges_queue",
@@ -331,6 +385,15 @@
       "case_id": "networking-kernel-004",
       "category": "networking",
       "check_name": "genl_family_has_name_field",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "west_build_docker",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -373,6 +436,15 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "power-mgmt-009",
+      "category": "power-mgmt",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "security-001",
       "category": "security",
       "check_name": "output_validation",
@@ -409,6 +481,60 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "security-009",
+      "category": "security",
+      "check_name": "minimum_32_bytes",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "key_bits_256",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "spi-i2c-009",
+      "category": "spi-i2c",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "data_verified_after_transfer",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "stm32-i2c-001",
       "category": "spi-i2c",
       "check_name": "i2c_address_left_shifted",
@@ -418,9 +544,63 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "clock_restored_after_stop_wakeup",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "led_toggled_after_wakeup",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "sysclock_reconfigured_after_stop_wakeup",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "stm32-spi-001",
       "category": "spi-i2c",
       "check_name": "cs_deasserted_after_transfer",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "duty_cycle_approximately_50pct",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "prescaler_arr_gives_1khz",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "timer_clock_before_init",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -490,6 +670,15 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "storage-013",
       "category": "storage",
       "check_name": "handler_registered",
@@ -538,6 +727,15 @@
       "case_id": "threading-007",
       "category": "threading",
       "check_name": "output_validation",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "threading-010",
+      "category": "threading",
+      "check_name": "k_sem_for_write_exclusion",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -607,6 +805,15 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "watchdog-004",
       "category": "watchdog",
       "check_name": "both_channels_fed",
@@ -625,6 +832,33 @@
       "pass_rate": 0.0
     },
     {
+      "case_id": "watchdog-009",
+      "category": "watchdog",
+      "check_name": "window_max_greater_than_zero",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "watchdog-009",
+      "category": "watchdog",
+      "check_name": "window_min_greater_than_zero",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "watchdog-009",
+      "category": "watchdog",
+      "check_name": "window_min_less_than_max",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
       "case_id": "yocto-005",
       "category": "yocto",
       "check_name": "no_custom_do_compile",
@@ -637,6 +871,15 @@
       "case_id": "yocto-007",
       "category": "yocto",
       "check_name": "rootfs_size_uses_weak_assignment",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "no_make_test_in_install_ptest",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 0,
@@ -2020,6 +2263,123 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "bluetooth_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "bt_enable_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "bt_foreach_bond_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "bt_unpair_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "settings_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-009",
+      "category": "ble",
+      "check_name": "settings_load_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "bluetooth_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "bt_l2cap_chan_send_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "bt_l2cap_server_register_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "l2cap_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "no_l2cap_connect",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "psm_value_set",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ble-010",
+      "category": "ble",
+      "check_name": "recv_callback_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "boot-001",
       "category": "boot",
       "check_name": "build_env",
@@ -2791,6 +3151,249 @@
       "model": "claude-code://claude-opus-5",
       "samples": 2,
       "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "all_required_configs_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "ext_flash_secondary_requires_spi_nor",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "flash_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "kconfig_format",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "no_single_application_slot_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "no_upgrade_only_swap_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "pm_external_flash_mcuboot_secondary_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "signature_type_mutual_exclusion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "single_application_slot_absent",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "spi_nor_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "spi_nor_page_size_4096",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "spi_nor_page_size_correct",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-009",
+      "category": "boot",
+      "check_name": "spi_nor_requires_flash",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "all_required_configs_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "boot_banner_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "kconfig_format",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "log_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "log_minimal_absent",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "log_minimal_log_level_dbg_mutual_exclusion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "mcuboot_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "mcuboot_log_level_dbg_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "mcuboot_log_level_dbg_requires_log",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "no_single_slot_swap_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "no_upgrade_only_swap_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "boot-010",
+      "category": "boot",
+      "check_name": "signature_type_mutual_exclusion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
       "pass_rate": 1.0
     },
     {
@@ -4369,6 +4972,258 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "braces_balanced",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "min_voltage_lte_max_voltage",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "no_fake_dt_properties",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "no_millivolt_property_names",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "regulator_boot_on_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "regulator_fixed_compatible",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "regulator_max_microvolt_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "regulator_min_microvolt_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "regulator_name_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "status_okay",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "values_in_microvolts_not_millivolts",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-009",
+      "category": "device-tree",
+      "check_name": "voltage_in_realistic_range",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "alias_uses_phandle_reference",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "aliases_node_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "braces_balanced",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "chosen_node_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "chosen_references_real_uart_node",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "console_references_uart0",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "gpio_keys_compatible",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "gpio_leds_compatible",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "led0_alias_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "no_fake_dt_properties",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "no_string_path_aliases",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "shell_uart_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "sw0_alias_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "device-tree-010",
+      "category": "device-tree",
+      "check_name": "zephyr_console_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "dma-001",
       "category": "dma",
       "check_name": "block_size_set",
@@ -5287,6 +6142,132 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "atomic_buffer_index",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "atomic_swap_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "dma_config_and_start_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "dma_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "dma_reload_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "dma_reload_for_next_buffer",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "no_memcpy_between_buffers",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "processing_loop_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "semaphore_cpu_dma_sync",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "two_separate_buffer_arrays",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "two_separate_dma_buffers",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "dma-010",
+      "category": "dma",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "dma-011",
       "category": "dma",
       "check_name": "blocks_linked",
@@ -5389,6 +6370,285 @@
       "case_id": "dma-012",
       "category": "dma",
       "check_name": "wait_for_completion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_oneshot_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_oneshot_read_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_read_error_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_unit_cleanup",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "app_main_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "averaging_loop_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "cali_raw_to_voltage_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "calibration_before_raw_to_voltage",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "correct_attenuation",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "esp_idf_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "no_deprecated_adc1_get_raw",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "no_zephyr_sensor_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-adc-001",
+      "category": "sensor-driver",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "advertising_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "app_main_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "ble_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "bluedroid_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "bt_controller_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "esp_bluedroid_init_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "esp_idf_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "gap_callback_registered",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "gatts_app_register_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "gatts_callback_registered",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "gatts_read_event_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "gatts_write_event_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "no_nimble_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "no_zephyr_bt_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "nvs_before_ble_init",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ble-001",
+      "category": "ble",
+      "check_name": "runtime_skip",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -5524,6 +6784,420 @@
       "case_id": "esp-i2c-001",
       "category": "spi-i2c",
       "check_name": "no_zephyr_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "app_main_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "commit_before_close",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "esp_idf_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "flash_init_before_open",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "no_posix_file_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "no_posix_file_ops",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "no_zephyr_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "not_found_key_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_close_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_commit_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_flash_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_flash_init_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_flash_init_error_recovery",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_get_error_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_open_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_set_error_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "nvs_set_i32_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-nvs-001",
+      "category": "storage",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "app_main_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "error_handling_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "esp_idf_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "firmware_validation",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "no_zephyr_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "nvs_init_before_wifi",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "ota_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "ota_url_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "restart_after_ota",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "rollback_on_failure",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "wifi_before_ota",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-ota-001",
+      "category": "ota",
+      "check_name": "wifi_init_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "app_main_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "deep_sleep_not_replaced_by_delay",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "deep_sleep_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "esp_idf_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "esp_sleep_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "gpio_pull_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "gpio_wakeup_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "no_zephyr_pm_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "wakeup_cause_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "esp-sleep-001",
+      "category": "power-mgmt",
+      "check_name": "wakeup_source_configured_before_sleep",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -6385,6 +8059,69 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "gpio_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "no_deepsleep_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "no_gpio_wakeup_enable_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "no_stm32_hal_power",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "pm_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "uses_dt_spec",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "gpio-basic-010",
+      "category": "gpio-basic",
+      "check_name": "uses_pm_state_force",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "isr-concurrency-001",
       "category": "isr-concurrency",
       "check_name": "no_floating_point",
@@ -7027,6 +8764,195 @@
       "case_id": "isr-concurrency-008",
       "category": "isr-concurrency",
       "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "k_poll_in_thread",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "k_poll_signal_declared",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "k_poll_signal_raise_in_isr",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "poll_event_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-009",
+      "category": "isr-concurrency",
+      "check_name": "signal_initialized",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "atomic_index_management",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "atomic_indices",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "buffer_size_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "drain_thread_calls_printk",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "drain_thread_not_busy_polling",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "drain_thread_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "isr_defers_logging",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "log_entry_struct_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "no_forbidden_apis_in_isr",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "no_printk_in_isr_path",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "printk_in_drain_thread",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "isr-concurrency-010",
+      "category": "isr-concurrency",
+      "check_name": "zephyr_headers_present",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -8089,6 +10015,276 @@
       "case_id": "kconfig-008",
       "category": "kconfig",
       "check_name": "userspace_requires_mpu",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "all_required_configs_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "kconfig_format",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "log_buffer_size_adequate",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "log_buffer_size_power_of_2",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "log_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "log_minimal_absent",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "log_minimal_shell_log_backend_mutual_exclusion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "no_hallucinated_config_options",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "no_newlib_minimal_libc_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "shell_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "shell_log_backend_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "shell_log_backend_requires_log",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-009",
+      "category": "kconfig",
+      "check_name": "shell_log_backend_requires_shell",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "all_required_crypto_configs_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "hw_cc3xx_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "hw_cc3xx_requires_psa_driver",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "kconfig_format",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "mbedtls_backend_mutual_exclusion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "mbedtls_builtin_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "mbedtls_builtin_requires_mbedtls",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "mbedtls_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "mbedtls_psa_crypto_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "no_hallucinated_config_options",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "no_mbedtls_backend_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "no_newlib_minimal_libc_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "no_tinycrypt_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "no_tinycrypt_mbedtls_conflict",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "kconfig-010",
+      "category": "kconfig",
+      "check_name": "psa_crypto_requires_mbedtls",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -10741,6 +12937,285 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "devm_gpiod_get_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "devm_prefix_for_auto_cleanup",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "direction_set_before_io",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "gpio_consumer_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "gpio_desc_type_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "gpio_direction_set",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "gpiod_get_error_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "gpiod_get_error_path_returns_ptr_err",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "gpiod_set_value_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "no_legacy_gpio_request",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "no_legacy_gpio_set_value",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "no_manual_gpio_free",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-017",
+      "category": "linux-driver",
+      "check_name": "no_zephyr_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "cancel_work_sync_in_exit",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "container_of_in_handler",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "init_exit_macros",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "init_work_before_schedule",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "init_work_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "init_work_ordered_before_schedule",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "memory_alloc_failure_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "module_license_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "no_other_zephyr_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "no_zephyr_k_work_submit",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "schedule_work_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "work_handler_process_context",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "work_struct_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "linux-driver-018",
+      "category": "linux-driver",
+      "check_name": "workqueue_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "linux-userspace-001",
       "category": "linux-userspace",
       "check_name": "all_resources_released",
@@ -12775,6 +15250,222 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "build_assert_has_message",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "build_assert_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "compile_time_not_runtime",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "meaningful_assert_condition",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "multiple_assertions",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "no_runtime_assert_for_size",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "not_raw_static_assert",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "sizeof_in_assert",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-009",
+      "category": "memory-opt",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "alignment_specified",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "buffer_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "buffer_in_named_section",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "gcc_section_attribute_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "named_section_referenced",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "no_hardcoded_memory_address",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "no_keil_at_attribute",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "section_attribute_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "memory-opt-010",
+      "category": "memory-opt",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "memory-opt-011",
       "category": "memory-opt",
       "check_name": "buffer_sizes_defined",
@@ -13984,6 +16675,195 @@
       "case_id": "networking-008",
       "category": "networking",
       "check_name": "will_topic_not_empty",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "sec_tag_list_set",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "tls_credential_registered",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "tls_credentials_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "tls_hostname_set",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "tls_socket_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "websocket_connect_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-009",
+      "category": "networking",
+      "check_name": "websocket_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "both_up_and_down_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "callback_registered_before_state_check",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "event_mask_includes_both",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "get_default_interface",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "initial_state_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "net_event_if_down_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "net_event_if_up_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "net_if_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "net_mgmt_add_callback",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "net_mgmt_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "net_mgmt_init_callback",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "networking-010",
+      "category": "networking",
+      "check_name": "west_build_docker",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -16087,6 +18967,231 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "boot_read_bank_header_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "both_slots_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "confirmed_status_reported",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "empty_slot_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "full_version_reported",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "img_confirmed_reported",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "mcuboot_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "mcuboot_img_header_struct",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "mcuboot_swap_type_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "slot0_referenced",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "slot1_info_reported",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "slot1_referenced",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "swap_type_human_readable",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "swap_type_queried",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "version_from_header_struct",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-009",
+      "category": "ota",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "apply_patch_function",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "crc32_ieee_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "crc_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "dfu_target_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "dfu_target_write_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "patch_verification_function",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "ota-010",
+      "category": "ota",
+      "check_name": "source_and_target_buffers",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "ota-011",
       "category": "ota",
       "check_name": "build_env",
@@ -18130,6 +21235,177 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "power-mgmt-009",
+      "category": "power-mgmt",
+      "check_name": "adc_or_battery_read",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-009",
+      "category": "power-mgmt",
+      "check_name": "battery_threshold_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-009",
+      "category": "power-mgmt",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-009",
+      "category": "power-mgmt",
+      "check_name": "multiple_pm_behaviors",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-009",
+      "category": "power-mgmt",
+      "check_name": "threshold_comparison",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "both_states_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "conditional_resume",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "device_usage_demonstrated",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "no_action_enum_as_state",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "pm_device_action_resume_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "pm_device_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "pm_device_state_get_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "pm_device_state_suspended_enum",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "safe_use_function_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "state_checked_before_use",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "state_get_return_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "power-mgmt-010",
+      "category": "power-mgmt",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "pwm-001",
       "category": "pwm",
       "check_name": "build_env",
@@ -19132,6 +22408,105 @@
       "case_id": "security-008",
       "category": "security",
       "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-009",
+      "category": "security",
+      "check_name": "no_rand_function",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-009",
+      "category": "security",
+      "check_name": "no_srand_function",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-009",
+      "category": "security",
+      "check_name": "no_sys_rand_get",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-009",
+      "category": "security",
+      "check_name": "return_value_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-009",
+      "category": "security",
+      "check_name": "secure_rng_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "ecc_key_pair_type",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "no_private_export_usage",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "psa_crypto_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "psa_generate_key_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "public_key_exported",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "security-010",
+      "category": "security",
+      "check_name": "secp_r1_curve_family",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -20164,6 +23539,132 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "low_power_freq_zero",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "sampling_frequency_attribute",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "sensor_attr_set_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "sensor_channel_get",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "sensor_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-009",
+      "category": "sensor-driver",
+      "check_name": "sensor_sample_fetch",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "calibration_struct_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "nvs_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "nvs_mount_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "nvs_read_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "nvs_write_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "sensor_attr_offset_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "sensor_attr_set_for_offset",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "sensor-driver-010",
+      "category": "sensor-driver",
+      "check_name": "sensor_header",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "spi-i2c-001",
       "category": "spi-i2c",
       "check_name": "build_env",
@@ -21082,6 +24583,438 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "spi-i2c-009",
+      "category": "spi-i2c",
+      "check_name": "cs_gpio_in_spi_config",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-009",
+      "category": "spi-i2c",
+      "check_name": "gpio_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-009",
+      "category": "spi-i2c",
+      "check_name": "spi_config_struct_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-009",
+      "category": "spi-i2c",
+      "check_name": "spi_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-009",
+      "category": "spi-i2c",
+      "check_name": "spi_write_or_transceive_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "device_address_0x3c",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "i2c_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "i2c_msg_stop_flag",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "i2c_msg_struct_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "i2c_msg_write_flag",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "i2c_transfer_not_replaced_by_write",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "i2c_transfer_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "register_address_in_write_buffer",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "restart_or_stop_flag_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "success_message_printed",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "transfer_return_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "spi-i2c-010",
+      "category": "spi-i2c",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_12bit_resolution",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_buffer_global_or_static",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_error_callback_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_handle_typedef_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "adc_started_with_dma",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "continuous_conv_mode_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "conv_complete_callback_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "dma_continuous_requests_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "dma_handle_typedef_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "dma_initialized_before_adc",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "no_cross_platform_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "stm32_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-adc-001",
+      "category": "sensor-driver",
+      "check_name": "stm32_hal_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "dma2_stream0_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "dma_buffers_not_on_stack",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "dma_clock_before_init",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "dma_handle_typedef_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "dma_start_it_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "dst_pointer_increment_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "m2m_direction_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "no_cross_platform_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "src_pointer_increment_enabled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "stm32_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "stm32_hal_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-dma-001",
+      "category": "dma",
+      "check_name": "transfer_complete_callback_registered",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "stm32-freertos-001",
       "category": "threading",
       "check_name": "consumer_blocking_receive",
@@ -21211,6 +25144,150 @@
       "case_id": "stm32-freertos-001",
       "category": "threading",
       "check_name": "task_creation_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "freertos_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "froomisr_used_not_blocking_send",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "higher_priority_woken_declared",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "isr_safe_queue_send_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "isr_yield_after_queue_send",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "no_blocking_calls_in_isr",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "no_zephyr_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "queue_created_before_scheduler",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "receiver_uses_blocking_receive",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "scheduler_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "stm32_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "stm32_hal_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "tim2_interrupt_source",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-freertos-002",
+      "category": "isr-concurrency",
+      "check_name": "timer_interrupt_started",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -21487,6 +25564,123 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "no_cross_platform_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "rtc_alarm_callback_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "rtc_alarm_interrupt_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "rtc_alarm_irq_handler_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "rtc_clock_source_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "rtc_handle_typedef_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "rtc_nvic_configured_before_stop",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "stm32_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "stm32_hal_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "stop_mode_api_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-lowpower-001",
+      "category": "power-mgmt",
+      "check_name": "wfi_entry_mode_specified",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "stm32-spi-001",
       "category": "spi-i2c",
       "check_name": "cs_asserted_before_transfer",
@@ -21598,6 +25792,105 @@
       "case_id": "stm32-spi-001",
       "category": "spi-i2c",
       "check_name": "stm32_hal_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "no_cross_platform_hallucination",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "pwm_oc_mode_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "pwm_start_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "runtime_skip",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "stm32_available",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "stm32_hal_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "tim3_instance_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "tim_channel_1_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "tim_handle_typedef_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "stm32-timer-001",
+      "category": "timer",
+      "check_name": "timer_clock_enabled",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -22541,6 +26834,186 @@
     },
     {
       "case_id": "storage-008",
+      "category": "storage",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "flash_area_closed",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "flash_area_get_size_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "flash_area_write_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "flash_map_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "offset_plus_size_boundary_check",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-009",
+      "category": "storage",
+      "check_name": "zero_size_check",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "both_paths_print_value",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "default_fallback_branch",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "default_value_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "init_before_load",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "safe_on_empty_storage",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "settings_handler_registered",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "settings_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "settings_load_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "settings_load_return_checked",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "settings_read_cb_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
+      "category": "storage",
+      "check_name": "settings_subsys_init_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "storage-010",
       "category": "storage",
       "check_name": "west_build_docker",
       "model": "claude-code://claude-opus-5",
@@ -23587,6 +28060,186 @@
       "case_id": "threading-008",
       "category": "threading",
       "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "completion_message_printed",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "give_take_balance",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "init_before_submit",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "k_sem_for_completion",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "k_sem_give_in_handler",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "k_sem_take_in_main",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "k_work_declared",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "k_work_init_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "k_work_submit_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "num_work_items_constant",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "semaphore_initial_count_zero",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-009",
+      "category": "threading",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-010",
+      "category": "threading",
+      "check_name": "k_mutex_for_reader_count",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-010",
+      "category": "threading",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-010",
+      "category": "threading",
+      "check_name": "lock_functions_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-010",
+      "category": "threading",
+      "check_name": "no_posix_rwlock",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "threading-010",
+      "category": "threading",
+      "check_name": "reader_count_variable",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -24763,6 +29416,267 @@
       "pass_rate": 1.0
     },
     {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "both_success_and_timeout_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "event_source_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "no_busy_wait_semaphore_poll",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "no_freertos_semaphore_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "no_rt_busywait_loop",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "sem_give_in_timer_callback",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "sem_take_timeout_nonzero",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "semaphore_properly_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "timeout_error_path_handled",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "timer_started_before_wait",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "uses_k_sem_take",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-009",
+      "category": "timer",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "infinite_loop_present",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "no_cross_platform_apis",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "no_custom_uptime_counter",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "no_freertos_tick_count",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "printk_used_for_output",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "runtime_started",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "sleep_duration_positive",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "sleep_in_loop",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "uptime_read_in_loop",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "uses_int64_for_uptime",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "uses_k_sleep",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "uses_k_uptime_get",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "timer-010",
+      "category": "timer",
+      "check_name": "west_build_docker",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
       "case_id": "uart-001",
       "category": "uart",
       "check_name": "build_env",
@@ -25027,6 +29941,60 @@
       "case_id": "uart-002",
       "category": "uart",
       "check_name": "uses_uart_tx",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "both_uarts_referenced",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "kernel_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "rx_buffer_size_nonzero",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "uart_config_struct_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "uart_configure_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "uart-003",
+      "category": "uart",
+      "check_name": "uart_header_included",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -25936,6 +30904,33 @@
       "case_id": "watchdog-008",
       "category": "watchdog",
       "check_name": "wdt_setup_called",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "watchdog-009",
+      "category": "watchdog",
+      "check_name": "watchdog_header_included",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "watchdog-009",
+      "category": "watchdog",
+      "check_name": "wdt_configured",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "watchdog-009",
+      "category": "watchdog",
+      "check_name": "wdt_feed_called",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,
@@ -27754,6 +32749,276 @@
       "case_id": "yocto-012",
       "category": "yocto",
       "check_name": "summary_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "colon_override_syntax",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "kernel_devicetree_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "kernel_devicetree_ends_in_dtb",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "kernel_imagetype_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "kernel_imagetype_recognized",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "machine_features_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "machine_features_valid_values",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "no_dts_in_kernel_devicetree",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "no_hardcoded_paths",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "no_require_for_bbclass",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "serial_consoles_correct_format",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "serial_consoles_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "serial_device_valid_tty_name",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-013",
+      "category": "yocto",
+      "check_name": "spdx_license_format",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "both_ptest_functions_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "build_env",
+      "model": "claude-code://claude-opus-5",
+      "samples": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "cc_used_for_test_compile",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "colon_override_syntax",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "d_ptest_path_in_install",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "do_compile_ptest_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "do_install_ptest_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "inherit_ptest",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "inherits_ptest_class",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "lic_chksum_has_hash",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "lic_files_chksum_defined",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "no_hardcoded_paths",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "ptest_path_used",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "run_ptest_script_installed",
+      "model": "claude-code://claude-opus-5",
+      "samples": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    {
+      "case_id": "yocto-014",
+      "category": "yocto",
+      "check_name": "spdx_license_format",
       "model": "claude-code://claude-opus-5",
       "samples": 1,
       "passed": 1,

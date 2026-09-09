@@ -7,7 +7,7 @@
 
 | Model | pass@1 (full) | pass@1 (quality) | 95% CI | pass@5 | Passed | Quality | Total | Samples |
 |-------|---------------|------------------|--------|--------|--------|---------|-------|---------|
-| claude-code://claude-opus-5 | 61.8% | 75.3% | [55.8%, 67.4%] | 61.8% | 165 | 201 | 267 | n=1 |
+| claude-code://claude-opus-5 | 70.0% | 83.5% | [64.3%, 75.2%] | 70.0% | 187 | 223 | 267 | n=1 |
 | claude-code://claude-sonnet-5 | 67.3% | 79.5% | [61.4%, 72.7%] | 67.3% | 177 | 209 | 263 | n=1 |
 | claude-code://haiku | 57.1% | 71.7% | [50.7%, 63.3%] | 57.1% | 133 | 167 | 233 | n=1 |
 | claude-code://sonnet | 67.4% | 82.8% | [61.1%, 73.1%] | 67.4% | 157 | 193 | 233 | n=1 |
@@ -19,8 +19,8 @@
 | Tier | pass@1 | Passed | Total |
 |------|--------|--------|-------|
 | Sanity (not scored) | 75.0% | 3 | 4 |
-| Core | 66.7% | 90 | 135 |
-| Challenge | 56.2% | 72 | 128 |
+| Core | 71.9% | 97 | 135 |
+| Challenge | 68.0% | 87 | 128 |
 | Sanity (not scored) | 75.0% | 3 | 4 |
 | Core | 69.2% | 92 | 133 |
 | Challenge | 65.1% | 82 | 126 |
@@ -35,10 +35,10 @@
 
 | Reasoning Type | pass@1 | Cases | LLM Reliability |
 |----------------|--------|-------|-----------------|
-| L1 API Recall | 64.2% | 240 | Expert review required |
-| L2 Rule Application | 68.1% | 166 | Expert review required |
-| L3 Cross-Domain | 48.2% | 56 | Expert review required |
-| L4 System Reasoning | 59.4% | 138 | Expert review required |
+| L1 API Recall | 72.9% | 240 | Review recommended |
+| L2 Rule Application | 74.7% | 166 | Review recommended |
+| L3 Cross-Domain | 57.1% | 56 | Expert review required |
+| L4 System Reasoning | 65.9% | 138 | Expert review required |
 | L1 API Recall | 71.2% | 236 | Review recommended |
 | L2 Rule Application | 71.6% | 162 | Review recommended |
 | L3 Cross-Domain | 51.8% | 56 | Expert review required |
@@ -56,11 +56,11 @@
 
 | SDK | pass@1 | Passed | Total | Notes |
 |-----|--------|--------|-------|-------|
-| zephyr | 60.9% | 117 | 192 |  |
-| embedded-linux | 67.3% | 37 | 55 |  |
+| zephyr | 70.3% | 135 | 192 |  |
+| embedded-linux | 74.5% | 41 | 55 |  |
 | freertos | 100.0% | 2 | 2 | thin bucket (n<8) |
-| esp-idf | 60.0% | 6 | 10 |  |
-| stm32-hal | 37.5% | 3 | 8 |  |
+| esp-idf | 70.0% | 7 | 10 |  |
+| stm32-hal | 25.0% | 2 | 8 |  |
 | zephyr | 67.7% | 130 | 192 |  |
 | embedded-linux | 64.7% | 33 | 51 |  |
 | freertos | 100.0% | 2 | 2 | thin bucket (n<8) |
@@ -81,29 +81,29 @@
 
 | Category | pass@1 | Passed | Total | Status |
 |----------|--------|--------|-------|--------|
-| adc | 50.0% | 1 | 2 | PARTIAL |
-| ble | 63.6% | 7 | 11 | PARTIAL |
+| adc | 100.0% | 2 | 2 | PASS |
+| ble | 72.7% | 8 | 11 | PARTIAL |
 | boot | 100.0% | 13 | 13 | PASS |
 | device-tree | 100.0% | 10 | 10 | PASS |
-| dma | 38.5% | 5 | 13 | FAIL |
+| dma | 53.8% | 7 | 13 | PARTIAL |
 | gpio-basic | 83.3% | 5 | 6 | PASS |
 | isr-concurrency | 30.8% | 4 | 13 | FAIL |
-| kconfig | 80.0% | 8 | 10 | PASS |
-| linux-driver | 72.2% | 13 | 18 | PARTIAL |
-| linux-userspace | 50.0% | 4 | 8 | PARTIAL |
+| kconfig | 90.0% | 9 | 10 | PASS |
+| linux-driver | 77.8% | 14 | 18 | PARTIAL |
+| linux-userspace | 87.5% | 7 | 8 | PASS |
 | memory-opt | 58.3% | 7 | 12 | PARTIAL |
-| networking | 52.9% | 9 | 17 | PARTIAL |
-| ota | 44.4% | 8 | 18 | FAIL |
-| power-mgmt | 66.7% | 8 | 12 | PARTIAL |
+| networking | 64.7% | 11 | 17 | PARTIAL |
+| ota | 72.2% | 13 | 18 | PARTIAL |
+| power-mgmt | 75.0% | 9 | 12 | PARTIAL |
 | pwm | 100.0% | 1 | 1 | PASS |
 | security | 40.0% | 4 | 10 | FAIL |
-| sensor-driver | 75.0% | 9 | 12 | PARTIAL |
+| sensor-driver | 83.3% | 10 | 12 | PASS |
 | spi-i2c | 71.4% | 10 | 14 | PARTIAL |
-| storage | 46.2% | 6 | 13 | FAIL |
+| storage | 53.8% | 7 | 13 | PARTIAL |
 | threading | 40.0% | 6 | 15 | FAIL |
-| timer | 66.7% | 8 | 12 | PARTIAL |
-| uart | 33.3% | 1 | 3 | FAIL |
-| watchdog | 70.0% | 7 | 10 | PARTIAL |
+| timer | 75.0% | 9 | 12 | PARTIAL |
+| uart | 66.7% | 2 | 3 | PARTIAL |
+| watchdog | 80.0% | 8 | 10 | PASS |
 | yocto | 78.6% | 11 | 14 | PARTIAL |
 | adc | 100.0% | 2 | 2 | PASS |
 | ble | 72.7% | 8 | 11 | PARTIAL |
@@ -180,7 +180,7 @@
 
 | Model| L0 Static| L1 Build| L2 Runtime| L3 Heuristic| L4 Mutation| |
 |-------|----------|----------|----------|----------|----------||
-| claude-code://claude-opus-5| 94%| 94%| 91%| 76%| 100%| |
+| claude-code://claude-opus-5| 94%| 94%| 92%| 87%| 95%| |
 | claude-code://claude-sonnet-5| 92%| 94%| 92%| 84%| 100%| |
 | claude-code://haiku| 82%| 88%| 93%| 85%| 100%| |
 | claude-code://sonnet| 94%| 93%| 90%| 85%| 100%| |
@@ -190,38 +190,38 @@
 | Layer | Failures | % of Total |
 |-------|----------|-----------|
 | L0 Static | 0.4 | 22% |
-| L1 Build | 0.3 | 18% |
-| L2 Runtime | 0.3 | 19% |
-| L3 Heuristic | 0.7 | 41% |
-| L4 Mutation | 0.0 | 0% |
+| L1 Build | 0.3 | 19% |
+| L2 Runtime | 0.3 | 20% |
+| L3 Heuristic | 0.6 | 36% |
+| L4 Mutation | 0.1 | 3% |
 
 ## Category Breakdown
 
 | Category | Pass@1 | Cases |
 |----------|--------|-------|
-| adc | 50% | 2 |
-| ble | 64% | 11 |
+| adc | 100% | 2 |
+| ble | 73% | 11 |
 | boot | 100% | 13 |
 | device-tree | 100% | 10 |
-| dma | 38% | 13 |
+| dma | 54% | 13 |
 | gpio-basic | 83% | 6 |
 | isr-concurrency | 31% | 13 |
-| kconfig | 80% | 10 |
-| linux-driver | 72% | 18 |
-| linux-userspace | 50% | 8 |
+| kconfig | 90% | 10 |
+| linux-driver | 78% | 18 |
+| linux-userspace | 88% | 8 |
 | memory-opt | 58% | 12 |
-| networking | 53% | 17 |
-| ota | 44% | 18 |
-| power-mgmt | 67% | 12 |
+| networking | 65% | 17 |
+| ota | 72% | 18 |
+| power-mgmt | 75% | 12 |
 | pwm | 100% | 1 |
 | security | 40% | 10 |
-| sensor-driver | 75% | 12 |
+| sensor-driver | 83% | 12 |
 | spi-i2c | 71% | 14 |
-| storage | 46% | 13 |
+| storage | 54% | 13 |
 | threading | 40% | 15 |
-| timer | 67% | 12 |
-| uart | 33% | 3 |
-| watchdog | 70% | 10 |
+| timer | 75% | 12 |
+| uart | 67% | 3 |
+| watchdog | 80% | 10 |
 | yocto | 79% | 14 |
 | adc | 100% | 2 |
 | ble | 73% | 11 |
@@ -298,7 +298,7 @@
 
 | Model | HumanEval | SWE-bench | EmbedEval (full) | EmbedEval (quality) | Embed Gap |
 |-------|-----------|-----------|------------------|---------------------|-----------|
-| claude-code://claude-opus-5 | 96.3% | 77.1% | 61.8% | 75.3% | -34.5%p |
+| claude-code://claude-opus-5 | 96.3% | 77.1% | 70.0% | 83.5% | -26.3%p |
 | claude-code://claude-sonnet-5 | 93.7% | 72.2% | 67.3% | 79.5% | -26.4%p |
 | claude-code://haiku | 84.0% | 48.2% | 57.1% | 71.7% | -26.9%p |
 | claude-code://sonnet | 93.7% | 72.2% | 67.4% | 82.8% | -26.3%p |

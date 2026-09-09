@@ -2,14 +2,12 @@
 
 <!-- SCHEMA_VERSION: 1 -->
 
-**Run ID:** `n1-private`
+**Run ID:** `n1`
 
 Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the most-failed checks are at the top.
 
 | TC ID | Category | Check | Model | pass_rate | passed/samples |
 |-------|----------|-------|-------|-----------|----------------|
-| adc-002 | adc | periodic_read_with_sleep | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ble-006 | ble | auth_state_reset_on_disconnect | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ble-008 | ble | bt_enable_before_scan | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ble-008 | ble | conn_cleanup_on_failed_connect | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ble-008 | ble | conn_unref_in_disconnected | claude-code://claude-opus-5 | 0.000 | 0/1 |
@@ -20,16 +18,9 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | dma-004 | dma | multiple_block_descriptors | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | dma-005 | dma | pre_invalidate_dst_before_dma | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | dma-007 | dma | two_dma_config_calls | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| dma-008 | dma | callback_sets_flag_on_error_status | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| dma-008 | dma | error_flag_causes_return | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| dma-008 | dma | error_flag_checked_after_wait | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| dma-008 | dma | error_flag_is_volatile | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| dma-008 | dma | error_flag_read_after_sync | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| dma-010 | dma | runtime_started | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | dma-011 | dma | block_count_three | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | dma-011 | dma | single_dma_start | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | dma-011 | dma | three_block_configs | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| esp-adc-001 | sensor-driver | adc_read_error_checked | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | esp-i2c-001 | spi-i2c | i2c_master_header | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | esp-i2c-001 | spi-i2c | i2c_master_new_api | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | esp-i2c-001 | spi-i2c | no_legacy_i2c_driver | claude-code://claude-opus-5 | 0.000 | 0/1 |
@@ -46,56 +37,40 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | isr-concurrency-009 | isr-concurrency | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | isr-concurrency-011 | isr-concurrency | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | kconfig-001 | kconfig | spi_dma_enabled | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| kconfig-010 | kconfig | hw_cc3xx_enabled | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| linux-driver-004 | linux-driver | init_error_path_cleanup | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | linux-driver-006 | linux-driver | init_error_path_cleanup | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | linux-driver-010 | linux-driver | module_platform_driver_macro | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | linux-driver-011 | linux-driver | free_irq_before_cancel_work | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | linux-driver-016 | linux-driver | is_err_guards_reset_control_get | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | linux-userspace-001 | linux-userspace | nonzero_exit_on_error | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| linux-userspace-003 | linux-userspace | start_limit_burst_and_interval_paired | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| linux-userspace-006 | linux-userspace | open_spidev0_0_rdwr | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| linux-userspace-007 | linux-userspace | bus_name_is_com_embedeval_example | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| linux-userspace-007 | linux-userspace | interface_name_correct | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | memory-opt-003 | memory-opt | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | memory-opt-006 | memory-opt | config_thread_stack_info_enabled | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | memory-opt-007 | memory-opt | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | memory-opt-011 | memory-opt | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | memory-opt-012 | memory-opt | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| networking-004 | networking | init_before_append_option | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| networking-005 | networking | credential_before_connect | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | networking-009 | networking | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | networking-kernel-002 | networking | exit_cancels_work_then_purges_queue | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | networking-kernel-003 | networking | input_cb_sends_netlink_unicast | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | networking-kernel-004 | networking | genl_family_has_name_field | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-001 | ota | check_before_confirm | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-001 | ota | self_test_before_confirm | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-004 | ota | header_return_checked_before_struct_access | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-005 | ota | check_before_confirm | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-005 | ota | self_test_before_confirm | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-006 | ota | hash_before_flash_write | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-006 | ota | hash_comparison_before_write | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| ota-008 | ota | timer_started_after_detection | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ota-010 | ota | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ota-011 | ota | self_test_failure_branch | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ota-swupdate-001 | ota | hardware_compatibility_list_nonempty | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ota-swupdate-002 | ota | hardware_compatibility_list_nonempty | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | ota-swupdate-004 | ota | hardware_compatibility_list_nonempty | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| power-mgmt-004 | power-mgmt | enable_before_get | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| power-mgmt-004 | power-mgmt | get_put_balanced | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| power-mgmt-005 | power-mgmt | all_three_devices_suspended | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| power-mgmt-009 | power-mgmt | periodic_battery_check | claude-code://claude-opus-5 | 0.000 | 0/1 |
+| power-mgmt-009 | power-mgmt | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | security-001 | security | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | security-003 | security | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | security-004 | security | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| security-005 | security | init_before_ps_set | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | security-008 | security | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
+| security-009 | security | minimum_32_bytes | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | security-010 | security | key_bits_256 | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | sensor-driver-009 | sensor-driver | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | sensor-driver-010 | sensor-driver | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | spi-i2c-009 | spi-i2c | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | stm32-dma-001 | dma | data_verified_after_transfer | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | stm32-i2c-001 | spi-i2c | i2c_address_left_shifted | claude-code://claude-opus-5 | 0.000 | 0/1 |
+| stm32-lowpower-001 | power-mgmt | clock_restored_after_stop_wakeup | claude-code://claude-opus-5 | 0.000 | 0/1 |
+| stm32-lowpower-001 | power-mgmt | led_toggled_after_wakeup | claude-code://claude-opus-5 | 0.000 | 0/1 |
+| stm32-lowpower-001 | power-mgmt | sysclock_reconfigured_after_stop_wakeup | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | stm32-spi-001 | spi-i2c | cs_deasserted_after_transfer | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | stm32-timer-001 | timer | duty_cycle_approximately_50pct | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | stm32-timer-001 | timer | prescaler_arr_gives_1khz | claude-code://claude-opus-5 | 0.000 | 0/1 |
@@ -108,7 +83,6 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | storage-008 | storage | delete_after_commit | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | storage-008 | storage | write_verify_commit_order | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | storage-009 | storage | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| storage-012 | storage | write_rate_limited | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | storage-013 | storage | handler_registered | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | threading-001 | threading | different_thread_priorities | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | threading-001 | threading | queue_capacity_positive | claude-code://claude-opus-5 | 0.000 | 0/1 |
@@ -123,18 +97,15 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | threading-014 | threading | explicit_memory_barrier | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | timer-001 | timer | output_validation | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | timer-007 | timer | timer_period_less_than_wdt_timeout | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| timer-008 | timer | bounded_loop | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| uart-002 | uart | callback_before_rx_enable | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | uart-003 | uart | west_build_docker | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | watchdog-004 | watchdog | both_channels_fed | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | watchdog-004 | watchdog | separate_channel_ids | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| watchdog-007 | watchdog | all_threads_set_flags | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | watchdog-009 | watchdog | window_max_greater_than_zero | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | watchdog-009 | watchdog | window_min_greater_than_zero | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | watchdog-009 | watchdog | window_min_less_than_max | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | yocto-005 | yocto | no_custom_do_compile | claude-code://claude-opus-5 | 0.000 | 0/1 |
-| yocto-006 | yocto | no_manual_patch_in_do_compile | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | yocto-007 | yocto | rootfs_size_uses_weak_assignment | claude-code://claude-opus-5 | 0.000 | 0/1 |
+| yocto-014 | yocto | no_make_test_in_install_ptest | claude-code://claude-opus-5 | 0.000 | 0/1 |
 | adc-001 | adc | adc_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-001 | adc | adc_sequence_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-001 | adc | buffer_linked_to_sequence | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -160,6 +131,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | adc-002 | adc | no_stm32_hal_adc | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-002 | adc | oversampling_before_read | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-002 | adc | oversampling_configured | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| adc-002 | adc | periodic_read_with_sleep | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-002 | adc | sample_buffer_nonzero | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-002 | adc | setup_before_read | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | adc-002 | adc | valid_adc_resolution | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -245,6 +217,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ble-005 | ble | security_level_mitm | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ble-005 | ble | security_set_in_connected_cb | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ble-006 | ble | auth_check_before_dfu_data | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ble-006 | ble | auth_state_reset_on_disconnect | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ble-006 | ble | authorization_error_returned | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ble-006 | ble | bluetooth_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ble-006 | ble | bt_conn_set_security_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -687,12 +660,17 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | dma-007 | dma | dma_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-007 | dma | two_dma_start_calls | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | callback_checks_status_parameter | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-008 | dma | callback_sets_flag_on_error_status | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | dma_callback_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | dma_config_and_start_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | dma_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | dma_stop_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | dma_stop_in_error_path | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | dma_stop_on_error | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-008 | dma | error_flag_causes_return | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-008 | dma | error_flag_checked_after_wait | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-008 | dma | error_flag_is_volatile | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-008 | dma | error_flag_read_after_sync | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | output_validation | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-008 | dma | runtime_started | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -713,9 +691,17 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | dma-009 | dma | timeout_mechanism_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-009 | dma | transfer_size_256 | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-010 | dma | atomic_buffer_index | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | atomic_swap_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-010 | dma | dma_config_and_start_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-010 | dma | dma_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-010 | dma | dma_reload_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | dma_reload_for_next_buffer | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | no_memcpy_between_buffers | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | processing_loop_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | runtime_started | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | semaphore_cpu_dma_sync | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| dma-010 | dma | two_separate_buffer_arrays | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-010 | dma | two_separate_dma_buffers | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-010 | dma | west_build_docker | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | dma-011 | dma | blocks_linked | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -732,6 +718,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | dma-012 | dma | wait_for_completion | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | esp-adc-001 | sensor-driver | adc_oneshot_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | esp-adc-001 | sensor-driver | adc_oneshot_read_used | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| esp-adc-001 | sensor-driver | adc_read_error_checked | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | esp-adc-001 | sensor-driver | adc_unit_cleanup | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | esp-adc-001 | sensor-driver | app_main_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | esp-adc-001 | sensor-driver | averaging_loop_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1148,12 +1135,22 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | kconfig-009 | kconfig | shell_log_backend_enabled | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-009 | kconfig | shell_log_backend_requires_log | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-009 | kconfig | shell_log_backend_requires_shell | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | all_required_crypto_configs_enabled | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
+| kconfig-010 | kconfig | hw_cc3xx_enabled | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | hw_cc3xx_requires_psa_driver | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-010 | kconfig | kconfig_format | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | mbedtls_backend_mutual_exclusion | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-010 | kconfig | mbedtls_builtin_enabled | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | mbedtls_builtin_requires_mbedtls | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-010 | kconfig | mbedtls_enabled | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-010 | kconfig | mbedtls_psa_crypto_enabled | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | no_hallucinated_config_options | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-010 | kconfig | no_mbedtls_backend_conflict | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | no_newlib_minimal_libc_conflict | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | kconfig-010 | kconfig | no_tinycrypt_conflict | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | no_tinycrypt_mbedtls_conflict | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| kconfig-010 | kconfig | psa_crypto_requires_mbedtls | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-driver-001 | linux-driver | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | linux-driver-001 | linux-driver | copy_from_user_used | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-driver-001 | linux-driver | copy_to_user_not_raw_deref | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1210,6 +1207,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | linux-driver-004 | linux-driver | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | linux-driver-004 | linux-driver | copy_to_user_in_read | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-driver-004 | linux-driver | free_irq_in_exit | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| linux-driver-004 | linux-driver | init_error_path_cleanup | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-driver-004 | linux-driver | interrupt_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-driver-004 | linux-driver | irq_handled_returned | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-driver-004 | linux-driver | irq_handler_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1520,6 +1518,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | linux-userspace-003 | linux-userspace | restart_directive_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-003 | linux-userspace | restart_sec_positive | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-003 | linux-userspace | service_section_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| linux-userspace-003 | linux-userspace | start_limit_burst_and_interval_paired | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-003 | linux-userspace | start_limit_not_half_declared | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-003 | linux-userspace | type_directive_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-003 | linux-userspace | type_notify_set | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1572,6 +1571,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | linux-userspace-006 | linux-userspace | no_arduino_spi_api | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-006 | linux-userspace | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-006 | linux-userspace | no_write_read_fallback | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| linux-userspace-006 | linux-userspace | open_spidev0_0_rdwr | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-006 | linux-userspace | perror_on_failure | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-006 | linux-userspace | speed_1mhz_configured | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-006 | linux-userspace | spi_ioc_message_nonzero_count | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1583,8 +1583,10 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | linux-userspace-006 | linux-userspace | tx_rx_buf_cast_to_unsigned_long | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-006 | linux-userspace | unistd_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-007 | linux-userspace | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
+| linux-userspace-007 | linux-userspace | bus_name_is_com_embedeval_example | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-007 | linux-userspace | bus_unref_on_exit | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-007 | linux-userspace | error_propagation_r_lt_0 | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| linux-userspace-007 | linux-userspace | interface_name_correct | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-007 | linux-userspace | main_function_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-007 | linux-userspace | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | linux-userspace-007 | linux-userspace | no_libdbus_api | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1794,6 +1796,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | networking-004 | networking | coap_packet_init_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-004 | networking | coap_packet_parse_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-004 | networking | coap_standard_port | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| networking-004 | networking | init_before_append_option | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-004 | networking | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-004 | networking | response_parsed | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-004 | networking | socket_closed | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1802,6 +1805,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | networking-004 | networking | uri_path_option | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-005 | networking | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | networking-005 | networking | ca_certificate_type | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| networking-005 | networking | credential_before_connect | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-005 | networking | http_client_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-005 | networking | http_client_req_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-005 | networking | https_port_443 | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1985,6 +1989,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | networking-kernel-005 | networking | register_netdevice_notifier_in_init | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | networking-kernel-005 | networking | unregister_netdevice_notifier_in_exit | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-001 | ota | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
+| ota-001 | ota | check_before_confirm | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-001 | ota | conditional_confirmation | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-001 | ota | confirm_error_handling | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-001 | ota | confirm_guarded_by_check | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -1993,6 +1998,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ota-001 | ota | kernel_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-001 | ota | mcuboot_dfu_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-001 | ota | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ota-001 | ota | self_test_before_confirm | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-002 | ota | all_swap_types_covered | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-002 | ota | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | ota-002 | ota | completion_message | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2029,6 +2035,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ota-004 | ota | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | ota-004 | ota | flash_map_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-004 | ota | header_read_error_handling | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ota-004 | ota | header_return_checked_before_struct_access | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-004 | ota | img_header_struct | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-004 | ota | mcuboot_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-004 | ota | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2040,6 +2047,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ota-004 | ota | version_comparison | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | all_five_states | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
+| ota-005 | ota | check_before_confirm | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | confirm_timeout | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | dfu_target_done | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | dfu_target_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2050,6 +2058,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ota-005 | ota | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | rollback_abort_on_download_error | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | rollback_on_error | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ota-005 | ota | self_test_before_confirm | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | self_test_return_checked | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | state_machine_complete | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-005 | ota | state_machine_loop | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2063,6 +2072,8 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ota-006 | ota | dfu_target_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-006 | ota | dfu_target_write_present | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-006 | ota | expected_hash_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ota-006 | ota | hash_before_flash_write | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ota-006 | ota | hash_comparison_before_write | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-006 | ota | hash_comparison_memcmp | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-006 | ota | hash_length_verified | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-006 | ota | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2102,6 +2113,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | ota-008 | ota | self_test_return_checked | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-008 | ota | sys_reboot_for_rollback | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-008 | ota | timeout_mechanism | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| ota-008 | ota | timer_started_after_detection | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-008 | ota | write_img_confirmed | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-009 | ota | boot_read_bank_header_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | ota-009 | ota | both_slots_checked | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2294,6 +2306,8 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | power-mgmt-003 | power-mgmt | state_tracking_variable | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-003 | power-mgmt | suspend_action_handled | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-004 | power-mgmt | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
+| power-mgmt-004 | power-mgmt | enable_before_get | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| power-mgmt-004 | power-mgmt | get_put_balanced | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-004 | power-mgmt | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-004 | power-mgmt | pm_callback_handles_both_directions | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-004 | power-mgmt | pm_device_runtime_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2304,6 +2318,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | power-mgmt-004 | power-mgmt | runtime_pm_disabled_at_end | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-004 | power-mgmt | runtime_put_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-005 | power-mgmt | all_three_devices_resumed | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| power-mgmt-005 | power-mgmt | all_three_devices_suspended | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-005 | power-mgmt | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | power-mgmt-005 | power-mgmt | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-005 | power-mgmt | per_device_state_tracking | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2353,18 +2368,10 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | power-mgmt-008 | power-mgmt | wakeup_less_than_sleep_duration | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-008 | power-mgmt | wakeup_message_printed | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-009 | power-mgmt | adc_or_battery_read | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | battery_level_printed | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | battery_read_before_pm_decision | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-009 | power-mgmt | battery_threshold_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-009 | power-mgmt | kernel_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | low_battery_aggressive_sleep | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-009 | power-mgmt | multiple_pm_behaviors | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | multiple_sleep_depths | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | pm_policy_function_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | runtime_skip | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-009 | power-mgmt | threshold_comparison | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| power-mgmt-009 | power-mgmt | west_build_docker | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-010 | power-mgmt | both_states_handled | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-010 | power-mgmt | conditional_resume | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | power-mgmt-010 | power-mgmt | device_usage_demonstrated | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2437,6 +2444,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | security-005 | security | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | security-005 | security | data_verified_after_get | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-005 | security | error_paths_return_early | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| security-005 | security | init_before_ps_set | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-005 | security | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-005 | security | no_insecure_rand | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-005 | security | protected_storage_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2490,22 +2498,11 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | security-008 | security | psa_mac_update_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-008 | security | runtime_started | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-008 | security | west_build_docker | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | buffer_32_bytes_min | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | error_path_handled | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | error_path_returns_early | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | minimum_32_bytes | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | no_ecb_mode | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | no_insecure_rand | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-009 | security | no_rand_function | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-009 | security | no_srand_function | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-009 | security | no_sys_rand_get | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-009 | security | return_value_checked | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | rng_return_value_used | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | runtime_started | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-009 | security | secure_rng_used | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | success_result_printed | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| security-009 | security | west_build_docker | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-010 | security | ecc_key_pair_type | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-010 | security | no_private_export_usage | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | security-010 | security | psa_crypto_header | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2851,8 +2848,6 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | stm32-i2c-001 | spi-i2c | runtime_skip | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-i2c-001 | spi-i2c | stm32_available | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-i2c-001 | spi-i2c | stm32_hal_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| stm32-lowpower-001 | power-mgmt | clock_restored_after_stop_wakeup | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| stm32-lowpower-001 | power-mgmt | led_toggled_after_wakeup | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-lowpower-001 | power-mgmt | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-lowpower-001 | power-mgmt | no_cross_platform_hallucination | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-lowpower-001 | power-mgmt | rtc_alarm_callback_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -2865,7 +2860,6 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | stm32-lowpower-001 | power-mgmt | stm32_available | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-lowpower-001 | power-mgmt | stm32_hal_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-lowpower-001 | power-mgmt | stop_mode_api_used | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| stm32-lowpower-001 | power-mgmt | sysclock_reconfigured_after_stop_wakeup | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-lowpower-001 | power-mgmt | wfi_entry_mode_specified | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-spi-001 | spi-i2c | cs_asserted_before_transfer | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | stm32-spi-001 | spi-i2c | hal_return_checked | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -3029,6 +3023,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | storage-012 | storage | static_allocation | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | storage-012 | storage | unsigned_counter_type | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | storage-012 | storage | uses_nvs_not_raw_flash | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| storage-012 | storage | write_rate_limited | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | storage-013 | storage | flash_write_rate_limited | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | storage-013 | storage | runtime_skip | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | storage-013 | storage | save_not_unconditional_in_loop | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -3264,6 +3259,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | timer-007 | timer | wdt_install_timeout_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | timer-007 | timer | wdt_setup_before_timer_start | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | timer-007 | timer | wdt_setup_called | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| timer-008 | timer | bounded_loop | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | timer-008 | timer | cycle_get_called_twice | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | timer-008 | timer | elapsed_cycles_computed | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | timer-008 | timer | kernel_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -3325,6 +3321,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | uart-001 | uart | uses_uart_poll_in | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | uart-001 | uart | uses_uart_poll_out | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | uart-002 | uart | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
+| uart-002 | uart | callback_before_rx_enable | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | uart-002 | uart | device_ready_check | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | uart-002 | uart | kernel_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | uart-002 | uart | no_cross_platform_apis | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -3417,6 +3414,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | watchdog-006 | watchdog | watchdog_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | watchdog-006 | watchdog | wdt_feed_called_in_main | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | watchdog-006 | watchdog | wdt_install_and_setup | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| watchdog-007 | watchdog | all_threads_set_flags | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | watchdog-007 | watchdog | atomic_header_included | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | watchdog-007 | watchdog | build_env | claude-code://claude-opus-5 | 1.000 | 2/2 |
 | watchdog-007 | watchdog | device_ready_check | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -3558,6 +3556,7 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | yocto-006 | yocto | lic_chksum_has_hash | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-006 | yocto | lic_files_chksum_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-006 | yocto | license_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
+| yocto-006 | yocto | no_manual_patch_in_do_compile | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-006 | yocto | patch_file_in_src_uri | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-006 | yocto | patch_uses_file_scheme | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-006 | yocto | spdx_license_format | claude-code://claude-opus-5 | 1.000 | 1/1 |
@@ -3675,7 +3674,6 @@ Per-(TC, check_name, model) pass_rate. Sorted by pass_rate ascending — the mos
 | yocto-014 | yocto | lic_chksum_has_hash | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-014 | yocto | lic_files_chksum_defined | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-014 | yocto | no_hardcoded_paths | claude-code://claude-opus-5 | 1.000 | 1/1 |
-| yocto-014 | yocto | no_make_test_in_install_ptest | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-014 | yocto | ptest_path_used | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-014 | yocto | run_ptest_script_installed | claude-code://claude-opus-5 | 1.000 | 1/1 |
 | yocto-014 | yocto | spdx_license_format | claude-code://claude-opus-5 | 1.000 | 1/1 |

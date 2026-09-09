@@ -102,6 +102,17 @@ def rescore_records(
             continue
         case_dir, meta = found
 
+        if not record.get("generated_code"):
+            # Nothing to re-score. Evaluating an empty submission would quietly
+            # produce FAIL@L0 and look like a model collapse — which is exactly
+            # what happened on 2026-09-09 when tracker-synthesised detail stubs
+            # from a partial run overwrote the real ones in the input set.
+            raise RescoreError(
+                f"{case_id} has no stored generated_code — the archive holds a "
+                "tracker-merged stub, not a submission. Re-score the run that "
+                "actually generated this case, or re-generate it."
+            )
+
         usage = record.get("token_usage") or {}
         result = evaluate(
             case_dir=case_dir,
@@ -168,14 +179,13 @@ def main() -> int:
     try:
         records = load_archived_details(args.run_dir)
         model = archived_model(records)
+        print(f"Re-scoring {len(records)} cases from {args.run_dir} (model={model})")
+        results, case_dir_map, skipped = rescore_records(
+            records, args.cases, args.private_cases
+        )
     except RescoreError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
-
-    print(f"Re-scoring {len(records)} cases from {args.run_dir} (model={model})")
-    results, case_dir_map, skipped = rescore_records(
-        records, args.cases, args.private_cases
-    )
     if skipped:
         print(f"\nSkipped {len(skipped)} case(s) missing from the case set: {skipped}")
     if not results:

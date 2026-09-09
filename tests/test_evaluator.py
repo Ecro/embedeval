@@ -8,6 +8,7 @@ import pytest
 import yaml
 
 from embedeval.evaluator import (
+    RUNTIME_TIMEOUT,
     _alias_native_sim_overlay,
     _get_build_board,
     _get_build_mode,
@@ -17,6 +18,7 @@ from embedeval.evaluator import (
     _load_negatives,
     _prepare_build_dir,
     _run_mutant_checks,
+    _run_runtime,
     evaluate,
 )
 from embedeval.models import TokenUsage
@@ -475,6 +477,78 @@ class TestNativeSimOverlayAlias:
             assert not (case_dir / "boards" / "native_sim_native_64.overlay").exists()
         finally:
             shutil.rmtree(build_dir)
+
+
+class TestRuntimeContainerLifetime:
+    """L2 must stop the firmware inside the container, not just locally.
+
+    Regression guard for 2026-09-09: subprocess's timeout killed only the local
+    `docker run` client while the container kept executing the while(1) loop.
+    One leaked container per runtime case accumulated past 100 until the host
+    ran out of memory and the benchmark process was killed.
+    """
+
+    @staticmethod
+    def _completed(returncode: int) -> MagicMock:
+        proc = MagicMock()
+        proc.returncode = returncode
+        proc.stdout = "Booting Zephyr"
+        proc.stderr = ""
+        return proc
+
+    @staticmethod
+    def _case(tmp_path: Path) -> Path:
+        """A compilable case dir — L2 skips outright without CMakeLists.txt."""
+        case_dir = tmp_path / "case-runtime"
+        case_dir.mkdir()
+        (case_dir / "CMakeLists.txt").write_text("cmake", encoding="utf-8")
+        return case_dir
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess.run")
+    def test_container_command_carries_timeout(
+        self, mock_run: MagicMock, _mode: object, tmp_path: Path
+    ) -> None:
+        mock_run.return_value = self._completed(137)
+        case_dir = self._case(tmp_path)
+        _run_runtime(case_dir, "int main(void) { return 0; }", 60.0, tmp_path)
+
+        cmd = mock_run.call_args.args[0]
+        assert "timeout" in cmd
+        assert str(int(RUNTIME_TIMEOUT)) in cmd
+        # The local leash must outlast the in-container one so the container
+        # exits (and --rm reaps it) rather than being orphaned.
+        assert mock_run.call_args.kwargs["timeout"] > RUNTIME_TIMEOUT
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess.run")
+    def test_kill_exit_code_counts_as_started(
+        self, mock_run: MagicMock, _mode: object, tmp_path: Path
+    ) -> None:
+        mock_run.return_value = self._completed(137)
+        result = _run_runtime(self._case(tmp_path), "code", 60.0, tmp_path)
+        started = [d for d in result.details if d.check_name == "runtime_started"]
+        assert started and started[0].passed is True
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess.run")
+    def test_term_exit_code_counts_as_started(
+        self, mock_run: MagicMock, _mode: object, tmp_path: Path
+    ) -> None:
+        mock_run.return_value = self._completed(124)
+        result = _run_runtime(self._case(tmp_path), "code", 60.0, tmp_path)
+        started = [d for d in result.details if d.check_name == "runtime_started"]
+        assert started and started[0].passed is True
+
+    @patch("embedeval.evaluator._get_build_mode", return_value="docker")
+    @patch("embedeval.evaluator.subprocess.run")
+    def test_real_failure_still_fails(
+        self, mock_run: MagicMock, _mode: object, tmp_path: Path
+    ) -> None:
+        mock_run.return_value = self._completed(1)
+        result = _run_runtime(self._case(tmp_path), "code", 60.0, tmp_path)
+        started = [d for d in result.details if d.check_name == "runtime_started"]
+        assert started and started[0].passed is False
 
 
 class TestPrepareBuildDir:

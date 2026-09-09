@@ -1,29 +1,29 @@
 {
   "version": "0.1.0",
-  "date": "2026-09-08",
+  "date": "2026-09-09",
   "models": [
     {
       "model": "claude-code://claude-opus-5",
-      "pass_at_1": 0.6179775280898876,
-      "pass_at_1_quality": 0.7528089887640449,
+      "pass_at_1": 0.700374531835206,
+      "pass_at_1_quality": 0.8352059925093633,
       "pass_at_1_comparable": null,
-      "pass_at_3": 0.6179775280898876,
-      "pass_at_5": 0.6179775280898876,
-      "avg_score": 0.6179775280898876,
+      "pass_at_3": 0.700374531835206,
+      "pass_at_5": 0.700374531835206,
+      "avg_score": 0.700374531835206,
       "total_cases": 267,
-      "passed_cases": 165,
-      "passed_cases_quality": 201,
+      "passed_cases": 187,
+      "passed_cases_quality": 223,
       "comparable_cases": null,
       "layer_pass_rates": {
-        "compile_gate": 0.9404761904761905,
-        "runtime_execution": 0.9113924050632911,
+        "compile_gate": 0.9365079365079365,
+        "runtime_execution": 0.9152542372881356,
         "static_analysis": 0.9438202247191011,
-        "static_heuristic": 0.7638888888888888,
-        "test_quality_proof": 1.0
+        "static_heuristic": 0.8657407407407407,
+        "test_quality_proof": 0.946524064171123
       },
       "pass_at_1_ci": [
-        0.5584131898612708,
-        0.6741950948335471
+        0.6429011479084941,
+        0.7521637165731809
       ],
       "n_samples": 1,
       "per_check_stats": [
@@ -231,11 +231,9 @@
           "check_name": "adc_read_error_checked",
           "category": "sensor-driver",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "esp-adc-001"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "adc_sequence_defined",
@@ -454,6 +452,14 @@
           "failing_tc_ids": []
         },
         {
+          "check_name": "all_required_crypto_configs_enabled",
+          "category": "kconfig",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
           "check_name": "all_required_security_configs_enabled",
           "category": "kconfig",
           "total_runs": 1,
@@ -481,11 +487,9 @@
           "check_name": "all_threads_set_flags",
           "category": "watchdog",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "watchdog-007"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "all_three_buses_present",
@@ -515,11 +519,9 @@
           "check_name": "all_three_devices_suspended",
           "category": "power-mgmt",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "power-mgmt-005"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "all_version_fields_compared",
@@ -890,6 +892,14 @@
           "failing_tc_ids": []
         },
         {
+          "check_name": "atomic_swap_present",
+          "category": "dma",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
           "check_name": "atomic_t_for_index",
           "category": "isr-concurrency",
           "total_runs": 1,
@@ -989,11 +999,9 @@
           "check_name": "auth_state_reset_on_disconnect",
           "category": "ble",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "ble-006"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "authorization_error_returned",
@@ -1030,22 +1038,6 @@
         {
           "check_name": "balanced_alloc_free",
           "category": "memory-opt",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
-          "check_name": "battery_level_printed",
-          "category": "power-mgmt",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
-          "check_name": "battery_read_before_pm_decision",
-          "category": "power-mgmt",
           "total_runs": 1,
           "fail_count": 0,
           "pass_rate": 1.0,
@@ -1571,11 +1563,9 @@
           "check_name": "bounded_loop",
           "category": "timer",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "timer-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "bounded_retry",
@@ -1836,14 +1826,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "buffer_32_bytes_min",
-          "category": "security",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "buffer_alignment",
           "category": "dma",
           "total_runs": 1,
@@ -1990,7 +1972,7 @@
         {
           "check_name": "build_env",
           "category": "kconfig",
-          "total_runs": 16,
+          "total_runs": 18,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -2191,11 +2173,9 @@
           "check_name": "bus_name_is_com_embedeval_example",
           "category": "linux-userspace",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "linux-userspace-007"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "bus_speed_125kbps",
@@ -2353,11 +2333,9 @@
           "check_name": "callback_before_rx_enable",
           "category": "uart",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "uart-002"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "callback_before_sleep",
@@ -2491,11 +2469,9 @@
           "check_name": "callback_sets_flag_on_error_status",
           "category": "dma",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "dma-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "callback_signature",
@@ -2661,12 +2637,9 @@
           "check_name": "check_before_confirm",
           "category": "ota",
           "total_runs": 2,
-          "fail_count": 2,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "ota-001",
-            "ota-005"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "checks_already_confirmed",
@@ -2752,9 +2725,11 @@
           "check_name": "clock_restored_after_stop_wakeup",
           "category": "power-mgmt",
           "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
+          "fail_count": 1,
+          "pass_rate": 0.0,
+          "failing_tc_ids": [
+            "stm32-lowpower-001"
+          ]
         },
         {
           "check_name": "close_called",
@@ -3560,11 +3535,9 @@
           "check_name": "credential_before_connect",
           "category": "networking",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "networking-005"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "cs_asserted_before_transfer",
@@ -4609,6 +4582,14 @@
           "failing_tc_ids": []
         },
         {
+          "check_name": "dma_reload_for_next_buffer",
+          "category": "dma",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
           "check_name": "dma_slot_values_reasonable",
           "category": "device-tree",
           "total_runs": 1,
@@ -5046,11 +5027,9 @@
           "check_name": "enable_before_get",
           "category": "power-mgmt",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "power-mgmt-004"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "enable_before_scan",
@@ -5200,41 +5179,33 @@
           "check_name": "error_flag_causes_return",
           "category": "dma",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "dma-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "error_flag_checked_after_wait",
           "category": "dma",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "dma-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "error_flag_is_volatile",
           "category": "dma",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "dma-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "error_flag_read_after_sync",
           "category": "dma",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "dma-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "error_handling",
@@ -5293,14 +5264,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "error_path_handled",
-          "category": "security",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "error_path_key_destroyed",
           "category": "security",
           "total_runs": 1,
@@ -5319,7 +5282,7 @@
         {
           "check_name": "error_path_returns_early",
           "category": "security",
-          "total_runs": 2,
+          "total_runs": 1,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -6546,11 +6509,9 @@
           "check_name": "get_put_balanced",
           "category": "power-mgmt",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "power-mgmt-004"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "gfp_kernel_flags",
@@ -6898,21 +6859,17 @@
           "check_name": "hash_before_flash_write",
           "category": "ota",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "ota-006"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "hash_comparison_before_write",
           "category": "ota",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "ota-006"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "hash_comparison_memcmp",
@@ -6974,11 +6931,9 @@
           "check_name": "header_return_checked_before_struct_access",
           "category": "ota",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "ota-004"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "health_flag_is_volatile",
@@ -7168,11 +7123,17 @@
           "check_name": "hw_cc3xx_enabled",
           "category": "kconfig",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "kconfig-010"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
+          "check_name": "hw_cc3xx_requires_psa_driver",
+          "category": "kconfig",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "hw_stack_protection_enabled",
@@ -7792,11 +7753,9 @@
           "check_name": "init_before_append_option",
           "category": "networking",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "networking-004"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "init_before_hash",
@@ -7836,11 +7795,9 @@
           "check_name": "init_before_ps_set",
           "category": "security",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "security-005"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "init_before_submit",
@@ -7894,10 +7851,9 @@
           "check_name": "init_error_path_cleanup",
           "category": "linux-driver",
           "total_runs": 3,
-          "fail_count": 2,
-          "pass_rate": 0.3333333333333333,
+          "fail_count": 1,
+          "pass_rate": 0.6666666666666666,
           "failing_tc_ids": [
-            "linux-driver-004",
             "linux-driver-006"
           ]
         },
@@ -8099,11 +8055,9 @@
           "check_name": "interface_name_correct",
           "category": "linux-userspace",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "linux-userspace-007"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "interrupt_edge_triggered",
@@ -9117,9 +9071,11 @@
           "check_name": "led_toggled_after_wakeup",
           "category": "power-mgmt",
           "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
+          "fail_count": 1,
+          "pass_rate": 0.0,
+          "failing_tc_ids": [
+            "stm32-lowpower-001"
+          ]
         },
         {
           "check_name": "led_toggled_via_hal",
@@ -9442,14 +9398,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "low_battery_aggressive_sleep",
-          "category": "power-mgmt",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "low_power_freq_zero",
           "category": "sensor-driver",
           "total_runs": 1,
@@ -9652,7 +9600,7 @@
         {
           "check_name": "mbedtls_backend_mutual_exclusion",
           "category": "kconfig",
-          "total_runs": 1,
+          "total_runs": 2,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -9668,7 +9616,7 @@
         {
           "check_name": "mbedtls_builtin_requires_mbedtls",
           "category": "kconfig",
-          "total_runs": 1,
+          "total_runs": 2,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -9909,9 +9857,11 @@
           "check_name": "minimum_32_bytes",
           "category": "security",
           "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
+          "fail_count": 1,
+          "pass_rate": 0.0,
+          "failing_tc_ids": [
+            "security-009"
+          ]
         },
         {
           "check_name": "mitm_security_level",
@@ -10224,14 +10174,6 @@
         {
           "check_name": "multiple_size_reducing_options",
           "category": "memory-opt",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
-          "check_name": "multiple_sleep_depths",
-          "category": "power-mgmt",
           "total_runs": 1,
           "fail_count": 0,
           "pass_rate": 1.0,
@@ -10848,7 +10790,7 @@
         {
           "check_name": "no_cross_platform_apis",
           "category": "dma",
-          "total_runs": 7,
+          "total_runs": 8,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -10912,7 +10854,7 @@
         {
           "check_name": "no_cross_platform_apis",
           "category": "power-mgmt",
-          "total_runs": 12,
+          "total_runs": 11,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -10928,7 +10870,7 @@
         {
           "check_name": "no_cross_platform_apis",
           "category": "security",
-          "total_runs": 5,
+          "total_runs": 4,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -11224,14 +11166,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "no_ecb_mode",
-          "category": "security",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "no_encryption_type_conflict",
           "category": "boot",
           "total_runs": 1,
@@ -11490,7 +11424,7 @@
         {
           "check_name": "no_hallucinated_config_options",
           "category": "kconfig",
-          "total_runs": 8,
+          "total_runs": 9,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -11618,7 +11552,7 @@
         {
           "check_name": "no_insecure_rand",
           "category": "security",
-          "total_runs": 4,
+          "total_runs": 3,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -11893,9 +11827,11 @@
           "check_name": "no_make_test_in_install_ptest",
           "category": "yocto",
           "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
+          "fail_count": 1,
+          "pass_rate": 0.0,
+          "failing_tc_ids": [
+            "yocto-014"
+          ]
         },
         {
           "check_name": "no_malloc_in_loop",
@@ -11925,11 +11861,9 @@
           "check_name": "no_manual_patch_in_do_compile",
           "category": "yocto",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "yocto-006"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "no_match_only_key_assigned",
@@ -11988,6 +11922,14 @@
           "failing_tc_ids": []
         },
         {
+          "check_name": "no_memcpy_between_buffers",
+          "category": "dma",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
           "check_name": "no_millivolt_property_names",
           "category": "device-tree",
           "total_runs": 1,
@@ -12030,7 +11972,7 @@
         {
           "check_name": "no_newlib_minimal_libc_conflict",
           "category": "kconfig",
-          "total_runs": 8,
+          "total_runs": 9,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -12543,6 +12485,14 @@
         },
         {
           "check_name": "no_tinycrypt_conflict",
+          "category": "kconfig",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
+          "check_name": "no_tinycrypt_mbedtls_conflict",
           "category": "kconfig",
           "total_runs": 1,
           "fail_count": 0,
@@ -13301,11 +13251,9 @@
           "check_name": "open_spidev0_0_rdwr",
           "category": "linux-userspace",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "linux-userspace-006"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "orientation_after_both_fetches",
@@ -13605,16 +13553,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "periodic_battery_check",
-          "category": "power-mgmt",
-          "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "power-mgmt-009"
-          ]
-        },
-        {
           "check_name": "periodic_feed_in_loop",
           "category": "watchdog",
           "total_runs": 1,
@@ -13642,11 +13580,9 @@
           "check_name": "periodic_read_with_sleep",
           "category": "adc",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "adc-002"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "periodic_sampling_loop",
@@ -13945,14 +13881,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "pm_policy_function_defined",
-          "category": "power-mgmt",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "pm_policy_header",
           "category": "power-mgmt",
           "total_runs": 1,
@@ -14197,6 +14125,14 @@
           "failing_tc_ids": []
         },
         {
+          "check_name": "processing_loop_present",
+          "category": "dma",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
           "check_name": "producer_exported",
           "category": "networking",
           "total_runs": 1,
@@ -14304,6 +14240,14 @@
           "check_name": "psa_crypto_init_called",
           "category": "security",
           "total_runs": 6,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
+          "check_name": "psa_crypto_requires_mbedtls",
+          "category": "kconfig",
+          "total_runs": 1,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -15345,14 +15289,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "rng_return_value_used",
-          "category": "security",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "rollback_abort_on_download_error",
           "category": "ota",
           "total_runs": 1,
@@ -15589,7 +15525,7 @@
         {
           "check_name": "runtime_skip",
           "category": "power-mgmt",
-          "total_runs": 4,
+          "total_runs": 3,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -15638,11 +15574,10 @@
           "check_name": "runtime_started",
           "category": "dma",
           "total_runs": 6,
-          "fail_count": 2,
-          "pass_rate": 0.6666666666666666,
+          "fail_count": 1,
+          "pass_rate": 0.8333333333333334,
           "failing_tc_ids": [
-            "dma-002",
-            "dma-010"
+            "dma-002"
           ]
         },
         {
@@ -15672,7 +15607,7 @@
         {
           "check_name": "runtime_started",
           "category": "security",
-          "total_runs": 7,
+          "total_runs": 6,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -16137,12 +16072,9 @@
           "check_name": "self_test_before_confirm",
           "category": "ota",
           "total_runs": 3,
-          "fail_count": 2,
-          "pass_rate": 0.3333333333333333,
-          "failing_tc_ids": [
-            "ota-001",
-            "ota-005"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "self_test_called",
@@ -16213,6 +16145,14 @@
         {
           "check_name": "sem_ver_struct",
           "category": "ota",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
+          "check_name": "semaphore_cpu_dma_sync",
+          "category": "dma",
           "total_runs": 1,
           "fail_count": 0,
           "pass_rate": 1.0,
@@ -17892,11 +17832,9 @@
           "check_name": "start_limit_burst_and_interval_paired",
           "category": "linux-userspace",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "linux-userspace-003"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "start_limit_not_half_declared",
@@ -18307,14 +18245,6 @@
           "failing_tc_ids": []
         },
         {
-          "check_name": "success_result_printed",
-          "category": "security",
-          "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
-        },
-        {
           "check_name": "sufficient_node_count",
           "category": "device-tree",
           "total_runs": 1,
@@ -18494,9 +18424,11 @@
           "check_name": "sysclock_reconfigured_after_stop_wakeup",
           "category": "power-mgmt",
           "total_runs": 1,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
+          "fail_count": 1,
+          "pass_rate": 0.0,
+          "failing_tc_ids": [
+            "stm32-lowpower-001"
+          ]
         },
         {
           "check_name": "sysfs_create_group_called",
@@ -19140,11 +19072,9 @@
           "check_name": "timer_started_after_detection",
           "category": "ota",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "ota-008"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "timer_started_before_pm_force",
@@ -19511,6 +19441,14 @@
         {
           "check_name": "two_sensor_fetches",
           "category": "sensor-driver",
+          "total_runs": 1,
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
+        },
+        {
+          "check_name": "two_separate_buffer_arrays",
+          "category": "dma",
           "total_runs": 1,
           "fail_count": 0,
           "pass_rate": 1.0,
@@ -20728,14 +20666,16 @@
           "check_name": "west_build_docker",
           "category": "power-mgmt",
           "total_runs": 2,
-          "fail_count": 0,
-          "pass_rate": 1.0,
-          "failing_tc_ids": []
+          "fail_count": 1,
+          "pass_rate": 0.5,
+          "failing_tc_ids": [
+            "power-mgmt-009"
+          ]
         },
         {
           "check_name": "west_build_docker",
           "category": "security",
-          "total_runs": 7,
+          "total_runs": 6,
           "fail_count": 0,
           "pass_rate": 1.0,
           "failing_tc_ids": []
@@ -21273,11 +21213,9 @@
           "check_name": "write_rate_limited",
           "category": "storage",
           "total_runs": 1,
-          "fail_count": 1,
-          "pass_rate": 0.0,
-          "failing_tc_ids": [
-            "storage-012"
-          ]
+          "fail_count": 0,
+          "pass_rate": 1.0,
+          "failing_tc_ids": []
         },
         {
           "check_name": "write_received_callback",
@@ -21383,15 +21321,15 @@
   "categories": [
     {
       "category": "adc",
-      "pass_at_1": 0.5,
+      "pass_at_1": 1.0,
       "total_cases": 2,
-      "passed_cases": 1
+      "passed_cases": 2
     },
     {
       "category": "ble",
-      "pass_at_1": 0.6363636363636364,
+      "pass_at_1": 0.7272727272727273,
       "total_cases": 11,
-      "passed_cases": 7
+      "passed_cases": 8
     },
     {
       "category": "boot",
@@ -21407,9 +21345,9 @@
     },
     {
       "category": "dma",
-      "pass_at_1": 0.38461538461538464,
+      "pass_at_1": 0.5384615384615384,
       "total_cases": 13,
-      "passed_cases": 5
+      "passed_cases": 7
     },
     {
       "category": "gpio-basic",
@@ -21425,21 +21363,21 @@
     },
     {
       "category": "kconfig",
-      "pass_at_1": 0.8,
+      "pass_at_1": 0.9,
       "total_cases": 10,
-      "passed_cases": 8
+      "passed_cases": 9
     },
     {
       "category": "linux-driver",
-      "pass_at_1": 0.7222222222222222,
+      "pass_at_1": 0.7777777777777778,
       "total_cases": 18,
-      "passed_cases": 13
+      "passed_cases": 14
     },
     {
       "category": "linux-userspace",
-      "pass_at_1": 0.5,
+      "pass_at_1": 0.875,
       "total_cases": 8,
-      "passed_cases": 4
+      "passed_cases": 7
     },
     {
       "category": "memory-opt",
@@ -21449,21 +21387,21 @@
     },
     {
       "category": "networking",
-      "pass_at_1": 0.5294117647058824,
+      "pass_at_1": 0.6470588235294118,
       "total_cases": 17,
-      "passed_cases": 9
+      "passed_cases": 11
     },
     {
       "category": "ota",
-      "pass_at_1": 0.4444444444444444,
+      "pass_at_1": 0.7222222222222222,
       "total_cases": 18,
-      "passed_cases": 8
+      "passed_cases": 13
     },
     {
       "category": "power-mgmt",
-      "pass_at_1": 0.6666666666666666,
+      "pass_at_1": 0.75,
       "total_cases": 12,
-      "passed_cases": 8
+      "passed_cases": 9
     },
     {
       "category": "pwm",
@@ -21479,9 +21417,9 @@
     },
     {
       "category": "sensor-driver",
-      "pass_at_1": 0.75,
+      "pass_at_1": 0.8333333333333334,
       "total_cases": 12,
-      "passed_cases": 9
+      "passed_cases": 10
     },
     {
       "category": "spi-i2c",
@@ -21491,9 +21429,9 @@
     },
     {
       "category": "storage",
-      "pass_at_1": 0.46153846153846156,
+      "pass_at_1": 0.5384615384615384,
       "total_cases": 13,
-      "passed_cases": 6
+      "passed_cases": 7
     },
     {
       "category": "threading",
@@ -21503,21 +21441,21 @@
     },
     {
       "category": "timer",
-      "pass_at_1": 0.6666666666666666,
+      "pass_at_1": 0.75,
       "total_cases": 12,
-      "passed_cases": 8
+      "passed_cases": 9
     },
     {
       "category": "uart",
-      "pass_at_1": 0.3333333333333333,
+      "pass_at_1": 0.6666666666666666,
       "total_cases": 3,
-      "passed_cases": 1
+      "passed_cases": 2
     },
     {
       "category": "watchdog",
-      "pass_at_1": 0.7,
+      "pass_at_1": 0.8,
       "total_cases": 10,
-      "passed_cases": 7
+      "passed_cases": 8
     },
     {
       "category": "yocto",
@@ -21535,55 +21473,55 @@
     },
     {
       "tier": "core",
-      "pass_at_1": 0.6666666666666666,
+      "pass_at_1": 0.7185185185185186,
       "total_cases": 135,
-      "passed_cases": 90
+      "passed_cases": 97
     },
     {
       "tier": "challenge",
-      "pass_at_1": 0.5625,
+      "pass_at_1": 0.6796875,
       "total_cases": 128,
-      "passed_cases": 72
+      "passed_cases": 87
     }
   ],
   "reasoning_scores": [
     {
       "reasoning_type": "api_recall",
-      "pass_at_1": 0.6416666666666667,
+      "pass_at_1": 0.7291666666666666,
       "total_cases": 240,
-      "passed_cases": 154
+      "passed_cases": 175
     },
     {
       "reasoning_type": "rule_application",
-      "pass_at_1": 0.6807228915662651,
+      "pass_at_1": 0.7469879518072289,
       "total_cases": 166,
-      "passed_cases": 113
+      "passed_cases": 124
     },
     {
       "reasoning_type": "cross_domain",
-      "pass_at_1": 0.48214285714285715,
+      "pass_at_1": 0.5714285714285714,
       "total_cases": 56,
-      "passed_cases": 27
+      "passed_cases": 32
     },
     {
       "reasoning_type": "system_reasoning",
-      "pass_at_1": 0.5942028985507246,
+      "pass_at_1": 0.6594202898550725,
       "total_cases": 138,
-      "passed_cases": 82
+      "passed_cases": 91
     }
   ],
   "sdk_scores": [
     {
       "sdk": "zephyr",
-      "pass_at_1": 0.609375,
+      "pass_at_1": 0.703125,
       "total_cases": 192,
-      "passed_cases": 117
+      "passed_cases": 135
     },
     {
       "sdk": "embedded-linux",
-      "pass_at_1": 0.6727272727272727,
+      "pass_at_1": 0.7454545454545455,
       "total_cases": 55,
-      "passed_cases": 37
+      "passed_cases": 41
     },
     {
       "sdk": "freertos",
@@ -21593,22 +21531,22 @@
     },
     {
       "sdk": "esp-idf",
-      "pass_at_1": 0.6,
+      "pass_at_1": 0.7,
       "total_cases": 10,
-      "passed_cases": 6
+      "passed_cases": 7
     },
     {
       "sdk": "stm32-hal",
-      "pass_at_1": 0.375,
+      "pass_at_1": 0.25,
       "total_cases": 8,
-      "passed_cases": 3
+      "passed_cases": 2
     }
   ],
   "overall": {
     "total_cases": 267,
     "total_models": 1,
     "best_model": "claude-code://claude-opus-5",
-    "best_pass_at_1": 0.6179775280898876,
+    "best_pass_at_1": 0.700374531835206,
     "common_cases": null,
     "case_set_warning": null
   },

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)]()
 [![Cases](https://img.shields.io/badge/cases-267-orange)]()
-[![Tests](https://img.shields.io/badge/tests-1467-green)]()
+[![Tests](https://img.shields.io/badge/tests-1496-green)]()
 
 **LLM Embedded Domain Knowledge Probe** — Do LLMs actually understand embedded firmware, or do they just pattern-match?
 

@@ -169,3 +169,47 @@ def test_archive_all_dashes_run_id_is_dropped(tmp_path: Path):
         [_result("kconfig-001")], _report(), tmp_path, MODEL, run_id="---"
     )
     assert not run_dir.name.endswith("_")
+
+
+class TestSynthesizedResultsSkipped:
+    """Tracker-merged results carry no submission and must not become details.
+
+    Regression guard for 2026-09-09: a partial run archived 219 stubs with
+    empty generated_code; copied into a re-score input set they overwrote the
+    real details and every one of those cases scored FAIL@L0 on empty code.
+    """
+
+    @staticmethod
+    def _stub(case_id: str) -> EvalResult:
+        result = _result(case_id)
+        result.generated_code = ""
+        return result
+
+    def test_stub_gets_no_detail_file(self, tmp_path: Path) -> None:
+        run_dir = generate_run_archive(
+            [_result("real-001"), self._stub("merged-002")],
+            _report(passed=2, total=2),
+            tmp_path,
+            MODEL,
+        )
+        assert (run_dir / "details" / "real-001.json").is_file()
+        assert not (run_dir / "details" / "merged-002.json").exists()
+
+    def test_summary_still_counts_stubs(self, tmp_path: Path) -> None:
+        run_dir = generate_run_archive(
+            [_result("real-001"), self._stub("merged-002")],
+            _report(passed=2, total=2),
+            tmp_path,
+            MODEL,
+        )
+        summary = json.loads((run_dir / "summary.json").read_text())
+        assert summary["total_results"] == 2
+
+    def test_all_stubs_leaves_details_empty(self, tmp_path: Path) -> None:
+        run_dir = generate_run_archive(
+            [self._stub("merged-001")],
+            _report(passed=1, total=1),
+            tmp_path,
+            MODEL,
+        )
+        assert list((run_dir / "details").glob("*.json")) == []

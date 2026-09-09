@@ -8,13 +8,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Benchmark results
 
-- **Opus 5 re-scored on the 219-case public slice after the L3 check fixes
-  below: 63.0% → 73.1% pass@1** (quality 84.0%), on identical generations.
-  `results/LEADERBOARD.md` still shows the pre-fix 267-case run (61.8%) — the
-  private held-out cases are not available on every machine, and re-publishing
-  without them would drop 48 cases from every row. Folding the fixes in needs a
-  `scripts/rescore_run.py` pass where both the private cases and the run's
-  `details/` directory exist; see `docs/CHECK-QUALITY-AUDIT-2026-09.md`.
+- **Opus 5, 267 cases (public + held-out private), n=1, full Docker L1/L2 gate:
+  pass@1 70.0%** (187/267, CI [64.3%, 75.2%]), quality (L0+L3) 83.5%. Public
+  slice 73.1%, private slice 56.2%. Ahead of claude-sonnet-5 (67.3%), but only
+  Opus 5 is scored with the fixed checks below — the other rows replay old-check
+  verdicts and are a floor. 61.8% → 70.0% on identical public generations plus a
+  fresh private slice.
+- **12 of the 48 private cases cannot be passed by any model in this
+  environment** — their reference solutions do not build (nrf52840dk DT aliases
+  absent, `zephyr/dfu/dfu_target.h` missing, link failures). Only 16 of 28
+  compilable private cases have a building reference, so the private slice is a
+  case-health number as much as a capability number.
 
 ### Fixed
 
@@ -33,6 +37,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   (which auto-passed runtime for ~60 cases).
 - **`scripts/sync_docs.py`** aborts instead of silently rewriting case counts to
   public-only when `../embedeval-private` is missing.
+
+- **L2 leaked one Docker container per runtime case.** Embedded firmware loops
+  forever; `subprocess`'s timeout killed only the local `docker run` client
+  while the container kept executing. Past 100 orphans the host ran out of
+  memory and killed the benchmark mid-run. The container command now carries
+  `timeout --signal=KILL`, and exit codes 124/137 count as a normal firmware
+  stop. Re-scoring also got ~4x faster.
+- **Run archives no longer write detail files for tracker-merged results.** A
+  partial run synthesised 219 stubs with empty `generated_code`; copied into a
+  re-score input set they overwrote the real details and scored pass@1 10.1%
+  with 223 L0 failures. `scripts/rescore_run.py` now aborts on such a record.
 
 ### Added
 

@@ -91,40 +91,55 @@ Public slice (219 cases), same generations, four scoring passes:
 |---------|--------|----|----|----|----|
 | aarch64 `native_sim` broken (superseded) | 55.3% | 12 | 53 | 0 | 33 |
 | L2 auto-passing (superseded) | 68.0% | 11 | 4 | 0 | 55 |
-| board + overlay + L2 gate fixed — **what the published 267-case run used** | 63.0% | 11 | 4 | 20 | 46 |
+| board + overlay + L2 gate fixed — **what the first 267-case publish used** | 63.0% | 11 | 4 | 20 | 46 |
 | **check defects fixed (this audit)** | **73.1%** | 11 | 4 | 20 | 24 |
 
 The first two rows were environment bugs (see the 2026-09-08 entries in
 CLAUDE.md); the last two differ only in check quality, on identical code.
 
-## The published leaderboard predates these fixes
+## Published 267-case result
 
-`results/LEADERBOARD.md` is the 267-case run (public + private held-out) scored
-with the **old** checks: Opus 5 61.8%, public slice 63.0%. It was not
-regenerated here on purpose — the private held-out cases are not available on
-this machine, so re-publishing from here would silently drop 48 cases from every
-row (the failure mode `scripts/sync_docs.py` now refuses to repeat for docs).
+The full set was re-published with the fixed checks: the 219 public cases
+re-scored from their stored generations, the 48 held-out cases generated fresh
+in the same environment.
 
-The 73.1% figure above is a measurement of the public slice only. To fold the
-fixes into the published numbers, on a machine that has both
-`../embedeval-private` and the run's `details/` directory:
+| Slice | pass@1 | Cases |
+|-------|--------|-------|
+| public | 73.1% | 160/219 |
+| private (held-out) | 56.2% | 27/48 |
+| **total** | **70.0%** | **187/267** |
 
-```bash
-EMBEDEVAL_ENABLE_BUILD=docker \
-uv run python scripts/rescore_run.py \
-  --run-dir results/runs/<date>_claude-code___claude-opus-5_n1 \
-  --cases cases/ --private-cases ../embedeval-private/cases/
-```
+quality (L0+L3) 83.5%, CI [64.3%, 75.2%]. Layers: L0 15, L1 16, L2 20, L3 29
+failures. `scripts/verify_results.py`: 267/267 verified, no false results.
 
-That costs no API spend — it replays the stored generations. Two constraints:
+### Leaderboard asymmetry — read before comparing
 
-- `results/runs/*/details/` is gitignored, so re-scoring only works where the
-  run was executed. Other machines would have to re-generate.
-- Only models whose details survive can be re-scored. `claude-sonnet-5`,
-  `sonnet` and `haiku` are replayed from `test_tracker.json` verdicts produced
-  by the old checks, so once Opus 5 is re-scored the leaderboard is asymmetric
-  until those models are re-generated. Their numbers are a floor — every defect
-  class above depressed them too, wherever their code hit it.
+Only `claude-code://claude-opus-5` is scored with the fixed checks.
+`claude-sonnet-5`, `sonnet` and `haiku` are replayed from `test_tracker.json`
+verdicts produced by the **old** checks and cannot be re-scored: per-case detail
+JSONs are gitignored (`results/runs/*/details/`), so those generations no longer
+exist. Their numbers are a floor — every defect class above depressed them too,
+wherever their code hit it. A symmetric leaderboard needs them re-generated
+(`uv run embedeval run --model claude-code://<model>`); re-scoring is only
+possible where a run's `details/` still exists.
+
+## The private slice is depressed by broken cases, not by the model
+
+Of Opus 5's 16 private-slice L1 failures, **12 are cases whose own reference
+solution does not build in this environment** — no model can pass them:
+
+| Cases | Cause |
+|-------|-------|
+| sensor-driver-009/010, spi-i2c-009, uart-003 | nrf52840dk DT alias/node absent (`__device_dts_ord_DT_N_ALIAS_*` undeclared) |
+| ota-010 | `zephyr/dfu/dfu_target.h` missing — DFU module not in the image |
+| ble-009/010, gpio-basic-010, networking-009, power-mgmt-009, storage-009, isr-concurrency-009 | link failure |
+
+Only 16 of the 28 compilable private cases have a building reference
+(`scripts/verify_references_build.py --cases ../embedeval-private/cases`). Four
+L1 failures are genuine: isr-concurrency-004, isr-concurrency-006,
+isr-concurrency-011, threading-012. The same 12 cases penalise every model, so
+they do not change the ranking, but the private slice should not be read as a
+capability number until they are fixed or marked `l1_skip`.
 
 ## Remaining L3 failures (24)
 
@@ -154,3 +169,26 @@ yocto-007
    and comments inflate counts.
 7. Every relaxation needs a seeded bug proving the check still fails it.
    Prefer adding it to `negatives.py` so the oracle guards it in CI.
+
+## Two infrastructure bugs found while re-scoring
+
+Both produced plausible-looking wrong numbers rather than errors, which is the
+failure mode this repo can least afford.
+
+- **Tracker-merged detail stubs.** A partial run (`--visibility private`, 48
+  cases) archived per-case details for all 267 — the 219 not re-run were
+  synthesised by `cli._build_comprehensive_results` from stored
+  `passed`/`failed_layer` and carry `generated_code=""`. Copied into a re-score
+  input set they overwrote the real details, and re-scoring empty code produced
+  pass@1 10.1% with 223 L0 failures that looked like a model collapse.
+  `generate_run_archive` no longer writes detail files for results with no
+  submission, and `rescore_run.py` aborts on such a record instead of scoring
+  it.
+- **Leaked runtime containers.** L2 runs `west build -t run`, and embedded
+  firmware loops forever. `subprocess`'s timeout killed only the local
+  `docker run` client while the container kept executing; one leak per runtime
+  case accumulated past 100 containers until the host ran out of memory and
+  killed the benchmark process mid-run. The container command now carries
+  `timeout --signal=KILL <RUNTIME_TIMEOUT>` so it self-terminates and `--rm`
+  reaps it; exit codes 124/137 count as a normal firmware stop. Side effect:
+  re-scoring got roughly 4x faster once builds stopped competing with orphans.

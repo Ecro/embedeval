@@ -190,6 +190,16 @@ class TestRescoreRecords:
         assert results[0].cost_usd == 0.12
         assert results[0].token_usage.total_tokens == 22500
 
+    def test_stub_without_code_raises(self, tmp_path: Path) -> None:
+        cases_root = tmp_path / "cases"
+        _write_case(cases_root, "case-a")
+        # A tracker-merged stub: the archive has a file, but no submission.
+        # Scoring it would read as FAIL@L0 rather than as a broken input set.
+        records = [_record("case-a", "")]
+
+        with pytest.raises(rescore.RescoreError, match="no stored generated_code"):
+            rescore.rescore_records(records, cases_root, progress=False)
+
     def test_unknown_case_is_skipped(self, tmp_path: Path) -> None:
         cases_root = tmp_path / "cases"
         _write_case(cases_root, "case-a")

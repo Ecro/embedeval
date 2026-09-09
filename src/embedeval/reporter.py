@@ -687,13 +687,29 @@ def generate_run_archive(
     details_dir = run_dir / "details"
     details_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save per-case detailed results
+    # Save per-case detailed results. Results merged in from the tracker carry
+    # no generated_code (cli._build_comprehensive_results synthesises them from
+    # stored pass/failed_layer), and a detail file with an empty submission is
+    # worse than no file: it looks exactly like a real one. A partial run wrote
+    # 219 such stubs, they overwrote the real details in a re-score input set,
+    # and every one of those cases scored FAIL@L0 on empty code (2026-09-09).
+    # The summary still counts them; only the per-case file is skipped.
+    synthesized = 0
     for r in results:
+        if not r.generated_code:
+            synthesized += 1
+            continue
         case_data = r.model_dump(mode="json")
         case_file = details_dir / f"{r.case_id}.json"
         case_file.write_text(
             json.dumps(case_data, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
+        )
+    if synthesized:
+        logger.info(
+            "Run archive: skipped %d detail file(s) for cases merged from the "
+            "tracker (no stored submission to record)",
+            synthesized,
         )
 
     # Save summary

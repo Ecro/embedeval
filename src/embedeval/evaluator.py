@@ -677,6 +677,12 @@ def _run_runtime(
         )
 
     if build_mode == "docker":
+        # `timeout` inside the container is what actually stops the firmware.
+        # subprocess's own timeout only kills the local `docker run` client —
+        # the container keeps executing the while(1) loop forever, and with one
+        # leaked container per runtime case a full benchmark accumulated 100+
+        # of them until the host ran out of memory and killed the run
+        # (2026-09-09). `--rm` then reaps the container on its own exit.
         cmd = [
             "docker",
             "run",
@@ -688,6 +694,9 @@ def _run_runtime(
             "-w",
             "/workspace",
             _get_docker_image(),
+            "timeout",
+            "--signal=KILL",
+            str(int(RUNTIME_TIMEOUT)),
             "west",
             "build",
             "-t",
@@ -701,7 +710,10 @@ def _run_runtime(
     # Embedded firmware runs forever (while(1) loops). We run for a short
     # window, capture whatever output appears, then kill the process.
     # Success = process started + expected output keywords found.
-    rt_timeout = RUNTIME_TIMEOUT
+    # In docker mode the in-container `timeout` is the primary stop; give the
+    # local client a slightly longer leash so that one fires first and the
+    # container exits (and is reaped) instead of being orphaned.
+    rt_timeout = RUNTIME_TIMEOUT + 5 if build_mode == "docker" else RUNTIME_TIMEOUT
     start = time.monotonic()
     try:
         result = subprocess.run(
@@ -714,7 +726,9 @@ def _run_runtime(
         # Process exited on its own — check exit code
         elapsed = time.monotonic() - start
         stdout = result.stdout + result.stderr
-        exited_ok = result.returncode == 0
+        # 124/137 = `timeout` stopped the firmware (TERM / KILL). For a while(1)
+        # program that is the expected outcome, not a failure to start.
+        exited_ok = result.returncode in (0, 124, 137)
     except subprocess.TimeoutExpired as exc:
         # Expected: firmware runs forever, we killed it after rt_timeout
         elapsed = time.monotonic() - start
